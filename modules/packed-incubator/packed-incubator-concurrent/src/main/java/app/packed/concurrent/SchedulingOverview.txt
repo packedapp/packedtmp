@@ -1,6 +1,23 @@
 === DomainObjects
 Schedule
 
+ScheduleOnce(nanos)
+ScheduleCron()  (Knows Timezones, alternativ @CalendarScheduled)
+ScheduleRecurrent
+
+
+------
+Annotations
+Runtime control
+
+
+
+-----
+ Schedule
+   CronSchedule
+   DurationSchedule
+     boolean atFixedRate
+
 ==== Annotations
 
 ==== Runtime

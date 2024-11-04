@@ -25,18 +25,19 @@ import app.packed.context.ContextTemplate;
 import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
- * An operation template defines the basic behaviour of an operation and is typically reused across multiple operations.
+ * An operation template defines the basic behaviour of an operation.
+ * <p>
+ *
+ * and is typically reused across multiple operations.
  *
  *
  * <p>
  */
 
-
 // Return types
 /// Checks
 /// Mappers (fx sealed record faetter)
 /// Sidecar extractor
-
 
 public sealed interface OperationTemplate permits PackedOperationTemplate {
 
@@ -52,10 +53,19 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     List<Class<? extends Throwable>> allowedThrowables();
 
+    // Problemet er dynamic types. Hvor vi er interesset i at embedded den
+    default List<Class<?>> returnTypes() {
+        throw new UnsupportedOperationException();
+    }
+
+    default List<Class<?>> parameterTypes() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
-     *
      * @return the method type representing the invocation
      */
+    // Does not really work with dynamic return types();
     MethodType invocationType();
 
     default boolean newLifetime() {

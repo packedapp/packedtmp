@@ -16,16 +16,15 @@ import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.lifecycle.BeanLifecycleMirror;
 import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
 import app.packed.binding.Key;
-import app.packed.build.BuildActor;
 import app.packed.build.action.BuildActionMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerMirror;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
-import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
@@ -33,6 +32,7 @@ import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.context.ContextSetup;
+import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
 import internal.app.packed.lifecycle.PackedBeanLifecycleMirror;
 import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.DependenciesMirror;
@@ -42,7 +42,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <p>
  * An instance of BeanMirror (or a subclass hereof) can be injected at runtime simply by declaring a dependency on it.
  */
-@OnExtensionServiceInteritedBeanTrigger(extension = BaseExtension.class)
+@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
 public non-sealed class BeanMirror implements Accessor, ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderMirror {
 
     /** The handle of the bean we are mirroring. */
@@ -183,22 +183,8 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     }
 
     /** {@return a stream of all of the operations declared by the bean.} */
-    public final Stream<OperationMirror> operations() {
-        return handle.bean.operations.stream().map(OperationSetup::mirror);
-    }
-
-    /**
-     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
-     *
-     * @param <T>
-     * @param operationType
-     *            the type of operations to include
-     * @return a collection of all of the operations declared by the bean of the specified type.
-     */
-    @SuppressWarnings("unchecked")
-    public final <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
-        requireNonNull(operationType, "operationType is null");
-        return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
+    public final OperationMirror.OfStream<OperationMirror> operations() {
+        return OperationMirror.OfStream.of(handle.bean.operations.stream().map(OperationSetup::mirror));
     }
 
     public Map<Key<?>, Collection<ServiceBindingMirror>> overriddenServices() {
@@ -206,7 +192,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     }
 
     /** {@return the owner of the bean.} */
-    public final BuildActor owner() {
+    public final ComponentRealm owner() {
         return handle.owner();
     }
 

@@ -16,10 +16,9 @@ import app.packed.build.MirrorPrinter;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.lifetime.CompositeLifetimeMirror;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
@@ -27,6 +26,7 @@ import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.PackedTreeView;
 
@@ -45,7 +45,7 @@ import internal.app.packed.util.PackedTreeView;
  * Like many other mirrors classes the type of application mirror being returned can be specialized. See
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
-@OnExtensionServiceInteritedBeanTrigger(extension = BaseExtension.class)
+@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
 public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationBuildLocal.Accessor {
 
     /** The application's handle. */
@@ -62,31 +62,21 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     /**
-     * {@return a stream of all of the operations declared in the application.}
+     * {@return a stream of all of the operations declared in the application}
      * <p>
-     * Unlike {@link #beans()}, this stream includes beans that are owned by extensions.
+     * Unlike {@link #beans()}, this returned stream includes beans that are owned by extensions.
      */
     public Stream<BeanMirror> allBeans() {
         return containers().stream().flatMap(ContainerMirror::allBeans);
     }
 
-    /** {@return a stream of all of the operations declared by the user in the application.} */
-    public Stream<OperationMirror> allOperations() {
-        return allBeans().flatMap(BeanMirror::operations);
-    }
-
     /**
-     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
-     *
-     * @param <T>
-     * @param operationType
-     *            the type of operations to include
-     * @return a collection of all of the operations declared by the bean of the specified type.
+     * {@return a stream of all operations defined in the application}
+     * <p>
+     * Unlike {@link #operations()} the returned stream includes operations on beans owned by extensions.
      */
-    @SuppressWarnings("unchecked")
-    public <T extends OperationMirror> Stream<T> allOperations(Class<T> operationType) {
-        requireNonNull(operationType, "operationType is null");
-        return (Stream<T>) allOperations().filter(f -> operationType.isAssignableFrom(f.getClass()));
+    public OperationMirror.OfStream<OperationMirror> allOperations() {
+        return OperationMirror.OfStream.of(allBeans().flatMap(BeanMirror::operations));
     }
 
     /** {@return a tree representing all the assemblies used for creating this application} */
@@ -118,7 +108,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     public ComponentPath componentPath() {
         return handle.application.componentPath();
     }
-
 
     /**
      * {@return an immutable set of tags that have been set on the application}
@@ -177,7 +166,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     /** {@return the application's lifetime. Which is identical to the root container's.} */
-    public ContainerLifetimeMirror lifetime() {
+    public CompositeLifetimeMirror lifetime() {
         return container().lifetime();
     }
 
@@ -216,26 +205,8 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     /** {@return a stream of all of the operations declared by the user in the application.} */
-    public Stream<OperationMirror> operations() {
-        return beans().flatMap(BeanMirror::operations);
-    }
-
-    /**
-     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
-     *
-     * @param <T>
-     * @param operationType
-     *            the type of operations to include
-     * @return a collection of all of the operations declared by the bean of the specified type.
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
-        requireNonNull(operationType, "operationType is null");
-        return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
-    }
-
-    public final void print(@SuppressWarnings("unchecked") Class<? extends Mirror>... mirrorTypes) {
-
+    public OperationMirror.OfStream<OperationMirror> operations() {
+        return OperationMirror.OfStream.of(beans().flatMap(BeanMirror::operations));
     }
 
     public void print() {
@@ -244,6 +215,10 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         // asJSON();
         // verbose();
         print0(handle.application.container());
+    }
+
+    public final void print(@SuppressWarnings("unchecked") Class<? extends Mirror>... mirrorTypes) {
+
     }
 
     private void print0(ContainerSetup cs) {
@@ -263,6 +238,13 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
             }
             System.out.print(sb.toString());
         }
+    }
+
+    /**
+     *
+     */
+    public MirrorPrinter printer() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the service contract of this application.} */
@@ -293,13 +275,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     public <E extends ExtensionMirror<?>> void useIfPresent(Class<E> type, Consumer<? super E> action) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     *
-     */
-    public MirrorPrinter printer() {
         throw new UnsupportedOperationException();
     }
 }

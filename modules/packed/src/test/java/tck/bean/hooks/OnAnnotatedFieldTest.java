@@ -46,7 +46,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
 
             OperationHandle<?> h = b.newGetOperation(T).install(OperationHandle::new);
             assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invokerType());
-            assertSame(HookTestingExtension.class, h.installerByExtension());
+            assertSame(HookTestingExtension.class, h.installedByExtension());
 
             if (h.target() instanceof OperationTarget.OfField f) {
                 assertEquals(FieldPrivateInstanceString.FOO_FIELD, f.field());

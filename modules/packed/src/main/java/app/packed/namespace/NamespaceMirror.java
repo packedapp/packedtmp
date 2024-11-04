@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
@@ -51,8 +51,7 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
         return handle.componentPath();
     }
 
-    @Override
-    public final BuildActor componentOwner() {
+    public final ComponentRealm componentOwner() {
         return handle.componentOwner();
     }
 
@@ -124,9 +123,8 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
-        requireNonNull(operationType, "operationType is null");
-        return (Stream) handle.namespace.operations.stream().map(e -> e.mirror()).filter(f -> operationType.isAssignableFrom(f.getClass()));
+    // Public???? In that case, we probably need both
+    protected final OperationMirror.OfStream<OperationMirror> operations() {
+        return OperationMirror.OfStream.of(handle.namespace.operations.stream().map(e -> e.mirror()));
     }
 }

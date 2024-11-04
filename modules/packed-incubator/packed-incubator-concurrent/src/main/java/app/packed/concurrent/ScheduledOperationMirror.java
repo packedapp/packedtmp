@@ -19,23 +19,26 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
+import app.packed.concurrent.job.impl.ScheduledOperationHandle;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationMirror;
+
 /**
  * An mirror for a scheduled operation.
  */
-public class ScheduledOperationMirror extends ThreadOperationMirror {
+public class ScheduledOperationMirror extends OperationMirror {
 
     final ScheduledOperationHandle handle;
 
     /**
      * @param handle
      */
-    ScheduledOperationMirror(ScheduledOperationHandle handle) {
+    public ScheduledOperationMirror(OperationHandle<?> handle) {
         super(handle);
-        this.handle = requireNonNull(handle);
+        this.handle = (ScheduledOperationHandle) requireNonNull(handle);
     }
 
     public String schedule() {
         return Objects.toString(handle.s);
     }
-
 }

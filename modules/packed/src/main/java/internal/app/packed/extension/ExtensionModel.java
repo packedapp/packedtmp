@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.Framework;
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
@@ -56,9 +56,6 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  */
 // Kan kalde dem Info klasser istedet for, hvis vi vil brug model externt i APIen
 public final class ExtensionModel implements ExtensionDescriptor {
-
-    @Deprecated
-    static final ThreadLocal<Wrapper> CONSTRUCT = new ThreadLocal<>();
 
     /** A cache of all encountered extension models. */
     private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
@@ -99,7 +96,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The {@link ExtensionDescriptor#orderingDepth() depth} of this extension. */
     private final int ordringDepth;
 
-    private final BuildActor realm;
+    private final ComponentRealm realm;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -109,7 +106,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     private ExtensionModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
-        this.realm = BuildActor.extension(extensionClass);
+        this.realm = ComponentRealm.extension(extensionClass);
         this.mhConstructor = builder.mhConstructor;
         this.ordringDepth = builder.depth;
         this.dependencies = Set.copyOf(builder.dependencies);
@@ -146,14 +143,21 @@ public final class ExtensionModel implements ExtensionDescriptor {
         // Start comparing by name
 
         // First we compare the depth of each extension
+        // We do this first because it is fast
         int d = ordringDepth - m.ordringDepth;
         if (d != 0) {
             return d;
         }
 
+        // Compare String lengths first (fast integer comparison)
+        // Only if the strings are the same length do we need to do full string comparison
+        int lengthDiff = nameFull.length() - m.nameFull.length();
+        if (lengthDiff != 0) {
+            return lengthDiff;
+        }
+
         // Then we compare the full name (class.getCanonicalName());
 
-        // Should we have compare on String.lenght first instead???
         // A lot faster
         int c = nameFull.compareTo(m.nameFull);
         if (c != 0) {
@@ -239,7 +243,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return ordringDepth;
     }
 
-    public BuildActor realm() {
+    public ComponentRealm realm() {
         return realm;
     }
 

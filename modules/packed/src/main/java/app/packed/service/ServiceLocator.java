@@ -34,9 +34,9 @@ import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.component.guest.FromGuest;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtension;
 import app.packed.operation.Op1;
 import app.packed.runtime.RunState;
+import internal.app.packed.extension.BaseExtensionBeanintrospector;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.service.PackedServiceLocator;
 
@@ -107,7 +107,7 @@ import internal.app.packed.service.PackedServiceLocator;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is unchangeable.
  */
-@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(introspector = BaseExtensionBeanintrospector.class)
 // I don't think this should have a service provider
 public interface ServiceLocator {
 

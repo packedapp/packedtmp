@@ -26,7 +26,7 @@ import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.bean.scanning.BeanHookModel.AnnotatedMethod;
+import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedMethodCache;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
@@ -81,13 +81,13 @@ public final class IntrospectorOnMethod extends IntrospectorOnExecutable<Method>
             Annotation a1 = annotations[i];
             Class<? extends Annotation> a1Type = a1.annotationType();
 
-            AnnotatedMethod am = iBean.hookModel.testMethodAnnotation(a1Type);
+            OnAnnotatedMethodCache am = iBean.triggerModel.testMethod(a1Type);
             if (am != null) {
-                BeanIntrospectorSetup contributor = iBean.computeIntrospector(am.extensionType());
+                BeanIntrospectorSetup contributor = iBean.computeIntrospector(am.bim());
 
                 IntrospectorOnMethod pbm = new IntrospectorOnMethod(contributor, method, annotations, am.isInvokable());
                 PackedAnnotationList pac = new PackedAnnotationList(a1);
-                contributor.introspector.onAnnotatedMethod(pac, pbm);
+                contributor.instance.onAnnotatedMethod(pac, pbm);
             }
         }
     }

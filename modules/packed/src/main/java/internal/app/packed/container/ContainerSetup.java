@@ -304,9 +304,10 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     public void onAssemblyClose(AuthoritySetup<?> as) {
         for (BeanSetup b : beans) {
             if (b.owner == as) {
-                BeanHandlers.invokeBeanHandleDoClose(b.handle());
+                BeanHandlers.invokeBeanHandleDoClose(b.handle(), true);
             }
         }
+
         for (ContainerSetup c : treeChildren.values()) {
             if (assembly == c.assembly) {
                 ContainerHandlers.invokeContainerHandleDoClose(c.handle());

@@ -15,10 +15,21 @@
  */
 package app.packed.container;
 
+import app.packed.build.BuildException;
+
 /**
  *
  */
 // ClosableContainerRequiredException
-public class ManagedContainerRequiredException {
+public class ManagedContainerRequiredException extends BuildException {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @param message
+     */
+    public ManagedContainerRequiredException(String message) {
+        super(message);
+    }
 
 }

@@ -22,8 +22,6 @@ import app.packed.container.ContainerMirror;
 /**
  *
  */
-// Jeg ved ikke
-
 public non-sealed abstract class ApplicationBuildHook extends BuildHook {
 
     // Maybe take ApplicationDescriptor, and fail within the method instead of returning boolean
@@ -43,6 +41,10 @@ public non-sealed abstract class ApplicationBuildHook extends BuildHook {
     }
 
     public void onNew(ApplicationConfiguration configuration) {}
+
+    // Vil mene det er den sidste der bliver kaldt.
+    // Den vil dog trigger fx BeanBuildHook.
+    public void onClosing(ApplicationConfiguration configuration) {}
 }
 
 class MyA extends ApplicationBuildHook {

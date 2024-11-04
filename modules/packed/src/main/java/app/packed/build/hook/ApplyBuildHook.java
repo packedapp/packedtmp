@@ -28,6 +28,7 @@ import java.lang.annotation.Target;
 @Target( ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+// Inheritable?????
 public @interface ApplyBuildHook {
 
     // I think we have hooks (instead of value), because we hope to have functions in annotations some day

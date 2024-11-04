@@ -58,6 +58,7 @@ public sealed abstract class BuildHook implements BuildCodeSource
 
     // If the same (.getClass()) build hook is placed on annotation ignore it
     // other.getClass() == this.getClass()
+    //
     public boolean ignoreDuplicate(BuildHook other) {
         return true; // Maybe false or maybe True/False/Fail/Warn
     }
@@ -108,6 +109,34 @@ public sealed abstract class BuildHook implements BuildCodeSource
         void observe(BuildHook... hooks);
 
         void transform(BuildHook... hooks);
+
+        Applicator traverse(AssemblyPropagator ap);
+
+        Applicator traverseRecursively();
+
+        // I think if you want them parallel, you probably need to write them yourself.
+        // assemblies.streamCompo
+        // Maaske supporter vi kun base componenter...
+        // Assembly can ikke være et child af container, jo maaske er det kun et child for root containeren i assemblyen
+
+        <T extends ComponentMirror> Applicator verify(Class<T> mirrorType, Consumer<? super T> verifier);
+
+    }
+
+    // Then move the methods
+    // ApplicationHook.transform(Assembly, C->{ });
+    public interface Applicator2<B extends BuildHook> {
+        // Normally the build hooks are inserted first
+        // IDK, firstOccurence?
+        Applicator applyBefore(Class<? extends B> bh);
+
+        Applicator applyLast();
+
+        // Den eneste forskel er jo en marker i vores BuildHookMirror...
+        // Vi checker altid det samme
+        void observe(@SuppressWarnings("unchecked") B... hooks);
+
+        void transform(@SuppressWarnings("unchecked") B... hooks);
 
         Applicator traverse(AssemblyPropagator ap);
 

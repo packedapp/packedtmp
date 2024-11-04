@@ -1,60 +1,40 @@
 package app.packed.extension;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.assembly.Assembly;
-import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanTemplate;
 import app.packed.bean.scanning.BeanClassMutator;
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.SyntheticBean;
 import app.packed.binding.Key;
-import app.packed.build.Mirror;
 import app.packed.build.action.BuildActionable;
-import app.packed.component.guest.ComponentHostContext;
-import app.packed.component.guest.FromGuest;
+import app.packed.concurrent.job.JobNamespaceConfiguration;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
-import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.operation.Op;
-import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceNamespaceConfiguration;
-import internal.app.packed.application.GuestBeanHandle;
-import internal.app.packed.application.deployment.DeploymentMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.bean.scanning.IntrospectorOn;
-import internal.app.packed.bean.scanning.IntrospectorOnField;
-import internal.app.packed.bean.scanning.IntrospectorOnMethod;
-import internal.app.packed.bean.scanning.IntrospectorOnVariableUnwrapped;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.BaseExtensionWirelet;
-import internal.app.packed.lifecycle.LifecycleAnnotationIntrospector;
-import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
-import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
-import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
-import internal.app.packed.service.ServiceAnnotationScanner;
 
 /**
  * An extension that defines the foundational APIs for managing beans, services, containers and applications.
@@ -65,11 +45,10 @@ import internal.app.packed.service.ServiceAnnotationScanner;
  * All methods on this class deals with beans Table area [bean,container,service] prefix desciption
  * <p>
  * This extension does not define an {@link ExtensionExtension extension mirror}. Instead all relevant methods are
- * placed directly on {@link app.packed.bean.BeanMirror}, {@link app.packed.container.ContainerMirror} and
- * {@link app.packed.application.ApplicationMirror}.
+ * placed directly on {@link app.packed.bean.BeanMirror}, {@link app.packed.container.ContainerMirror},
+ * {@link app.packed.application.ApplicationMirror} and relevant {@link app.packed.namespace.NamespaceMirror}s.
  *
  * @see app.packed.container.BaseAssembly#base()
- * @see BaseWirelets
  */
 
 // Bean
@@ -93,7 +72,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     static final BeanTemplate TEMPLATE = BeanKind.CONTAINER.template().withInitialization(OperationTemplate.defaults().withReturnTypeDynamic());
 
     /**
-     * All your base are belong to us. £
+     * All your base are belong to us.
      *
      * @param handle
      *            the extension's handle
@@ -269,6 +248,10 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         });
     }
 
+    public JobNamespaceConfiguration jobs() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Creates a new child container by linking the specified assembly.
      *
@@ -322,128 +305,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         return ((PackedBeanTemplate) template).newInstaller(extension, extension);
     }
 
-    /**
-     * Creates a new BeanIntrospector for handling annotations managed by BeanExtension.
-     *
-     * @see Inject
-     * @see OnInitialize
-     * @see OnStart
-     * @see OnStop
-     */
-    @Override
-    protected BeanIntrospector newBeanIntrospector() {
-        return new BeanIntrospector() {
-
-            /** Handles {@link Inject}. */
-            @Override
-            public void onAnnotatedField(Annotation annotation, OnField onField) {
-                IntrospectorOnField f = (IntrospectorOnField) onField;
-
-                // Test for @Inject
-                if (LifecycleAnnotationIntrospector.testFieldAnnotation(f, annotation)) {
-                    return;
-                }
-
-                // Test For @Provide
-                if (ServiceAnnotationScanner.testFieldAnnotation(f, annotation)) {
-                    return;
-                }
-                super.onAnnotatedField(annotation, onField);
-            }
-
-            /**
-             * {@inheritDoc}
-             *
-             * @see app.packed.bean.lifecycle.Inject
-             * @see app.packed.bean.lifecycle.Initialize
-             * @see app.packed.bean.lifecycle.Start
-             * @see app.packed.bean.lifecycle.Stop
-             * @see app.packed.service.Provide
-             * @see app.packed.service.Export
-             * @see app.packed.lifetime.Main
-             */
-            @Override
-            public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
-                IntrospectorOnMethod m = (IntrospectorOnMethod) method;
-
-                // Handles @Inject, @Initialize, @Start, @Stop
-                if (LifecycleAnnotationIntrospector.testMethodAnnotation(m, annotation)) {
-                    return;
-                }
-
-                // Handles @Provide, @Export
-                if (ServiceAnnotationScanner.testMethodAnnotation(m, annotation)) {
-                    return;
-                }
-
-                // Handles @Main
-                if (EntryPointManager.testMethodAnnotation(BaseExtension.this, isInApplicationLifetime(), m, annotation)) {
-                    return;
-                }
-
-                super.onAnnotatedMethod(annotation, method);
-            }
-
-            /** Handles {@link ContainerGuest}. */
-            @Override
-            public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
-                if (annotation instanceof FromGuest) {
-                    IntrospectorOn pbe = ((IntrospectorOn) v);
-                    GuestBeanHandle gbh = (GuestBeanHandle) pbe.bean().handle();
-                    gbh.resolve(this, v);
-                } else {
-                    super.onAnnotatedVariable(annotation, v);
-                }
-            }
-
-            @Override
-            public void onExtensionService(Key<?> key, OnExtensionService service) {
-                Class<?> actualHook = service.baseClass();
-                OnVariableUnwrapped binding = service.binder();
-
-                if (LifecycleAnnotationIntrospector.testExtensionService(service, binding)) {
-                    return;
-                }
-
-                Class<?> hook = key.rawType();
-
-                if (ApplicationLaunchContext.class.isAssignableFrom(hook)) {
-                    binding.bindContext(ApplicationLaunchContext.class);
-                } else if (hook == ExtensionContext.class) {
-                    // We probably should have failed already, so no need to check. Only beans that are in the context
-                    if (beanAuthor().isApplication()) {
-                        binding.failWith(hook.getSimpleName() + " can only be injected into bean that owned by an extension");
-                    }
-                    binding.bindContext(ExtensionContext.class);
-                } else if (hook == ComponentHostContext.class) {
-                    ComponentHostContext c = beanHandle(GuestBeanHandle.class).get().toContext();
-                    binding.bindInstance(c);
-                } else if (Mirror.class.isAssignableFrom(hook)) {
-                    OperationSetup operation = ((IntrospectorOnVariableUnwrapped) binding).var().operation;
-                    if (actualHook == DeploymentMirror.class) {
-                        binding.bindInstance(operation.bean.container.application.deployment.mirror());
-                    } else if (actualHook == ApplicationMirror.class) {
-                        binding.bindInstance(operation.bean.container.application.mirror());
-                    } else if (actualHook == ContainerMirror.class) {
-                        binding.bindInstance(operation.bean.container.mirror());
-                    } else if (actualHook == AssemblyMirror.class) {
-                        binding.bindInstance(operation.bean.container.assembly.mirror());
-                    } else if (actualHook == BeanMirror.class) {
-                        binding.bindInstance(operation.bean.mirror());
-                    } else if (actualHook == OperationMirror.class) {
-                        binding.bindInstance(operation.mirror());
-                    } else {
-                        binding.checkAssignableTo(ExtensionContext.class, DeploymentMirror.class, ApplicationMirror.class, ContainerMirror.class,
-                                AssemblyMirror.class, BeanMirror.class, OperationMirror.class);
-                    }
-                } else {
-                    super.onExtensionService(key, service);
-
-                }
-            }
-        };
-    }
-
     /** {@return a mirror for this extension.} */
     @Override
     protected BaseExtensionMirror newExtensionMirror() {
@@ -463,9 +324,9 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      * {@link internal.app.packed.container.ExtensionModel#orderingDepth()} 0.
      */
     @Override
-    protected void onAssemblyClose() {
+    protected void onConfigured() {
         // close child extensions first
-        super.onAssemblyClose();
+        super.onConfigured();
 
         // A lifetime root lets order some dependencies
         if (isLifetimeRoot()) {

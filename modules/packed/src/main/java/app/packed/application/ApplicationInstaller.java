@@ -27,6 +27,10 @@ import internal.app.packed.application.PackedApplicationInstaller;
  */
 public sealed interface ApplicationInstaller<H extends ApplicationHandle<?, ?>> permits PackedApplicationInstaller {
 
+    default ApplicationInstaller<H> expectsResult(Class<?> resultType) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Add the specified tags to the application.
      *
@@ -74,7 +78,6 @@ public sealed interface ApplicationInstaller<H extends ApplicationHandle<?, ?>> 
      */
     <T> ApplicationInstaller<H> setLocal(ApplicationBuildLocal<T> local, T value);
 }
-
 
 // Det er nok ikke her man skal installere det...
 

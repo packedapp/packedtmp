@@ -61,7 +61,8 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
 
     /** {@inheritDoc} */
     @Override
-    public PackedBootstrapApp<A, H> expectsResult(Class<?> resultType) {
+    public PackedBootstrapApp<A, H> withExpectsResult(Class<?> resultType) {
+        // Could just be a stored internal wirelet for now.
         // Ideen er bootstrapApp.expectsResult(FooBar.class).launch(...);
         throw new UnsupportedOperationException();
     }
@@ -79,7 +80,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     }
 
     @Override
-    public A checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationException {
+    public A checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException {
         ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.LAUNCH, launcher, wirelets);
 
         // Build the application

@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.binding.BindingKind;
 import app.packed.binding.BindingMirror;
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.component.ComponentPath;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.OperationSetup;
@@ -36,7 +36,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
      * <p>
      * May be the application itself if using {@link app.packed.operation.Op#bind(Object)} or similar.
      */
-    public final BuildActor boundBy;
+    public final ComponentRealm boundBy;
 
     /** The index of this binding into {@link OperationSetup#bindings}. */
     public final int index;
@@ -49,7 +49,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
     /** The operation this binding is a part of. */
     public final OperationSetup operation;
 
-    protected BindingSetup(OperationSetup operation, int index, BuildActor boundBy) {
+    protected BindingSetup(OperationSetup operation, int index, ComponentRealm boundBy) {
         this.operation = requireNonNull(operation);
         this.index = index;
         this.boundBy = requireNonNull(boundBy);
@@ -87,7 +87,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
         /** Provider for the binding. */
         public final BindingAccessor provider;
 
-        public HookBindingSetup(OperationSetup operation, int index, BuildActor user, BindingAccessor provider) {
+        public HookBindingSetup(OperationSetup operation, int index, ComponentRealm user, BindingAccessor provider) {
             super(operation, index, user);
             this.provider = requireNonNull(provider);
         }
@@ -122,7 +122,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
          * @param index
          * @param user
          */
-        public ManualBindingSetup(OperationSetup operation, int index, BuildActor user, BindingAccessor provider) {
+        public ManualBindingSetup(OperationSetup operation, int index, ComponentRealm user, BindingAccessor provider) {
             super(operation, index, user);
             this.provider = provider;
         }

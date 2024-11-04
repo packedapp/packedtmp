@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.util.Nullable;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.extension.ExtensionSetup;
@@ -64,7 +64,7 @@ public sealed abstract class AuthoritySetup<T extends AbstractTreeNode<T>> exten
     }
 
     /** {@return a realm representing the owner.} */
-    public abstract BuildActor authority();
+    public abstract ComponentRealm authority();
 
     /** {@return whether or not the authority entity is still configurable.} */
     public abstract boolean isConfigurable();

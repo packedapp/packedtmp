@@ -2,8 +2,7 @@ package internal.app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
@@ -71,7 +70,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
 
     /** {@inheritDoc} */
     @Override
-    public BuildActor authority() {
+    public ComponentRealm authority() {
         return tree.model.realm();
     }
 
@@ -152,19 +151,6 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     @Override
     public BuildLocalMap locals() {
         return container.locals();
-    }
-
-    /**
-     * Call {@link Extension#newBeanIntrospector()} to generate a new {@link BeanIntrospector}.
-     *
-     * @return the new introspector
-     */
-    public BeanIntrospector newBeanIntrospector() {
-        BeanIntrospector bi = ExtensionHandlers.invokeExtensionNewBeanIntrospector(instance());
-        if (bi == null) {
-            throw new InternalExtensionException("newBeanIntrospector returned null for " + this);
-        }
-        return bi;
     }
 
     public ExtensionMirror<?> newExtensionMirror(Class<? extends ExtensionMirror<?>> mirrorClass) {

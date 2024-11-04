@@ -25,14 +25,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import app.packed.concurrent.DaemonContext;
 import app.packed.concurrent.SchedulingContext;
 import app.packed.extension.ExtensionContext;
 
 /**
  *
  */
-class VirtualThreadScheduledTaskManager implements ScheduledTaskManager {
+public class VirtualThreadScheduledTaskManager implements ScheduledTaskManager {
 
     final ExecutorService es = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -56,29 +55,6 @@ class VirtualThreadScheduledTaskManager implements ScheduledTaskManager {
         es.shutdown();
     }
 
-    static class DaemonOperationRunner implements Runnable {
-
-        final ExtensionContext ec;
-        final MethodHandle mh;
-
-        DaemonOperationRunner(ExtensionContext ec, MethodHandle mh) {
-            this.ec = ec;
-            this.mh = mh;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void run() {
-            DaemonContext dc = new PackedDaemonContext();
-            for (;;) {
-                try {
-                    mh.invokeExact(ec, dc);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 
     /**
     *

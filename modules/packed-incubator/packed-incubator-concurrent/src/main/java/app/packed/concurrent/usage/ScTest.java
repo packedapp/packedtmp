@@ -17,11 +17,11 @@ package app.packed.concurrent.usage;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.concurrent.Daemon;
-import app.packed.concurrent.DaemonContext;
-import app.packed.concurrent.ScheduleRecurrent;
 import app.packed.concurrent.ScheduledOperationMirror;
 import app.packed.concurrent.SchedulingContext;
+import app.packed.concurrent.annotations.ScheduleJob;
+import app.packed.concurrent.job.DaemonJob;
+import app.packed.concurrent.job.DaemonJobContext;
 
 /**
  *
@@ -42,18 +42,18 @@ public class ScTest extends BaseAssembly {
 
     public static class MuB {
 
-        @Daemon
-        public static void dae(DaemonContext sc) throws InterruptedException {
+        @DaemonJob
+        public static void dae(DaemonJobContext sc) throws InterruptedException {
             System.out.println("Daemon");
             Thread.sleep(100);
         }
 
-        @ScheduleRecurrent(millies = 10)
+        @ScheduleJob(withFixedDelay = 10)
         public static void schd(SchedulingContext sc, ScheduledOperationMirror op) {
             System.out.println("SCHs®ED " + op.target());
         }
 
-        @ScheduleRecurrent(millies = 88)
+        @ScheduleJob(withFixedDelay = 88)
         public static void sch(SchedulingContext sc, ScheduledOperationMirror op) {
             System.out.println("SCHED " + sc.invocationCount());
 //            System.out.println(op.target());

@@ -23,7 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.context.Context;
-import app.packed.extension.Extension;
 
 /**
  * A bean trigger are simply properties of a bean that trigger some action.
@@ -45,8 +44,8 @@ public @interface BeanTrigger {
          */
         boolean allowFullPrivilegeAccess() default false;
 
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
+        /** The introspector responsible for this trigger. */
+        Class<? extends BeanIntrospector<?>> introspector();
 
         Class<? extends Context<?>>[] requiresContext() default {};
 
@@ -73,8 +72,8 @@ public @interface BeanTrigger {
         /** Whether or not the owning extension is allow to set the contents of the field. */
         boolean allowSet() default false;
 
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
+        /** The introspector responsible for this trigger. */
+        Class<? extends BeanIntrospector<?>> introspector();
 
         /** {@return any contexts that are required to use the target annotation.} */
         Class<? extends Context<?>>[] requiresContext() default {};
@@ -107,8 +106,8 @@ public @interface BeanTrigger {
         // invocationAccess
         boolean allowInvoke() default false; // allowIntercept...
 
-        /** The extension that will be triggered. */
-        Class<? extends Extension<?>> extension();
+        /** The introspector responsible for this trigger. */
+        Class<? extends BeanIntrospector<?>> introspector();
 
         // Can we have more than one???
         // Ala Requires TransactionContext +
@@ -144,8 +143,8 @@ public @interface BeanTrigger {
         // Hmm, men det betyder jo ogsaa vi laver peeling
         boolean checkKeyRepresentation() default true;
 
-        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
-        Class<? extends Extension<?>> extension();
+        /** The introspector responsible for this trigger. */
+        Class<? extends BeanIntrospector<?>> introspector();
 
         /**
          * Contexts that are required in order to use the binding class or annotation.
@@ -188,12 +187,8 @@ public @interface BeanTrigger {
     @BeanTrigger
     public @interface OnExtensionServiceBeanTrigger {
 
-        /**
-         * The extension that will provide the services.
-         * <p>
-         * The extension must be located in the same module as the type that is annotated with this annotation.
-         */
-        Class<? extends Extension<?>> extension();
+        /** The introspector responsible for this trigger. */
+        Class<? extends BeanIntrospector<?>> introspector();
 
         /**
          * Any context that is needed for the service to be provided. The default is
@@ -229,12 +224,8 @@ public @interface BeanTrigger {
     @Inherited
     public @interface OnExtensionServiceInteritedBeanTrigger {
 
-        /**
-         * The extension that will provide services of the annotated type.
-         * <p>
-         * The extension must be located in the same module as the type that is annotated with this annotation.
-         */
-        Class<? extends Extension<?>> extension();
+        /** The introspector responsible for this trigger. */
+        Class<? extends BeanIntrospector<?>> introspector();
 
         /**
          * Contexts that are required in order to use the binding class.

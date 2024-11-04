@@ -20,13 +20,12 @@ import java.util.Optional;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
-import app.packed.concurrent.Daemon;
-import app.packed.concurrent.DaemonContext;
-import app.packed.concurrent.ScheduleRecurrent;
 import app.packed.concurrent.ScheduledOperationMirror;
 import app.packed.concurrent.SchedulingContext;
 import app.packed.concurrent.ThreadNamespaceMirror;
-import app.packed.concurrent.ThreadOperationMirror;
+import app.packed.concurrent.annotations.ScheduleJob;
+import app.packed.concurrent.job.DaemonJob;
+import app.packed.concurrent.job.DaemonJobContext;
 
 /**
  *
@@ -35,20 +34,14 @@ public class ScTest2 extends BaseAssembly {
 
     public static void main(String[] args) throws Exception {
         ApplicationMirror m = App.mirrorOf(new ScTest2());
-        m.operations(ScheduledOperationMirror.class).forEach(c -> {
+        m.operations().ofType(ScheduledOperationMirror.class).forEach(c -> {
             System.out.println(c.name() + ":" + c.schedule());
-        });
-        m.operations(ThreadOperationMirror.class).forEach(c -> {
-            System.out.println(c.name() + ":" + c);
         });
         Optional<ThreadNamespaceMirror> o = m.namespace(ThreadNamespaceMirror.class);
 
-        o.get().scheduledOperations().forEach(c -> {
-            System.out.println(c.name() + ":" + c.schedule());
-        });
-        o.get().daemonOperations().forEach(c -> {
-            System.out.println(c.name() + ":" + c.isInteruptAtStop());
-        });
+//        o.get().daemons().forEach(c -> {
+//            System.out.println(c.name() + ":" + c.isInteruptAtStop());
+//        });
 
 
         System.out.println(o.get());
@@ -67,13 +60,13 @@ public class ScTest2 extends BaseAssembly {
 
     public static class MuB {
 
-        @Daemon
-        public static void dae(DaemonContext sc) throws InterruptedException {
+        @DaemonJob
+        public static void dae(DaemonJobContext sc) throws InterruptedException {
             System.out.println("Daemon");
             Thread.sleep(100);
         }
 
-        @ScheduleRecurrent(millies = 88)
+        @ScheduleJob(withFixedDelay = 88)
         public static void sch(SchedulingContext sc, ScheduledOperationMirror op) {
 //            System.out.println("SCHED " + sc.invocationCount());
 //            System.out.println(op.target());

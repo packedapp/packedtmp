@@ -15,7 +15,7 @@
  */
 package internal.app.packed.extension;
 
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 
 /**
@@ -25,7 +25,7 @@ public record PackedExtensionUseSite(ExtensionSetup extension, ExtensionSetup us
 
     /** {@inheritDoc} */
     @Override
-    public BuildActor author() {
+    public ComponentRealm author() {
         return extension.authority();
     }
 }

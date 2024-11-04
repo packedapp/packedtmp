@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.scanning.BeanIntrospector.OnField;
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.operation.OperationInstaller;
@@ -32,50 +32,52 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.BeanHookCache.HookOnFieldAnnotation;
+import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedFieldCache;
 import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
 import internal.app.packed.util.PackedAnnotationList;
 
-/** Implementation of {@link BeanField}. */
+/** Implementation of {@link BeanIntrospector.OnField}. */
 // Previous we had a PackedBeanMember, but there are actually only 2-3 common operations. So don't go that road again.
-public final class IntrospectorOnField extends IntrospectorOn implements OnField, Comparable<IntrospectorOnField> {
+public final class IntrospectorOnField extends IntrospectorOn implements BeanIntrospector.OnField, Comparable<IntrospectorOnField> {
 
     /** Whether or not operations that read from the field can be created. */
-    final boolean allowGet;
+    private final boolean allowGet;
 
     /** Whether or not operations that write to the field can be created. */
-    final boolean allowSet;
+    private final boolean allowSet;
 
     /** Annotations on the field. */
     private final PackedAnnotationList annotations;
 
     /** The field. */
-    public final Field field;
+    private final Field field;
 
-    /** Hooks on the field */
-    private final PackedAnnotationList hooks;
+    /** The bean introspector that was triggered. */
+    private final BeanIntrospectorSetup introspector;
 
-    final BeanIntrospectorSetup introspectorSetup;
+    /** Triggering annotations on the field (for the given introspector). */
+    private final PackedAnnotationList triggeringAnnotations;
 
     // Field, FieldAnnotations, Type, TypeAnnotations
-    IntrospectorOnField(BeanScanner scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList hookAnnotations,
-            HookOnFieldAnnotation... hooks) {
-        introspectorSetup = scanner.computeIntrospector(hooks[0].extensionType());
+    private IntrospectorOnField(BeanIntrospectorSetup introspector, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations,
+            OnAnnotatedFieldCache... annotatedFields) {
+        this.introspector = introspector;
         this.field = field;
         this.annotations = annotations;
 
-        boolean allowGet = introspectorSetup.hasFullAccess();
+        boolean allowGet = introspector.hasFullAccess();
         boolean allowSet = allowGet;
-        for (HookOnFieldAnnotation annotatedField : hooks) {
+        for (OnAnnotatedFieldCache annotatedField : annotatedFields) {
             allowGet |= annotatedField.isGettable();
             allowSet |= annotatedField.isSettable();
         }
         this.allowGet = allowGet;
         this.allowSet = allowSet;
-        this.hooks = hookAnnotations;
+
+        this.triggeringAnnotations = triggeringAnnotations;
     }
 
     /** {@return a list of annotations on the member.} */
@@ -87,12 +89,12 @@ public final class IntrospectorOnField extends IntrospectorOn implements OnField
     /** {@inheritDoc} */
     @Override
     public BeanSetup bean() {
-        return introspectorSetup.scanner.bean;
+        return introspector.scanner.bean;
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
     void checkConfigurable() {
-        if (!introspectorSetup.extension.isConfigurable()) {
+        if (!introspector.extension.isConfigurable()) {
             throw new IllegalStateException("This method must be called before the extension is closed");
         }
     }
@@ -126,7 +128,9 @@ public final class IntrospectorOnField extends IntrospectorOn implements OnField
     public OperationInstaller newGetOperation(OperationTemplate template) {
         PackedOperationTemplate t = (PackedOperationTemplate) requireNonNull(template, "template is null");
         checkConfigurable();
-
+        if (!allowGet) {
+            throw new IllegalStateException("" + triggeringAnnotations);
+        }
         // Get A direct method handle to a getter for the field
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
 
@@ -135,7 +139,7 @@ public final class IntrospectorOnField extends IntrospectorOn implements OnField
         }
 
 //        template = template.reconfigure(c -> c.returnType(field.getType()));
-        MethodHandle directMH = introspectorSetup.scanner.unreflectGetter(field);
+        MethodHandle directMH = introspector.scanner.unreflectGetter(field);
         return newOperation(t, directMH, accessMode);
     }
 
@@ -144,7 +148,7 @@ public final class IntrospectorOnField extends IntrospectorOn implements OnField
         OperationType ft = OperationType.fromField(field, accessMode);
 
         // We should be able to create the method handle lazily
-        return t.newInstaller(introspectorSetup, mh, new OperationFieldTarget(field, accessMode), ft);
+        return t.newInstaller(introspector, mh, new OperationFieldTarget(field, accessMode), ft);
     }
 
     /** {@inheritDoc} */
@@ -153,7 +157,7 @@ public final class IntrospectorOnField extends IntrospectorOn implements OnField
         requireNonNull(template, "template is null");
         checkConfigurable();
 
-        VarHandle varHandle = introspectorSetup.scanner.unreflectVarHandle(field);
+        VarHandle varHandle = introspector.scanner.unreflectVarHandle(field);
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
 
         return newOperation(template, mh, accessMode);
@@ -164,15 +168,13 @@ public final class IntrospectorOnField extends IntrospectorOn implements OnField
     public OperationInstaller newSetOperation(OperationTemplate template) {
         requireNonNull(template, "template is null");
         checkConfigurable();
-
-        MethodHandle mh = introspectorSetup.scanner.unreflectSetter(field);
+        if (!allowSet) {
+            throw new IllegalStateException();
+        }
+        MethodHandle mh = introspector.scanner.unreflectSetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
 
         return newOperation(template, mh, accessMode);
-    }
-
-    void onHook() {
-        introspectorSetup.introspector.onAnnotatedField(hooks, this);
     }
 
     /** {@inheritDoc} */
@@ -183,7 +185,19 @@ public final class IntrospectorOnField extends IntrospectorOn implements OnField
 
     /** {@inheritDoc} */
     @Override
+    public AnnotationList triggeringAnnotations() {
+        return triggeringAnnotations;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Variable variable() {
         return new PackedVariable(annotations, field.getGenericType());
+    }
+
+    static void process(BeanIntrospectorSetup introspectorSetup, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations,
+            OnAnnotatedFieldCache... annotatedFields) {
+        IntrospectorOnField f = new IntrospectorOnField(introspectorSetup, field, annotations, triggeringAnnotations, annotatedFields);
+        introspectorSetup.instance.onAnnotatedField(triggeringAnnotations, f);
     }
 }

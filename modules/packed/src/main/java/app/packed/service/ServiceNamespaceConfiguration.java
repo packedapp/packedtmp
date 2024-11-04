@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceConfiguration;
@@ -53,7 +53,7 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
      * @implNote invoked via
      *           {@link internal.app.packed.handlers.ServiceHandlers#newServiceNamespaceConfiguration(ServiceNamespaceHandle, BaseExtension)}
      */
-    ServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension, BuildActor actor) {
+    ServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension, ComponentRealm actor) {
         super(handle, extension, actor);
     }
 

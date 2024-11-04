@@ -24,11 +24,15 @@ import app.packed.namespace.NamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
 
 /** Configuration of a component. */
+
+// I don't know about tag... We should probably prefix all with component
+// Or neither
+
 public abstract sealed class ComponentConfiguration
         permits ApplicationConfiguration, BeanConfiguration, ContainerConfiguration, NamespaceConfiguration, OperationConfiguration {
 
     /**
-     * Check that the component is still configurable.
+     * Check that the component is still configurable by its owner.
      *
      * @throws IllegalStateException
      *             if the component is no longer configurable
@@ -39,7 +43,7 @@ public abstract sealed class ComponentConfiguration
         }
     }
 
-    /** {@return the path of the component} */
+    /** {@return the path of this component} */
     public final ComponentPath componentPath() {
         return handle().componentPath();
     }
@@ -53,9 +57,10 @@ public abstract sealed class ComponentConfiguration
      *
      * @see ComponentMirror#componentTags()
      */
-    public abstract ComponentConfiguration componentTag(String... tags);
+    public abstract ComponentConfiguration tag(String... tags);
 
-    public abstract Set<String> componentTags();
+    /** {@return a set of all tags on this component} */
+    public abstract Set<String> tags();
 
     /** {@inheritDoc} */
     @Override
@@ -63,12 +68,7 @@ public abstract sealed class ComponentConfiguration
         return obj instanceof ComponentConfiguration cc && handle().equals(cc.handle());
     }
 
-    /**
-     * <p>
-     * Typically a component configuration will define a such {@link app.packed.bean.BeanConfiguration#beanHandle}
-     *
-     * @return the component handle
-     */
+    /** {@return the underlying handle of this component} */
     protected abstract ComponentHandle handle();
 
     /** {@inheritDoc} */
@@ -77,14 +77,8 @@ public abstract sealed class ComponentConfiguration
         return handle().hashCode();
     }
 
-    /**
-     * {@return whether or not the component is still configurable}
-     * <p>
-     * Typically this is determined by whether or not the defining assembly of the component is still configurable.
-     */
-    // I think the handle is configurable after the assembly has closed????
-    // So I think handle.isConfigurable!=configuration.configurable
+    /** {@return whether or not the component is still configurable} */
     public final boolean isConfigurable() {
-        return handle().isConfigurationConfigurable();
+        return handle().isConfigurable();
     }
 }

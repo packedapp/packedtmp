@@ -26,19 +26,20 @@ import internal.app.packed.extension.ExtensionSetup;
  */
 public final class BeanIntrospectorSetup implements Comparable<BeanIntrospectorSetup> {
 
-    /** The extension instance. */
+    /** The extension the bean introspector is a part of. */
     public final ExtensionSetup extension;
 
     boolean hasFullAccess;
 
-    /** A bean introspector provided by the extension via {@link Extension#newBeanIntrospector} */
-    final BeanIntrospector introspector;
+    /** The bean introspector instance.*/
+    final BeanIntrospector<?> instance;
 
+    /** The bean scanner. */
     public final BeanScanner scanner;
 
-    BeanIntrospectorSetup(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector introspector) {
+    BeanIntrospectorSetup(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector<?> instance) {
         this.extension = extension;
-        this.introspector = introspector;
+        this.instance = instance;
         this.scanner = scanner;
     }
 

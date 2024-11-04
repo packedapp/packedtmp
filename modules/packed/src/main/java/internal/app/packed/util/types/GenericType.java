@@ -39,6 +39,8 @@ import internal.app.packed.util.StringFormatter;
 // Take a look at helidons
 // https://helidon.io/docs/v2/apidocs/io.helidon.common/io/helidon/common/GenericType.html
 // I like the cast method
+
+// I think implement type (Variable shouldn't do it though)
 public abstract class GenericType<T> {
 
     /** A cache of generic types. */

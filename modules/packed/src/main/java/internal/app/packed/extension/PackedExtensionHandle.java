@@ -127,7 +127,6 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
 
             installer.install();
 
-
             namespaceHandle = t.newHandle().apply(installer);
         }
 
@@ -138,8 +137,9 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
      * {@return an instance of this extension that is used in the application's root container. Will return this if this
      * extension is the root extension}
      */
+    @Override
     @SuppressWarnings("unchecked")
-    public  E applicationRoot() {
+    public E applicationRoot() {
         return (E) extension.root().instance();
     }
 

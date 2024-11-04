@@ -18,7 +18,7 @@ package internal.app.packed.context.publish;
 import java.util.Map;
 import java.util.Set;
 
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.context.Context;
 
 /**
@@ -29,7 +29,7 @@ public interface ContextualizedElement {
     /** {@return a set of the contexts available for this bean.} */
     // This method is mainly used for informational purposes.
     // Kan ikke se man har brug for andet en
-    default Set<Class<? extends Context<?>>> contextAvailable(BuildActor author) {
+    default Set<Class<? extends Context<?>>> contextAvailable(ComponentRealm author) {
         throw new UnsupportedOperationException();
     }
 

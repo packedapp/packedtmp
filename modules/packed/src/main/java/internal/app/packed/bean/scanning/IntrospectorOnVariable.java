@@ -19,6 +19,7 @@ import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.function.Supplier;
@@ -37,6 +38,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedVariableCache;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.binding.BindingAccessor.FromCodeGenerated;
 import internal.app.packed.binding.BindingAccessor.FromConstant;
@@ -53,6 +55,7 @@ import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.PackedOp.NewOperation;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
+import internal.app.packed.util.PackedAnnotationList;
 
 /** Implementation of {@link BindableVariable}. */
 public final class IntrospectorOnVariable extends IntrospectorOn implements OnVariable {
@@ -225,6 +228,10 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
         return operation.bindings[index] != null;
     }
 
+
+    static void process(BeanIntrospectorSetup introspectorSetup, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations,
+            OnAnnotatedVariableCache... annotatedFields) {
+    }
 
     /** {@inheritDoc} */
     @Override

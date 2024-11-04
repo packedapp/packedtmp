@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanTrigger;
-import app.packed.extension.BaseExtension;
+import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -44,7 +44,7 @@ import app.packed.extension.BaseExtension;
 // Channels -> Notification: Notifiers friends and families about the pending shutdown
 // Do the actual shutdown
 // Notifaction again: Shit has been shutdown
-@BeanTrigger.OnAnnotatedMethod(extension = BaseExtension.class, requiresContext = StopContext.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedMethod(introspector = LifecycleAnnotationBeanIntrospector.class, requiresContext = StopContext.class, allowInvoke = true)
 public @interface Stop {
 
 //    // What is the usecase?

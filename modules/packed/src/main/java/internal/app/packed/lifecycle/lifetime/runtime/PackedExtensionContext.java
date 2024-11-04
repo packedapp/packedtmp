@@ -21,16 +21,16 @@ import java.lang.invoke.MethodType;
 
 import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.context.ContextTemplate;
-import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.ValueBased;
+import internal.app.packed.extension.BaseExtensionBeanintrospector;
 import internal.app.packed.util.LookupUtil;
 
 /**
  * All strongly connected components relate to the same pod.
  */
-@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(introspector = BaseExtensionBeanintrospector.class)
 @ValueBased
 public final class PackedExtensionContext implements ExtensionContext {
 

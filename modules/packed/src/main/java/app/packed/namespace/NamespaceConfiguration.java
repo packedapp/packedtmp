@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerPropagator;
 import app.packed.extension.Extension;
@@ -39,13 +39,13 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
     /** A handle for the namespace. */
     private final NamespaceHandle<E, ?> handle;
 
-    protected NamespaceConfiguration(NamespaceHandle<E, ?> namespace, E extension, BuildActor actor) {
+    protected NamespaceConfiguration(NamespaceHandle<E, ?> namespace, E extension, ComponentRealm actor) {
         this.handle = requireNonNull(namespace);
         this.extension = requireNonNull(extension);
         // TODO check that the extension is the right type for the namespace
     }
 
-    public final BuildActor authority() {
+    public final ComponentRealm authority() {
         return handle.namespace.owner.authority();
     }
 
@@ -57,15 +57,17 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
 
     }
 
+    /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration componentTag(String... tags) {
+    public ComponentConfiguration tag(String... tags) {
+        checkIsConfigurable();
         handle.componentTag(tags);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Set<String> componentTags() {
+    public Set<String> tags() {
         return handle.componentTags();
     }
 

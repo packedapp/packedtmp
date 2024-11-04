@@ -18,6 +18,14 @@ package app.packed.operation;
 import app.packed.build.hook.BuildHook;
 
 // Hvis du er en lifecycle operation i container X. Så gør foo
+
+
+// Det her maa simpelthen
+
+
+/**
+ *
+ */
 public non-sealed abstract class OperationBuildHook extends BuildHook {
 
 }

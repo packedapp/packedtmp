@@ -30,7 +30,6 @@ import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
@@ -161,7 +160,7 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
      *            the operation that provides the service
      * @return a provided service
      */
-    public void provideService(BeanSetup bean, Key<?> key, OperationSetup operation, BindingAccessor resolution) {
+    public void provideService(Key<?> key, OperationSetup operation, BindingAccessor resolution) {
         super.provide(key, operation, resolution);
 
         if (exportAll) {

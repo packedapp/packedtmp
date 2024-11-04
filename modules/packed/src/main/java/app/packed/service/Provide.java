@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanTrigger;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import app.packed.extension.BaseExtension;
 import app.packed.namespace.sandbox.NamespaceMetaAnnotation;
+import internal.app.packed.service.ServiceBeanIntrospector;
 
 /**
  * An annotation indicating that an annotated method or field on a bean provides a service to the container in which the
@@ -55,8 +55,8 @@ import app.packed.namespace.sandbox.NamespaceMetaAnnotation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceMetaAnnotation
-@OnAnnotatedMethod(extension = BaseExtension.class, allowInvoke = true)
-@BeanTrigger.OnAnnotatedField(extension = BaseExtension.class, allowGet = true)
+@OnAnnotatedMethod(introspector = ServiceBeanIntrospector.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedField(introspector = ServiceBeanIntrospector.class, allowGet = true)
 // Hvis vi laver meta annoteringen, skal vi jo naesten lave den om til en repeatable..
 // Syntes godt man maa smide flere pa
 public @interface Provide {

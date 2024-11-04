@@ -21,7 +21,9 @@ import java.util.List;
  *
  */
 public interface LifetimeStoreMirror {
+
+    /** {@return the number of elements in the store} */
     int size();
 
-    List<LifetimeStoreEntryMirror> entries();
+    List<LifetimeStoreEntryMirror> elements();
 }

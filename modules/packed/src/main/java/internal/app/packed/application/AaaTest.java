@@ -18,13 +18,13 @@ package internal.app.packed.application;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationException;
+import app.packed.application.ApplicationPanicException;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
-import app.packed.bean.lifecycle.Start;
+import app.packed.bean.lifecycle.OnStart;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromGuest;
@@ -59,7 +59,7 @@ public class AaaTest extends BaseAssembly {
             System.out.println(Thread.currentThread());
         }
 
-        @Start
+        @OnStart
         public void onStart() throws InterruptedException {
             Thread.sleep(1000);
             System.out.println("STARTING");
@@ -131,13 +131,13 @@ public class AaaTest extends BaseAssembly {
 
             /** {@inheritDoc} */
             @Override
-            public void checkedRun(Wirelet... wirelets) throws ApplicationException {
+            public void checkedRun(Wirelet... wirelets) throws ApplicationPanicException {
                 image.checkedLaunch(RunState.TERMINATED, wirelets);
             }
 
             /** {@inheritDoc} */
             @Override
-            public App checkedStart(Wirelet... wirelets) throws ApplicationException {
+            public App checkedStart(Wirelet... wirelets) throws ApplicationPanicException {
                 return null;
             }
         }

@@ -27,8 +27,8 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.repository.ApplicationRepository;
-import app.packed.application.repository.InstalledApplication;
+import app.packed.application.registry.ApplicationRegistry;
+import app.packed.application.registry.LaunchableApplication;
 import app.packed.build.BuildGoal;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.ApplicationSetup;
@@ -39,7 +39,7 @@ import internal.app.packed.application.PackedApplicationTemplate.ApplicationInst
 /** Implementation of {@link ApplicationRepository}. */
 @ValueBased
 public sealed abstract class AbstractApplicationRepository<I, H extends ApplicationHandle<I, ?>>
-        implements ApplicationRepository<I, H>, ApplicationInstallingSource permits ManagedApplicationRepository, UnmanagedApplicationRepository {
+        implements ApplicationRegistry<I, H>, ApplicationInstallingSource permits ManagedApplicationRepository, UnmanagedApplicationRepository {
 
     /** All applications that are installed or being installed into the container. */
     private final ConcurrentHashMap<String, ApplicationLauncherOrFuture<I, H>> applications;
@@ -60,7 +60,7 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
 
     /** {@inheritDoc} */
     @Override
-    public final Optional<InstalledApplication<I>> application(String name) {
+    public final Optional<LaunchableApplication<I>> application(String name) {
         ApplicationLauncherOrFuture<I, H> f = applications.get(name);
         return f instanceof PackedInstalledApplication<I, H> l ? Optional.of(l) : Optional.empty();
     }
@@ -68,7 +68,7 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public final Stream<InstalledApplication<I>> applications() {
+    public final Stream<LaunchableApplication<I>> applications() {
         return (Stream) applications0();
     }
 
@@ -83,7 +83,7 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public final InstalledApplication<I> install(Consumer<? super ApplicationInstaller<H>> installer) {
+    public final LaunchableApplication<I> install(Consumer<? super ApplicationInstaller<H>> installer) {
         PackedApplicationInstaller<H> pai = template.newInstaller(this, BuildGoal.IMAGE, methodHandle);
         installer.accept(pai);
         ApplicationSetup setup = pai.toSetup();

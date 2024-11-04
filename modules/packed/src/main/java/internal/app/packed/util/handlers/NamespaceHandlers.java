@@ -28,7 +28,7 @@ import internal.app.packed.namespace.NamespaceSetup;
 public final class NamespaceHandlers extends Handlers {
 
     /** A handle for invoking the protected method {@link NamespaceHandle#onNamespaceClose()}. */
-    private static final MethodHandle MH_HANDLE_ON_NAMESPACE_CLOSE =method(MethodHandles.lookup(), NamespaceHandle.class, "onNamespaceClose",
+    private static final MethodHandle MH_HANDLE_ON_NAMESPACE_CLOSE =method(MethodHandles.lookup(), NamespaceHandle.class, "onClose",
             void.class);
 
     /** A handle that can access {@link NamespaceHandle#namespace}. */

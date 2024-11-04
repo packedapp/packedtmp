@@ -23,7 +23,7 @@ import java.util.TreeSet;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.assembly.DelegatingAssembly;
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.repository.BuildApplicationRepository;
@@ -98,8 +98,8 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
 
     /** {@inheritDoc} */
     @Override
-    public BuildActor authority() {
-        return BuildActor.application();
+    public ComponentRealm authority() {
+        return ComponentRealm.application();
     }
 
     /**

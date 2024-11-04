@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanTrigger;
-import app.packed.extension.BaseExtension;
 import app.packed.namespace.sandbox.NamespaceOperation;
+import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
@@ -55,6 +55,14 @@ import app.packed.namespace.sandbox.NamespaceOperation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceOperation
-@BeanTrigger.OnAnnotatedField(extension = BaseExtension.class, allowSet = true)
-@BeanTrigger.OnAnnotatedMethod(extension = BaseExtension.class, allowInvoke = true)
-public @interface Inject {}
+@BeanTrigger.OnAnnotatedField(introspector = LifecycleAnnotationBeanIntrospector.class, allowSet = true)
+@BeanTrigger.OnAnnotatedMethod(introspector = LifecycleAnnotationBeanIntrospector.class, allowInvoke = true)
+public @interface Inject {
+    // Altsaa med mindre vi laver en inject annotatering for alle namespace kinds,
+    // Kan vi kun styre det her, men hvordan styre vi det paa parameter niveau???
+    ///// Ahhhh, bliver maaske noedt til at have en Namespace annotering
+    // Ihvertfald hvis man skal mikse og matches.
+    // Min store "frygt" er man smider den paa alt
+    //
+    String namespace() default "main";
+}

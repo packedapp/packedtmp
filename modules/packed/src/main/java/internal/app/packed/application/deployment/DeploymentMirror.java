@@ -24,9 +24,9 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.build.Mirror;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.TreeView;
+import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
 
 /**
  *
@@ -38,7 +38,7 @@ import app.packed.util.TreeView;
 // Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
 
 //Cluster|Node? < Java Process(Logical name) < Family
-@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
 public class DeploymentMirror implements Mirror {
 
     /** The deployment we are mirroring. */

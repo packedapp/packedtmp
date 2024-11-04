@@ -17,7 +17,9 @@ package app.packed.concurrent;
 
 import java.time.Duration;
 
+import app.packed.concurrent.job.impl.ScheduledOperationHandle;
 import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationHandle;
 import internal.app.packed.concurrent.ScheduleImpl;
 
 /**
@@ -33,15 +35,14 @@ public final class ScheduledOperationConfiguration extends OperationConfiguratio
     /**
      * @param handle
      */
-    ScheduledOperationConfiguration(ScheduledOperationHandle handle) {
+    public ScheduledOperationConfiguration(OperationHandle<?> handle) {
         super(handle);
-        this.handle = handle;
+        this.handle = (ScheduledOperationHandle) handle;
     }
 
     public boolean isScheduled() {
         return handle.s != null;
     }
-
 
     public void setMillies(int millies) {
         checkIsConfigurable();

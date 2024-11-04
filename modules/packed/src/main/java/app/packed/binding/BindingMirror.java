@@ -18,8 +18,8 @@ package app.packed.binding;
 import java.util.Optional;
 
 import app.packed.binding.sandbox.BindingHandle;
-import app.packed.build.BuildActor;
 import app.packed.build.Mirror;
+import app.packed.component.ComponentRealm;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.PackedBindingHandle;
@@ -54,7 +54,7 @@ public class BindingMirror implements Mirror {
     }
 
     /** {@return who created the binding.} */
-    public final BuildActor boundBy() {
+    public final ComponentRealm boundBy() {
         return binding.boundBy;
     }
 

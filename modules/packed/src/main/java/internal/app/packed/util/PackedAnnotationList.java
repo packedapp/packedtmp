@@ -32,6 +32,7 @@ public record PackedAnnotationList(Annotation... annotations) implements Annotat
     public PackedAnnotationList(Annotation a) {
         this(new Annotation[] { a });
     }
+
     public static final PackedAnnotationList EMPTY = new PackedAnnotationList(new Annotation[0]);
 
     /** {@inheritDoc} */
@@ -147,6 +148,11 @@ public record PackedAnnotationList(Annotation... annotations) implements Annotat
     @Override
     public List<Annotation> toList() {
         return List.of(annotations);
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(annotations);
     }
 
 }

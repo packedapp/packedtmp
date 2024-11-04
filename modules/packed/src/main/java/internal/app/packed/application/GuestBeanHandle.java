@@ -65,7 +65,7 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         return Map.of();
     }
 
-    public void resolve(BeanIntrospector i, OnVariable v) {
+    public void resolve(BeanIntrospector<?> i, OnVariable v) {
         Variable va = v.variable();
 
         // AssignableTo in case of

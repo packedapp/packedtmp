@@ -16,11 +16,10 @@
 package internal.app.packed.operation;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanKind;
@@ -37,15 +36,16 @@ import internal.app.packed.util.handlers.OperationHandlers;
 public final class BeanOperationStore implements Iterable<OperationSetup> {
 
     /** Operations declared by the bean. */
-    private final ArrayList<OperationSetup> all = new ArrayList<>();
+    public final ArrayList<OperationSetup> all = new ArrayList<>();
+
+    public CompoundOperation initialization;
 
     /**
      * All lifecycle operations for the bean. Is initially unsorted as operations can be added in any order. But in the end
      * the list will be sorted in the order of execution. With {@link app.packed.lifetime.RunState#INITIALIZING} lifecycle
      * operations first, and {@link app.packed.lifetime.RunState#STOPPING} lifecycle operations at the end.
      */
-    // We need it sorted for now
-    public final SortedMap<InternalBeanLifecycleKind, List<BeanLifecycleOperationHandle>> lifecycleHandles = new TreeMap<>();
+    public final EnumMap<InternalBeanLifecycleKind, List<BeanLifecycleOperationHandle>> lifecycleHandles = new EnumMap<>(InternalBeanLifecycleKind.class);
 
     /**
      * The unique name of every operation.
@@ -59,8 +59,6 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
     volatile Map<OperationSetup, String> operationNames;
 
     public boolean providingOperationsVisited;
-
-    public CompoundOperation initialization;
 
     /** A list of services provided by the bean, used for circular dependency checks. */
     public final List<NamespaceServiceProviderHandle> serviceProviders = new ArrayList<>();

@@ -27,7 +27,6 @@ import java.lang.annotation.Target;
 import java.util.Optional;
 
 import app.packed.BaseModuleNames;
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.build.BuildCodeSource;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentPath;
@@ -231,19 +230,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     }
 
     /**
-     * Returns a bean introspector.
-     *
-     * Whenever a Hook annotation is found
-     * <p>
-     * This method is called exactly once for a single bean if needed.
-     *
-     * @return a new bean introspector
-     */
-    protected BeanIntrospector newBeanIntrospector() {
-        return new BeanIntrospector() {};
-    }
-
-    /**
      * This method can be overridden to provide a customized {@link ExtensionMirror mirror} for the extension. For example,
      * {@link BaseExtension} overrides this method to provide an instance of {@link BaseExtensionMirror}.
      * <p>
@@ -287,10 +273,10 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      */
     // Hmm InternalExtensionException hvis det er brugerens skyld??
     // Configured????
-    protected void onApplicationClose() {
+    protected void onClose() {
         // childCursor
         for (ExtensionSetup e = extension.treeFirstChild; e != null; e = e.treeNextSibling) {
-            e.instance().onApplicationClose();
+            e.instance().onClose();
         }
     }
 
@@ -319,11 +305,11 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      */
     // When the realm in which the extension's container is located is closed
     // Maybe we also have an onAssemblyClosed() <--- where you cannot install any more extensions
-    protected void onAssemblyClose() {
+    protected void onConfigured() {
         ExtensionSetup s = extension;
         for (ExtensionSetup c = s.treeFirstChild; c != null; c = c.treeNextSibling) {
             if (c.container.assembly == s.container.assembly) {
-                c.instance().onAssemblyClose();
+                c.instance().onConfigured();
             }
         }
     }

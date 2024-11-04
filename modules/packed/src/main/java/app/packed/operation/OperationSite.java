@@ -21,8 +21,13 @@ import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 
 /**
+ * A operation site represents an operation on a bean at runtime.
  *
  */
+
+// Used for all runtime decisision
+//// ApplicationPanicException
+
 // Implements Serializable??
 
 // Important that we only make one of them per operation.
@@ -31,7 +36,10 @@ import app.packed.context.Context;
 
 // Is Static!
 // Maybe we can use already with interceptors filters
+
+// Replaced with OperationInfo
 public interface OperationSite {
+
     Class<?> beanClass();
 
     ComponentPath beanComponentPath();

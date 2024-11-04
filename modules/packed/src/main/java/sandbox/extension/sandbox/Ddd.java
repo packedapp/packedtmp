@@ -15,7 +15,6 @@
  */
 package sandbox.extension.sandbox;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,12 +27,12 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.LifecycleDependantOrder;
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerTemplate;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
+import internal.app.packed.extension.BaseExtensionBeanintrospector;
 
 /**
  *
@@ -84,24 +83,12 @@ public class Ddd extends BaseAssembly {
             return c;
         }
 
-        @Override
-        protected BeanIntrospector newBeanIntrospector() {
-            return new BeanIntrospector() {
-
-                @Override
-                public void onAnnotatedMethod(Annotation hooks, BeanIntrospector.OnMethod on) {
-                    // base().runOnBeanInject(on.newDelegatingOperation());
-
-                    // base().runOnBeanInject(on.newOperation());
-                }
-            };
-        }
 
     }
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @OnAnnotatedMethod(allowInvoke = true, extension = MyEntityExtension.class)
+    @OnAnnotatedMethod(allowInvoke = true, introspector = BaseExtensionBeanintrospector.class)
     public @interface MyOnInitialize {
 
         /**

@@ -26,7 +26,6 @@ import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.service.Provide;
@@ -53,7 +52,7 @@ public class TestNew extends BaseAssembly {
         System.out.println("_---");
 
         for (BeanMirror b : App.mirrorOf(new TestNew()).container().beans().toList()) {
-            b.operations(ProvidedServiceMirror.class).forEach(e -> {
+            b.operations().ofType(ProvidedServiceMirror.class).forEach(e -> {
                 List<ServiceBindingMirror> sbm = e.useSites().toList();
                 System.out.println(sbm);
                 System.out.println("Bean " + b.componentPath() + " provides services for key " + e.key());
@@ -97,26 +96,22 @@ public class TestNew extends BaseAssembly {
             super(handle);
         }
 
-        @Override
-        protected BeanIntrospector newBeanIntrospector() {
-            return new BeanIntrospector() {
-
-                @Override
-                public void onAnnotatedVariable(Annotation hook, OnVariable h ) {
-                    if (hook.annotationType() == XX.class) {
-                        String str = h.annotations().readRequired(XX.class).value();
-                        h.bindInstance(str.toUpperCase());
-                    } else {
-                        super.onAnnotatedVariable( hook, h);
-                    }
+        static class MyI extends BeanIntrospector<MyExt> {
+            @Override
+            public void onAnnotatedVariable(Annotation hook, OnVariable h ) {
+                if (hook.annotationType() == XX.class) {
+                    String str = h.annotations().readRequired(XX.class).value();
+                    h.bindInstance(str.toUpperCase());
+                } else {
+                    super.onAnnotatedVariable( hook, h);
                 }
-            };
+            }
         }
     }
 
     @Target({ ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    @OnAnnotatedVariable(extension = MyExt.class)
+    //@OnAnnotatedVariable(extension = MyExt.class)
     @interface XX {
         String value();
     }

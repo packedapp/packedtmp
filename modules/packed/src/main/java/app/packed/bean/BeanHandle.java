@@ -26,9 +26,9 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.binding.Key;
-import app.packed.build.BuildActor;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.InvokerFactory;
@@ -40,6 +40,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.binding.BindingAccessor.FromConstant;
+import internal.app.packed.component.ComponentBuildState;
 import internal.app.packed.context.publish.ContextualizedElement;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
@@ -53,9 +54,8 @@ import internal.app.packed.util.handlers.OperationHandlers;
  * A bean handle is a build-time reference to an installed bean. They are created by the framework when an extension
  * {@link Installer installs} a bean on behalf of the user (or an another extension).
  * <p>
- * Instances of {@code BeanHandle} should in general not be exposed from outside of the extension that made it. Instead
- * the extension should expose instances of {@link #configuration() bean configuration} to the user (or another
- * extension).
+ * Instances of {@code BeanHandle} should in general not be exposed to outside of the handling extension. Instead the
+ * extension should expose instances of {@link #configuration() bean configuration} to the owner of the bean.
  *
  * @see BeanTemplate
  * @see BeanInstaller
@@ -69,11 +69,11 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     /** The lazy generated bean configuration. */
     private C configuration;
 
-    /** Whether or not the bean is configurable. */
-    private boolean isConfigurationConfigurable = true;
-
     /** The lazy generated bean mirror. */
     private BeanMirror mirror;
+
+    /** The state of the bean. */
+    private ComponentBuildState state = ComponentBuildState.CONFIGURABLE_AND_OPEN;
 
     /**
      * Create a new bean handle
@@ -89,7 +89,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      *
      */
     public final void allowMultiClass() {
-        checkHandleIsConfigurable();
+        checkIsOpen();
         bean.multiInstall = bean.multiInstall | 1 << 31;
     }
 
@@ -122,7 +122,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     // Is lazy, or eager?
     // Eager_never_fail, Eager_fail_if_not_used, Lazy_whenFirstUsed, LazyFailIfNotUsed, Some default for the container?
     public final <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
-        checkHandleIsConfigurable();
+        checkIsOpen();
         bean.bindCodeGenerator(key, supplier);
     }
 
@@ -176,7 +176,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkHandleIsConfigurable();
+        checkIsOpen();
         bean.container.application.componentTags.addComponentTags(bean, tags);
     }
 
@@ -209,25 +209,6 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
         return Key.fromClass(beanClass());
     }
 
-    /**
-     * Called by the framework to mark the bean as no longer be configurable.
-     *
-     * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle)
-     */
-    // onOwnerClosed
-    final void doClose() {
-        // I think we might need to methods, one before we close operations, and one after
-        // So the one before is the last chance to add (synthetic) operations
-        // Also we close the operation handles here. Not the configuration
-
-        // Close all operations
-        bean.operations.forEach(o -> OperationHandlers.invokeOperationHandleDoClose(o.handle()));
-        // Do we want to close operations?
-        // Or is this based on the installing extension and not the owner??
-        onConfigurationClosed();
-        isConfigurationConfigurable = false;
-    }
-
     public final void exportAs(Class<?> key) {
         exportAs(Key.of(key));
     }
@@ -245,13 +226,13 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      * @see #serviceProvideAs(Key)
      */
     public final void exportAs(Key<?> key) {
-        checkHandleIsConfigurable();
-        bean.serviceNamespace().export(key, instancePovideOperation());
+        checkIsOpen();
+        bean.serviceNamespace().export(key, instanceProvideOperation());
     }
 
     // Used from export/provide
     // The only funny thing is the operation target
-    private OperationSetup instancePovideOperation() {
+    private OperationSetup instanceProvideOperation() {
         PackedOperationTemplate template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(beanClass());
 
         PackedOperationInstaller installer = template.newInstaller(OperationType.of(beanClass()), bean, bean.installedBy);
@@ -263,14 +244,14 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isConfigurationConfigurable() {
-        return isConfigurationConfigurable;
+    public final boolean isConfigurable() {
+        return state == ComponentBuildState.CONFIGURABLE_AND_OPEN;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isHandleConfigurable() {
-        return bean.installedBy.isConfigurable();
+    public final boolean isOpen() {
+        return state != ComponentBuildState.CLOSED;
     }
 
     /**
@@ -315,16 +296,16 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      *             if another bean with the specified name already exists
      */
     public final void named(String name) {
-        checkHandleIsConfigurable();
+        checkIsOpen();
         bean.named(name);
     }
-
-    // add overrideServiceIfPresent? Or have a Set<Key<?>> BeanConfiguration.services()
 
     @SuppressWarnings("unchecked")
     protected C newBeanConfiguration() {
         return (C) new BeanConfiguration(this);
     }
+
+    // add overrideServiceIfPresent? Or have a Set<Key<?>> BeanConfiguration.services()
 
     protected BeanMirror newBeanMirror() {
         return new BeanMirror(this);
@@ -338,11 +319,16 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     // Probably not called on beans owned by extensions
     // Or maybe we call it for users when assembly closes, and extensions when application closes
     /**
-     * Called by the framework when the {@link BeanConfiguration bean} can no longer be configured by the owner of the bean.
+     * Invoked just before this handle is closed.
      * <p>
-     * This handle can still be {@link #isHandleConfigurable() configured} until the extension is being closed together with
-     * the application. So this method can be used to make the last checks of the configuration of the bean.
+     * This handle can still be until the extension is being closed together with the application. So this method can be
+     * used to make the last checks of the configuration of the bean.
      * <p>
+     * This method should rarely be used for any kind of validation, as is is invoked very late in the build process.
+     * {@link #isConfigurable()} is often a better choice for validation.
+     * <p>
+     * Ope
+     *
      * This handle will be {@link #isConfigurable()} while calling this method, but marked as non configurable immediately
      * after.
      * <p>
@@ -352,12 +338,77 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      * If there are multiple beans that are marked as no longer configurable at the same time. The framework may call this
      * method in any order between the beans.
      *
-     * @see #isConfigurationConfigurable()
+     * @see #isConfigurable()
      */
-    protected void onConfigurationClosed() {}
+    protected void onClose() {}
+
+    /**
+     * Invoked after the bean is no longer configurable by the owner of the bean.
+     * <p>
+     * This method is primarily overridden to perform validation that can only be performed after the bean is no longer
+     * configurable.
+     */
+    protected void onConfigured() {}
+
+    /**
+     * Called by the framework to mark that the bean is no longer configurable or open.
+     *
+     * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle, boolean)
+     */
+    /* package private */ final void onStateChange(boolean isClose) {
+
+        if (isClose) {
+            int i = onStateChange(0, isClose);
+            onClose();
+            onStateChange(i, isClose);
+            state = ComponentBuildState.CLOSED;
+        } else {
+            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
+
+            onConfigured();
+        }
+    }
+
+    /* package private */ final void onStateChange2(boolean isClose) {
+        if (state == ComponentBuildState.CONFIGURABLE_AND_OPEN) {
+            // OperationHandle.onConfigured could technically add operation to the bean
+            // So make sure we use .size() comparison to catch stragglers
+            int i = onStateChange(0, false);
+            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
+            onConfigured();
+            // Catch any operations added in OnConfigure
+            // Hmm, IDK we add operations at any time now...
+            // So why do anything special here...
+            onStateChange(i, false);
+        }
+
+        if (isClose) {
+            onClose();
+            state = ComponentBuildState.CLOSED;
+        }
+        if (isClose) {
+            int i = onStateChange(0, isClose);
+            onClose();
+            onStateChange(i, isClose);
+            state = ComponentBuildState.CLOSED;
+        } else {
+            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
+
+            onConfigured();
+        }
+    }
+
+    private int onStateChange(int listIndex, boolean isClose) {
+        int i = listIndex;
+        for (; i < bean.operations.all.size(); i++) {
+            OperationSetup op = bean.operations.all.get(i);
+            OperationHandlers.invokeOperationHandleDoClose(op.handle(), isClose);
+        }
+        return i;
+    }
 
     /** {@return the owner of the bean} */
-    public final BuildActor owner() {
+    public final ComponentRealm owner() {
         return bean.owner();
     }
 
@@ -382,13 +433,13 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      */
     public final void provideAs(Key<?> key) {
         Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
-        checkHandleIsConfigurable();
+        checkIsOpen();
         if (beanKind() != BeanKind.CONTAINER || beanKind() != BeanKind.LAZY) {
             // throw new UnsupportedOperationException("This method can only be called on beans of kind " + BeanKind.CONTAINER + "
             // or " + BeanKind.LAZY);
         }
 
-        bean.serviceNamespace().provideService(bean, k, instancePovideOperation(), bean.beanInstanceBindingProvider());
+        bean.serviceNamespace().provideService(k, instanceProvideOperation(), bean.beanInstanceBindingProvider());
     }
 
     /** {@inheritDoc} */

@@ -31,12 +31,12 @@ import app.packed.namespace.sandbox.NamespaceOperation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceOperation
-@OnAnnotatedMethod(extension = CliExtension.class)
+@OnAnnotatedMethod(introspector = CliExtension.MyI.class)
 public @interface CliCommand {
 
-    /**w
-     * The name(s) of the command. If no name is specified. The name of the annotated method is used. Method names starting
-     * with underscores will automaticalOsly be renamed to hyphens.
+    /**
+     * w The name(s) of the command. If no name is specified. The name of the annotated method is used. Method names
+     * starting with underscores will automaticalOsly be renamed to hyphens.
      *
      * @return the name(s) of the command
      */

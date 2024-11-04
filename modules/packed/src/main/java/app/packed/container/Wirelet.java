@@ -27,11 +27,11 @@ import java.util.EnumSet;
 import java.util.function.Supplier;
 
 import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
-import app.packed.extension.BaseExtension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerWirelets.ContainerOverrideNameWirelet;
 import internal.app.packed.container.wirelets.CompositeWirelet;
 import internal.app.packed.container.wirelets.WrappingWirelet;
+import internal.app.packed.extension.BaseExtensionBeanintrospector;
 
 /**
  * Wirelets are a small pieces of "glue code" that can be specified when wiring containers.
@@ -106,7 +106,7 @@ import internal.app.packed.container.wirelets.WrappingWirelet;
 // So now the "User" wirelet is just plain wirelet
 
 // Specified class must be visible when querying
-@OnExtensionServiceInteritedBeanTrigger(extension = BaseExtension.class)
+@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionBeanintrospector.class)
 public abstract class Wirelet {
 
     // How do com

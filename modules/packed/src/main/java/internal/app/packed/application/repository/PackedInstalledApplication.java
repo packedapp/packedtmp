@@ -23,15 +23,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.repository.ApplicationLauncher;
-import app.packed.application.repository.InstalledApplication;
-import app.packed.application.repository.other.ManagedInstance;
+import app.packed.application.registry.LaunchableApplication;
+import app.packed.application.registry.other.ManagedInstance;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
-public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, ?>> implements ApplicationLauncherOrFuture<I, H>, InstalledApplication<I> {
+public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, ?>> implements ApplicationLauncherOrFuture<I, H>, LaunchableApplication<I> {
 
     final H handle;
 
@@ -57,7 +56,7 @@ public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, 
 
     /** {@inheritDoc} */
     @Override
-    public Optional<ManagedInstance<I>> instance(String name) {
+    public Optional<ManagedInstance<I>> managedInstance(String name) {
         if (!isManaged) {
             throw new UnsupportedOperationException(
                     "This application is an unmanaged application, once it is initialized the framework no longer keeps track of the application instance.");
@@ -67,7 +66,7 @@ public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, 
 
     /** {@inheritDoc} */
     @Override
-    public Stream<ManagedInstance<I>> instances() {
+    public Stream<ManagedInstance<I>> managedInstances() {
         if (!isManaged) {
             throw new UnsupportedOperationException(
                     "This application is an unmanaged application, once it is initialized the framework no longer keeps track of the application instance.");
@@ -89,7 +88,7 @@ public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, 
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationLauncher<I> launcher() {
+    public Launcher<I> launcher() {
         return null;
     }
 

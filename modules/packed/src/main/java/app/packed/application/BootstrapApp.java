@@ -25,7 +25,7 @@ import app.packed.runtime.RunState;
 import internal.app.packed.application.PackedApplicationTemplate;
 
 /**
- * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application.
+ * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) applications.
  * <p>
  * Bootstrap apps cannot directly modify the applications that it bootstraps. It cannot, for example, install a new
  * extension in the application. However, it can say it can only bootstrap applications that have the extension
@@ -37,15 +37,16 @@ import internal.app.packed.application.PackedApplicationTemplate;
  * {@link App} or {@link app.packed.service.ServiceLocator} to create new applications. However, if greater control of
  * how an application behaves, a user may create their own bootstrap application.
  * <p>
- * Normally, you never create more than a single instance of a bootstrap app. Bootstrap application instances safe for
- * concurrent usage.
+ * Normally, you would never create more than a single instance of a bootstrap app.
+ * <p>
+ * Bootstrap application instances are safe for concurrent usage.
  *
  * @param <E>
  *            the type of applications this bootstrap app creates
  */
 public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootstrapApp {
 
-    BootstrapApp<I> expectsResult(Class<?> resultType);
+    I checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException;
 
     /**
      * An application image is a stand-alone program, derived from an {@link app.packed.container.Assembly}, which runs the
@@ -90,8 +91,6 @@ public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootst
      *             if the image could not be build
      */
     BaseImage<I> imageOf(Assembly assembly, Wirelet... wirelets);
-
-    I checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationException;
 
     /**
      * Builds an application, launches it and returns an application interface instance (possible {@code void})
@@ -153,6 +152,9 @@ public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootst
      */
     void verify(Assembly assembly, Wirelet... wirelets);
 
+    // withExpectingResult
+    BootstrapApp<I> withExpectsResult(Class<?> resultType);
+
     /**
      * Augment the driver with the specified wirelets, that will be processed when building or instantiating new
      * applications.
@@ -203,7 +205,7 @@ record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? exten
 
     /** {@inheritDoc} */
     @Override
-    public BootstrapApp<E> expectsResult(Class<?> resultType) {
+    public BootstrapApp<E> withExpectsResult(Class<?> resultType) {
         throw new UnsupportedOperationException();
     }
 
@@ -236,7 +238,7 @@ record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? exten
 
     /** {@inheritDoc} */
     @Override
-    public E checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationException {
+    public E checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException {
         A result = app.checkedLaunch(state, assembly, wirelets);
         E e = mapper.apply(result);
         return e;

@@ -81,7 +81,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkHandleIsConfigurable();
+        checkIsOpen();
         application.componentTags.addComponentTags(application, tags);
     }
 
@@ -119,13 +119,13 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isConfigurationConfigurable() {
+    public final boolean isConfigurable() {
         return application.container().assembly.isConfigurable();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isHandleConfigurable() {
+    public final boolean isOpen() {
         return application.container().assembly.isConfigurable();
     }
 

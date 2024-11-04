@@ -24,11 +24,12 @@ import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanIntrospector.OnVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import app.packed.build.BuildActor;
 import app.packed.build.hook.BuildHook;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.context.Context;
+import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
@@ -48,7 +49,7 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.lifecycle.LifecycleAnnotationIntrospector;
+import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
 import internal.app.packed.lifecycle.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeSetup;
@@ -122,6 +123,8 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     /** The bean's template. */
     public final PackedBeanTemplate template;
 
+    public final HashMap<PackedBeanAttachmentKey, PackedAttachmentOperationHandle> attachments = new HashMap<>();
+
     /** Create a new bean. */
     private BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
         this.beanKind = requireNonNull(installer.template.beanKind());
@@ -152,6 +155,18 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         for (PackedContextTemplate t : installer.template.initializationTemplate().contexts) {
             contexts.put(t.contextClass(), new ContextSetup(t, this));
         }
+    }
+
+    public PackedAttachmentOperationHandle attach(Class<? extends Extension<?>> extension, Op<?> op, boolean ifAbsent) {
+        Key<?> key = op.type().returnVariable().asKey();
+        return attachments.compute(new PackedBeanAttachmentKey(extension, key), (k, v) -> {
+            if (v == null) {
+
+            } else if (ifAbsent) {
+                return v;
+            }
+            throw new IllegalArgumentException("An attachment for the specified key has already been registered, key=" + key);
+        });
     }
 
     public BindingAccessor beanInstanceBindingProvider() {
@@ -262,7 +277,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 //        return new PackedNamespacePath(paths);
 //    }
 
-    public BuildActor owner() {
+    public ComponentRealm owner() {
         return owner.authority();
     }
 
@@ -291,7 +306,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         return switch (accessor) {
         case BeanConfiguration b -> crack(b);
         case BeanHandle<?> b -> crack(b);
-        case BeanIntrospector b -> crack(b);
+        case BeanIntrospector<?> b -> crack(b);
         case BeanMirror b -> crack(b);
         };
     }
@@ -311,7 +326,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         return BeanHandlers.getBeanHandleBean(handle);
     }
 
-    public static BeanSetup crack(BeanIntrospector introspector) {
+    public static BeanSetup crack(BeanIntrospector<?> introspector) {
         return BeanHandlers.invokeBeanIntrospectorBean(introspector);
     }
 
@@ -345,6 +360,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         if (!installer.owner.isConfigurable()) {
             throw new IllegalStateException();
         }
+
         installer.checkNotInstalledYet();
 
         // Create the Bean, this also marks this installer as unconfigurable
@@ -354,11 +370,12 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         BeanHandle<?> handle = handleFactory.apply(installer);
         bean.handle = handle;
 
-        LifecycleAnnotationIntrospector.checkForFactoryOp(bean);
-        // Scan the bean if needed, and remove references to the scanner
-        BeanScanner bs = bean.scanner;
-        if (bs != null) {
-            bs.introspect();
+        LifecycleAnnotationBeanIntrospector.checkForFactoryOp(bean);
+
+        // Scan the bean if needed
+        BeanScanner scanner = bean.scanner;
+        if (scanner != null) {
+            scanner.introspect();
             bean.scanner = null;
         }
 

@@ -28,8 +28,8 @@ import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.concurrent.ScheduledOperationConfiguration;
 import app.packed.concurrent.SchedulingContext;
-import app.packed.concurrent.ThreadExtension;
-import app.packed.concurrent.ThreadExtensionPoint;
+import app.packed.concurrent.job.JobExtension;
+import app.packed.concurrent.job.JobExtensionPoint;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
@@ -52,12 +52,12 @@ public class ScTestOtherE extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @OnAnnotatedMethod(allowInvoke = true, extension = MyE.class)
+    @OnAnnotatedMethod(allowInvoke = true, introspector = MyE.MyI.class)
     public @interface ScheduleOther {
         String value();
     }
 
-    @DependsOn(extensions = ThreadExtension.class)
+    @DependsOn(extensions = JobExtension.class)
     public static class MyE extends Extension<MyE> {
 
         /**
@@ -67,18 +67,15 @@ public class ScTestOtherE extends BaseAssembly {
             super(handle);
         }
 
-        @Override
-        protected BeanIntrospector newBeanIntrospector() {
-            return new BeanIntrospector() {
+        static class MyI extends BeanIntrospector<MyE> {
 
-                @Override
-                public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod on) {
-                    ScheduleOther so = (ScheduleOther) hook;
-                    ScheduledOperationConfiguration soc = use(ThreadExtensionPoint.class).schedule(null /*on.newDelegatingOperation()*/);
-                    Duration p = Duration.parse(so.value());
-                    soc.setMillies((int) p.toMillis());
-                }
-            };
+            @Override
+            public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod on) {
+                ScheduleOther so = (ScheduleOther) hook;
+                ScheduledOperationConfiguration soc = extensionHandle().use(JobExtensionPoint.class).schedule(null /* on.newDelegatingOperation() */);
+                Duration p = Duration.parse(so.value());
+                soc.setMillies((int) p.toMillis());
+            }
         }
     }
 

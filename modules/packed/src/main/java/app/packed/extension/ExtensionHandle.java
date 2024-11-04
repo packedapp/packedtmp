@@ -24,9 +24,14 @@ import app.packed.util.TreeView;
 import internal.app.packed.extension.PackedExtensionHandle;
 
 /**
- * A handle for an {@link Extension}, that can be passed along to code outside of the extension itself.
+ * A handle private to an {@link Extension}.
+ * <p>
+ * This class serves as a callback mechanism, enabling code defined outside the extension itself to call methods that
+ * are otherwise protected on the extension itself.
  */
 public sealed interface ExtensionHandle<E extends Extension<E>> permits PackedExtensionHandle {
+
+    E applicationRoot();
 
     TreeView.Node<E> applicationNode();
 

@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  *
  */
-public class CronExpressionFieldTest {
+class CronExpressionFieldTest {
 
     private static final Function<String, RuntimeException> EXCEPTION_SUPPLIER = message -> new RuntimeException(message);
 

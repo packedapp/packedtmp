@@ -13,12 +13,12 @@ import app.packed.build.BuildCodeSourceMirror;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.BaseExtension;
 import app.packed.util.AnnotationList;
 import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
 import internal.app.packed.util.PackedTreeView;
 
 /**
@@ -31,7 +31,7 @@ import internal.app.packed.util.PackedTreeView;
  * @see ApplicationMirror#assembly()
  * @see ContainerMirror#assembly()
  */
-@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
 public final class AssemblyMirror implements BuildCodeSourceMirror {
 
     /** The assembly we are mirroring. */

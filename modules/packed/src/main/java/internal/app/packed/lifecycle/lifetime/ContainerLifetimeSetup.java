@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.extension.ExtensionContext;
-import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.lifetime.CompositeLifetimeMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -68,9 +68,6 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     // Er ikke noedvendigvis fra et entrypoint, kan ogsaa vaere en completer
     public final Class<?> resultType;
 
-    /** The size of the pool. */
-    int size;
-
     public final List<LifecycleOnStartHandle> startersPost = new ArrayList<>();
 
     public final List<LifecycleOnStartHandle> startersPre = new ArrayList<>();
@@ -92,7 +89,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         this.resultType = installer.template.resultType();
 
         if (newContainer.isApplicationRoot()) {
-            store.addOther(ManagedLifetime.class);
+            store.addInternal(ManagedLifetime.class);
         }
     }
 
@@ -121,7 +118,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     /** {@return a mirror that can be exposed to end-users.} */
     @Override
-    public ContainerLifetimeMirror mirror() {
+    public CompositeLifetimeMirror mirror() {
         return BeanLifetimeHandlers.newRegionalLifetimeMirror(this);
     }
 

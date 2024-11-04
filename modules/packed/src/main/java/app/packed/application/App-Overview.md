@@ -38,7 +38,7 @@ Conceptually like a Future with no result
   
   
 ======= SYNCHRONIZATION MODE ===========
-We support both sync (run) and async (start/close) usage in the same interface ALWAYS (other we need to double the number of interfaces)
+We support both sync (run) and async (start/close) usage in the same interface ALWAYS (otherwise we need to double the number of interfaces)
   
   // Sync mode will stop when exits main
   // Async mode will stop when explicitly called, or for example, main exits 

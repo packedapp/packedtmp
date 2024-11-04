@@ -33,7 +33,8 @@ import internal.app.packed.operation.OperationSetup;
 // Lifetime == Scope????
 
 // What about OperationLifetimeMirror????
-public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, ContainerLifetimeMirror {
+// I think we need to add ApplicationMirror and PodMirror?
+public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, CompositeLifetimeMirror {
 
     /**
      * If the lifetime has any entry points. This method returns the extension that is responsible for choosing the right
@@ -82,7 +83,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
     }
 
     /** {@return any parent lifetime this lifetime is contained within.} */
-    public abstract Optional<ContainerLifetimeMirror> parent();
+    public abstract Optional<CompositeLifetimeMirror> parent();
 
     /**
      * If the lifetime needs to produce a result.
@@ -92,6 +93,12 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
      */
     public final Class<?> resultType() {
         return lifetime().resultType();
+    }
+
+
+    // IDK, maybe too confusing
+    Stream<LifetimeBeanMirror> lifetimeBeans() {
+        throw new UnsupportedOperationException();
     }
 }
 

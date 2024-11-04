@@ -32,7 +32,6 @@ import java.util.IdentityHashMap;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.InaccessibleBeanMemberException;
-import app.packed.extension.Extension;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.extension.ExtensionSetup;
@@ -61,12 +60,12 @@ public final class BeanScanner {
 
     final Lookup customLookup;
 
-    /** The hook model for the bean. */
-    final BeanHookModel hookModel;
+    /** The trigger model for the bean. */
+    final BeanTriggerModel triggerModel;
 
-    /** The various extensions that are part of the reflection process. */
+    /** The various bean introspectors that have been encountered. */
     // We sort it in the end
-    private final IdentityHashMap<Class<? extends Extension<?>>, BeanIntrospectorSetup> introspectors = new IdentityHashMap<>();
+    private final IdentityHashMap<BeanIntrospectorModel, BeanIntrospectorSetup> introspectors = new IdentityHashMap<>();
 
     boolean isConfigurable;
 
@@ -96,18 +95,18 @@ public final class BeanScanner {
         this.bean = bean;
         this.beanClass = bean.beanClass;
         this.customLookup = bean.container.assembly.customLookup;
-        this.hookModel = bean.container.assembly.model.hookModel;
+        this.triggerModel = new BeanTriggerModelDefaults();
         this.accessor = new OpenClass(MethodHandles.lookup());
         bean.scanner = this;
     }
 
-    BeanIntrospectorSetup computeIntrospector(Class<? extends Extension<?>> extensionType) {
-        return introspectors.computeIfAbsent(extensionType, c -> {
+    BeanIntrospectorSetup computeIntrospector(BeanIntrospectorModel bim) {
+        return introspectors.computeIfAbsent(bim, c -> {
             // Get the extension (installing it if necessary)
-            ExtensionSetup extension = bean.container.useExtension(extensionType, null);
+            ExtensionSetup extension = bean.container.useExtension(bim.extensionClass, null);
 
             // Create a new introspector
-            BeanIntrospector introspector = extension.newBeanIntrospector();
+            BeanIntrospector<?> introspector = bim.newInstance();
 
             BeanIntrospectorSetup setup = new BeanIntrospectorSetup(this, extension, introspector);
 
@@ -115,7 +114,7 @@ public final class BeanScanner {
             BeanHandlers.invokeBeanIntrospectorInitialize(introspector, setup);
 
             // Notify the bean introspector that it is being used
-            introspector.scanningStarted();
+            introspector.onScanStart();
 
             return setup;
         });
@@ -133,13 +132,13 @@ public final class BeanScanner {
         // What if the op creates an interface?
         if (!beanClass.isInterface()) {
             // Find the constructor if needed
-            BeanScannerConstructors.findConstructor(this, beanClass);
+            BeanScannerOnConstructors.findConstructor(this, beanClass);
 
             // Introspect all fields on the bean and its super classes
-            BeanScannerFields.introspect(this, beanClass);
+            BeanScannerOnFields.introspect(this, beanClass);
 
             // Introspect all methods on the bean and its super classes
-            BeanScannerMethods.introspect(this, beanClass);
+            BeanScannerOnMethods.introspect(this, beanClass);
 
         }
 
@@ -147,7 +146,7 @@ public final class BeanScanner {
 
         // Call into every BeanIntrospector and tell them it is all over
         for (BeanIntrospectorSetup e : introspectors.values()) {
-            e.introspector.scanningStopped();
+            e.instance.onScanStop();
         }
     }
 
@@ -157,7 +156,7 @@ public final class BeanScanner {
         for (int i = 0; i < operation.bindings.length; i++) {
             BindingSetup binding = operation.bindings[i];
             if (binding == null) {
-                BeanScannerVariable.resolveVariable(this, operation, operation.type.parameter(i), i);
+                BeanScannerOnVariable.resolveVariable(this, operation, operation.type.parameter(i), i);
             }
         }
     }

@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
 import app.packed.binding.Key;
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.context.ContextMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceNamespaceMirror;
@@ -51,9 +51,13 @@ public interface ServiceProviderMirror {
 
     ServiceProviderKind kind();
 
-    BuildActor providedBy();
+    // Skal der owner paa alt nu???
+    // filter.cliCommands().owned
+    //
+    ComponentRealm providedBy();
 
-    BuildActor providedTo();
+    // I don't think so, call distinct on bindings();
+    ComponentRealm providedTo();
 
     interface FromOperation {
 

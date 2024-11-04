@@ -20,10 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodType;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
 import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
@@ -35,12 +39,13 @@ import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
-import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.context.ContextSetup;
+import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
+import internal.app.packed.util.AbstractDelegatingStream;
 import sandbox.operation.mirror.DependenciesMirror;
 
 /**
@@ -54,7 +59,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@OnExtensionServiceInteritedBeanTrigger(extension = BaseExtension.class)
+@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
 public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderMirror {
 
     /** The handle of the operation we are mirroring. */
@@ -93,6 +98,11 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
         return List.of(hooks);
     }
 
+    // D
+    List<OperationMirror> callsites() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final ComponentPath componentPath() {
@@ -123,11 +133,6 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
     @Override
     public final boolean equals(Object other) {
         return this == other || other instanceof OperationMirror m && handle == m.handle;
-    }
-
-    @Override
-    public String toString() {
-        return handle.toString();
     }
 
     /** {@inheritDoc} */
@@ -170,9 +175,131 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
         return handle.target();
     }
 
+    @Override
+    public String toString() {
+        return handle.toString();
+    }
+
     /** {@return the type of the operation.} */
     public final OperationType type() {
         return handle.operation.type;
+    }
+
+
+
+
+    /** A stream of operation mirrors. */
+    public static final class OfStream<T extends OperationMirror> extends AbstractDelegatingStream<T> {
+
+        /**
+         * @param stream
+         */
+        private OfStream(Stream<T> stream) {
+            super(stream);
+        }
+
+        public <S extends OperationMirror> OfStream<S> ofType(Class<S> c) {
+            return of(filter(c::isInstance).map(c::cast));
+        }
+
+        public OfStream<T> taggedWith(String tag) {
+            return filter(o -> o.componentTags().contains(tag));
+        }
+
+
+//        // ownedBy
+//
+//        // Will attempt to resolveTheClassPath, and the String
+//        // app.operations.hasBinding(Clock.class).source().print();
+//
+//        // All uniqueBeans in the stream
+//        /** {@return a bean stream of a all distinct beans} */
+//        BeanMirrorStream<BeanMirror> beans();
+//
+//        OperationMirrorStream<T> inContext(Class<? extends Context<?>> context);
+//
+//        OperationMirrorStream<T> installedByExtension(Class<? extends Extension<?>> extensionType);
+//
+//        OperationMirrorStream<T> ownedByUser();
+//
+//        OperationMirrorStream<T> ownedByExtension(Class<? extends Extension<?>> extensionType);
+
+
+
+        ///////////////////////// Return type adapted
+
+        /** {@inheritDoc} */
+        @Override
+        public OfStream<T> distinct() {
+            return of(stream.distinct());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OfStream<T> filter(Predicate<? super T> predicate) {
+            return of(stream.filter(predicate));
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OfStream<T> limit(long maxSize) {
+            return of(stream.limit(maxSize));
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OfStream<T> parallel() {
+            return of(stream.parallel());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OfStream<T> peek(Consumer<? super T> action) {
+            return of(stream.peek(action));
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OfStream<T> sequential() {
+            return of(stream.sequential());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OfStream<T> skip(long n) {
+            return of(stream.skip(n));
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OfStream<T> sorted() {
+            return of(stream.sorted());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OfStream<T> sorted(Comparator<? super T> comparator) {
+            return of(stream.sorted(comparator));
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OfStream<T> unordered() {
+            return of(stream.unordered());
+        }
+
+        /**
+         * Create a new operation mirror stream from a normal stream of operation mirrors.
+         *
+         * @param <T>
+         *            the type of operation mirrors
+         * @param stream
+         *            the stream to wrap
+         * @return the operation mirror stream
+         */
+        public static <T extends OperationMirror> OfStream<T> of(Stream<T> stream) {
+            return new OfStream<>(stream);
+        }
     }
 }
 

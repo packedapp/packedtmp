@@ -9,8 +9,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.binding.Key;
-import app.packed.build.BuildActor;
 import app.packed.build.action.BuildActionable;
+import app.packed.component.ComponentRealm;
 import app.packed.component.ComponentConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
@@ -188,7 +188,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     /** {@inheritDoc} */
     @Override
     @BuildActionable("component.addTags") // Hmm or bean.addTags
-    public BeanConfiguration componentTag(String... tags) {
+    public BeanConfiguration tag(String... tags) {
         checkIsConfigurable();
         handle.componentTag(tags);
         return this;
@@ -196,7 +196,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     /** {@inheritDoc} */
     @Override
-    public final Set<String> componentTags() {
+    public final Set<String> tags() {
         return handle.componentTags();
     }
 
@@ -281,6 +281,12 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return list.get(0);
     }
 
+    // Named instead //operation(ScheduledOperationConfiguration, "foo");
+    final <T extends OperationConfiguration> T operation(Class<T> operationType, String operationName) {
+        return operation(operationType);
+    }
+
+
     /** {@return a stream of operation configurations for all the operations that currently defined on this bean} */
     public final Stream<? extends OperationConfiguration> operations() {
         return handle.bean.operations.stream().map(m -> m.handle().configuration()).filter(e -> e != null);
@@ -301,7 +307,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     /** {@return the owner of the bean.} */
     // Declared by???
-    public final BuildActor owner() {
+    public final ComponentRealm owner() {
         return handle.owner();
     }
 

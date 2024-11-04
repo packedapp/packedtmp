@@ -30,6 +30,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
+import internal.app.packed.component.ComponentBuildState;
 import internal.app.packed.operation.OperationCodeGenerator;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
@@ -117,6 +118,8 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** The internal operation configuration. */
     final OperationSetup operation;
 
+    private ComponentBuildState state = ComponentBuildState.CONFIGURABLE_AND_OPEN;
+
     /**
      * Creates a new operation handle.
      *
@@ -192,11 +195,11 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkHandleIsConfigurable();
+        checkIsOpen();
         operation.bean.container.application.componentTags.addComponentTags(operation, tags);
     }
 
-    /** { @return the user exposed configuration of the operation} */
+    /** {@return the user exposed configuration of this operation} */
     public final C configuration() {
         C c = configuration;
         if (c == null) {
@@ -206,31 +209,36 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     }
 
     /**
-     * Called by the framework to mark the bean as no longer be configurable.
+     * Called by the framework to mark that the bean is no longer configurable.
      *
      * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle)
      */
-    final void doClose() {
-        onOperationClose();
-        // isConfigurable = false;
+    /* package private */ final void onStateChange(boolean isClose) {
+        // Logic in BeanHandle, only calls this method once (with isClose=true)
+        // sometimes we run both onConfigured() and onClose();
+        if (state == ComponentBuildState.CONFIGURABLE_AND_OPEN) {
+            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
+            onConfigured();
+        }
+
+        if (isClose) {
+            onClose();
+            state = ComponentBuildState.CLOSED;
+        }
     }
 
     /** {@return the operator of the operation.} */
-    public final Class<? extends Extension<?>> installerByExtension() {
+    public final Class<? extends Extension<?>> installedByExtension() {
         return operation.installedByExtension.extensionType;
     }
 
-    // For those that are "afraid" of method handles. You can specify a SAM interface (Or abstract class with an empty
-    // constructor)
-    // I actually think this is a lot prettier, you can see the signature
-    // Maybe a class value in the template.
-    // This will codegen though
-    // constructor arguments are for abstract classes only
+    /** {@inheritDoc} */
     @Override
     public final <T> T invokerAs(Class<T> handleClass, Object... constructorArguments) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public final MethodHandle invokerAsMethodHandle() {
         // If we have already created the final method handle return this
@@ -246,7 +254,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         }
 
         // Check that we are still configurable
-        checkHandleIsConfigurable();
+        checkIsOpen();
 
         if (operation.bean.container.application.isAssembling()) {
             // Still assembling, we need to create a lazy method handle
@@ -264,10 +272,15 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
     // Must be a SAM type
 
+    @Override
+    public final VarHandle invokerAsVarHandle() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * {@return the invocation type of this operation.}
      * <p>
-     * Method handles generated via {@link #generateMethodHandle()} will always the returned value as their
+     * Method handles generated via {@link #generateMethodHandle()} will always have the returned value as their
      * {@link MethodHandle#type() method handle type}.
      *
      * @see OperationTemplate.Descriptor#invocationType()
@@ -277,24 +290,16 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         return operation.template.invocationType();
     }
 
+    /** {@inheritDoc} */
     @Override
-    public final VarHandle invokerAsVarHandle() {
-        throw new UnsupportedOperationException();
+    public final boolean isConfigurable() {
+        return state == ComponentBuildState.CONFIGURABLE_AND_OPEN;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isConfigurationConfigurable() {
-        return operation.installedByExtension.isConfigurable();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean isHandleConfigurable() {
-        // Hah der er forskel paa handle og configuration
-        // Fordi configuration kan tilgaas af brugeren.
-        // Det er jo faktisk det samme som for en bean...
-        return operation.installedByExtension.isConfigurable();
+    public final boolean isOpen() {
+        return state != ComponentBuildState.CLOSED;
     }
 
     /** {@inheritDoc} */
@@ -312,7 +317,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
     public final void named(String name) {
         requireNonNull(name, "name is null");
-        checkHandleIsConfigurable();
+        checkIsOpen();
         operation.namePrefix = name;
     }
 
@@ -364,13 +369,18 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /**
      * {@return creates a new mirror for the operation}
      * <p>
-     * This method should never be called directly, only through, {@link #mirror}
+     * This method should never be called directly, only through {@link #mirror}.
      * <p>
-     * This method will never be called more than once for a single operation.
+     * This method will never be called more than once by the framework for each operation.
      */
     protected OperationMirror newOperationMirror() {
         return new OperationMirror(this);
     }
+
+    /**
+     * The owner on the bean on which the operation is located can no longer configure it.
+     */
+    protected void onConfigured() {}
 
     /**
      * Called by the framework when the operation is marked as no longer configurable.
@@ -384,9 +394,15 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      * The framework may call this method for all beans owned by the same authority in any order within the same
      * assembly/application (Ideen er bare at smide dem i en liste)
      */
-    protected void onOperationClose() {}
+    // Okay we need to clean this us.
+    // There is whenTheUseCannotCallTheOperation
+    //// This is here where you want to tell the user, that oops, you never configured the X
 
-    /** {@return the target of this operation.} */
+    // Maybe we need both??? We have it for Extension, onAssemblyClose, onApplicationClose
+    // As a okay you cannot do anything else
+    protected void onClose() {}
+
+    /** {@return the target of this operation} */
     public final OperationTarget target() {
         return operation.target.target();
     }
@@ -397,7 +413,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         return operation.toString();
     }
 
-    /** {@return the type of this operation.} */
+    /** {@return the type of this operation} */
     public final OperationType type() {
         return operation.type;
     }

@@ -16,7 +16,6 @@
 package app.packed.concurrent.usage;
 
 import app.packed.assembly.BaseAssembly;
-import app.packed.concurrent.ThreadExtension;
 
 /**
  *
@@ -26,15 +25,15 @@ public class UsageFunctional extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        use(ThreadExtension.class).fDaemon(c -> {
-            System.out.println("GEH");
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        });
+//        use(JobExtension.class).fDaemon(c -> {
+//            System.out.println("GEH");
+//            try {
+//                Thread.sleep(10);
+//            } catch (InterruptedException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//        });
     }
 
 }

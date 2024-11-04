@@ -107,7 +107,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application fails to build
      */
-    static void checkedRun(Assembly assembly, Wirelet... wirelets) throws ApplicationException {
+    static void checkedRun(Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException {
         PackedApp.BOOTSTRAP_APP.checkedLaunch(RunState.TERMINATED, assembly, wirelets);
     }
 
@@ -124,7 +124,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application fails to build
      */
-    static App checkedStart(Assembly assembly, Wirelet... wirelets) throws ApplicationException {
+    static App checkedStart(Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException {
         return PackedApp.BOOTSTRAP_APP.checkedLaunch(RunState.RUNNING, assembly, wirelets);
     }
 
@@ -233,6 +233,7 @@ public interface App extends AutoCloseable {
      * @throws UnsupportedOperationException
      *             currently not implemented
      */
+    // Nej Jeg tror ikke den er der.
     static void test(Assembly assembly, Consumer<? /* TestObject */> cno, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
@@ -267,7 +268,7 @@ public interface App extends AutoCloseable {
          * @throws ApplicationException
          *             if the application fails during execution
          */
-        void checkedRun(Wirelet... wirelets) throws ApplicationException;
+        void checkedRun(Wirelet... wirelets) throws ApplicationPanicException;
 
         /**
          * Starts the application with exception checking.
@@ -278,7 +279,7 @@ public interface App extends AutoCloseable {
          * @throws ApplicationException
          *             if the application fails to start
          */
-        App checkedStart(Wirelet... wirelets) throws ApplicationException;
+        App checkedStart(Wirelet... wirelets) throws ApplicationPanicException;
 
         /**
          * Runs the application to completion.

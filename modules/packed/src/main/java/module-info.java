@@ -13,6 +13,8 @@ module app.packed {
     exports app.packed.component;
     exports app.packed.container;
     exports app.packed.context;
+    exports app.packed.concurrent;
+    exports app.packed.concurrent.job;
     exports app.packed.extension;
     exports app.packed.lifetime;
     exports app.packed.namespace;

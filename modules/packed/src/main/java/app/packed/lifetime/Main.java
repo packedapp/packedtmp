@@ -22,15 +22,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import app.packed.extension.BaseExtension;
+import internal.app.packed.extension.BaseExtensionBeanintrospector;
 
+
+// Maybe move to app.packed.application?
+// I don't know if it makes sense for pods
+
+// Cannot be mixed with CliCommand. Or ComputeJob in the ApplicationLifetime
 /**
+ *
  * Trying to build an application with more than a single method annotated with this annotation will fail with
  * {@link BuildException}.
  * <p>
  * Methods annotated with {@code @Main} must have a void return type.
  * <p>
- * If the application fails either while initializing or starting, the annotated method will not be invoked.
+ * If the application fails either while initializing or starting, the main method will not be invoked.
  * <p>
  * When the annotated method returns the container will automatically be stopped. If the annotated method fails with an
  * unhandled exception the container will automatically be shutdown with the exception being the cause.
@@ -40,7 +46,7 @@ import app.packed.extension.BaseExtension;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@OnAnnotatedMethod(extension = BaseExtension.class, allowInvoke = true)
+@OnAnnotatedMethod(introspector = BaseExtensionBeanintrospector.class, allowInvoke = true)
 public @interface Main {}
 
 //A single method. Will be executed.

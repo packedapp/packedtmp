@@ -37,10 +37,12 @@ public sealed abstract class ComponentHandle permits ApplicationHandle, Containe
      * @throws IllegalStateException
      *             if this handle is no longer configurable
      */
-    public final void checkHandleIsConfigurable() {
-        if (!isHandleConfigurable()) {
+    protected final void checkIsOpen() {
+        if (!isOpen()) {
             // could also go compo
-            throw new IllegalStateException("The " + componentPath().componentKind().name() + " is no longer configurable");
+            // Should probably throw InternalExtensionException
+            // No because, ApplicationHandle can actually be defined by the user
+            throw new IllegalStateException("The " + componentPath().componentKind().name() + " is been closed");
         }
     }
 
@@ -58,16 +60,18 @@ public sealed abstract class ComponentHandle permits ApplicationHandle, Containe
     }
 
     /**
+     * {@return whether or no the component can be configured by its owner}
+     */
+    public abstract boolean isConfigurable();
+
+    /**
      * {@return whether or not the handle is still configurable}
      * <p>
-     * A specific component instance's handle might be configurable while its configuration is not.
-     * For example, a bean that is being installed will have
+     * A specific component instance's handle might be configurable while its configuration is not. For example, a bean that
+     * is being installed will have
      */
-    public abstract boolean isHandleConfigurable();
-
-    public abstract boolean isConfigurationConfigurable();
+    public abstract boolean isOpen();
 
     /** { @return a mirror for the component} */
     public abstract ComponentMirror mirror();
-
 }

@@ -21,6 +21,7 @@ import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
+import internal.app.packed.extension.BaseExtensionBeanintrospector;
 
 /**
  * I think this probably mostly be informational. You would only need it for debugging.
@@ -28,7 +29,7 @@ import app.packed.extension.BaseExtension;
  * @see FromComponentGuest
  * @see OnComponentGuestLifecycle
  */
-@OnExtensionServiceBeanTrigger(extension = BaseExtension.class, requiresContext = ComponentHostContext.class)
+@OnExtensionServiceBeanTrigger(introspector = BaseExtensionBeanintrospector.class, requiresContext = ComponentHostContext.class)
 public interface ComponentHostContext extends Context<BaseExtension> {
 
     // Hvis vi teanker paa at faa injected selve bean instancen. Kan vi sagtens have Object, eller Entity som key

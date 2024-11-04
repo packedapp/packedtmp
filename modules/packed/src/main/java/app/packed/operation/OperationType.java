@@ -29,6 +29,7 @@ import java.util.StringJoiner;
 
 import app.packed.binding.Variable;
 import app.packed.util.AnnotationList;
+import internal.app.packed.ValueBased;
 import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.util.PackedAnnotationList;
 
@@ -39,7 +40,8 @@ import internal.app.packed.util.PackedAnnotationList;
  *          element type. This means that both detailed {@link Type} information and annotations are available.
  */
 // Maybe it is InvocationType anyway.
-public final /* primitive */ class OperationType {
+@ValueBased
+public final class OperationType {
 
     /** May be used for operation types without parameter variables. */
     private static final Variable[] NO_PARAMETERS = {};

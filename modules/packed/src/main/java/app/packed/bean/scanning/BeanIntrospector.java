@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanAttachmentConfiguration;
+import app.packed.bean.AttachmentConfiguration;
 import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
@@ -38,10 +38,12 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.context.Context;
+import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
+import app.packed.extension.ExtensionHandle;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
 import app.packed.operation.OperationInstaller;
@@ -57,17 +59,18 @@ import internal.app.packed.bean.scanning.IntrospectorOnMethod;
 import internal.app.packed.bean.scanning.IntrospectorOnServiceProvision;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariableUnwrapped;
+import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.util.PackedAnnotationList;
 
 /**
  * A bean introspector is the primary way for extensions are the primary way for extensions to interacts the
  *
- * This class contains a number of overridable callback methods, all of them starting with {@code on}. Make list
+ * This class contains a number of overridable callback methods, all of them starting with {@code on}. TODO Make list
  *
  * @see Extension#newBeanIntrospector()
  */
-public non-sealed abstract class BeanIntrospector implements Accessor {
+public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implements Accessor {
 
     /**
      * The internal configuration of this introspector. Is initially null but populated via
@@ -76,26 +79,27 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     @Nullable
     private BeanIntrospectorSetup introspector;
 
-    BeanSetup bean() {
+    // Hvornaar skal den laves?
+    public final <T> AttachmentConfiguration<T> attach(Op<T> op) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final <T> AttachmentConfiguration<T> attachIfAbsent(Op<T> op) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final BaseExtensionPoint base() {
+        return new PackedExtensionHandle<>(introspector.extension).use(BaseExtensionPoint.class);
+    }
+
+    /** { @return the bean} */
+    private BeanSetup bean() {
         return requireNonNull(introspector().scanner.bean);
-    }
-
-    public final <T> BeanAttachmentConfiguration<T> attachToBean(Op<T> op) {
-        throw new UnsupportedOperationException();
-    }
-
-    public final <T> BeanAttachmentConfiguration<T> attachToBeanIfAbsent(Op<T> op) {
-        throw new UnsupportedOperationException();
     }
 
     /** {@return an annotation reader for the bean class.} */
     public final AnnotationList beanAnnotations() {
         return new PackedAnnotationList(beanClass().getAnnotations());
-    }
-
-    /** {@return the owner of the bean.} */
-    public final BuildActor beanAuthor() {
-        return bean().owner();
     }
 
     /** {@return the bean class that is being introspected.} */
@@ -129,13 +133,31 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
         return bean().beanKind;
     }
 
+    /** {@return the owner of the bean.} */
+    public final ComponentRealm beanOwner() {
+        return bean().owner();
+    }
+
     /** {@return the bean source kind.} */
     public final BeanSourceKind beanSourceKind() {
         return bean().beanSourceKind;
     }
 
-    private ExtensionDescriptor extension() {
+    @SuppressWarnings("unchecked")
+    public final E extension() {
+        return (E) introspector.extension.instance();
+    }
+
+    private ExtensionDescriptor extensionDescriptor() {
         return introspector().extension.model;
+    }
+
+    public final ExtensionHandle<E> extensionHandle() {
+        return handle();
+    }
+
+    private PackedExtensionHandle<E> handle() {
+        return new PackedExtensionHandle<E>(introspector.extension);
     }
 
     /**
@@ -190,7 +212,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
 
     public void onAnnotatedClass(Annotation annotation, BeanIntrospector.OnClass onClass) {
         throw new InternalExtensionException(
-                extension().fullName() + " failed to handle class annotation " + annotation.annotationType() + " on " + beanClass());
+                extensionDescriptor().fullName() + " failed to handle class annotation " + annotation.annotationType() + " on " + beanClass());
     }
 
     /**
@@ -211,13 +233,14 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      * This method is called by the similar named method {@link #hookOnAnnotatedField(AnnotationList, BeanField)} for every
      * annotation.
      *
-     * @param annotation
-     *            the annotation
+     * @param triggeringAnnotation
+     *            the triggering annotation
      * @param field
      *            an operational field
      */
-    public void onAnnotatedField(Annotation annotation, OnField onField) {
-        throw new InternalExtensionException(extension().fullName() + " failed to handle field annotation " + annotation.annotationType() + " on " + onField);
+    public void onAnnotatedField(Annotation triggeringAnnotation, OnField onField) {
+        throw new InternalExtensionException(
+                extensionDescriptor().fullName() + " failed to handle triggering field annotation " + triggeringAnnotation.annotationType() + " on " + onField);
     }
 
     /**
@@ -238,17 +261,17 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
      * annotations on the same field.
      *
-     * @param hooks
-     *            a non-empty list of field activating annotations
+     * @param triggeringAnnotations
+     *            a non-empty list of field triggering annotations
      * @param field
-     *            an operational field
+     *            the field that was triggered
      * @see app.packed.extension.ExtensionMetaHook.AnnotatedBeanFieldHook
      */
     // Combinations of Field Annotations, Variable Annotations & VariableType
     // Failures? or order of importancez
     // What about meta data annotations? Maybe this is mostly applicable to binding class hooks
-    public void onAnnotatedField(AnnotationList annotations, OnField ofField) {
-        for (Annotation annotation : annotations) {
+    public void onAnnotatedField(AnnotationList triggeringAnnotations, OnField ofField) {
+        for (Annotation annotation : triggeringAnnotations) {
             onAnnotatedField(annotation, ofField);
         }
     }
@@ -257,7 +280,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod onMethod) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
-        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + annotation);
+        throw new InternalExtensionException(extensionDescriptor().fullName() + " failed to handle method annotation(s) " + annotation);
     }
 
     /**
@@ -291,7 +314,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      * @see AnnotatedBindingHook
      */
     public void onAnnotatedVariable(Annotation annotation, OnVariable onVariable) {
-        throw new BeanInstallationException(extension().fullName() + " failed to handle parameter hook annotation(s) " + annotation);
+        throw new BeanInstallationException(extensionDescriptor().fullName() + " failed to handle parameter hook annotation(s) " + annotation);
     }
 
     /**
@@ -301,7 +324,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      * @see app.packed.context.InheritableContextualServiceProvider
      */
     public void onExtensionService(Key<?> key, OnExtensionService service) {
-        throw new BeanInstallationException(extension().fullName() + " cannot handle type hook " + key);
+        throw new BeanInstallationException(extensionDescriptor().fullName() + " cannot handle type hook " + key);
     }
 
     /**
@@ -311,7 +334,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      *
      * @see #beforeScan()
      */
-    public void scanningStarted() {}
+    public void onScanStart() {}
 
     /**
      * A callback method that is called after any other callback methods on this class.
@@ -322,7 +345,23 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      *
      * @see #afterHooks()
      */
-    public void scanningStopped() {}
+    public void onScanStop() {}
+
+    /**
+     * Registers a action to run doing the code generation phase of the application.
+     * <p>
+     * If the application has no code generation phase. For example, if building a {@link BuildGoal#MIRROR}. The specified
+     * action will not be executed.
+     *
+     * @param action
+     *            the action to run
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable
+     * @see BuildGoal#isCodeGenerating()
+     */
+    public final void runOnCodegen(Runnable action) {
+        handle().runOnCodegen(action);
+    }
 
     /**
      *
@@ -447,6 +486,14 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
 
     public sealed interface OnExtensionService permits IntrospectorOnServiceProvision {
 
+        Class<?> baseClass();
+
+        OnVariableUnwrapped binder();
+
+        Set<Class<? extends Context<?>>> contexts();
+
+        Key<?> key();
+
         default boolean match(Class<?> clazz) {
             if (key().rawType() == clazz) {
                 if (key().isQualified()) {
@@ -456,14 +503,6 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
             }
             return false;
         }
-
-        Class<?> baseClass();
-
-        OnVariableUnwrapped binder();
-
-        Set<Class<? extends Context<?>>> contexts();
-
-        Key<?> key();
 
     }
 
@@ -568,6 +607,11 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
          *             if the field does not represent a valid key
          */
         Key<?> toKey();
+
+        /**
+         * {@return a list of triggering annotations on the field}
+         **/
+        AnnotationList triggeringAnnotations();
 
         /**
          * {@return the underlying field represented as a {@code Variable}.}

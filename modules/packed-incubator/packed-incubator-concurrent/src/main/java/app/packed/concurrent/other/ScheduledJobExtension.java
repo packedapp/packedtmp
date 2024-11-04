@@ -65,45 +65,41 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
 
     // Creates a new instance on every invocation
 
-    @Override
-    protected BeanIntrospector newBeanIntrospector() {
-        return new BeanIntrospector() {
+    public static class MyI extends BeanIntrospector<ScheduledJobExtension> {
+        @SuppressWarnings("unused")
+        @Override
+        public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {
+            Cron c = method.annotations().readRequired(Cron.class);
 
-            @SuppressWarnings("unused")
-            @Override
-            public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {
-                Cron c = method.annotations().readRequired(Cron.class);
+            OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
 
-                OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
+            InstanceBeanConfiguration<SchedulingBean> bean = extension().lifetimeRoot().base().installIfAbsent(SchedulingBean.class, handle -> {
+                handle.bindServiceInstance(MethodHandle.class, operation.invokerAsMethodHandle());
+            });
+            // bean, add scheduling +
+            // Manytons dur ikke direkte
 
-                InstanceBeanConfiguration<SchedulingBean> bean = lifetimeRoot().base().installIfAbsent(SchedulingBean.class, handle -> {
-                    handle.bindServiceInstance(MethodHandle.class, operation.invokerAsMethodHandle());
-                });
-                // bean, add scheduling +
-                // Manytons dur ikke direkte
+            //
+            // bean.addSchedule
+            // parse expresion
 
-                //
-                // bean.addSchedule
-                // parse expresion
+        }
 
+        @Override
+        public void onExtensionService(Key<?> key, OnExtensionService service) {
+            OnVariableUnwrapped binding = service.binder();
+
+            Class<?> hook = key.rawType();
+            if (hook == SchedulingContext.class) {
+                binding.bindContext(SchedulingContext.class);
+            } else if (hook == SchedulingHistory.class) {
+                binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
+
+                // binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
+            } else {
+                super.onExtensionService(key, service);
             }
-
-            @Override
-            public void onExtensionService(Key<?> key, OnExtensionService service) {
-                OnVariableUnwrapped binding = service.binder();
-
-                Class<?> hook = key.rawType();
-                if (hook == SchedulingContext.class) {
-                    binding.bindContext(SchedulingContext.class);
-                } else if (hook == SchedulingHistory.class) {
-                    binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
-
-                    // binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
-                } else {
-                    super.onExtensionService(key, service);
-                }
-            }
-        };
+        }
     }
 
     //

@@ -31,7 +31,6 @@ import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
  */
 public final class BeanHandlers extends Handlers {
 
-
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE = method(MethodHandles.lookup(), BeanIntrospector.class, "initialize", void.class,
             BeanIntrospectorSetup.class);
@@ -61,18 +60,18 @@ public final class BeanHandlers extends Handlers {
     }
 
     /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
-    private static final MethodHandle MH_BEAN_HANDLE_DO_CLOSE = method(MethodHandles.lookup(), BeanHandle.class, "doClose", void.class);
+    private static final MethodHandle MH_BEAN_HANDLE_DO_CLOSE = method(MethodHandles.lookup(), BeanHandle.class, "onStateChange", void.class, boolean.class);
 
     /** Call {@link BeanHandle#onClose()}. */
-    public static void invokeBeanHandleDoClose(BeanHandle<?> handle) {
+    public static void invokeBeanHandleDoClose(BeanHandle<?> handle, boolean isClose) {
         try {
-            MH_BEAN_HANDLE_DO_CLOSE.invokeExact(handle);
+            MH_BEAN_HANDLE_DO_CLOSE.invokeExact(handle, isClose);
         } catch (Throwable t) {
             throw throwIt(t);
         }
     }
 
-    public static BeanSetup invokeBeanIntrospectorBean(BeanIntrospector introspector) {
+    public static BeanSetup invokeBeanIntrospectorBean(BeanIntrospector<?> introspector) {
         try {
             return (BeanSetup) MH_BEAN_INTROSPECTOR_TO_SETUP.invokeExact(introspector);
         } catch (Throwable t) {
@@ -80,7 +79,7 @@ public final class BeanHandlers extends Handlers {
         }
     }
 
-    public static void invokeBeanIntrospectorInitialize(BeanIntrospector introspector, BeanIntrospectorSetup ref) {
+    public static void invokeBeanIntrospectorInitialize(BeanIntrospector<?> introspector, BeanIntrospectorSetup ref) {
         try {
             MH_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, ref);
         } catch (Throwable t) {

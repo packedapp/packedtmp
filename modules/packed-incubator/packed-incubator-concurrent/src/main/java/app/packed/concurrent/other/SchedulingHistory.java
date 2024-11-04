@@ -20,7 +20,7 @@ import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 /**
  *
  */
-@OnExtensionServiceBeanTrigger(extension = ScheduledJobExtension.class, requiresContext = SchedulingContext.class)
+@OnExtensionServiceBeanTrigger(introspector = ScheduledJobExtension.MyI.class, requiresContext = SchedulingContext.class)
 public interface SchedulingHistory {
 
 }

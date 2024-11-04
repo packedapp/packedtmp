@@ -42,12 +42,13 @@ public final class OperationHandlers extends Handlers {
     }
 
     /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
-    private static final MethodHandle MH_OPERATION_HANDLE_DO_CLOSE = method(MethodHandles.lookup(), OperationHandle.class, "doClose", void.class);
+    private static final MethodHandle MH_OPERATION_HANDLE_DO_CLOSE = method(MethodHandles.lookup(), OperationHandle.class, "onStateChange", void.class,
+    boolean.class);
 
     /** Call {@link OperationHandle#onClose()}. */
-    public static void invokeOperationHandleDoClose(OperationHandle<?> handle) {
+    public static void invokeOperationHandleDoClose(OperationHandle<?> handle, boolean isClose) {
         try {
-            MH_OPERATION_HANDLE_DO_CLOSE.invokeExact(handle);
+            MH_OPERATION_HANDLE_DO_CLOSE.invokeExact(handle, isClose);
         } catch (Throwable t) {
             throw throwIt(t);
         }

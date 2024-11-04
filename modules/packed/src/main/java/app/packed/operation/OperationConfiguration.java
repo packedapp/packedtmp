@@ -65,7 +65,7 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public OperationConfiguration componentTag(String... tags) {
+    public OperationConfiguration tag(String... tags) {
         checkIsConfigurable();
         handle.componentTag(tags);
         return this;
@@ -73,7 +73,7 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public final Set<String> componentTags() {
+    public final Set<String> tags() {
         return handle.componentTags();
     }
 
@@ -85,7 +85,7 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
 
     /** {@return the extension that operates the operation} */
     public final Class<? extends Extension<?>> installerByExtension() {
-        return handle.installerByExtension();
+        return handle.installedByExtension();
     }
 
     public OperationConfiguration named(String name) {

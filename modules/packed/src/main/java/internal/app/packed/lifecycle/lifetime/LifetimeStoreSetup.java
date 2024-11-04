@@ -27,27 +27,28 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public final class LifetimeStoreSetup {
+final class LifetimeStoreSetup {
 
     final ArrayList<Object> entries = new ArrayList<>();
+
+    public int addAttachment(OperationSetup bean) {
+        return 0;
+    }
 
     public int addBean(BeanSetup bean) {
         if (bean.beanKind == BeanKind.CONTAINER && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             entries.add(bean);
-            return entries.size()-1;
+            return entries.size() - 1;
         }
         return -1;
     }
 
-    public void addOther(Class<?> other) {
+    // For example, lifetime store
+    public void addInternal(Class<?> other) {
         entries.add(other);
     }
 
     public ExtensionContext newRuntimePool() {
         return PackedExtensionContext.create(entries.size());
-    }
-
-    public int addAttachment(OperationSetup bean) {
-        return 0;
     }
 }

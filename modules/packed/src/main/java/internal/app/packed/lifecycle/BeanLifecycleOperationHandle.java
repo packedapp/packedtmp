@@ -23,14 +23,16 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.LifecycleDependantOrder;
-import app.packed.bean.lifecycle.Start;
+import app.packed.bean.lifecycle.OnStart;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.scanning.IntrospectorOnMethod;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.handlers.BeanLifecycleHandlers;
@@ -73,6 +75,18 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
         LifecycleOperationInitializeHandle(OperationInstaller installer, @Nullable Initialize annotation) {
             super(installer, annotation.order() == LifecycleDependantOrder.BEFORE_DEPENDANTS ? InternalBeanLifecycleKind.INITIALIZE_PRE_ORDER
                     : InternalBeanLifecycleKind.INITIALIZE_POST_ORDER);
+        }
+
+        /** An operation template for {@link Inject} and {@link Initialize}. */
+        private static final OperationTemplate OPERATION_LIFECYCLE_TEMPLATE = OperationTemplate.defaults().withReturnIgnore();
+
+        public static void from(Initialize annotation, IntrospectorOnMethod method) {
+            BeanSetup bean = method.bean();
+
+//            checkNotStaticBean(bean, Initialize.class);
+            LifecycleOperationInitializeHandle handle = method.newOperation(OPERATION_LIFECYCLE_TEMPLATE)
+                    .install(i -> new LifecycleOperationInitializeHandle(i, annotation));
+            bean.operations.addLifecycleHandle(handle);
         }
 
         /**
@@ -125,7 +139,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
         /**
          * @param installer
          */
-        LifecycleOnStartHandle(OperationInstaller installer, Start annotation) {
+        LifecycleOnStartHandle(OperationInstaller installer, OnStart annotation) {
             super(installer, annotation.order() == LifecycleDependantOrder.BEFORE_DEPENDANTS ? InternalBeanLifecycleKind.START_PRE_ORDER
                     : InternalBeanLifecycleKind.START_POST_ORDER);
             this.stopOnFailure = annotation.stopOnFailure();

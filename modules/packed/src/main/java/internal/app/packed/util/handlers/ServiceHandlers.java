@@ -18,6 +18,7 @@ package internal.app.packed.util.handlers;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.service.ServiceNamespaceConfiguration;
 import app.packed.service.ServiceNamespaceMirror;
@@ -30,7 +31,7 @@ public final class ServiceHandlers extends Handlers {
 
     /** A handle for invoking the protected method {@link NamespaceHandle#onNamespaceClose()}. */
     private static final MethodHandle MH_NEW_SERVICE_NAMESPACE_CONFIGURATION = constructor(MethodHandles.lookup(), ServiceNamespaceConfiguration.class,
-            ServiceNamespaceHandle.class, BaseExtension.class);
+            ServiceNamespaceHandle.class, BaseExtension.class, ComponentRealm.class);
 
     /** A handle for invoking the protected method {@link NamespaceHandle#onNamespaceClose()}. */
     private static final MethodHandle MH_NEW_SERVICE_NAMESPACE_MIRROR = constructor(MethodHandles.lookup(), ServiceNamespaceMirror.class,

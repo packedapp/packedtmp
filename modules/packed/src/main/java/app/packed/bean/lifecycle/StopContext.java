@@ -21,13 +21,14 @@ import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.StopInfo;
+import internal.app.packed.extension.BaseExtensionBeanintrospector;
 
 /**
  *
  */
 // Bliver lavet per operation
 // BeanStopContext
-@OnExtensionServiceBeanTrigger(extension = BaseExtension.class, requiresContext = StopContext.class)
+@OnExtensionServiceBeanTrigger(introspector = BaseExtensionBeanintrospector.class, requiresContext = StopContext.class)
 public interface StopContext extends Context<BaseExtension> {
 
     /**

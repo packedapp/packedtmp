@@ -22,6 +22,7 @@ import java.lang.invoke.VarHandle;
 /**
  *
  */
+
 public interface InvokerFactory {
     // For those that are "afraid" of method handles. You can specify a SAM interface (Or abstract class with an empty
     // constructor)
@@ -29,7 +30,26 @@ public interface InvokerFactory {
     // Maybe a class value in the template.
     // This will codegen though
     // constructor arguments are for abstract classes only
-    <T> T invokerAs(Class<T> handleClass, Object... constructorArguments);
+
+    // I think the idea is that the Invoker does not expose MethodHandle, so what are the constructor arguments used for?
+
+    // Do we want ExtensionContext? I don't think so
+
+    // Det her bliver jo injected......
+
+    /**
+     * <p>
+     * An abstract class can be specified, this can be used to hold metadata about operation. That can be useful at runtime.
+     *
+     * @param <T>
+     * @param handleClass
+     * @param constructorArguments
+     *            in case the specified class is an abstract class, the abstract class can take the specified arguments
+     * @return
+     */
+    // Specifically, the abstract class does not allow injection of services.
+    // It is primarily meant for meta data at runtime.
+    <T> T invokerAs(Class<T> handleClass, Object... abstractClassConstructorArguments);
 
     MethodHandle invokerAsMethodHandle();
 
@@ -46,10 +66,7 @@ public interface InvokerFactory {
     /**
      * {@return the invocation type of this operation.}
      * <p>
-     * Method handles generated via {@link #invokerAsMethodHandle()} will always the returned value as their
-     * {@link MethodHandle#type() method handle type}.
-     *
-     * @see OperationTemplate.Descriptor#invocationType()
+     * The method handle will return {@link #invokerType()} from its {@link MethodHandle#type() method handle type}.
      */
     MethodType invokerType();
 
@@ -57,4 +74,10 @@ public interface InvokerFactory {
     // Hmm, maaske har vi noget builder faetter her
     // Men det er vel mere eller mindre compound operation...
     // InvokerFactory ofAll(OperationTemplate template, OperationHandle... handles);
+
+    // Det er vel fold... Vi bruger resultatet i naeste operation.
+    // Men naeste operation kan jo saa ikke rigtigt returnere noget.
+
+    // Altsaa hvor tit har folk brug for dette
+    // @Verify(X), @VerifyY
 }

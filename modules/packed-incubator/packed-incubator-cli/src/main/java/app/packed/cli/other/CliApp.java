@@ -16,99 +16,28 @@
 package app.packed.cli.other;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationTemplate;
-import app.packed.application.BaseImage;
-import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.container.Wirelets;
-import app.packed.runtime.RunState;
 
 /**
  *
  */
-//Like App but calls system exit and prints stack
-//traces to system.err
+// Maybe it is just a thin wrapper for App
+public interface CliApp {
 
-// CliApp er maaske i virkeligheden mere noget der har praecist mest 1 entrypoint.
+    // But isn't this normally in the code???
+    // Maybe a StopOption?
+    // ObjectToInt(ApplicationException->int errorCode)
 
-// Er ikke noedvendigvis managed. Eller det kan den jo ligesaa godt eftersom vi ikke
-// har start/stop. Alt koere indefor en operation
 
-public final class CliApp {
-
-    /** Nope. */
-    private CliApp() {}
-
-    public static void run(Assembly assembly, String[] args, Wirelet... wirelets) {
-        App.run(assembly);
+    static void run(Assembly assembly, Wirelet... wirelets) {
+        // Maybe checked run...
+        App.run(assembly, wirelets);
     }
 
-    public static void run(Assembly assembly, Wirelet... wirelets) {
-        App.run(assembly);
-    }
-
-    public static void mirrorOf(Assembly assembly, String[] args, Wirelet... wirelets) {
-        bootstrap().mirrorOf(assembly, Wirelets.argList(args).andThen(wirelets));
-    }
-
-    public static int runWithExitCode(Assembly assembly, String[] args) {
-        App.run(assembly);
-        return 0;
-    }
-
-    public static void verify(Assembly assembly, String[] args) {
-        bootstrap().verify(assembly);
-    }
-
-    /**
-     * Returns the bootstrap app. If interfaces allowed non-public fields we would have stored it in a field instead of this
-     * method.
-     */
-    private static BootstrapApp<Void> bootstrap() {
-        class ServiceLocatorBootstrap {
-            private static final BootstrapApp<Void> APP = BootstrapApp.of(ApplicationTemplate.ofManaged(Void.class));
-        }
-        return ServiceLocatorBootstrap.APP;
-    }
-//
-//    public static final class Result {
-//
-//    }
-
-    /** An application image for App. */
-    public static final class Image {
-
-        /** The bootstrap image we are delegating to */
-        private final BaseImage<?> image;
-
-        private Image(BaseImage<?> image) {
-            this.image = image;
-        }
-
-        /** Runs the application represented by this image. */
-        public void run() {
-            image.launch(RunState.TERMINATED);
-        }
-
-        /**
-         * Runs the application represented by this image.
-         *
-         * @param wirelets
-         *            optional wirelets
-         */
-        public void run(Wirelet... wirelets) {
-            image.launch(RunState.TERMINATED, wirelets);
-        }
-    }
-
-    public class Launcher {
-        // Tror faktisk vi er chatty som default
-        // Sgu da ikke hvis vi er en CLI. Det vil jeg da vaere ret traet af.
-        // CliApp.launcher().silent().run();
-        Launcher silent() {
-            return this;
-        }
+    static void run(Assembly assembly, String[] args, Wirelet... wirelets) {
+        // Maybe checked run...
+        App.run(assembly, Wirelets.argList(args).andThen(wirelets));
     }
 }
-

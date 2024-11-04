@@ -16,7 +16,7 @@ import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
 import app.packed.build.hook.ApplyBuildHook;
 import app.packed.build.hook.BuildHook;
-import internal.app.packed.bean.scanning.BeanHookModel;
+import internal.app.packed.bean.scanning.BeanTriggerModelCustom;
 import internal.app.packed.build.hook.BuildHookMap;
 import internal.app.packed.build.hook.StaticBuildHookMap;
 import internal.app.packed.util.ThrowableUtil;
@@ -77,12 +77,12 @@ public final /* primitive */ class AssemblyModel {
         }
     };
 
-    public final BeanHookModel hookModel;
+    public final BeanTriggerModelCustom hookModel;
 
     public final StaticBuildHookMap hooks;
 
     private AssemblyModel(Class<?> assemblyClass, StaticBuildHookMap hm) {
-        this.hookModel = BeanHookModel.of(assemblyClass);
+        this.hookModel = BeanTriggerModelCustom.of(assemblyClass);
         this.hooks = hm;
     }
 

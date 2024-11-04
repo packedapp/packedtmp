@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
-import app.packed.build.BuildActor;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.operation.OperationHandle;
@@ -58,7 +58,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         return (E) namespace.root.root().instance();
     }
 
-    public final BuildActor componentOwner() {
+    public final ComponentRealm componentOwner() {
         throw new UnsupportedOperationException();
     }
 
@@ -71,7 +71,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkHandleIsConfigurable();
+        checkIsOpen();
         namespace.container().application.componentTags.addComponentTags(namespace, tags);
     }
 
@@ -83,7 +83,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
      * @return
      */
     public final C configuration(E e) {
-        return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k, BuildActor.application()));
+        return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k, ComponentRealm.application()));
     }
 
     public final C configuration(E e, ExtensionUseSite useSite) {
@@ -98,18 +98,18 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isConfigurationConfigurable() {
-        return namespace.root.container.handle().isHandleConfigurable();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean isHandleConfigurable() {
-        return namespace.root.container.handle().isHandleConfigurable();
+    public final boolean isConfigurable() {
+        return namespace.root.container.handle().isConfigurable();
     }
 
     public final boolean isInApplicationLifetime(Extension<?> extension) {
         return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isOpen() {
+        return namespace.root.container.handle().isOpen();
     }
 
     /** {@inheritDoc} */
@@ -127,7 +127,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     }
 
     /** {@inheritDoc} */
-    protected abstract C newNamespaceConfiguration(E extension, BuildActor actor);
+    protected abstract C newNamespaceConfiguration(E extension, ComponentRealm actor);
 
     /**
      * <p>
@@ -140,22 +140,22 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         return new NamespaceMirror<E>(this);
     }
 
-    protected void onAssemblyClose(E rootExtension, boolean isNamespaceRoot) {}
+    protected void onClose() {}
 
-    protected void onNamespaceClose() {}
+    // I think we have one per assembly
+    protected void onConfigured(E rootExtension, boolean isNamespaceRoot) {}
 
-    /** {@return a stream of all of the operations declared in the namespace.} */
+    /** {@return a stream of all of the operations that have been declared in this namespace.} */
     public final Stream<OperationHandle<?>> operations() {
         return namespace.operations.stream().map(e -> e.handle());
     }
 
     /**
-     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
+     * {@return a stream of all of the operations that have been declared in this namespace of the specified type.}
      *
      * @param <T>
      * @param handleType
-     *            the type of operation handles to include
-     * @return a stream of all of the operations declared in namespace with the specified handle type.
+     *            the type of operation handles to include in the stream
      */
     @SuppressWarnings("unchecked")
     public final <H extends OperationHandle<?>> Stream<H> operations(Class<H> handleType) {

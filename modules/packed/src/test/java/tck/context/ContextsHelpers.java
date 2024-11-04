@@ -22,11 +22,12 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import tck.AbstractBootstrapedAppTest;
 import tck.HookTestingExtension;
+import tck.HookTestingExtensionBeanIntrospector;
 
 /** Various context class and their templates that can be used where applicable. */
 public class ContextsHelpers {
 
-    @OnExtensionServiceBeanTrigger(extension = HookTestingExtension.class)
+    @OnExtensionServiceBeanTrigger(introspector = HookTestingExtensionBeanIntrospector.class)
     public record NoImplContext(int i) implements Context<HookTestingExtension> {
         /** A template. */
         public static final ContextTemplate CT = ContextTemplate.of(NoImplContext.class);

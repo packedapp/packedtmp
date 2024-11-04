@@ -15,22 +15,22 @@
  */
 package internal.app.packed.concurrent;
 
-import app.packed.bean.lifecycle.Start;
+import app.packed.bean.lifecycle.OnStart;
 import app.packed.extension.ExtensionContext;
-import internal.app.packed.concurrent.VirtualThreadScheduledTaskManager.DaemonOperationRunner;
+import internal.app.packed.concurrent.daemon.DaemonRuntimeConfiguration;
 
 // Runtime
 public class SchedulingTaskManager {
 
     final ExtensionContext cc;
 
-    final ScheduledDaemon[] daemons;
+    final DaemonRuntimeConfiguration[] daemons;
 
     final ScheduledOperation[] mhs;
     final boolean shutdownOnExit;
     final ScheduledTaskManager vts;
 
-    public SchedulingTaskManager(ExecutorConfiguration scheduler, ScheduledOperation[] mhs, ScheduledDaemon[] daemons,
+    public SchedulingTaskManager(ExecutorConfiguration scheduler, ScheduledOperation[] mhs, DaemonRuntimeConfiguration[] daemons,
             ExtensionContext cc) {
         if (scheduler == null) {
             this.vts = new VirtualThreadScheduledTaskManager(cc);
@@ -44,23 +44,23 @@ public class SchedulingTaskManager {
         this.mhs = mhs;
     }
 
-    @Start
+    @OnStart
     public void onStart() {
         System.out.println("On Start");
 
         for (ScheduledOperation p : mhs) {
             vts.schedule(p.callMe(), p.s().d());
         }
-        for (ScheduledDaemon d : daemons) {
-            if (d.useVirtual()) {
-                Thread.startVirtualThread(new DaemonOperationRunner(cc, d.callMe()));
-            } else {
-                Thread.ofPlatform().daemon().start(new DaemonOperationRunner(cc, d.callMe()));
-            }
-        }
+//        for (DaemonRuntimeConfiguration d : daemons) {
+////            if (d.useVirtual()) {
+////                Thread.startVirtualThread(new DaemonOperationRunner(cc, d.callMe()));
+////            } else {
+////                Thread.ofPlatform().daemon().start(new DaemonOperationRunner(cc, d.callMe()));
+////            }
+//        }
     }
 
-    @Start
+    @OnStart
     public void onStop() {
         System.out.println("Bye");
     }

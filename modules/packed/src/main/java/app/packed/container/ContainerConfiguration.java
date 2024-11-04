@@ -50,7 +50,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
     /** {@inheritDoc} */
     @Override
     @BuildActionable("container.addTags")
-    public ComponentConfiguration componentTag(String... tags) {
+    public ComponentConfiguration tag(String... tags) {
         checkIsConfigurable();
         handle.componentTag(tags);
         return this;
@@ -58,7 +58,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
 
     /** {@inheritDoc} */
     @Override
-    public final Set<String> componentTags() {
+    public final Set<String> tags() {
         return handle.componentTags();
     }
 

@@ -15,13 +15,10 @@
  */
 package app.packed.concurrent.other;
 
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
-import app.packed.extension.BaseExtension;
-
 /**
  *
  */
-@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
+//@OnExtensionServiceBeanTrigger(in = BaseExtension.class)
 public final class PackedSchedulingContext implements SchedulingContext {
     SchedulingHistory history;
 

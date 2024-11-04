@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-import app.packed.application.ApplicationException;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.ApplicationPanicException;
 import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
@@ -37,12 +37,13 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
+import internal.app.packed.extension.BaseExtensionBeanintrospector;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(introspector = BaseExtensionBeanintrospector.class)
 // Wait a bit with transforming this class to a record.
 // We might have some mutable fields such as name
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
@@ -93,7 +94,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
     }
 
     @SuppressWarnings("unused")
-    public static final <A> A checkedLaunch(ApplicationHandle<A, ?> handle, RunState state, Wirelet... wirelets) throws ApplicationException {
+    public static final <A> A checkedLaunch(ApplicationHandle<A, ?> handle, RunState state, Wirelet... wirelets) throws ApplicationPanicException {
         return launch(handle, state, wirelets);
     }
 

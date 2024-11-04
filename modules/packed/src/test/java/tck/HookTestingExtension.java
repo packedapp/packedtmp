@@ -55,13 +55,13 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     private Map<String, OperationHandle<?>> ink = new HashMap<>();
 
     @Nullable
-    private BiConsumer<? super AnnotationList, ? super OnField> onAnnotatedField;
+    BiConsumer<? super AnnotationList, ? super OnField> onAnnotatedField;
 
     @Nullable
-    private BiConsumer<? super AnnotationList, ? super BeanIntrospector.OnMethod> onAnnotatedMethod;
+    BiConsumer<? super AnnotationList, ? super BeanIntrospector.OnMethod> onAnnotatedMethod;
 
     @Nullable
-    private BiConsumer<? super Class<?>, ? super OnVariableUnwrapped> onVariableType;
+    BiConsumer<? super Class<?>, ? super OnVariableUnwrapped> onVariableType;
 
     /**
      * @param handle
@@ -77,41 +77,6 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         base().installIfAbsent(HookBean.class, b -> {
             b.bindServiceInstance(new Key<Map<String, MethodHandle>>() {}, CollectionUtil.copyOf(ink, v -> v.invokerAsMethodHandle()));
         });
-    }
-
-    @Override
-    protected BeanIntrospector newBeanIntrospector() {
-        return new BeanIntrospector() {
-
-            @Override
-            public void onExtensionService(Key<?> key, OnExtensionService service) {
-                OnVariableUnwrapped variable = service.binder();
-
-                if (onVariableType != null) {
-                    onVariableType.accept(key.rawType(), variable);
-                } else {
-                    super.onExtensionService(key, service);
-                }
-            }
-
-            @Override
-            public void onAnnotatedField(AnnotationList annotations, OnField onField) {
-                if (onAnnotatedField != null) {
-                    onAnnotatedField.accept(annotations, onField);
-                } else {
-                    super.onAnnotatedField(annotations, onField);
-                }
-            }
-
-            @Override
-            public void onAnnotatedMethod(AnnotationList hooks, BeanIntrospector.OnMethod method) {
-                if (onAnnotatedMethod != null) {
-                    onAnnotatedMethod.accept(hooks, method);
-                } else {
-                    super.onAnnotatedMethod(hooks, method);
-                }
-            }
-        };
     }
 
     public HookTestingExtension onAnnotatedField(BiConsumer<? super AnnotationList, ? super OnField> consumer) {
@@ -132,7 +97,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @OnAnnotatedField(extension = HookTestingExtension.class)
+    @OnAnnotatedField(introspector = HookTestingExtensionBeanIntrospector.class, allowGet = true, allowSet = true)
     public @interface FieldHook {
 
         String name() default "main";
@@ -185,7 +150,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @OnAnnotatedMethod(extension = HookTestingExtension.class)
+    @OnAnnotatedMethod(introspector = HookTestingExtensionBeanIntrospector.class)
     public @interface MethodHook {
 
         public static class InstanceMethodNoParamsVoid {

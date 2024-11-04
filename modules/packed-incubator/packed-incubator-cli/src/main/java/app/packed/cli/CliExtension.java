@@ -34,6 +34,9 @@ import app.packed.extension.FrameworkExtension;
 /**
  * An extension that
  */
+
+// Det er faktisk kun CliCommand der stjaeler execution
+// CliOption er ikke noget problem
 public class CliExtension extends FrameworkExtension<CliExtension> {
 
     /**
@@ -71,21 +74,17 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
         return applicationRoot().namespaceLazy(CliNamespaceHandle.TEMPLATE, "main");
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected BeanIntrospector newBeanIntrospector() {
-        return new BeanIntrospector() {
+    static class MyI extends BeanIntrospector<CliExtension> {
 
-            /** {@inheritDoc} */
-            @Override
-            public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {
-                if (hook instanceof CliCommand c) {
-                    ns().process(CliExtension.this, c, method);
-                } else {
-                    super.onAnnotatedMethod(hook, method);
-                }
+        /** {@inheritDoc} */
+        @Override
+        public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {
+            if (hook instanceof CliCommand c) {
+                extension().ns().process(extension(), c, method);
+            } else {
+                super.onAnnotatedMethod(hook, method);
             }
-        };
+        }
     }
 
     public CliNamespaceConfiguration namespace() {
@@ -113,9 +112,9 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
     }
 
     @Override
-    protected void onApplicationClose() {
+    protected void onClose() {
         System.out.println("Have commands for " + ns().oldCommands.keySet());
 
-        super.onApplicationClose();
+        super.onClose();
     }
 }

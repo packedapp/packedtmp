@@ -12,19 +12,20 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
-import app.packed.build.BuildActor;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.lifetime.CompositeLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
 import internal.app.packed.extension.ExtensionModel;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.PackedTreeView;
@@ -39,7 +40,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected
  */
-@OnExtensionServiceInteritedBeanTrigger(extension = BaseExtension.class)
+@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
 public non-sealed class ContainerMirror implements ComponentMirror, ContainerBuildLocal.Accessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
@@ -73,6 +74,15 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
         return handle.container.beans.stream().map(b -> b.mirror());
     }
 
+    /**
+     * {@return a stream of all operations defined in the application}
+     * <p>
+     * Unlike {@link #operations()} the returned stream includes operations on beans owned by extensions.
+     */
+    public final OperationMirror.OfStream<OperationMirror> allOperations() {
+        return OperationMirror.OfStream.of(allBeans().flatMap(BeanMirror::operations));
+    }
+
     /** {@return the application this container is a part of.} */
     public ApplicationMirror application() {
         return handle.container.application.mirror();
@@ -95,7 +105,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
      * need to include those.
      */
     public final Stream<BeanMirror> beans() {
-        return allBeans().filter(m -> m.owner() == BuildActor.application());
+        return allBeans().filter(m -> m.owner() == ComponentRealm.application());
     }
 
     /** {@inheritDoc} */
@@ -165,7 +175,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
     }
 
     /** {@return the containers's lifetime.} */
-    public final ContainerLifetimeMirror lifetime() {
+    public final CompositeLifetimeMirror lifetime() {
         return handle.container.lifetime.mirror();
     }
 
@@ -187,23 +197,8 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
     }
 
     /** {@return a stream of all of the operations declared on beans in the container owned by the user} */
-    public final Stream<OperationMirror> operations() {
-        return beans().flatMap(BeanMirror::operations);
-    }
-
-    /**
-     * {@return a stream of all of the operations declared on beans in the container owned by the user of the specified
-     * type}
-     *
-     * @param <T>
-     *            the type of operation mirror
-     * @param operationType
-     *            the type of operation mirrors to include in the stream
-     */
-    @SuppressWarnings("unchecked")
-    public final <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
-        requireNonNull(operationType, "operationType is null");
-        return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
+    public final OperationMirror.OfStream<OperationMirror> operations() {
+        return OperationMirror.OfStream.of(beans().flatMap(BeanMirror::operations));
     }
 
     /** {@inheritDoc} */
@@ -274,7 +269,6 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
     }
 }
 
-
 //public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {
 //  return Assemblies.verify(assembly, ContainerMirror.class, verifier);
 //}
@@ -297,7 +291,6 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
 //public Stream<BeanMirror> beansInContainerLifetime() {
 //    return handle.container.beans.stream().filter(b -> b.lifetime == handle.container.lifetime).map(b -> b.mirror());
 //}
-
 
 //
 ///** {@return a set of all boundaries to this container's parent. Or empty if family root.} */

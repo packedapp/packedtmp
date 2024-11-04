@@ -19,7 +19,6 @@ import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildActor;
 import app.packed.build.Mirror;
 import app.packed.container.ContainerMirror;
 import app.packed.namespace.NamespaceMirror;
@@ -46,9 +45,10 @@ public sealed interface ComponentMirror extends Mirror permits ApplicationMirror
 
     /** {@return the path of the component} */
     // Giver mening hvis vi faar Applications.components();
-    default BuildActor componentOwner() {
-        throw new UnsupportedOperationException();
-    }
+    // IDK
+    //    default ComponentAuthor componentOwner() {
+//        throw new UnsupportedOperationException();
+//    }
 
     /** {@return the path of the component} */
     ComponentPath componentPath();

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-import app.packed.application.ApplicationException;
+import app.packed.application.ApplicationPanicException;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.BaseImage;
 import app.packed.container.Wirelet;
@@ -53,7 +53,7 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
 
         /** {@inheritDoc} */
         @Override
-        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationException {
+        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationPanicException {
             F result = image.checkedLaunch(state, wirelets);
             return mapper.apply(result);
         }
@@ -84,7 +84,7 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
 
         /** {@inheritDoc} */
         @Override
-        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationException {
+        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationPanicException {
             BaseImage<A> img = ref.getAndSet(null);
             if (img == null) {
                 throw new IllegalStateException(
@@ -110,7 +110,7 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
 
         /** {@inheritDoc} */
         @Override
-        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationException {
+        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationPanicException {
             return ApplicationLaunchContext.checkedLaunch(handle, state, wirelets);
         }
     }
@@ -129,7 +129,7 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationException {
+        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationPanicException {
             ApplicationHandle<?, ?> ah = application.lazyBuild().handle();
             return (A) ApplicationLaunchContext.checkedLaunch(ah, state, wirelets);
         }

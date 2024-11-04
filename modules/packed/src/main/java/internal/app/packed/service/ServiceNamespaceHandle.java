@@ -19,7 +19,7 @@ import java.util.Set;
 
 import app.packed.binding.Key;
 import app.packed.binding.KeyAlreadyProvidedException;
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
@@ -58,7 +58,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
 
     /** {@inheritDoc} */
     @Override
-    protected final ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e, BuildActor actor) {
+    protected final ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e, ComponentRealm actor) {
         return ServiceHandlers.newServiceNamespaceConfiguration(this, e);
     }
 

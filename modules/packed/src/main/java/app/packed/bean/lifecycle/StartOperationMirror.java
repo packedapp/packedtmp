@@ -18,8 +18,9 @@ package app.packed.bean.lifecycle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
 
 /**
- *
+ * Represents a starting operation.
  */
+// Mangler lidt en struktur for pre/post. Interceptor like
 public final class StartOperationMirror extends BeanLifecycleOperationMirror {
 
     /**

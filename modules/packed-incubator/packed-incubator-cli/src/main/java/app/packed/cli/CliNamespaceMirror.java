@@ -18,6 +18,7 @@ package app.packed.cli;
 import java.util.stream.Stream;
 
 import app.packed.namespace.NamespaceMirror;
+import app.packed.operation.OperationMirror;
 
 /**
  * Represents a CLI namespace where {@link CliCommandMirror commands} and global {@link CliOption options} are unique.
@@ -33,8 +34,9 @@ public final class CliNamespaceMirror extends NamespaceMirror<CliExtension> {
     }
 
     /** {@return all commands within the namespace.} */
-    public Stream<CliCommandMirror> commands() {
-        return operations(CliCommandMirror.class);
+    // Hmm this includes operations owned by extensions
+    public OperationMirror.OfStream<CliCommandMirror> commands() {
+        return operations().ofType(CliCommandMirror.class);
     }
 
     /** {@return all commands within the namespace.} */

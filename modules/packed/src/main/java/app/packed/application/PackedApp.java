@@ -85,13 +85,13 @@ final class PackedApp implements App {
 
         /** {@inheritDoc} */
         @Override
-        public void checkedRun(Wirelet... wirelets) throws ApplicationException {
+        public void checkedRun(Wirelet... wirelets) throws ApplicationPanicException {
             image.checkedLaunch(RunState.TERMINATED, wirelets);
         }
 
         /** {@inheritDoc} */
         @Override
-        public App checkedStart(Wirelet... wirelets) throws ApplicationException {
+        public App checkedStart(Wirelet... wirelets) throws ApplicationPanicException {
             return image.checkedLaunch(RunState.RUNNING, wirelets);
         }
     }

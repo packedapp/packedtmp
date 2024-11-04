@@ -15,3 +15,11 @@ Figure out how binding-handles work
 
 
 ----- app.packed.namespace -----
+
+
+
+
+---- Modules
+packed-base
+packed-base-devtools   <---- Testing
+packed-base-devops     <---- What went wrong, Observability

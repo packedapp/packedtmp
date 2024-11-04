@@ -22,5 +22,8 @@ import app.packed.runtime.RunState;
  *
  */
 public interface ErrorHandler {
+
+    // Probably also a message
+    // But I don't if lazy created
     boolean handle(RunState state, OperationSite operationSite, Exception cause);
 }

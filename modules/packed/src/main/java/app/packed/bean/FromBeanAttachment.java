@@ -21,15 +21,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
-import app.packed.extension.BaseExtension;
+import internal.app.packed.extension.BaseExtensionBeanintrospector;
 
 /**
  * Can be used to annotated injectable parameters into a guest bean.
  *
  * @see ComponentHostContext
  * @see OnComponentGuestLifecycle
+ *
+ * @see BeanHandle#attach(app.packed.operation.Op)
+ *
+ * @see app.packed.bean.scanning.BeanIntrospector#attachToBean(app.packed.operation.Op)
+ * @see app.packed.bean.scanning.BeanIntrospector#attachToBeanIfAbsent(app.packed.operation.Op)
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-@OnAnnotatedVariable(extension = BaseExtension.class)
+@OnAnnotatedVariable(introspector = BaseExtensionBeanintrospector.class)
 public @interface FromBeanAttachment {}

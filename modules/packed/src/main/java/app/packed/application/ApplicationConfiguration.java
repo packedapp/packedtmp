@@ -85,7 +85,7 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationConfiguration componentTag(String... tags) {
+    public ApplicationConfiguration tag(String... tags) {
         checkUpdatable();
         handle.componentTag(tags);
         return this;
@@ -93,7 +93,7 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
 
     /** {@inheritDoc} */
     @Override
-    public Set<String> componentTags() {
+    public Set<String> tags() {
         return handle.componentTags();
     }
 
@@ -133,10 +133,11 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
      *            stop options
      * @return a shutdown hook wirelet
      * @see Runtime#addShutdownHook(Thread)
+     * @throws UnsupportedOperationException
+     *             if the application is unmanaged
      */
     // Why shouldn't I be able to use this on runtime???
-    public void shutdownHook(Function<Runnable, Thread> threadFactory, StopOption... options) {
-    }
+    public void shutdownHook(Function<Runnable, Thread> threadFactory, StopOption... options) {}
 
     /**
      * Returns a wirelet that will install a shutdown hook for an application.
@@ -153,6 +154,8 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
      * @return a shutdown hook wirelet
      * @see #shutdownHook(Function, app.packed.lifetime.sandbox.StopOption...)
      * @see Runtime#addShutdownHook(Thread)
+     * @throws UnsupportedOperationException
+     *             if the application is unmanaged
      */
     // Ogsaa skrive noget om hvad der sker hvis vi stopper
     // Multiple shutdown hooks? I don't think we should do any checks.

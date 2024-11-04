@@ -15,7 +15,7 @@
  */
 package app.packed.runtime.errorhandling;
 
-import app.packed.build.BuildActor;
+import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
@@ -30,7 +30,7 @@ public final class ErrorHandlingNamespaceConfiguration extends NamespaceConfigur
      * @param extension
      * @param actor
      */
-    protected ErrorHandlingNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> namespace, BaseExtension extension, BuildActor actor) {
+    protected ErrorHandlingNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> namespace, BaseExtension extension, ComponentRealm actor) {
         super(namespace, extension, actor);
     }
 

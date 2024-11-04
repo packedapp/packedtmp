@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanTrigger;
-import app.packed.extension.BaseExtension;
+import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
 
 /**
  * Indicates that the annotated method must be invoked as part of the targeted bean's initialization.
@@ -68,7 +68,7 @@ import app.packed.extension.BaseExtension;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@BeanTrigger.OnAnnotatedMethod(extension = BaseExtension.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedMethod(introspector = LifecycleAnnotationBeanIntrospector.class, allowInvoke = true)
 public @interface Initialize {
 
     /**

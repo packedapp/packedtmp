@@ -24,7 +24,6 @@ import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.operation.Op0;
@@ -63,7 +62,7 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @OnAnnotatedVariable(extension = MyExt.class)
+    // @OnAnnotatedVariable(extension = MyExt.class)
     @interface BuildTime {}
 
     static class MyExt extends Extension<MyExt> {
@@ -75,39 +74,38 @@ public class OSITest extends BaseAssembly {
             super(handle);
         }
 
-        @Override
-        protected BeanIntrospector newBeanIntrospector() {
-            return new BeanIntrospector() {
-                @Override
-                public void onAnnotatedVariable(Annotation hook, OnVariable d) {
-                    if (hook instanceof BuildTime) {
-                        d.checkAssignableTo(LocalDateTime.class);
-                        // d.bindConstant(LocalDateTime.now());
-                        d.bindComputedConstant(() -> LocalDateTime.now());
-                    } else if (hook instanceof InitializationTime) {
-                        applicationRoot().base().installIfAbsent(AppInitializeTime.class);
-                        d.checkAssignableTo(LocalDateTime.class);
-                        d.bindOp(new Op1<AppInitializeTime, LocalDateTime>(b -> b.initialized) {});
-                    } else if (hook instanceof Now) { // now
-                        d.checkAssignableTo(LocalDateTime.class);
-                        d.bindOp(new Op0<>(LocalDateTime::now) {});
-                    } else {
-                        super.onAnnotatedVariable(hook, d);
-                    }
-                }
-            };
-        }
 
+        static class MyBI extends BeanIntrospector<MyExt> {
+            @Override
+            public void onAnnotatedVariable(Annotation hook, OnVariable d) {
+                if (hook instanceof BuildTime) {
+                    d.checkAssignableTo(LocalDateTime.class);
+                    // d.bindConstant(LocalDateTime.now());
+                    d.bindComputedConstant(() -> LocalDateTime.now());
+                } else if (hook instanceof InitializationTime) {
+                    extensionHandle().applicationRoot().base().installIfAbsent(AppInitializeTime.class);
+                    d.checkAssignableTo(LocalDateTime.class);
+                    d.bindOp(new Op1<AppInitializeTime, LocalDateTime>(b -> b.initialized) {});
+                } else if (hook instanceof Now) { // now
+                    d.checkAssignableTo(LocalDateTime.class);
+                    d.bindOp(new Op0<>(LocalDateTime::now) {});
+                } else {
+                    super.onAnnotatedVariable(hook, d);
+                }
+            }
+        }
         private static class AppInitializeTime {
             final LocalDateTime initialized = LocalDateTime.now();
         }
+
+
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @OnAnnotatedVariable(extension = MyExt.class)
+    // @OnAnnotatedVariable(extension = MyExt.class)
     @interface Now {}
 
     @Retention(RetentionPolicy.RUNTIME)
-    @OnAnnotatedVariable(extension = MyExt.class)
+//    @OnAnnotatedVariable(extension = MyExt.class)
     @interface InitializationTime {}
 }

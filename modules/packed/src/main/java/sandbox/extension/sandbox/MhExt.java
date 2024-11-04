@@ -85,7 +85,7 @@ public class MhExt extends BaseAssembly {
         }
 
         @Override
-        public void onAssemblyClose() {
+        public void onConfigured() {
             InstanceBeanConfiguration<EBean> b = base().install(EBean.class);
             InvokerFactory oh = h.lifecycleInvokers().get(0);
             b.bindServiceInstance(MethodHandle.class, oh.invokerAsMethodHandle());

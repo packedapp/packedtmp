@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.StructureViolationException;
 import java.util.concurrent.StructuredTaskScope;
 
-import app.packed.bean.lifecycle.StartContext;
+import app.packed.bean.lifecycle.OnStartContext;
 import app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
 import internal.app.packed.util.ThrowableUtil;
@@ -54,7 +54,7 @@ final class StartRunner {
     private Void run(LifecycleOnStartHandle h) {
         MethodHandle mh = h.methodHandle;
         try {
-            mh.invokeExact(pool, (StartContext) new PackedOnStartContext(this));
+            mh.invokeExact(pool, (OnStartContext) new PackedOnStartContext(this));
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -95,10 +95,10 @@ final class StartRunner {
         return ts = new StructuredTaskScope<>("AppStart", Thread.ofVirtual().name("CoolAppStartin", 0).factory());
     }
 
-    record PackedOnStartContext(StartRunner runner) implements StartContext {
+    record PackedOnStartContext(StartRunner runner) implements OnStartContext {
 
-        @Override
-        public void fail(Throwable cause) {}
+//        @Override
+//        public void fail(Throwable cause) {}
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
@@ -112,7 +112,7 @@ final class StartRunner {
             runner.ts().fork((Callable) Executors.callable(runnable));
         }
 
-        @Override
-        public void forkNoAwait(Runnable runnable) {}
+//        @Override
+//        public void forkNoAwait(Runnable runnable) {}
     }
 }
