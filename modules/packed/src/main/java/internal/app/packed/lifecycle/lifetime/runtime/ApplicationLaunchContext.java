@@ -37,13 +37,13 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
-import internal.app.packed.extension.BaseExtensionBeanintrospector;
+import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-@OnExtensionServiceBeanTrigger(introspector = BaseExtensionBeanintrospector.class)
+@OnExtensionServiceBeanTrigger(introspector = BaseExtensionHostGuestBeanintrospector.class)
 // Wait a bit with transforming this class to a record.
 // We might have some mutable fields such as name
 public final class ApplicationLaunchContext implements Context<BaseExtension> {

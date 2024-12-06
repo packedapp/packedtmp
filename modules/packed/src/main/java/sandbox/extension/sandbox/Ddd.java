@@ -32,7 +32,7 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerTemplate;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import internal.app.packed.extension.BaseExtensionBeanintrospector;
+import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 
 /**
  *
@@ -88,7 +88,7 @@ public class Ddd extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @OnAnnotatedMethod(allowInvoke = true, introspector = BaseExtensionBeanintrospector.class)
+    @OnAnnotatedMethod(allowInvoke = true, introspector = BaseExtensionHostGuestBeanintrospector.class)
     public @interface MyOnInitialize {
 
         /**

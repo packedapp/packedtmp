@@ -15,13 +15,13 @@ import app.packed.bean.BeanBuildHook;
 import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.BeanLifecycleModel;
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanIntrospector.OnVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.build.hook.BuildHook;
@@ -67,21 +67,23 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     // TODO Align with Key and allowed classes
     public static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Class.class, Key.class, Op.class, Optional.class, Provider.class);
 
+    public final HashMap<PackedBeanAttachmentKey, PackedAttachmentOperationHandle> attachments = new HashMap<>();
+
     /** The bean class. */
     public final Class<?> beanClass;
 
     /** The kind of bean. */
     public final BeanKind beanKind;
 
-    /** Services that have been bound specifically to the bean. */
-    public final ServiceMap<OnVariable> beanServices = new ServiceMap<>();
+    /** The lifecycle kind of the bean. */
+    public final BeanLifecycleModel beanLifecycleKind = BeanLifecycleModel.UNMANAGED_LIFECYCLE;
+
+    /** Services that have been bound specifically for this bean. */
+    public final ServiceMap<BeanServiceProviderSetup> beanServices = new ServiceMap<>();
 
     /** The source ({@code null}, {@link Class}, {@link PackedOp}, otherwise the bean instance) */
     @Nullable
     public final Object beanSource;
-
-    /** The lifecycle kind of the bean. */
-    public final BeanLifecycleModel beanLifecycleKind = BeanLifecycleModel.UNMANAGED_LIFECYCLE;
 
     /** The type of source the installer is created from. */
     public final BeanSourceKind beanSourceKind;
@@ -89,6 +91,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     /** The container this bean is installed in. */
     public final ContainerSetup container;
 
+    /** Contexts the bean are in. */
     private final HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
     /** The bean's handle. */
@@ -118,12 +121,8 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     @Nullable
     public BeanScanner scanner;
 
-    public final ServiceMap<BeanServiceProviderSetup> serviceProviders = new ServiceMap<>();
-
     /** The bean's template. */
     public final PackedBeanTemplate template;
-
-    public final HashMap<PackedBeanAttachmentKey, PackedAttachmentOperationHandle> attachments = new HashMap<>();
 
     /** Create a new bean. */
     private BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
@@ -158,7 +157,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     }
 
     public PackedAttachmentOperationHandle attach(Class<? extends Extension<?>> extension, Op<?> op, boolean ifAbsent) {
-        Key<?> key = op.type().returnVariable().asKey();
+        Key<?> key = op.type().returnVariable().toKey();
         return attachments.compute(new PackedBeanAttachmentKey(extension, key), (k, v) -> {
             if (v == null) {
 
@@ -181,24 +180,8 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     }
 
     public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
-        requireNonNull(key, "key is null");
         requireNonNull(supplier, "supplier is null");
-
-        // Add the service provider for the bean
-        serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromCodeGenerated(supplier, SuppliedBindingKind.CODEGEN)));
-
-        ServiceMap<OnVariable> m = beanServices;
-        OnVariable var = m.get(key);
-//        if (var == null) {
-//            throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + ComputedConstant.class.getSimpleName() + " " + key
-//                    + ". Available " + m.keySet());
-//        } else if (var.isBound()) {
-//            throw new IllegalStateException("A supplier has previously been provided for key [key = " + key + ", bean = " + this + "]");
-//        }
-        if (var == null) {
-            return;
-        }
-        var.bindComputedConstant(supplier);
+        beanServices.put(key, new BeanServiceProviderSetup(key, new FromCodeGenerated(supplier, SuppliedBindingKind.CODEGEN)));
     }
 
     /** {@inheritDoc} */
@@ -229,9 +212,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         contexts.values().forEach(action);
     }
 
-    /**
-     * {@return the handle of the bean}
-     */
+    /** {@return the bean's handle} */
     @Override
     public BeanHandle<?> handle() {
         return requireNonNull(handle);
@@ -253,6 +234,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         return handle().mirror();
     }
 
+    /** {@return the name of the bean} */
     public String name() {
         return name;
     }
@@ -262,21 +244,8 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     public void named(String newName) {
         container.beans.updateBeanName(this, newName);
     }
-//
-//    /** {@return the path of this component} */
-//    public OldApplicationPath path() {
-//        int size = container.node.depth();
-//        String[] paths = new String[size + 1];
-//        paths[size] = name();
-//        ContainerSetup c = container;
-//        // check for null instead...
-//        for (int i = size - 1; i >= 0; i--) {
-//            paths[i] = c.node.name;
-//            c = c.node.parent;
-//        }
-//        return new PackedNamespacePath(paths);
-//    }
 
+    /** {@return the owner of the bean} */
     public ComponentRealm owner() {
         return owner.authority();
     }
@@ -335,26 +304,26 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     }
 
     /**
-     * Creates the new bean using this installer as the configuration.
+     * Create a new bean.
      *
-     * @param <C>
-     *            the type of bean configuration that is returned to the user
+     * @param <H>
+     *            the type of bean handle that is created to represent the bean
      * @param beanClass
      *            the bean class
      * @param sourceKind
      *            the source of the bean
      * @param source
      *            the source of the bean
-     * @param newConfiguration
-     *            a function responsible for creating the bean's configuration
-     * @return a handle for the bean
+     * @param handleFactory
+     *            a function responsible for creating the bean's handle
+     * @return a handle for the new bean
      */
     @SuppressWarnings("unchecked")
     static <H extends BeanHandle<?>> H newBean(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
             Function<? super BeanInstaller, H> handleFactory) {
         requireNonNull(handleFactory, "handleFactory is null");
         if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
-            throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
+            throw new BeanInstallationException(beanClass + ", is not a valid type for a bean");
         }
 
         if (!installer.owner.isConfigurable()) {
@@ -366,10 +335,10 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         // Create the Bean, this also marks this installer as unconfigurable
         BeanSetup bean = installer.install(new BeanSetup(installer, beanClass, sourceKind, source));
 
-        // Create the new BeanHandle
-        BeanHandle<?> handle = handleFactory.apply(installer);
-        bean.handle = handle;
+        // Create a handle for the new bean
+        BeanHandle<?> handle = bean.handle = handleFactory.apply(installer);
 
+        // We need to install a factory operation, if an Op was specified when creating the bean.
         LifecycleAnnotationBeanIntrospector.checkForFactoryOp(bean);
 
         // Scan the bean if needed
@@ -385,7 +354,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         // Apply hooks to the bean. Hmm, I think may have hooks we need to apply before scanning
         bean.container.assembly.model.hooks.forEach(BeanBuildHook.class, h -> h.onNew(handle.configuration()));
 
-        // Return the new bean's handle
+        // Return the handle of the new bean
         return (H) handle;
     }
 }

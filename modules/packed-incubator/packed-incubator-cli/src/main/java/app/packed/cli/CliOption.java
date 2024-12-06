@@ -15,12 +15,14 @@
  */
 package app.packed.cli;
 
+import app.packed.bean.scanning.BeanTrigger;
 import app.packed.namespace.sandbox.NamespaceOperation;
 
 /**
  *
  */
 @NamespaceOperation
+@BeanTrigger.OnAnnotatedVariable(introspector = CliBeanIntrospector.class)
 public @interface CliOption {
 
 }

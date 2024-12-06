@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
 import app.packed.binding.BindingMirror;
+import app.packed.binding.Key;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
@@ -42,6 +43,7 @@ import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
+import app.packed.service.mirrorold.ServiceProviderIsThisUsefulMirror;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
@@ -60,7 +62,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * </ul>
  */
 @OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
-public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderMirror {
+public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror {
 
     /** The handle of the operation we are mirroring. */
     private final OperationHandle<?> handle;
@@ -73,6 +75,11 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
      */
     public OperationMirror(OperationHandle<?> handle) {
         this.handle = requireNonNull(handle);
+    }
+
+    /** {@return a map of all services that are available for the given operation} */
+    public final Map<Key<?>, ServiceProviderMirror> availableServices() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the bean that this operation is a part of.} */
@@ -146,11 +153,6 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
         return handle.operation.installedByExtension.extensionType;
     }
 
-    /** {@return the extension that can invoke the operation.} */
-    public final Class<? extends Extension<?>> invokedBy() {
-        return handle.operation.installedByExtension.extensionType;
-    }
-
     /**
      * {@return the name of the operation}
      * <p>
@@ -185,9 +187,6 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
         return handle.operation.type;
     }
 
-
-
-
     /** A stream of operation mirrors. */
     public static final class OfStream<T extends OperationMirror> extends AbstractDelegatingStream<T> {
 
@@ -206,7 +205,6 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
             return filter(o -> o.componentTags().contains(tag));
         }
 
-
 //        // ownedBy
 //
 //        // Will attempt to resolveTheClassPath, and the String
@@ -223,8 +221,6 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
 //        OperationMirrorStream<T> ownedByUser();
 //
 //        OperationMirrorStream<T> ownedByExtension(Class<? extends Extension<?>> extensionType);
-
-
 
         ///////////////////////// Return type adapted
 

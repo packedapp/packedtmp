@@ -35,13 +35,12 @@ import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
- * A model of an {@link Extension}. Exposed to end-users as {@link ExtensionDescriptor}.
+ * A model of a {@link BeanIntrospector}.
  *
  * @implNote This could have been a record, but there are so many fields that that we get a better overview as a plain
  *           class.
  */
-// Kan kalde dem Info klasser istedet for, hvis vi vil brug model externt i APIen
-public final class BeanIntrospectorModel {
+final class BeanIntrospectorModel {
 
     /** A cache of all encountered extension models. */
     private static final ClassValue<BeanIntrospectorModel> MODELS = new ClassValue<>() {
@@ -72,7 +71,7 @@ public final class BeanIntrospectorModel {
     /** A method handle for creating new instances of extensionClass. */
     private final MethodHandle mhConstructor; // (ExtensionSetup)Extension
 
-    public final Class<? extends Extension<?>> extensionClass;
+    final Class<? extends Extension<?>> extensionClass;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -185,7 +184,5 @@ public final class BeanIntrospectorModel {
         } catch (IllegalAccessException e) {
             throw new InternalExtensionException(extensionClass + " must be open to '" + BeanIntrospector.class.getModule().getName() + "'", e);
         }
-
     }
-
 }

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
-import app.packed.concurrent.job.impl.ScheduledOperationHandle;
+import app.packed.concurrent.job2.impl.ScheduledOperationHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 

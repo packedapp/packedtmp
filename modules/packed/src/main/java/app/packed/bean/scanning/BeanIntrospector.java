@@ -67,8 +67,9 @@ import internal.app.packed.util.PackedAnnotationList;
  * A bean introspector is the primary way for extensions are the primary way for extensions to interacts the
  *
  * This class contains a number of overridable callback methods, all of them starting with {@code on}. TODO Make list
- *
- * @see Extension#newBeanIntrospector()
+ * <p>
+ * A bean introspector implementation must have a no-argument constructor. And must be located in the same module as the
+ * extension itself. The implementation must be open for the framework
  */
 public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implements Accessor {
 
@@ -88,37 +89,42 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         throw new UnsupportedOperationException();
     }
 
+    /** {@return the base extension point} */
     public final BaseExtensionPoint base() {
-        return new PackedExtensionHandle<>(introspector.extension).use(BaseExtensionPoint.class);
+        return new PackedExtensionHandle<>(introspector().extension()).use(BaseExtensionPoint.class);
     }
 
-    /** { @return the bean} */
+    /** {@return the bean (for internal use)} */
     private BeanSetup bean() {
         return requireNonNull(introspector().scanner.bean);
     }
 
-    /** {@return an annotation reader for the bean class.} */
+    /**
+     * {@return an annotation list containing all annotations on the bean}
+     * <p>
+     * This may differ do the actual class that defines the bean, in case it has been transformed in some way, for examle,
+     * by a {@link app.packed.bean.BeanBuildHook} before installing.
+     */
     public final AnnotationList beanAnnotations() {
         return new PackedAnnotationList(beanClass().getAnnotations());
     }
 
-    /** {@return the bean class that is being introspected.} */
+    /** {@return the bean class that is being introspected} */
     public final Class<?> beanClass() {
         return bean().beanClass;
     }
 
-    // I think people should guard themselves. Just return the handle
     /**
      * @param <H>
-     * @param handleKind
-     * @return
-     *
-     * @throws InternalExtensionException
-     *             if the the bean introspector
+     * @param beanHandleType
+     *            the type of the bean handle
+     * @return the bean handle if
+     * @throws ClassCastException
+     *             if the bean handle is of another type then the specified
      */
-    public final <H extends BeanHandle<?>> Optional<H> beanHandle(Class<H> handleKind) {
+    public final <H extends BeanHandle<?>> Optional<H> beanHandle(Class<H> beanHandleType) {
         if (isBeanInstallingExtension()) {
-            return Optional.of(handleKind.cast(bean().handle()));
+            return Optional.of(beanHandleType.cast(bean().handle()));
         }
         return Optional.empty();
     }
@@ -143,38 +149,38 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         return bean().beanSourceKind;
     }
 
+    /**
+     * {@return the extension instance}
+     */
     @SuppressWarnings("unchecked")
     public final E extension() {
-        return (E) introspector.extension.instance();
+        return (E) introspector().extension().instance();
     }
 
     private ExtensionDescriptor extensionDescriptor() {
-        return introspector().extension.model;
+        return ExtensionDescriptor.of(introspector().extensionClass);
     }
 
+    /**
+     * {@return a handle for the extension}
+     */
     public final ExtensionHandle<E> extensionHandle() {
-        return handle();
-    }
-
-    private PackedExtensionHandle<E> handle() {
-        return new PackedExtensionHandle<E>(introspector.extension);
+        return new PackedExtensionHandle<E>(introspector().extension());
     }
 
     /**
      * Invoked by a MethodHandle from ExtensionSetup.
      *
-     * @param extension
-     *            the extension that owns the scanner
-     * @param bean
-     *            the bean we are scanning
+     * @param introspector
+     *            the bean introspector setup
      * @throws IllegalStateException
      *             if called more than once
      */
-    final void initialize(BeanIntrospectorSetup ce) {
+    final void initialize(BeanIntrospectorSetup introspector) {
         if (this.introspector != null) {
             throw new IllegalStateException("This introspector has already been initialized.");
         }
-        this.introspector = ce;
+        this.introspector = introspector;
     }
 
     /**
@@ -196,7 +202,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      * bean.}
      */
     public final boolean isBeanInstallingExtension() {
-        return introspector.extension == bean().installedBy;
+        return introspector().extensionClass == bean().installedBy.extensionType;
     }
 
     /** {@return whether or not the bean is in same lifetime as the application.} */
@@ -360,7 +366,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      * @see BuildGoal#isCodeGenerating()
      */
     public final void runOnCodegen(Runnable action) {
-        handle().runOnCodegen(action);
+        extensionHandle().runOnCodegen(action);
     }
 
     /**
@@ -494,7 +500,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
 
         Key<?> key();
 
-        default boolean match(Class<?> clazz) {
+        default boolean matchNoQualifiers(Class<?> clazz) {
             if (key().rawType() == clazz) {
                 if (key().isQualified()) {
                     throw new BeanInstallationException("oops");

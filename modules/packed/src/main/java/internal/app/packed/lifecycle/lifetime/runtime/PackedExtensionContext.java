@@ -24,13 +24,13 @@ import app.packed.context.ContextTemplate;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.ValueBased;
-import internal.app.packed.extension.BaseExtensionBeanintrospector;
+import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 import internal.app.packed.util.LookupUtil;
 
 /**
  * All strongly connected components relate to the same pod.
  */
-@OnExtensionServiceBeanTrigger(introspector = BaseExtensionBeanintrospector.class)
+@OnExtensionServiceBeanTrigger(introspector = BaseExtensionHostGuestBeanintrospector.class)
 @ValueBased
 public final class PackedExtensionContext implements ExtensionContext {
 

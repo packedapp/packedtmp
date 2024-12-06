@@ -15,6 +15,7 @@
  */
 package app.packed.cli;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.namespace.NamespaceMirror;
@@ -26,11 +27,15 @@ import app.packed.operation.OperationMirror;
 public final class CliNamespaceMirror extends NamespaceMirror<CliExtension> {
 
     /** The CLI namespace handle. */
-    final CliNamespaceHandle handle;
+    private final CliNamespaceHandle handle;
 
     CliNamespaceMirror(CliNamespaceHandle handle) {
         super(handle);
         this.handle = handle;
+    }
+
+    public Optional<CliCommandMirror> command(String name) {
+        return Optional.ofNullable(handle.commands.get(name)).map(h -> (CliCommandMirror) h.mirror());
     }
 
     /** {@return all commands within the namespace.} */
@@ -39,22 +44,19 @@ public final class CliNamespaceMirror extends NamespaceMirror<CliExtension> {
         return operations().ofType(CliCommandMirror.class);
     }
 
-    /** {@return all commands within the namespace.} */
+    /** {@return all general options within the namespace.} */
     public Stream<CliOptionMirror> options() {
-        return Stream.empty();
+        return handle.options.stream();
     }
 }
 
 // Commands
 // Operations // Fx, kan vi godt have flere operations
 
-
-
 /// Commands filtering on
 // Filter on Author
 // Filter on Containers
 // Filter on Namespaces
-
 
 // Global Namespace = Global Commands + Global Operations
 /// Some Command namespace = Operations Applicable only for that command

@@ -21,7 +21,7 @@ import java.util.Set;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.context.Context;
-import app.packed.service.advanced.ServiceResolver;
+import app.packed.service.sandbox.ServiceResolver;
 import internal.app.packed.bean.scanning.BeanTriggerModel.ParameterAnnotatedCache;
 import internal.app.packed.bean.scanning.BeanTriggerModel.ParameterTypeCache;
 import internal.app.packed.binding.InternalDependency;
@@ -41,9 +41,9 @@ final class BeanScannerOnVariable {
             Class<? extends Annotation> a1Type = a1.annotationType();
             ParameterAnnotatedCache hook = scanner.triggerModel.testParameterAnnotation(a1Type);
             if (hook != null) {
-                BeanIntrospectorSetup ei = scanner.computeIntrospector(hook.bim());
+                BeanIntrospectorSetup ei = scanner.introspector(hook.bim());
 
-                IntrospectorOnVariable h = new IntrospectorOnVariable(scanner, operation, index, ei.extension, v);
+                IntrospectorOnVariable h = new IntrospectorOnVariable(scanner, operation, index, ei.extension(), v);
                 ei.instance.onAnnotatedVariable(a1, h);
                 return;
             }
@@ -55,8 +55,8 @@ final class BeanScannerOnVariable {
         ParameterTypeCache hook = scanner.triggerModel.testParameterType(v.rawType());
 
         if (hook != null) {
-            BeanIntrospectorSetup contributor = scanner.computeIntrospector(hook.bim());
-            IntrospectorOnVariable h = new IntrospectorOnVariable(scanner, operation, index, contributor.extension, v);
+            BeanIntrospectorSetup contributor = scanner.introspector(hook.bim());
+            IntrospectorOnVariable h = new IntrospectorOnVariable(scanner, operation, index, contributor.extension(), v);
 
             Class<?> cl = v.rawType();
             Key<?> k = h.toKey();

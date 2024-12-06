@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.binding.BindingKind;
 import app.packed.binding.Key;
-import app.packed.service.advanced.ServiceProviderKind;
-import app.packed.service.advanced.ServiceResolver;
 import app.packed.service.mirror.ServiceBindingMirror;
+import app.packed.service.sandbox.ServiceProviderKind;
+import app.packed.service.sandbox.ServiceResolver;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.binding.BindingSetup;
@@ -56,7 +56,7 @@ public final class ServiceBindingSetup extends BindingSetup {
         this.key = key;
         this.isRequired = isRequired;
         this.resolver = requireNonNull(resolver);
-        this.mirrorSupplier = () -> new ServiceBindingMirror(new PackedBindingHandle(this), this.key);
+        this.mirrorSupplier = () -> new ServiceBindingMirror(new PackedBindingHandle(this));
     }
 
     /** {@return whether or not the service could be resolved.} */
@@ -86,7 +86,7 @@ public final class ServiceBindingSetup extends BindingSetup {
                 }
             }
             case BEAN_SERVICE -> {
-                BeanServiceProviderSetup sps = operation.bean.serviceProviders.get(key);
+                BeanServiceProviderSetup sps = operation.bean.beanServices.get(key);
                 if (sps != null) {
                     return sps;
                 }

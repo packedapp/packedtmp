@@ -112,7 +112,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     public PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle methodHandle, OperationMemberTarget<?> target,
             OperationType operationType) {
-        return new PackedOperationInstaller(this, operationType, extension.scanner.bean, extension.extension) {
+        return new PackedOperationInstaller(this, operationType, extension.scanner.bean, extension.extension()) {
 
             @SuppressWarnings("unchecked")
             @Override

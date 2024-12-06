@@ -18,7 +18,7 @@ package app.packed.operation;
 import java.lang.invoke.MethodType;
 import java.util.Set;
 
-import app.packed.build.BeanSite;
+import app.packed.bean.BeanInfo;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.util.AnnotationList;
@@ -51,7 +51,7 @@ public interface OperationInfo {
     AnnotationList annotations();
 
     /** {@return the bean this operation is placed on} */
-    BeanSite bean();
+    BeanInfo bean();
 
     /** {@return the component path of the operation} */
     // Maybe just path? IDK should we be consistant between configuration and site

@@ -61,7 +61,7 @@ public interface BeanTriggerModel {
 
         @Override
         public void handleOne(BeanScanner scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations) {
-            IntrospectorOnVariable.process(scanner.computeIntrospector(bim()), field, annotations, triggeringAnnotations, this);
+            IntrospectorOnVariable.process(scanner.introspector(bim()), field, annotations, triggeringAnnotations, this);
         }
     }
 
@@ -82,7 +82,7 @@ public interface BeanTriggerModel {
 
         @Override
         public void handleOne(BeanScanner scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations) {
-            IntrospectorOnField.process(scanner.computeIntrospector(bim()), field, annotations, triggeringAnnotations, this);
+            IntrospectorOnField.process(scanner.introspector(bim()), field, annotations, triggeringAnnotations, this);
         }
     }
 }

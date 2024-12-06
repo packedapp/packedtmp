@@ -83,7 +83,7 @@ public final class IntrospectorOnMethod extends IntrospectorOnExecutable<Method>
 
             OnAnnotatedMethodCache am = iBean.triggerModel.testMethod(a1Type);
             if (am != null) {
-                BeanIntrospectorSetup contributor = iBean.computeIntrospector(am.bim());
+                BeanIntrospectorSetup contributor = iBean.introspector(am.bim());
 
                 IntrospectorOnMethod pbm = new IntrospectorOnMethod(contributor, method, annotations, am.isInvokable());
                 PackedAnnotationList pac = new PackedAnnotationList(a1);

@@ -31,6 +31,8 @@ import internal.app.packed.extension.PackedExtensionHandle;
  */
 public sealed interface ExtensionHandle<E extends Extension<E>> permits PackedExtensionHandle {
 
+    void runOnCodegen(Runnable action);
+
     E applicationRoot();
 
     TreeView.Node<E> applicationNode();

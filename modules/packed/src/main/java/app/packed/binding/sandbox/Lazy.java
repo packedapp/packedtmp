@@ -25,6 +25,7 @@ import app.packed.bean.lifecycle.OnStart;
  */
 
 // Maybe just LazyStarting
+// LazyValue?
 public interface Lazy<T> extends Supplier<T> {
 
     static <T> Lazy<T> of(Callable<T> callable) {

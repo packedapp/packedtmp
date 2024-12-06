@@ -156,7 +156,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
     @Override
     @Nullable
-   public ParameterTypeCache testParameterType(Class<?> parameterType) {
+    public ParameterTypeCache testParameterType(Class<?> parameterType) {
         if (parameterType.getModule() == BeanScanner.JAVA_BASE_MODULE) {
             return null;
         }
@@ -166,8 +166,8 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
     private static BeanIntrospectorModel bim(Class<?> annotationType, Class<? extends BeanIntrospector<?>> beanIntrospectorType) {
         BeanIntrospectorModel bim = BeanIntrospectorModel.of(beanIntrospectorType);
         if (bim.extensionClass.getModule() != annotationType.getModule()) {
-            System.out.println(bim.extensionClass.getModule());
-            System.out.println(annotationType.getModule());
+            // System.out.println(bim.extensionClass.getModule());
+            // System.out.println(annotationType.getModule());
             throw new InternalExtensionException(
                     "The annotation " + annotationType + " and the extension " + bim.extensionClass + " must be declared in the same module");
         }

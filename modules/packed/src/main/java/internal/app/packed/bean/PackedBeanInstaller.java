@@ -32,12 +32,12 @@ import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.build.AuthoritySetup;
-import internal.app.packed.component.PackedComponentInstaller;
+import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.PackedOp;
 
 /** Implementation of {@link BeanTemplate.Installer}. */
-public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetup, PackedBeanInstaller> implements BeanInstaller {
+public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSetup, PackedBeanInstaller> implements BeanInstaller {
 
     /** The extension that is installing the bean. */
     final ExtensionSetup installledByExtension;

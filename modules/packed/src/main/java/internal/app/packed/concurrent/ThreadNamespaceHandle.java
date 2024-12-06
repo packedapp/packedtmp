@@ -15,10 +15,6 @@
  */
 package internal.app.packed.concurrent;
 
-import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanKind;
-import app.packed.bean.BeanTemplate;
 import app.packed.component.ComponentRealm;
 import app.packed.concurrent.ThreadNamespaceConfiguration;
 import app.packed.concurrent.ThreadNamespaceMirror;
@@ -27,12 +23,6 @@ import app.packed.extension.ExtensionHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
-import app.packed.service.ProvidableBeanConfiguration;
-import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.concurrent.daemon.DaemonOperationHandle;
-import internal.app.packed.concurrent.daemon.DaemonRuntimeConfiguration;
-import internal.app.packed.concurrent.daemon.DaemonRuntimeManager;
-import internal.app.packed.extension.ExtensionSetup;
 
 /**
  * A namespace for the thread management in Packed.
@@ -66,33 +56,5 @@ public final class ThreadNamespaceHandle extends NamespaceHandle<BaseExtension, 
 
     public static ThreadNamespaceHandle mainHandle(ExtensionHandle<BaseExtension> handle) {
         return handle.namespaceLazy(ThreadNamespaceHandle.TEMPLATE, "main");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onClose() {
-        // Find all daemon operations in the namespace.
-        DaemonRuntimeConfiguration[] daemons = operations(DaemonOperationHandle.class).map(DaemonOperationHandle::runtimeConfiguration)
-                .toArray(DaemonRuntimeConfiguration[]::new);
-
-        // Is this general Useful??
-        // Otherwise could have methods instead
-        // Are there extensions that want to do this other extensions?
-//        BuildReference<DaemonInvoker[]> daemons = operations(DaemonOperationHandle.class).map(DaemonOperationHandle::runtimeConfiguration)
-//                .toArray(DaemonInvoker[]::new);
-
-        // Would probably be DaemonInvoker
-        // b.bindPromise(DaemonInvoker[].class, daemons)
-
-        // Install deamon manager if we have any operations.
-        if (daemons.length > 0) {
-            BeanConfiguration b = new ProvidableBeanConfiguration<>(newBeanBuilderSelf(BeanKind.CONTAINER.template()).install(DaemonRuntimeManager.class));
-            b.bindServiceInstance(DaemonRuntimeConfiguration[].class, daemons);
-        }
-    }
-
-    private BeanInstaller newBeanBuilderSelf(BeanTemplate template) {
-        ExtensionSetup es = ExtensionSetup.crack(rootExtension());
-        return ((PackedBeanTemplate) template).newInstaller(es, es);
     }
 }

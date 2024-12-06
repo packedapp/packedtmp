@@ -34,13 +34,13 @@ import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
-import internal.app.packed.component.PackedComponentInstaller;
+import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.container.wirelets.CompositeWirelet;
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.util.handlers.AssemblyHandlers;
 
 /** Implementation of {@link ContainerTemplate.Installer} */
-public final class PackedContainerInstaller<H extends ContainerHandle<?>> extends PackedComponentInstaller<ContainerSetup, PackedContainerInstaller<H>>
+public final class PackedContainerInstaller<H extends ContainerHandle<?>> extends AbstractComponentInstaller<ContainerSetup, PackedContainerInstaller<H>>
         implements ContainerInstaller<H> {
 
     /** Non-null if this container is being installed as the root container of an application. */

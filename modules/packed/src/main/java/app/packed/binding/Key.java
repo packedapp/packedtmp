@@ -689,7 +689,7 @@ public abstract class Key<T> {
     public static Key<?> fromParamaterizedTypes(Class<?> rawType, Type... typeArguments) {
         ParameterizedType p = Types.createNewParameterizedType(rawType, typeArguments);
         Variable v = Variable.of(p);
-        return v.asKey();
+        return v.toKey();
     }
 
     public static Key<?> fromVariable(Variable variable) {

@@ -52,7 +52,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
         super(installer);
     }
 
-    public Set<Key<?>> keys() {
+    public final Set<Key<?>> keys() {
         return providers.keySet();
     }
 
@@ -80,7 +80,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
      *            the operation that provides the service
      * @return a provided service
      */
-    public NamespaceServiceProviderHandle provide(Key<?> key, OperationSetup operation, BindingAccessor resolution) {
+    public final NamespaceServiceProviderHandle provide(Key<?> key, OperationSetup operation, BindingAccessor resolution) {
         // Have no idea what we are doing here
         if (resolution instanceof FromLifetimeArena fla) {
             if (key.rawType() != fla.type()) {
@@ -130,7 +130,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
     }
 
     @Nullable
-    public NamespaceServiceProviderHandle provider(Key<?> key) {
+    public final NamespaceServiceProviderHandle provider(Key<?> key) {
         return providers.get(key);
     }
 }

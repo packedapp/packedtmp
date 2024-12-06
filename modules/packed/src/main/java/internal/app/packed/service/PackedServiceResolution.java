@@ -19,8 +19,8 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 
 import app.packed.context.Context;
-import app.packed.service.advanced.ServiceProviderKind;
-import app.packed.service.advanced.ServiceResolver;
+import app.packed.service.sandbox.ServiceProviderKind;
+import app.packed.service.sandbox.ServiceResolver;
 
 /** Implementation of {@link ServiceResolution}. */
 public record PackedServiceResolution(Class<? extends Context<?>>[] contexts, String[] namespaces, ServiceProviderKind[] order) implements ServiceResolver {

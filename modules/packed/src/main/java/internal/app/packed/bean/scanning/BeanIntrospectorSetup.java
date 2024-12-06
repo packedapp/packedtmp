@@ -16,7 +16,9 @@
 package internal.app.packed.bean.scanning;
 
 import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.extension.Extension;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.util.handlers.BeanHandlers;
 
 /**
  * An instance of this class is created for each extension that participates in the introspection of a single bean.
@@ -26,19 +28,23 @@ import internal.app.packed.extension.ExtensionSetup;
  */
 public final class BeanIntrospectorSetup implements Comparable<BeanIntrospectorSetup> {
 
-    /** The extension the bean introspector is a part of. */
-    public final ExtensionSetup extension;
+    /** The extension instance the bean introspector is a part of, lazily initialized. */
+    private ExtensionSetup extension;
 
-    boolean hasFullAccess;
+    /** The extension the introspector is part of. */
+    public final Class<? extends Extension<?>> extensionClass;
 
-    /** The bean introspector instance.*/
+    /** Whether or not the introspector has full access (get, set, invoke). */
+    private boolean hasFullAccess;
+
+    /** The bean introspector instance. */
     final BeanIntrospector<?> instance;
 
     /** The bean scanner. */
     public final BeanScanner scanner;
 
-    BeanIntrospectorSetup(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector<?> instance) {
-        this.extension = extension;
+    private BeanIntrospectorSetup(Class<? extends Extension<?>> extensionClass, BeanScanner scanner, BeanIntrospector<?> instance) {
+        this.extensionClass = extensionClass;
         this.instance = instance;
         this.scanner = scanner;
     }
@@ -49,7 +55,29 @@ public final class BeanIntrospectorSetup implements Comparable<BeanIntrospectorS
         return extension.compareTo(o.extension);
     }
 
+    public ExtensionSetup extension() {
+        ExtensionSetup e = extension;
+        if (e == null) {
+            e = extension = scanner.bean.container.useExtension(extensionClass, null);
+        }
+        return e;
+    }
+
     public boolean hasFullAccess() {
         return hasFullAccess;
+    }
+
+    static BeanIntrospectorSetup create(BeanScanner scanner, BeanIntrospectorModel bim) {
+        BeanIntrospector<?> introspector = bim.newInstance();
+
+        BeanIntrospectorSetup setup = new BeanIntrospectorSetup(bim.extensionClass, scanner, introspector);
+
+        // Call BeanIntrospector#initialize(BeanIntrospectorSetup)
+        BeanHandlers.invokeBeanIntrospectorInitialize(introspector, setup);
+
+        // Notify the bean introspector that it is being used
+        introspector.onScanStart();
+
+        return setup;
     }
 }

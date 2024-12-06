@@ -19,8 +19,8 @@ import java.util.function.Function;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.binding.BindingHandle;
 import app.packed.binding.Key;
-import app.packed.binding.sandbox.BindingHandle;
 import app.packed.service.mirror.ServiceBindingMirror;
 
 /**
@@ -103,9 +103,7 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         return this;
     }
 
-    @SuppressWarnings("exports")
     public ProvidableBeanConfiguration<T> specializeMirror(Function<? super BindingHandle, ? extends ServiceBindingMirror> factory) {
         throw new UnsupportedOperationException();
     }
-
 }

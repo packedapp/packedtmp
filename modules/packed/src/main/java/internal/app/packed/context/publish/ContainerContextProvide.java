@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanTrigger;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import internal.app.packed.extension.BaseExtensionBeanintrospector;
+import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 
 /**
  * Ideen er at provide context fra en bean. Typisk container brug.
@@ -45,8 +45,8 @@ import internal.app.packed.extension.BaseExtensionBeanintrospector;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@OnAnnotatedMethod(introspector = BaseExtensionBeanintrospector.class, allowInvoke = true)
-@BeanTrigger.OnAnnotatedField(introspector = BaseExtensionBeanintrospector.class, allowGet = true)
+@OnAnnotatedMethod(introspector = BaseExtensionHostGuestBeanintrospector.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedField(introspector = BaseExtensionHostGuestBeanintrospector.class, allowGet = true)
 // Skal returnere implementationen
 public @interface ContainerContextProvide {
     // Det kan vi vel extracte fra metode/field signaturen

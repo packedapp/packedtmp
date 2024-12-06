@@ -22,10 +22,11 @@ import java.util.List;
 import app.packed.operation.OperationConfiguration;
 
 /**
- *
+ * A configuration object for a cli command.
  */
 public class CliCommandConfiguration extends OperationConfiguration {
 
+    /** The handle for the command. */
     private final CliCommandHandle handle;
 
     /**
@@ -36,12 +37,21 @@ public class CliCommandConfiguration extends OperationConfiguration {
         this.handle = requireNonNull(handle);
     }
 
+    // replace or add? I think replace
     public CliCommandConfiguration names(String... names) {
         checkIsConfigurable();
-        handle.names.addAll(List.of(names));
+        List<String> ns = List.of(names);
+
+        for (String name : names) {
+            System.out.println(name);
+            // handle.namespace.commands
+            // check not exists
+        }
+
+        handle.names.addAll(ns);
         // handle.names = List.of(names);
         // check namespace
         //
-        throw new UnsupportedOperationException();
+        return this;
     }
 }

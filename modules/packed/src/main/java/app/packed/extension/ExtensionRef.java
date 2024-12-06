@@ -21,6 +21,8 @@ package app.packed.extension;
 // RuntimeExtension?
 // Ideen er at ditch alt omkring extension classes on runtime
 // Saa vi fjerne dem via condensing
+// Alternativt, gemme interfaces og saa strip alle metoder fra det
+// Og permitted implementation
 class ExtensionRef {
     String className;
 

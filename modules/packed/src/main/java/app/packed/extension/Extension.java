@@ -85,6 +85,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     /** The internal configuration of the extension. */
     final ExtensionSetup extension;
 
+    /** A handle for the extension. */
     final PackedExtensionHandle<E> handle;
 
     /**
@@ -173,6 +174,12 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         return s == null ? Optional.empty() : Optional.ofNullable((E) s.instance());
     }
 
+    /**
+     * {@return an extension handle representing this extension}
+     * <p>
+     * An extension handle is primarily used for parsing around to code that is not located in the same package as the
+     * extension itself.
+     */
     protected final ExtensionHandle<E> handle() {
         return handle;
     }
@@ -435,7 +442,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      *             if the dependent extension does not have a direct dependency on this extension. Or if the dependent
      *             extension is not in the same module as this extension
      */
-    protected final <D extends Extension<D>> D useDependent(Class<D> dependentExtension) {
+    final <D extends Extension<D>> D useDependent(Class<D> dependentExtension) {
         // Ideen er at vi kan slaa nogen der er dependant paa os op.
         // Same module
         // Tror alligevel det er extension point vi skal returnere... IDK

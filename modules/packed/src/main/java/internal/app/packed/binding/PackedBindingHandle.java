@@ -15,7 +15,7 @@
  */
 package internal.app.packed.binding;
 
-import app.packed.binding.sandbox.BindingHandle;
+import app.packed.binding.BindingHandle;
 
 /**
  *

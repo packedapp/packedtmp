@@ -17,7 +17,6 @@ package app.packed.binding;
 
 import java.util.Optional;
 
-import app.packed.binding.sandbox.BindingHandle;
 import app.packed.build.Mirror;
 import app.packed.component.ComponentRealm;
 import app.packed.operation.OperationMirror;
@@ -32,7 +31,6 @@ import sandbox.operation.mirror.DependenciesMirror;
  *
  * @see OperationMirror#bindings()
  */
-@SuppressWarnings("exports") // Uses sandbox classes
 public class BindingMirror implements Mirror {
 
     /** The binding we are mirrored. */

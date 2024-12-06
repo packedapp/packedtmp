@@ -32,6 +32,7 @@ public class FooContextTest extends BaseAssembly {
     protected void build() {
         use(MyExt.class);
         installInstance(123);
+        System.out.println(NewExt.class.getPermittedSubclasses()[0]);
     }
 
     public static void main(String[] args) {
@@ -40,7 +41,9 @@ public class FooContextTest extends BaseAssembly {
         System.out.println("BYE");
     }
 
-    public static final class MyExt extends Extension<MyExt> {
+    public sealed interface NewExt permits MyExt {}
+
+    public static final class MyExt extends Extension<MyExt> implements NewExt {
 
         protected MyExt(ExtensionHandle<MyExt> handle) {
             super(handle);

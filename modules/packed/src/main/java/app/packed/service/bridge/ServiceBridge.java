@@ -205,7 +205,7 @@ public interface ServiceBridge {
     default void replace(Op<?> op) {
         map(op);
         for (Variable v : op.type().parameterArray()) {
-            remove(v.asKey());
+            remove(v.toKey());
         }
     }
 

@@ -96,6 +96,8 @@ public non-sealed abstract class ContainerBuildHook extends BuildHook {
     // I think this a generic thingy...
     // We shouldn't need
     // predicateClass == Predicate<? extends Consumer<ContainerMirror>>>
+
+    // Man kunne ogsaa simpelthen skrive det til en fil her...
     public void verify(ContainerMirror mirror) {}
 
     // Doesn't really work... We need to aggreate them

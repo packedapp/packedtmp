@@ -137,34 +137,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
         // Add a service provider for the instance
         Class<?> claz = instance == null ? Object.class : instance.getClass();
-        bean.serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromConstant(claz, instance)));
-
-//        // Find any existing bindings for the specified key
-//        NamespaceServiceProviderSetup ss = bean.serviceNamespace().nodes.get(key);
-//
-//        if (ss != null) {
-//            List<ServiceBindingSetup> l = ss.removeBindingsForBean(bean);
-//            if (!l.isEmpty()) {
-//                for (ServiceBindingSetup s : l) {
-//                    int index = s.index;
-//                    Class<?> cl;
-//                    if (instance == null) {
-//                        cl = s.operation.type().toMethodType().parameterType(index);
-//                    } else {
-//                        cl = instance.getClass();
-//                    }
-//                    s.operation.bindings[s.index] = new ManualBindingSetup(s.operation, s.index, s.operation.bean.owner(), new FromConstant(cl, instance));
-//                }
-//                return;
-//            }
-//        }
-
-        // TODO we should go through all bindings and see if have some where the type matches.
-        // But is not resolved as a service
-
-        // Also if we override twice, would be nice with something like. Already overridden
-//        throw new IllegalArgumentException("Bean '" + bean.name() + "' does not have a dependency for a service with " + key
-//                + ". Services that can be overridden: " + bean.serviceNamespace().keys());
+        bean.beanServices.put(key, new BeanServiceProviderSetup(key, new FromConstant(claz, instance)));
     }
 
     /** {@inheritDoc} */

@@ -30,14 +30,14 @@ import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.build.PackedBuildProcess;
-import internal.app.packed.component.PackedComponentInstaller;
+import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationInstaller}. */
 public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
-        extends PackedComponentInstaller<ApplicationSetup, PackedApplicationInstaller<H>> implements ApplicationInstaller<H> {
+        extends AbstractComponentInstaller<ApplicationSetup, PackedApplicationInstaller<H>> implements ApplicationInstaller<H> {
 
     /** The build process the application is part of. */
     public final PackedBuildProcess buildProcess;

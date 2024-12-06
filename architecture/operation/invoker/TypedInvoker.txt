@@ -1,0 +1,12 @@
+Ideen er at vi ikke exposer MethodHandle + ExtensionContext til en extension.
+
+Istedet for for en extension injected en invoker[] i en bean af eget valg.
+
+// Saa vi skal instantiere et array hver gang (StableValue??)
+
+
+? Hvordan faar dem knyttet Invokeren til en Bean
+
+Man maa angive beanen naar man registere invokeren...
+
+? Skal den vaere i samme lifetime? mhhm nej. Jo, eller ogsaa skal den lave i lifetime i operationen...

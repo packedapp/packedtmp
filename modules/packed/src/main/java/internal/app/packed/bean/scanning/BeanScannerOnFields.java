@@ -78,7 +78,7 @@ class BeanScannerOnFields {
 
         // Test if we are using the same introspector
         if (afc0.bim() == afc1.bim()) {
-            IntrospectorOnField.process(scanner.computeIntrospector(afc0.bim()), field, pal, new PackedAnnotationList(a0, a1), afc0, afc1);
+            IntrospectorOnField.process(scanner.introspector(afc0.bim()), field, pal, new PackedAnnotationList(a0, a1), afc0, afc1);
         } else {
             afc0.handleOne(scanner, field, pal, new PackedAnnotationList(a0));
             afc1.handleOne(scanner, field, pal, new PackedAnnotationList(a1));
@@ -124,7 +124,7 @@ class BeanScannerOnFields {
             map.forEach((bim, pList) -> {
                 Annotation[] triggers = pList.stream().map(p -> p.a).toArray(i -> new Annotation[i]);
                 OnAnnotatedFieldCache[] fields = pList.stream().map(p -> (OnAnnotatedFieldCache) p.af).toArray(i -> new OnAnnotatedFieldCache[i]);
-                IntrospectorOnField.process(scanner.computeIntrospector(bim), field, pal, new PackedAnnotationList(triggers), fields);
+                IntrospectorOnField.process(scanner.introspector(bim), field, pal, new PackedAnnotationList(triggers), fields);
             });
         }
     }

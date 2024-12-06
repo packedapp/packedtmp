@@ -1,7 +1,7 @@
 package app.packed.concurrent;
 
 import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
-import app.packed.concurrent.job.JobExtension;
+import app.packed.concurrent.job2.JobExtension;
 import app.packed.context.Context;
 
 /**

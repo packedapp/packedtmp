@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanTrigger;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import internal.app.packed.extension.BaseExtensionBeanintrospector;
+import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 
 /**
  *
@@ -16,8 +16,8 @@ import internal.app.packed.extension.BaseExtensionBeanintrospector;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@OnAnnotatedMethod(introspector = BaseExtensionBeanintrospector.class, allowInvoke = true)
-@BeanTrigger.OnAnnotatedField(introspector = BaseExtensionBeanintrospector.class, allowGet = true)
+@OnAnnotatedMethod(introspector = BaseExtensionHostGuestBeanintrospector.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedField(introspector = BaseExtensionHostGuestBeanintrospector.class, allowGet = true)
 public @interface Export {
     // Make Provide into meta annotation??
     String namespace() default "exports";

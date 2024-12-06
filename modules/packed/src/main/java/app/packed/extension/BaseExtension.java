@@ -14,7 +14,6 @@ import app.packed.bean.scanning.BeanClassMutator;
 import app.packed.bean.scanning.SyntheticBean;
 import app.packed.binding.Key;
 import app.packed.build.action.BuildActionable;
-import app.packed.concurrent.job.JobNamespaceConfiguration;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
@@ -34,7 +33,7 @@ import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.BaseExtensionWirelet;
-import internal.app.packed.service.PackedServiceLocator;
+import internal.app.packed.service.util.PackedServiceLocator;
 
 /**
  * An extension that defines the foundational APIs for managing beans, services, containers and applications.
@@ -248,9 +247,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         });
     }
 
-    public JobNamespaceConfiguration jobs() {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Creates a new child container by linking the specified assembly.

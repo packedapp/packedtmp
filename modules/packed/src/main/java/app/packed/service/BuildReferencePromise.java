@@ -23,6 +23,11 @@ import app.packed.binding.Key;
 // Bruger den i situationer hvor vi vil injecte noget der kan foerst kan laves paa runtime
 // Ideen er at vi laver virtuelle instancer af den paa build time (Invoker)service naar vi bygger.
 // Den kan saa bliver injected on runtime
+
+// Men vi extracter alt hvad vi kan fra T
+
+// Fx Invokers
+
 public interface BuildReferencePromise<T> {
     Key<?> key();
 }

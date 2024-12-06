@@ -68,7 +68,6 @@ public class EntryPointManager {
         BeanSetup bean = method.bean();
 
         if (annotation instanceof Main) {
-
             if (!isInApplicationLifetime) {
                 throw new BeanInstallationException("Must be in the application lifetime to use @" + Main.class.getSimpleName());
             }
@@ -82,7 +81,7 @@ public class EntryPointManager {
 
             MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
 
-            mc.generatedMethodHandle=os.invokerAsMethodHandle();
+            mc.generatedMethodHandle = os.invokerAsMethodHandle();
             return true;
         }
 
@@ -97,4 +96,3 @@ public class EntryPointManager {
         EntryPointDispatcher() {}
     }
 }
-

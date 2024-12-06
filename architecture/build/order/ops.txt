@@ -1,0 +1,33 @@
+Operation
+  NewOperation     [OperationBuildHook] <- Before being returned to the extension actually
+  OnClosing        [OperationBuildHook] <- Going to mark it as unconfigureable
+  OnConfigured     [OperationHandle]    <- The 
+  OnClosed         [OperationHandle]
+[ApplicationFinishedBuilding]  
+  Verify           [OperationBuildHook] <- Verify is maybe not the best word...
+  
+  
+Lifecycle
+  OperationHandle is created, OperationConfiguration is created
+  hooks.onNew(Configuration)
+  
+  operation.onConfigured
+    hooks.onClosing(Configuration)
+    handle.onConfigured();
+    
+  operation.onClose();
+  
+  hooks.onBuildSuccess  
+
+----
+Problemet med at tillade at installere operation for beanen efter alle operation.onConfigured.
+Er at nu tilfoejer vi en operation for en bean der ikke laengere er configurable...
+Det er lidt noget moej, har vi brug for dette?
+Tror ikke man kan installere flere operation for en bean efter den er onConfigured
+
+bean.onConfigured
+forAllOperations.onConfigured
+  onConfigured
+bean.state=OnConfigured=true <- Can no longer add operations
+
+// Bruger kalder onConfigured() { WebExtension.AddFake() stuff that needs to add operations to all beans}

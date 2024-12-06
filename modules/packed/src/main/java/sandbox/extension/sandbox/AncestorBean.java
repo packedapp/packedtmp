@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
-import internal.app.packed.extension.BaseExtensionBeanintrospector;
+import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 
 // I virkeligheden er det jo en slags multi-return fra en operation...
 // Som bliver brugt til at populere en bean...
@@ -48,7 +48,7 @@ import internal.app.packed.extension.BaseExtensionBeanintrospector;
 @Target({ ElementType.PARAMETER, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@OnAnnotatedVariable(introspector = BaseExtensionBeanintrospector.class)
+@OnAnnotatedVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
 public @interface AncestorBean {} // childExtension? instead
 
 //Alternativt en ContainerLaucherContext? med context services.

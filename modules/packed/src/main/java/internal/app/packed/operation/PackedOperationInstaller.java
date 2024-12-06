@@ -23,7 +23,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.bean.BeanKind;
-import app.packed.bean.scanning.InstanceMembersNotAllowedException;
+import app.packed.bean.scanning.InstanceMembersDisallowedException;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
@@ -31,7 +31,7 @@ import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.component.PackedComponentInstaller;
+import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
@@ -39,7 +39,7 @@ import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget
 /**
  *
  */
-public class PackedOperationInstaller extends PackedComponentInstaller<OperationSetup, PackedOperationInstaller> implements OperationInstaller {
+public non-sealed class PackedOperationInstaller extends AbstractComponentInstaller<OperationSetup, PackedOperationInstaller> implements OperationInstaller {
 
     NamespaceHandle<?, ?> addToNamespace;
 
@@ -87,13 +87,13 @@ public class PackedOperationInstaller extends PackedComponentInstaller<Operation
     }
 
     @Override
-    public final <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super OperationInstaller, N, H> factory) {
+    public <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super OperationInstaller, N, H> factory) {
         checkNotInstalledYet();
         this.addToNamespace = requireNonNull(namespace);
         return install(f -> factory.apply(f, namespace));
     }
 
-    final OperationSetup newOperation(Function<? super OperationInstaller, OperationHandle<?>> newHandle) {
+    OperationSetup newOperation(Function<? super OperationInstaller, OperationHandle<?>> newHandle) {
         return OperationSetup.newOperation(this, newHandle);
     }
 
@@ -101,7 +101,7 @@ public class PackedOperationInstaller extends PackedComponentInstaller<Operation
     public <H extends OperationHandle<?>> OperationSetup newOperationFromMember(OperationMemberTarget<?> member, MethodHandle methodHandle,
             Function<? super OperationInstaller, H> configurationCreator) {
         if (bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
-            throw new InstanceMembersNotAllowedException("Cannot create operation for non-static member " + member);
+            throw new InstanceMembersDisallowedException("Cannot create operation for non-static member " + member);
         }
         namePrefix = member.name();
 

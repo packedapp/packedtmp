@@ -23,8 +23,7 @@ import app.packed.extension.Extension;
 /**
  * A mirror representing a wirelet that was specified at build-time.
  * <p>
- * NOTICE: As by design (build) mirror classes cannot be used to introspect which wirelets that have been specified at
- * runtime.
+ * NOTICE: As by design (build) mirror classes cannot be used to introspect wirelets that are specified at runtime.
  *
  * @apiNote composite wirelets are never returned as a single mirror, they are always expanded to the individual
  *          wirelets

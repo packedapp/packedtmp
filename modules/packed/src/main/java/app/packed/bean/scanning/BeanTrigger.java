@@ -36,6 +36,7 @@ public @interface BeanTrigger {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @BeanTrigger
+    // Should we also have an Inherited version
     public @interface OnAnnotatedClass {
 
         /** Whether or not the sidecar is allow to get the contents of a field. */
@@ -109,16 +110,10 @@ public @interface BeanTrigger {
         /** The introspector responsible for this trigger. */
         Class<? extends BeanIntrospector<?>> introspector();
 
-        // Can we have more than one???
-        // Ala Requires TransactionContext +
         Class<? extends Context<?>>[] requiresContext() default {};
 
         // Async, Transactional, Maybe metric?
         boolean requiresProxy() default false;
-
-//        // IDK, don't we just want to ignore it most of the time???
-//        // Nah maybe fail. People might think it does something
-//        boolean requiresVoidReturn() default false;
     }
 
     /**
@@ -134,14 +129,14 @@ public @interface BeanTrigger {
     @Documented
     @BeanTrigger
     public @interface OnAnnotatedVariable {
-
-        // I think it would be super nice to indicate that we simply uses a key based local namespace
-        // Nothing fancy freeflowing key
-        // Maybe this is actually two different annotations???
-        // Should we have something about we use a KeyBasedScheme? Or a free
-        // For example Codegenerated...
-        // Hmm, men det betyder jo ogsaa vi laver peeling
-        boolean checkKeyRepresentation() default true;
+//
+//        // I think it would be super nice to indicate that we simply uses a key based local namespace
+//        // Nothing fancy freeflowing key
+//        // Maybe this is actually two different annotations???
+//        // Should we have something about we use a KeyBasedScheme? Or a free
+//        // For example Codegenerated...
+//        // Hmm, men det betyder jo ogsaa vi laver peeling
+//        boolean checkKeyRepresentation() default true;
 
         /** The introspector responsible for this trigger. */
         Class<? extends BeanIntrospector<?>> introspector();

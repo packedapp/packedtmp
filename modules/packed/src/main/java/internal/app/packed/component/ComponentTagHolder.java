@@ -23,6 +23,7 @@ import java.util.Set;
  *
  */
 public final class ComponentTagHolder {
+
     final HashMap<ComponentSetup, Set<String>> map = new HashMap<>();
 
     public void addComponentTags(ComponentSetup cs, String... tags) {

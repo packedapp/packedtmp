@@ -1,0 +1,35 @@
+In what order is everything build.
+
+
+Principals
+* Must be deterministic
+* Must give good error messages
+* Must provide an easy way to shutdown
+* Must be explainable
+
+
+Actors
+  User, Extension, Framework
+
+BuildCodeSource
+  Assembly, Extension, BuildHook
+
+Lifecycle
+  Application, Container, Bean, Operation, Namespace, Binding
+
+Other
+  ComponentHandle, ComponentConfiguration
+
+// onClose, onConfigured
+
+-- Clarification
+Build - Order
+
+Component/Extension/Assembly
+  onClose(), onConfigured();
+  
+Extension Ordering, when can they install shit
+
+
+* When can extensions install stuff
+* How are build hooks applied and ordered

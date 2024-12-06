@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
-import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
+import app.packed.extension.FrameworkExtension;
 import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.application.PackedApplicationTemplate;
@@ -35,7 +35,7 @@ import internal.app.packed.extension.ExtensionSetup;
 
 // Maybe this is more of Codegen at runtime thing???
 // But then again
-public final class ApplicationRegistryExtension extends Extension<ApplicationRegistryExtension> {
+public final class ApplicationRegistryExtension extends FrameworkExtension<ApplicationRegistryExtension> {
 
     /**
      * @param handle

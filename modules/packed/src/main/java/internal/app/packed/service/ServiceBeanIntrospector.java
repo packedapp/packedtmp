@@ -28,15 +28,14 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.service.Export;
 import app.packed.service.Provide;
-import internal.app.packed.bean.scanning.IntrospectorOnField;
-import internal.app.packed.bean.scanning.IntrospectorOnMethod;
 import internal.app.packed.binding.BindingAccessor.FromOperationResult;
+import internal.app.packed.extension.PackedBeanIntrospector;
 import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-public final class ServiceBeanIntrospector extends BeanIntrospector<BaseExtension> {
+public final class ServiceBeanIntrospector extends PackedBeanIntrospector<BaseExtension> {
 
     static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withReturnTypeDynamic();
 
@@ -57,13 +56,11 @@ public final class ServiceBeanIntrospector extends BeanIntrospector<BaseExtensio
             }
         }
 
-
-        OperationSetup operation = OperationSetup.crack(onField.newGetOperation(OPERATION_TEMPLATE).install(OperationHandle::new));
-
+        // Checks that it is a valid key
         Key<?> key = onField.toKey();
 
-        IntrospectorOnField field = (IntrospectorOnField) onField;
-        field.bean().serviceNamespace().provideService(key, operation, new FromOperationResult(operation));
+        OperationSetup operation = OperationSetup.crack(onField.newGetOperation(OPERATION_TEMPLATE).install(OperationHandle::new));
+        bean().serviceNamespace().provideService(key, operation, new FromOperationResult(operation));
     }
 
 
@@ -74,24 +71,29 @@ public final class ServiceBeanIntrospector extends BeanIntrospector<BaseExtensio
      */
     @Override
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
-        IntrospectorOnMethod m = (IntrospectorOnMethod) method;
-
         if (annotation instanceof Provide) {
             if (!Modifier.isStatic(method.modifiers())) {
                 if (beanKind() != BeanKind.CONTAINER) {
                     throw new BeanInstallationException("Not okay)");
                 }
             }
+
+            // Checks that it is a valid key
+            Key<?> key = method.toKey();
+
             OperationSetup operation = OperationSetup.crack(method.newOperation(OPERATION_TEMPLATE).install(OperationHandle::new));
-            m.bean().container.servicesMain().provideService(method.toKey(), operation, new FromOperationResult(operation));
+            bean().serviceNamespace().provideService(key, operation, new FromOperationResult(operation));
         } else if (annotation instanceof Export) {
             if (!Modifier.isStatic(method.modifiers())) {
                 if (beanKind() != BeanKind.CONTAINER) {
                     throw new BeanInstallationException("Not okay)");
                 }
             }
+            // Checks that it is a valid key
+            Key<?> key = method.toKey();
+
             OperationSetup operation = OperationSetup.crack(method.newOperation(OPERATION_TEMPLATE).install(OperationHandle::new));
-            m.bean().container.servicesMain().export(method.toKey(), operation);
+            bean().serviceNamespace().export(key, operation);
         }
     }
 }

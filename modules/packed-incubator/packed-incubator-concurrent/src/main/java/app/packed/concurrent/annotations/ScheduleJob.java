@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import app.packed.concurrent.job.JobExtension;
+import app.packed.concurrent.job2.JobExtension;
 
 /**
  * <p>

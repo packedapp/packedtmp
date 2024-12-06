@@ -15,9 +15,18 @@
  */
 package internal.app.packed.component;
 
-/**
- *
- */
+/** The build state of a component. */
 public enum ComponentBuildState {
-    CONFIGURABLE_AND_OPEN, OPEN_BUT_NOT_CONFIGURABLE, CLOSED;
+
+    /** The component can be configured by its owner. */
+    CONFIGURABLE_AND_OPEN,
+
+    /**
+     * The component can no longer be configured by its owner, but the extension handling the component can still configure
+     * it.
+     */
+    OPEN_BUT_NOT_CONFIGURABLE,
+
+    /** The component can no longer be configured by its owner or the extension handling the component. */
+    CLOSED;
 }

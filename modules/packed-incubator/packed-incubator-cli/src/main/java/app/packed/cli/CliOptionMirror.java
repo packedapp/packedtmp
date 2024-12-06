@@ -15,10 +15,21 @@
  */
 package app.packed.cli;
 
+import app.packed.binding.BindingHandle;
+import app.packed.binding.BindingMirror;
+
 /**
  *
  */
 // Taenker det er fedt at vide hvor den er defineret
-public class CliOptionMirror {
+//
+public class CliOptionMirror extends BindingMirror {
+
+    /**
+     * @param handle
+     */
+    public CliOptionMirror(BindingHandle handle) {
+        super(handle);
+    }
 
 }

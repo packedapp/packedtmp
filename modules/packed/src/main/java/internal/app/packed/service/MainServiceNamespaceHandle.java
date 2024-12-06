@@ -37,6 +37,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
+import internal.app.packed.service.util.PackedServiceLocator;
 import internal.app.packed.service.util.ServiceMap;
 import internal.app.packed.util.handlers.OperationHandlers;
 

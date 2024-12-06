@@ -44,6 +44,4 @@ public final class CliNamespaceConfiguration extends NamespaceConfiguration<CliE
     public static NamespaceBuildHook<CliNamespaceConfiguration> pushToNewApplication(boolean inheritExistingConfiguration, Consumer<? super CliNamespaceConfiguration> c) {
         throw new UnsupportedOperationException();
     }
-
-
 }

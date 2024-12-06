@@ -18,7 +18,6 @@ package internal.app.packed.extension;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.build.Mirror;
 import app.packed.container.ContainerMirror;
@@ -31,7 +30,7 @@ import internal.app.packed.operation.OperationSetup;
 /**
  * Handles the various base {@link app.packed.build.Mirror} classes.
  */
-public final class BaseExtensionMirrorBeanIntrospector extends BeanIntrospector<BaseExtension> {
+public final class BaseExtensionMirrorBeanIntrospector extends PackedBeanIntrospector<BaseExtension> {
 
     @Override
     public void onExtensionService(Key<?> key, OnExtensionService service) {

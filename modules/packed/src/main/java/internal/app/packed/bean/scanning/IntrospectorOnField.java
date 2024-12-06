@@ -94,7 +94,7 @@ public final class IntrospectorOnField extends IntrospectorOn implements BeanInt
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
     void checkConfigurable() {
-        if (!introspector.extension.isConfigurable()) {
+        if (!introspector.extension().isConfigurable()) {
             throw new IllegalStateException("This method must be called before the extension is closed");
         }
     }
@@ -195,9 +195,9 @@ public final class IntrospectorOnField extends IntrospectorOn implements BeanInt
         return new PackedVariable(annotations, field.getGenericType());
     }
 
-    static void process(BeanIntrospectorSetup introspectorSetup, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations,
+    static void process(BeanIntrospectorSetup introspector, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations,
             OnAnnotatedFieldCache... annotatedFields) {
-        IntrospectorOnField f = new IntrospectorOnField(introspectorSetup, field, annotations, triggeringAnnotations, annotatedFields);
-        introspectorSetup.instance.onAnnotatedField(triggeringAnnotations, f);
+        IntrospectorOnField f = new IntrospectorOnField(introspector, field, annotations, triggeringAnnotations, annotatedFields);
+        introspector.instance.onAnnotatedField(triggeringAnnotations, f);
     }
 }

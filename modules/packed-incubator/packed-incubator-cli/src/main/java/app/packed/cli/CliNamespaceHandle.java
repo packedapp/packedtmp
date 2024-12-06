@@ -15,10 +15,13 @@
  */
 package app.packed.cli;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.scanning.BeanIntrospector.OnVariable;
 import app.packed.component.ComponentRealm;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
@@ -34,10 +37,17 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
     static final NamespaceTemplate<CliNamespaceHandle> TEMPLATE = NamespaceTemplate.of(CliNamespaceHandle.class, CliNamespaceHandle::new);
 
     /** All the commands within the namespace. */
-    final LinkedHashMap<String, CliCommandHandle> oldCommands = new LinkedHashMap<>();
+    final LinkedHashMap<String, CliCommandHandle> commands = new LinkedHashMap<>();
+
+    final List<CliOptionMirror> options = new ArrayList<>();
 
     CliNamespaceHandle(NamespaceInstaller<?> installer) {
         super(installer);
+    }
+
+    @Override
+    protected CliNamespaceConfiguration newNamespaceConfiguration(CliExtension e, ComponentRealm actor) {
+        return new CliNamespaceConfiguration(this, e, actor);
     }
 
     /** {@inheritDoc} */
@@ -46,18 +56,17 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
         return new CliNamespaceMirror(this);
     }
 
-    @Override
-    protected CliNamespaceConfiguration newNamespaceConfiguration(CliExtension e, ComponentRealm actor) {
-        return new CliNamespaceConfiguration(this, e, actor);
-    }
-
     void process(CliExtension extension, CliCommand c, BeanIntrospector.OnMethod method) {
         CliCommandHandle h = null;
+        for (String n : c.name()) {
+            if (commands.containsKey(n)) {
+                throw new BeanInstallationException("Multiple cli commands with the same name, name = " + c.name());
+            }
+        }
+
         // For each name check that it doesn't exists in commands already
         if (isInApplicationLifetime(extension)) {
             h = method.newOperation(OperationTemplate.defaults()).install(i -> new CliCommandHandle(i, this));
-
-//            h.specializeMirror(() -> new CliCommandMirror(h, this));
 
             // OperationTemplate.
             // h.namespace(this)
@@ -69,9 +78,19 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
         }
 
         h.command = c;
-        if (oldCommands.putIfAbsent(c.name()[0], h) != null) {
+
+        if (commands.putIfAbsent(c.name()[0], h) != null) {
             throw new BeanInstallationException("Multiple cli commands with the same name, name = " + c.name());
         }
         // OT.DEFAULTS.entryPoint();
+    }
+
+    /**
+     * @param extension
+     * @param c
+     * @param onVariable
+     */
+    void process(CliExtension extension, CliOption c, OnVariable onVariable) {
+        throw new UnsupportedOperationException();
     }
 }

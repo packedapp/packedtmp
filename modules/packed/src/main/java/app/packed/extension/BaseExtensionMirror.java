@@ -4,7 +4,7 @@ import java.util.Map;
 
 import app.packed.binding.Key;
 import app.packed.service.ServiceContract;
-import app.packed.service.mirror.oldMaybe.ExportedServiceMirror;
+import app.packed.service.mirrorold.ExportedServiceMirror;
 
 /** A mirror for {@link BaseExtension}. */
 public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {

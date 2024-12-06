@@ -55,7 +55,7 @@ public final class ServiceNamespaceMirror extends NamespaceMirror<BaseExtension>
     }
 
     /** {@return a map with details of all the provided services in the namespace.} */
-    public Map<Key<?>, ServiceProviderMirror> providers() {
+    public Map<Key<?>, ServiceProviderMirror.FromNamespace> providers() {
         throw new UnsupportedOperationException();
     }
 

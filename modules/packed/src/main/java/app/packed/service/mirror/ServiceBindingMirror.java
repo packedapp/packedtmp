@@ -17,38 +17,41 @@ package app.packed.service.mirror;
 
 import java.util.Optional;
 
+import app.packed.binding.BindingHandle;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
-import app.packed.binding.sandbox.BindingHandle;
+import internal.app.packed.binding.PackedBindingHandle;
+import internal.app.packed.service.ServiceBindingSetup;
+import internal.app.packed.service.ServiceProviderSetup;
 
 /**
  *
  * @see BindingKind#SERVICE
  */
-@SuppressWarnings("exports")
 public class ServiceBindingMirror extends BindingMirror {
 
-    final Key<?> key;
+    /** The service binding. */
+    private final ServiceBindingSetup binding;
 
     /**
      * @param handle
      */
-    public ServiceBindingMirror(BindingHandle handle, Key<?> key) {
+    public ServiceBindingMirror(BindingHandle handle) {
         super(handle);
-        this.key = key;
+        PackedBindingHandle pbh = (PackedBindingHandle) handle;
+        this.binding = (ServiceBindingSetup) pbh.binding();
     }
 
     /** {@return the binding key.} */
     public Key<?> key() {
-        return key;
+        return binding.key;
     }
 
     /** {@return the service the binding is bound to, or empty if a service could not be provided} */
-    public Optional<ServiceMirror> service() {
-        return Optional.empty();
+    public Optional<ServiceProviderMirror> service() {
+        return Optional.ofNullable(binding.resolvedProvider).map(ServiceProviderSetup::mirror);
     }
 }
-
 
 //
 ///**

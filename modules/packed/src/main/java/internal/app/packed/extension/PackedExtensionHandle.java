@@ -41,6 +41,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
 @ValueBased
 public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup extension) implements ExtensionHandle<E> {
 
+    @Override
     public void runOnCodegen(Runnable action) {
         checkIsConfigurable();
         extension.container.application.addCodegenAction(action);

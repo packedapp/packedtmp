@@ -20,28 +20,45 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.binding.Key;
+import app.packed.service.mirror.ServiceProviderMirror;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.binding.BindingAccessor.SupplierOrInstance;
-import internal.app.packed.binding.Keyed;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /**
+ * Provides a service either:
+ *
+ * Locally to a bean
+ *
+ * Locally to an operation
+ *
+ * To a namespace
+ *
+ * To a context
  *
  */
-public sealed interface ServiceProviderSetup extends Keyed {
+public sealed interface ServiceProviderSetup {
+
+    Key<?> key();
 
     BindingAccessor binding();
 
+    default ServiceProviderMirror mirror() {
+        throw new UnsupportedOperationException();
+    }
+
     public static final class BeanServiceProviderSetup implements ServiceProviderSetup {
+
         private final SupplierOrInstance binding;
+
         /** All bindings that uses this provider. */
         public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
 
         private final Key<?> key;
 
         public BeanServiceProviderSetup(Key<?> key, SupplierOrInstance binding) {
-            this.key = key;
+            this.key = requireNonNull(key);
             this.binding = requireNonNull(binding);
         }
 
@@ -62,10 +79,13 @@ public sealed interface ServiceProviderSetup extends Keyed {
     }
 
     public static final class ContextServiceProviderSetup implements ServiceProviderSetup {
+
         private final BindingAccessor binding;
-        private final ContextSetup context;
+
         /** All bindings that uses this provider. */
         public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
+
+        private final ContextSetup context;
 
         private final Key<?> key;
 
@@ -99,10 +119,10 @@ public sealed interface ServiceProviderSetup extends Keyed {
         /** All bindings that uses this provider. */
         public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
 
-        private final Key<?> key;
-
         /** Used for checking for dependency cycles. */
         public boolean hasBeenCheckForDependencyCycles;
+
+        private final Key<?> key;
 
         private final ServiceNamespaceHandle namespace;
 
@@ -120,18 +140,18 @@ public sealed interface ServiceProviderSetup extends Keyed {
             return binding;
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public Key<?> key() {
+            return key;
+        }
+
         public ServiceNamespaceHandle namespace() {
             return namespace;
         }
 
         public OperationSetup operation() {
             return operation;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Key<?> key() {
-            return key;
         }
     }
 
@@ -142,12 +162,13 @@ public sealed interface ServiceProviderSetup extends Keyed {
      * @see app.packed.operation.OperationConfiguration#bindServiceInstance(Key, Object)
      */
     public static final class OperationServiceProviderSetup implements ServiceProviderSetup {
+
+        private final SupplierOrInstance binding;
+
         /** All bindings that uses this provider. */
         public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
 
         private final Key<?> key;
-
-        private final SupplierOrInstance binding;
 
         private final OperationSetup operation;
 
@@ -167,14 +188,14 @@ public sealed interface ServiceProviderSetup extends Keyed {
             return binding;
         }
 
-        public OperationSetup operation() {
-            return operation;
-        }
-
         /** {@inheritDoc} */
         @Override
         public Key<?> key() {
             return key;
+        }
+
+        public OperationSetup operation() {
+            return operation;
         }
     }
 }

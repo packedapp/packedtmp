@@ -31,7 +31,7 @@ import app.packed.namespace.sandbox.NamespaceOperation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceOperation
-@OnAnnotatedMethod(introspector = CliExtension.MyI.class)
+@OnAnnotatedMethod(introspector = CliBeanIntrospector.class)
 public @interface CliCommand {
 
     /**

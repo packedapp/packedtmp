@@ -1,0 +1,7 @@
+Can an operation be added after Bean.OnConfigured?
+
+Jeg tror simpelthen alle hooks er koert nar vi begynder paa det..
+
+Saa er det kun extensions vi skal bekymre os om, og ikke brugeren
+
+Hmm nej

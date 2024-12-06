@@ -1,0 +1,15 @@
+
+Extension, ApplicationHandle, ContainerHandle, NamespaceHandle, BeanHandle, OperationHandle
+
+
+onConfigured() is always executed before onClosed()
+
+operation.onClose() is invoked before bean.onClose()
+bean.onClose() is invoked before container.onClose();
+
+container.onClose() is invoked before application.onClose()
+namespace.onClose() is invoked before application.onClose()
+
+
+
+extension.onClose is invoked after all namespaces that is owns has been shutdown

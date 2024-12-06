@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 
 import app.packed.binding.Key;
 import app.packed.build.action.BuildActionable;
-import app.packed.component.ComponentRealm;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentRealm;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationConfiguration;
@@ -143,6 +143,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     // was bindComputedConstant
     // bind(Supplier) <-- every time we create the bean
     // bindSuppler(BuildTime, CodegenTime, Lazy, PerUsage); // Multithreaded???
+    // Lazy_Per_ApplicationInstance, ...
     public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
         checkIsConfigurable();
         handle.bindCodeGenerator(key, supplier);

@@ -20,15 +20,24 @@ import app.packed.build.hook.BuildHook;
 import app.packed.extension.Extension;
 
 /**
- * All applications are build on the basis of three different types of build sources. The different types of sources
- * are:
+ * A build source that is based on code. There are 3 different ways to configure an application in code.
+ *
+ * Assembly
+ *
+ * Extension
+ *
+ * BuildHook: Build hooks can be specified that modifies the instructions provided by assemblies and extensions.
+ *
+ * <p>
+ * All applications are build on the basis of three different types of build
+ * sources. The different types of sources are:
  *
  * <p>
  * Where the "root" build source is always a single {@link Assembly}. Hmm what about
  *
  * <p>
  * Typically, assemblies are created by the application developer. Extensions are primary resuable, but in some
- * situations application developers will need to create their own. And build transformers are a mix of the two.
+ * situations application developers will need to create their own. And build hook are a mix of the two.
  */
 /// Hmm Delegating Assembly??? Kan jo ikke execute noget. Taenker det kun er ting der har fat i en XConfiguration
 // Men maaske fint at have her for at goere det simpler. Hvis man vil branche ud...
@@ -36,6 +45,7 @@ import app.packed.extension.Extension;
 
 // BuildCodeSource (I virkeligheden er det jo Bytecode)
 // Var BuildSource... Maaske er det bedre
+
 // To Abstract Class?
 public sealed interface BuildCodeSource extends BuildSource permits Assembly, Extension, BuildHook {}
 

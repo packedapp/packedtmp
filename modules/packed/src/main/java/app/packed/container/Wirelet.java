@@ -31,7 +31,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerWirelets.ContainerOverrideNameWirelet;
 import internal.app.packed.container.wirelets.CompositeWirelet;
 import internal.app.packed.container.wirelets.WrappingWirelet;
-import internal.app.packed.extension.BaseExtensionBeanintrospector;
+import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 
 /**
  * Wirelets are a small pieces of "glue code" that can be specified when wiring containers.
@@ -106,7 +106,7 @@ import internal.app.packed.extension.BaseExtensionBeanintrospector;
 // So now the "User" wirelet is just plain wirelet
 
 // Specified class must be visible when querying
-@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionBeanintrospector.class)
+@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionHostGuestBeanintrospector.class)
 public abstract class Wirelet {
 
     // How do com

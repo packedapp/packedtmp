@@ -15,13 +15,11 @@
  */
 package app.packed.cli;
 
-import java.lang.annotation.Annotation;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
@@ -74,19 +72,6 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
         return applicationRoot().namespaceLazy(CliNamespaceHandle.TEMPLATE, "main");
     }
 
-    static class MyI extends BeanIntrospector<CliExtension> {
-
-        /** {@inheritDoc} */
-        @Override
-        public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {
-            if (hook instanceof CliCommand c) {
-                extension().ns().process(extension(), c, method);
-            } else {
-                super.onAnnotatedMethod(hook, method);
-            }
-        }
-    }
-
     public CliNamespaceConfiguration namespace() {
         return ns().configuration(this);
     }
@@ -113,7 +98,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     @Override
     protected void onClose() {
-        System.out.println("Have commands for " + ns().oldCommands.keySet());
+        System.out.println("Have commands for " + ns().commands.keySet());
 
         super.onClose();
     }

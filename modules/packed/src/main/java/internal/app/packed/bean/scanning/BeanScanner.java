@@ -30,14 +30,11 @@ import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.InaccessibleBeanMemberException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingSetup;
-import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.StringFormatter;
-import internal.app.packed.util.handlers.BeanHandlers;
 
 /**
  * This class represents a single bean being introspected.
@@ -60,14 +57,14 @@ public final class BeanScanner {
 
     final Lookup customLookup;
 
-    /** The trigger model for the bean. */
-    final BeanTriggerModel triggerModel;
-
     /** The various bean introspectors that have been encountered. */
     // We sort it in the end
     private final IdentityHashMap<BeanIntrospectorModel, BeanIntrospectorSetup> introspectors = new IdentityHashMap<>();
 
     boolean isConfigurable;
+
+    /** The trigger model for the bean. */
+    final BeanTriggerModel triggerModel;
 
     // Vi har lidt det her besvaer med at lukke ting in order her ogsaa.
     // Hvis man f.x. kalder OH.manuallyBindingable.bind(new Op0<ExoticExtension>(){})
@@ -100,26 +97,6 @@ public final class BeanScanner {
         bean.scanner = this;
     }
 
-    BeanIntrospectorSetup computeIntrospector(BeanIntrospectorModel bim) {
-        return introspectors.computeIfAbsent(bim, c -> {
-            // Get the extension (installing it if necessary)
-            ExtensionSetup extension = bean.container.useExtension(bim.extensionClass, null);
-
-            // Create a new introspector
-            BeanIntrospector<?> introspector = bim.newInstance();
-
-            BeanIntrospectorSetup setup = new BeanIntrospectorSetup(this, extension, introspector);
-
-            // Call BeanIntrospector#initialize(BeanIntrospectorSetup)
-            BeanHandlers.invokeBeanIntrospectorInitialize(introspector, setup);
-
-            // Notify the bean introspector that it is being used
-            introspector.onScanStart();
-
-            return setup;
-        });
-    }
-
     /** Introspect the bean. */
     public void introspect() {
         introspectClass();
@@ -145,12 +122,22 @@ public final class BeanScanner {
         resolveOperations();
 
         // Call into every BeanIntrospector and tell them it is all over
-        for (BeanIntrospectorSetup e : introspectors.values()) {
-            e.instance.onScanStop();
+        for (BeanIntrospectorSetup introspector : introspectors.values()) {
+            introspector.instance.onScanStop();
         }
     }
 
     private void introspectClass() {}
+
+    /**
+     * Returns a introspector for the specified introspector model.
+     * @param model
+     *            the introspector model
+     * @return the introspector
+     */
+    BeanIntrospectorSetup introspector(BeanIntrospectorModel model) {
+        return introspectors.computeIfAbsent(model, im -> BeanIntrospectorSetup.create(this, im));
+    }
 
     void resolveBindings(OperationSetup operation) {
         for (int i = 0; i < operation.bindings.length; i++) {

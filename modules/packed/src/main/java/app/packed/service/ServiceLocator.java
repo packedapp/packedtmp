@@ -36,9 +36,9 @@ import app.packed.component.guest.FromGuest;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op1;
 import app.packed.runtime.RunState;
-import internal.app.packed.extension.BaseExtensionBeanintrospector;
+import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
-import internal.app.packed.service.PackedServiceLocator;
+import internal.app.packed.service.util.PackedServiceLocator;
 
 /**
  * An service locator is a holder of services, where each service can be looked up by a {@link Key} at runtime.
@@ -107,7 +107,7 @@ import internal.app.packed.service.PackedServiceLocator;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is unchangeable.
  */
-@OnExtensionServiceBeanTrigger(introspector = BaseExtensionBeanintrospector.class)
+@OnExtensionServiceBeanTrigger(introspector = BaseExtensionHostGuestBeanintrospector.class)
 // I don't think this should have a service provider
 public interface ServiceLocator {
 

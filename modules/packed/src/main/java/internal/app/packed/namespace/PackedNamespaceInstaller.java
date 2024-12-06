@@ -19,11 +19,11 @@ import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.build.AuthoritySetup;
-import internal.app.packed.component.PackedComponentInstaller;
+import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 
 /** Implementation of {@link NamespaceTemplate.Installer} */
-public final class PackedNamespaceInstaller<H extends NamespaceHandle<?, ?>> extends PackedComponentInstaller<NamespaceSetup, PackedNamespaceInstaller<H>>
+public final class PackedNamespaceInstaller<H extends NamespaceHandle<?, ?>> extends AbstractComponentInstaller<NamespaceSetup, PackedNamespaceInstaller<H>>
         implements NamespaceInstaller<H> {
 
     public NamespaceHandle<?, ?> handle;

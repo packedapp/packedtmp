@@ -29,7 +29,7 @@ import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.mirror.ServiceBindingMirror;
-import app.packed.service.mirror.ServiceProviderMirror;
+import app.packed.service.mirrorold.ServiceProviderIsThisUsefulMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
@@ -43,7 +43,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * An instance of BeanMirror (or a subclass hereof) can be injected at runtime simply by declaring a dependency on it.
  */
 @OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
-public non-sealed class BeanMirror implements Accessor, ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderMirror {
+public non-sealed class BeanMirror implements Accessor, ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror {
 
     /** The handle of the bean we are mirroring. */
     private final BeanHandle<?> handle;

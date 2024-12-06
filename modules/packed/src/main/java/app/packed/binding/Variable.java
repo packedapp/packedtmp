@@ -51,10 +51,6 @@ import internal.app.packed.util.types.TypeUtil;
  */
 public sealed interface Variable permits PackedVariable {
 
-    default Key<?> asKey() {
-        return Key.fromVariable(this);
-    }
-
     /** {@return a list of annotations on the variable. */
     AnnotationList annotations();
 
@@ -72,6 +68,11 @@ public sealed interface Variable permits PackedVariable {
      */
     default Class<?> rawType() {
         return TypeUtil.rawTypeOf(type());
+    }
+
+    // Maybe toKey?? // It can fail
+    default Key<?> toKey() {
+        return Key.fromVariable(this);
     }
 
     /** {@return the type of this variable.} */

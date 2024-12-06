@@ -95,6 +95,7 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
     }
 
     // peekBinding(int index, Consumer<?>)
+    //replaceBindingWithServiceInstance??
     public void replaceBinding(int index, Object value) {
         throw new UnsupportedOperationException();
     }

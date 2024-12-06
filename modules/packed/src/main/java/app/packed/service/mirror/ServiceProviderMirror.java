@@ -15,34 +15,73 @@
  */
 package app.packed.service.mirror;
 
+import java.util.SequencedCollection;
+import java.util.stream.Stream;
+
 import app.packed.bean.BeanMirror;
-import app.packed.operation.BuildArgumentMirror;
+import app.packed.binding.Key;
+import app.packed.context.ContextMirror;
 import app.packed.operation.OperationMirror;
+import app.packed.service.ServiceNamespaceMirror;
 
 /**
  *
  */
 
-// Taenker vi skal kun have en service der bare er en constant og ikke dukker op som en bean.
+// Har vi et BeanNamespace??? Og hvis vi har peger vi altid paa services derfra?
 
-// Skal vi kunne sige noget om det er en runtime constant? eller en compile time constant?
-// Ja vil jeg mene. Vi vil gerne vide hvornaar den skal instantieres.
+// Hvis ikke, har vi saa services tilgaengelig fra forskellige namespaces???
+// Baade Bean og Container
 
+// Hvad hvis den samme service er tilgaengelig under flere keys...
 
-// Vi har behov for at kunne se hvor en given provider er blevet brugt...
-//// Saa enten skal vi have en extra peger klasse (ProvidedServiceMirror).
-//// Eller ogsaa laver vi noget generisk useSite (Relationsship) functionalitet paa de forskellige mirrors.
+// Det man gerne vil have svar er jo fx hvor i applikationen bliver denne bean brugt som en service...
 
-// From Where
-// From Who
+public interface ServiceProviderMirror {
 
+    /** {@return a stream of all bindings where this service is provided to} */
+    Stream<ServiceBindingMirror> bindings();
 
-public sealed interface ServiceProviderMirror permits BeanMirror, OperationMirror, BuildArgumentMirror {
+    /** {@return the key under which the service is available.} */
+    Key<?> key();
 
-    // Hvor faar man pathen? Man skal vel hen til bindingen, og saa gaa tilbage igen...
+    // Ideen er lidt at den her viser. Hvilke exports o.s.v. vi skal igennem
+    SequencedCollection<Object> servicePath();
 
-    // default Set<?> userAsServices() {
-    //   relatoinsShips(SSS.class);
-    // }
+    /**
+     * @see app.packed.bean.BeanConfiguration#bindCodeGenerator(Key, java.util.function.Supplier)
+     * @see app.packed.bean.BeanConfiguration#bindServiceInstance(Key, Object)
+     */
+    interface FromBean extends ServiceProviderMirror {
 
+        /** {@return the bean the service was bound to} */
+        BeanMirror bean();
+    }
+
+    interface FromContext extends ServiceProviderMirror {
+        ContextMirror context();
+    }
+
+    interface FromNamespace extends ServiceProviderMirror {
+        // Is there always an operation????
+
+        ServiceNamespaceProvideOperationMirror providedVia();
+
+        ServiceNamespaceMirror namespace();
+    }
+
+    interface FromOperation extends ServiceProviderMirror {
+        OperationMirror operation();
+    }
 }
+
+//
+///** {@return the namespace the service is available in.} */
+//ServiceNamespaceMirror namespace();
+
+///**
+//* {@return the provider of the service.}
+//* <p>
+//* May either be an operation on a bean. The bean itself Or a constant
+//*/
+//ServiceProviderIsThisUsefulMirror provider();

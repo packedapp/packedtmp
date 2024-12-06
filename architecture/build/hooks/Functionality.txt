@@ -1,0 +1,7 @@
+What rights does a build hook have???
+
+Can it do something then owner of the component cannot???
+Meaning can it do something only an extension would normally be able to?
+
+--
+I think it must be owned focused

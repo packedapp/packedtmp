@@ -55,7 +55,7 @@ abstract sealed class IntrospectorOnMember<M extends Member> extends Introspecto
         // TODO we need to check the Authority instead of the assemvly
         BeanSetup bean = bean();
         if (bean.owner instanceof AssemblySetup) {
-            if (!participant.extension.container.assembly.isConfigurable()) {
+            if (!participant.extension().container.assembly.isConfigurable()) {
                 throw new IllegalStateException("This method must be called before the assembly is closed");
             }
         } else {

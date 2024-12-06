@@ -28,5 +28,4 @@ public final class InjectOperationConfiguration extends BeanLifecycleOperationCo
     InjectOperationConfiguration(LifecycleOperationInitializeHandle handle) {
         super(handle);
     }
-
 }

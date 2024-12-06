@@ -1,0 +1,36 @@
+
+-- Clarification
+Build - Order
+
+BuildHooks
+  onClose(), onConfigured();
+  
+Extension Ordering, when can they install shit
+
+// Assembly
+
+
+
+
+----- app.packed.application ----
+BaseImage.result
+ApplicationConfiguration
+ApplicationRepository
+
+----- app.packed.build ----
+Cleanup hooks
+
+----- app.packed.binding ----
+Cleanup bindings
+Figure out how binding-handles work 
+
+
+----- app.packed.namespace -----
+
+
+
+
+---- Modules
+packed-base
+packed-base-devtools   <---- Testing
+packed-base-devops     <---- What went wrong, Observability

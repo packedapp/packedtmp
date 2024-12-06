@@ -17,7 +17,7 @@ package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.operation.OperationSite;
+import app.packed.operation.OperationInfoOld;
 import app.packed.runtime.RunState;
 
 /**
@@ -28,7 +28,7 @@ public class ApplicationPanicException extends Exception {
     private static final long serialVersionUID = 1L;
 
     /** The operation that failed. */
-    private final OperationSite operationSite;
+    private final OperationInfoOld operationSite;
 
     /** The run state of the application when it failed */
     private final RunState state;
@@ -37,26 +37,26 @@ public class ApplicationPanicException extends Exception {
     // For example, if I shutdown with a failure
     // ApplicationException. Maybe we cannot shut it down with a failure from the outside?
 
-    public ApplicationPanicException(RunState state, OperationSite operationSite, String message) {
+    public ApplicationPanicException(RunState state, OperationInfoOld operationSite, String message) {
         super(message);
         this.state = requireNonNull(state);
         this.operationSite = requireNonNull(operationSite);
     }
 
-    public ApplicationPanicException(RunState state, OperationSite operationSite, String message, Throwable cause) {
+    public ApplicationPanicException(RunState state, OperationInfoOld operationSite, String message, Throwable cause) {
         super(message, cause);
         this.state = requireNonNull(state);
         this.operationSite = requireNonNull(operationSite);
     }
 
-    public ApplicationPanicException(RunState state, OperationSite operationSite, Throwable cause) {
+    public ApplicationPanicException(RunState state, OperationInfoOld operationSite, Throwable cause) {
         super(cause);
         this.state = requireNonNull(state);
         this.operationSite = requireNonNull(operationSite);
     }
 
     /** {@return the operation that failed} */
-    public OperationSite operationSite() {
+    public OperationInfoOld operationSite() {
         return operationSite;
     }
 

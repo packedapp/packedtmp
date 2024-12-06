@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
-import app.packed.concurrent.job.JobNamespaceConfiguration;
 import app.packed.service.ProvidableBeanConfiguration;
 
 /**
@@ -64,11 +63,11 @@ public final class ApplicationRegistryConfiguration<I, H extends ApplicationHand
         handle.repository.add(installer);
     }
 
-    public ApplicationRegistryConfiguration<I, H> trackInstallations(JobNamespaceConfiguration job) {
-        // I guess this means that have a JobTracker interface provided to the repository bean
-        // handle.
-        return this;
-    }
+//    public ApplicationRegistryConfiguration<I, H> trackInstallations(JobNamespaceConfiguration job) {
+//        // I guess this means that have a JobTracker interface provided to the repository bean
+//        // handle.
+//        return this;
+//    }
 
     @Override
     public ApplicationRegistryConfiguration<I, H> provide() {

@@ -30,7 +30,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.service.Provide;
 import app.packed.service.mirror.ServiceBindingMirror;
-import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
+import app.packed.service.mirrorold.ProvidedServiceMirror;
 
 /**
  *

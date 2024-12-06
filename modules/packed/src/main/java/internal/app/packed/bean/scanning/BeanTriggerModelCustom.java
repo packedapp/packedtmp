@@ -31,7 +31,7 @@ import internal.app.packed.assembly.AssemblyMetaHolder;
 import internal.app.packed.util.types.ClassUtil;
 
 /**
- *
+ * Ideen er lidt at vi kan have foreign triggers
  */
 public final class BeanTriggerModelCustom {
 

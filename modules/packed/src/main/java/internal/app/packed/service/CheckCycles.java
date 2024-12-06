@@ -25,7 +25,7 @@ import app.packed.extension.BaseExtensionMirror;
 import app.packed.service.Export;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.Provide;
-import app.packed.service.mirror.oldMaybe.ExportedServiceMirror;
+import app.packed.service.mirrorold.ExportedServiceMirror;
 
 /**
  *
