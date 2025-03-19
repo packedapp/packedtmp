@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanBuildLocal.Accessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.binding.Key;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
@@ -99,7 +99,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
     /** {@inheritDoc} */
     public final Class<?> beanClass() {
-        return bean.beanClass;
+        return bean.bean.beanClass;
     }
 
     /** {@return the bean kind.} */
@@ -109,7 +109,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
     /** {@return the bean source kind.} */
     public final BeanSourceKind beanSourceKind() {
-        return bean.beanSourceKind;
+        return bean.bean.beanSourceKind;
     }
 
     /**
@@ -405,7 +405,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      * @see ProvideableBeanConfiguration#provideAs(Key)
      */
     public final void provideAs(Key<?> key) {
-        Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
+        Key<?> k = InternalServiceUtil.checkKey(bean.bean.beanClass, key);
         checkIsOpen();
         if (beanKind() != BeanKind.CONTAINER || beanKind() != BeanKind.LAZY) {
             // throw new UnsupportedOperationException("This method can only be called on beans of kind " + BeanKind.CONTAINER + "

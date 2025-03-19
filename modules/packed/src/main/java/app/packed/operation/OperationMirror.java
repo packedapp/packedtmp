@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceInheritableVariable;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.component.ComponentMirror;
@@ -61,7 +61,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
+@OnContextServiceInheritableVariable(introspector = BaseExtensionMirrorBeanIntrospector.class)
 public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror {
 
     /** The handle of the operation we are mirroring. */

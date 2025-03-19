@@ -28,7 +28,7 @@ public class LookupUsage {
                         if (mm.flags().has(AccessFlag.PUBLIC)) {
                             for (int i = 0; i < mm.methodTypeSymbol().parameterCount(); i++) {
                                 if (mm.methodTypeSymbol().parameterType(i).descriptorString().equals("Ljava/lang/invoke/MethodHandles$Lookup;")) {
-                                    hits.computeIfAbsent(i, k -> new ArrayList<>()).add(new Entry(cm, mm));
+                                    hits.computeIfAbsent(i, _ -> new ArrayList<>()).add(new Entry(cm, mm));
                                 }
                             }
                         }

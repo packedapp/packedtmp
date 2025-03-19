@@ -68,7 +68,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
     }
 
     public <T extends BeanLifecycleOperationHandle> T addLifecycleHandle(T handle) {
-        lifecycleHandles.compute(handle.lifecycleKind, (k, v) -> {
+        lifecycleHandles.compute(handle.lifecycleKind, (_, v) -> {
             if (v == null) {
                 return List.of(handle);
             } else {
@@ -80,7 +80,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
             OperationSetup os = OperationSetup.crack(handle);
             BeanSetup bean = os.bean;
             if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
-                assert (bean.beanSourceKind != BeanSourceKind.INSTANCE);
+                assert (bean.bean.beanSourceKind != BeanSourceKind.INSTANCE);
 //                handle.setMethodHandle(handle.methodHandle());
 
                 // Problemet er hvor vi laver vi bedst adaption af method Handle???

@@ -6,6 +6,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.bean.Bean;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
@@ -56,9 +57,13 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         super(usesite);
     }
 
-    public <T> ProvidableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = newBean(CONTAINER, context()).install(implementation, ProvidableBeanHandle::new);
+    public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
+        BeanHandle<ProvidableBeanConfiguration<T>> h = newBean(CONTAINER, context()).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
+    }
+
+    public <T> ProvidableBeanConfiguration<T> install(Class<T> implementation) {
+        return install(Bean.of(implementation));
     }
 
     /**
@@ -69,12 +74,11 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public <T> ProvidableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = newBean(CONTAINER, context()).install(op, ProvidableBeanHandle::new);
-        return h.configuration();
+        return install(Bean.of(op));
     }
 
     public <T> ProvidableBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
-        return installIfAbsent(clazz, c -> {});
+        return installIfAbsent(clazz, _ -> {});
     }
 
     /**
@@ -108,8 +112,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a providable configuration for the new bean
      */
     public <T> ProvidableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = newBean(CONTAINER, context()).installInstance(instance, ProvidableBeanHandle::new);
-        return h.configuration();
+        return install(Bean.ofInstance(instance));
     }
 
     /**
@@ -120,7 +123,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        return newBean(BeanKind.STATIC.template(), context()).install(beanClass, BeanHandle::new).configuration();
+        return newBean(BeanKind.STATIC.template(), context()).install(Bean.of(beanClass), BeanHandle::new).configuration();
     }
 
     /**

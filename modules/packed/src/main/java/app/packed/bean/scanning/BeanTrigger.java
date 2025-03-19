@@ -180,7 +180,10 @@ public @interface BeanTrigger {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @BeanTrigger
-    public @interface OnExtensionServiceBeanTrigger {
+    // OnServiceVariable
+    // OnContextServiceVariable
+    // Was OnExtensionServiceBeanTrigger
+    public @interface OnContextServiceVariable {
 
         /** The introspector responsible for this trigger. */
         Class<? extends BeanIntrospector<?>> introspector();
@@ -217,7 +220,7 @@ public @interface BeanTrigger {
     @Documented
     @BeanTrigger
     @Inherited
-    public @interface OnExtensionServiceInteritedBeanTrigger {
+    public @interface OnContextServiceInheritableVariable {
 
         /** The introspector responsible for this trigger. */
         Class<? extends BeanIntrospector<?>> introspector();

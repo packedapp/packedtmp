@@ -22,7 +22,7 @@ import app.packed.application.ApplicationBuildHook;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyBuildHook;
 import app.packed.assembly.AssemblyPropagator;
-import app.packed.bean.BeanBuildHook;
+import app.packed.bean.BeanHook;
 import app.packed.build.BuildCodeSource;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerBuildHook;
@@ -54,7 +54,7 @@ import app.packed.operation.OperationBuildHook;
 // Abstract class because we do not want a build hook to do multiple things
 
 public sealed abstract class BuildHook implements BuildCodeSource
-        permits ApplicationBuildHook, AssemblyBuildHook, ContainerBuildHook, BeanBuildHook, OperationBuildHook {
+        permits ApplicationBuildHook, AssemblyBuildHook, ContainerBuildHook, BeanHook, OperationBuildHook {
 
     // If the same (.getClass()) build hook is placed on annotation ignore it
     // other.getClass() == this.getClass()

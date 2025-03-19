@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
 import app.packed.build.Mirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
@@ -38,7 +38,7 @@ import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
 // Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
 
 //Cluster|Node? < Java Process(Logical name) < Family
-@OnExtensionServiceBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
+@OnContextServiceVariable(introspector = BaseExtensionMirrorBeanIntrospector.class)
 public class DeploymentMirror implements Mirror {
 
     /** The deployment we are mirroring. */

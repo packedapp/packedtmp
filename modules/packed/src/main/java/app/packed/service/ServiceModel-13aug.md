@@ -22,8 +22,6 @@ Possibilitites
   * A namespace is both for container, and-or beans, and-or-operations
     Cons: Namespace is now a lot more complicated than a set of containers
   * A service either belongs to a 
-  
-  
 
 
 

@@ -17,15 +17,12 @@ package internal.app.packed.concurrent.daemon;
 
 import java.util.concurrent.ThreadFactory;
 
-import app.packed.bean.scanning.BeanIntrospector.OnMethod;
 import app.packed.concurrent.ThreadKind;
 import app.packed.concurrent.job.DaemonJob;
 import app.packed.concurrent.job.DaemonJobConfiguration;
 import app.packed.concurrent.job.DaemonJobContext;
 import app.packed.concurrent.job.DaemonJobMirror;
 import app.packed.context.ContextTemplate;
-import app.packed.extension.BaseExtension;
-import app.packed.extension.ExtensionHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.concurrent.ThreadNamespaceHandle;
@@ -46,14 +43,14 @@ public final class DaemonOperationHandle extends ThreadedOperationHandle<DaemonJ
 
     public ThreadKind threadKind;
 
-    private DaemonOperationHandle(OperationInstaller installer, ThreadNamespaceHandle namespace, DaemonJob annotation) {
+    DaemonOperationHandle(OperationInstaller installer, ThreadNamespaceHandle namespace, DaemonJob annotation) {
         super(installer, namespace);
-        threadKind = annotation.threadKind();
-        interruptOnStop = annotation.interruptOnStop();
+        this.threadKind = annotation.threadKind();
+        this.interruptOnStop = annotation.interruptOnStop();
     }
 
-    public DaemonRuntimeConfiguration runtimeConfiguration() {
-        return new DaemonRuntimeConfiguration(runtimeThreadFactory(), invokerAsMethodHandle());
+    public DaemonRuntimeOperationConfiguration runtimeConfiguration() {
+        return new DaemonRuntimeOperationConfiguration(runtimeThreadFactory(), invokerAsMethodHandle());
     }
 
     /** {@inheritDoc} */
@@ -78,22 +75,5 @@ public final class DaemonOperationHandle extends ThreadedOperationHandle<DaemonJ
             };
         }
         return tf;
-    }
-
-    /**
-     * Handles the {@link Daemon} annotation.
-     *
-     * @param extensionHandle
-     *            an extension handle for {@link BaseExtension}
-     * @param method
-     *            the annotated method
-     * @param annotation
-     *            the Daemon annotation
-     */
-    static void onAnnotatedMethod(ExtensionHandle<BaseExtension> extensionHandle, OnMethod method, DaemonJob annotation) {
-        ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(extensionHandle);
-
-        // Install the operation
-        method.newOperation(DaemonOperationHandle.DAEMON_OPERATION_TEMPLATE).install(namespace, (i, n) -> new DaemonOperationHandle(i, n, annotation));
     }
 }

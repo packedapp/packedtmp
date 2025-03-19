@@ -19,7 +19,7 @@ import app.packed.application.App;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.BaseAssembly;
 import app.packed.assembly.DelegatingAssembly;
-import app.packed.bean.BeanBuildLocal;
+import app.packed.bean.BeanLocal;
 import app.packed.build.hook.BuildHook;
 import app.packed.service.ProvidableBeanConfiguration;
 
@@ -28,7 +28,7 @@ import app.packed.service.ProvidableBeanConfiguration;
  */
 public class ContainerHookUsage extends BaseAssembly {
 
-    static final BeanBuildLocal<String> L = BeanBuildLocal.of();
+    static final BeanLocal<String> L = BeanLocal.of();
 
     /** {@inheritDoc} */
     @Override

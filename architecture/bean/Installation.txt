@@ -1,0 +1,14 @@
+4 Parties
+
+Framework - Extension - Hooks - Users
+
+// Installation flow
+User|Extension -> Extension -> Framework
+
+
+
+install(Object) [User] -> newBeanInstaller [Extension] -> Bean 
+
+
+BeanIn
+prep(Object).install()

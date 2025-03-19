@@ -87,7 +87,7 @@ public final class TypeVariableExtractor {
     }
 
     public static void main(String[] args) {
-        Op1<@Nullable String, Long> o = new Op1<@Nullable String, Long>(s -> 12L) {};
+        Op1<@Nullable String, Long> o = new Op1<@Nullable String, Long>(_ -> 12L) {};
 
         TypeVariableExtractor tve = TypeVariableExtractor.of(Op1.class);
 

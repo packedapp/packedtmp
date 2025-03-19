@@ -61,7 +61,7 @@ public abstract class LookupValue<T> {
         // we could just to chm.computeIfAbsent(..) but thats not garbage free
         T value = chm.get(lookupMode);
         if (value == null) {
-            value = chm.computeIfAbsent(lookupMode, ignore -> computeValue(lookup));
+            value = chm.computeIfAbsent(lookupMode, _ -> computeValue(lookup));
         }
         return value;
     }

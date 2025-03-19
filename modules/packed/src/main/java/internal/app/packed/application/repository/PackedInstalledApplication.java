@@ -23,8 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
+import app.packed.application.containerdynamic.ManagedInstance;
 import app.packed.application.registry.LaunchableApplication;
-import app.packed.application.registry.other.ManagedInstance;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;

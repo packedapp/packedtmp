@@ -29,10 +29,20 @@ interface Invokers {
 
     // Kan det misbruges?
 
-
     // Varhandle er ikke relevant
 
     static InvokerFactory of(InvokerFactory... factories) {
         throw new UnsupportedOperationException();
     }
+}
+//We need to be able to beans in the invoker
+//For example, validating beans...
+//Men vi vil typisk gerne wrappe PackedExtensionContext
+
+//Det er ikke sikkert den skal vaere her
+interface InvokerTemplate {
+
+    boolean isSynthetic();
+
+    Class<?> invokerKind();
 }

@@ -48,8 +48,4 @@ No Entry points -> Runs until shutdown or no non-deamon threads running
 Entry points -> Runs until entry points exists
 
 
-
-
-
-
 ====================== Unmanaged Apps ========================

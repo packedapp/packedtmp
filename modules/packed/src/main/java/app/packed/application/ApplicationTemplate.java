@@ -23,8 +23,9 @@ import app.packed.operation.Op;
 import internal.app.packed.application.PackedApplicationTemplate;
 
 /**
- * A template for creating new applications. It is typically only used by {@link app.packed.extension.Extension
- * extensions} and normal users will rarely have any use for it.
+ * A template for creating new applications.
+ * <p>
+ * Application templates are typically only used by extensions, and normal users will rarely have any use for them.
  *
  * @param <H>
  *            the type of application handles the template creates
@@ -42,15 +43,15 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
         return rootContainer().isManaged();
     }
 
-    /** {@return the template for the root container of the application} */
+    /** {@return the container template for the root container of the application} */
     ContainerTemplate<?> rootContainer();
 
     /**
-     * Add the specified tag(s) to the application.
+     * Creates a new application template, Adding the specified tag(s) to the template.
      *
      * @param tags
      *            the tag(s) to add
-     * @return this configurator
+     * @return the new application template
      * @see ApplicationMirror#componentTags()
      * @see ApplicationHandle#componentTag(String...)
      * @see ApplicationConfiguration#componentTag(String...)

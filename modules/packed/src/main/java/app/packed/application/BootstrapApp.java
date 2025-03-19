@@ -46,7 +46,9 @@ import internal.app.packed.application.PackedApplicationTemplate;
  */
 public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootstrapApp {
 
-    I checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException;
+//    // Thrown on an Unhandled exception
+//    // Alternativ APE er Runtime... Yeah I think so
+//    I checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws UnhandledApplicationException;
 
     /**
      * An application image is a stand-alone program, derived from an {@link app.packed.container.Assembly}, which runs the
@@ -103,8 +105,8 @@ public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootst
      * @param wirelets
      *            optional wirelets
      * @return an application interface instance or void
-     * @throws RuntimeException
-     *             if the application could not be built or failed to launch
+     * @throws UnhandledApplicationException
+     *             if the application threw an exception that could not be handled
      * @see App#run(Assembly, Wirelet...)
      */
     I launch(RunState state, Assembly assembly, Wirelet... wirelets);
@@ -235,13 +237,13 @@ record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? exten
     public void verify(Assembly assembly, Wirelet... wirelets) {
         app.verify(assembly, wirelets);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public E checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException {
-        A result = app.checkedLaunch(state, assembly, wirelets);
-        E e = mapper.apply(result);
-        return e;
-
-    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public E checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws UnhandledApplicationException {
+//        A result = app.checkedLaunch(state, assembly, wirelets);
+//        E e = mapper.apply(result);
+//        return e;
+//
+//    }
 }

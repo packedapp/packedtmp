@@ -23,10 +23,9 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.EnumSet;
 import java.util.function.Supplier;
 
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceInheritableVariable;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerWirelets.ContainerOverrideNameWirelet;
 import internal.app.packed.container.wirelets.CompositeWirelet;
@@ -37,6 +36,10 @@ import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
  * Wirelets are a small pieces of "glue code" that can be specified when wiring containers.
  * <p>
  * Wirelets are typically used to debug foobar, sdsd.
+ *
+ * <p>
+ * Wirelets can
+ *
  *
  * , that is used to wire together the components that make up your program. connect, wire, instantiate, debug your
  * applications.
@@ -70,6 +73,9 @@ import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
  *
  * Framework wirelets: These wirelets are defined by the framework. Cannot be extended by neither users or applications.
  *
+ *
+ * @see app.packed.assembly.AbstractBaseAssembly#selectWirelets(Class)
+ * @see app.packed.extension.Extension#selectWirelets(Class)
  * @see ContainerConfiguration#selectWirelets(Class)
  */
 
@@ -78,12 +84,9 @@ import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 // * We need to able to specify where the wirelet can be used
 // * We need to able to check if the wirelet is consumed at the site where it is used. It should be by default an error to not be consumed
 
-
 //// I think fixed
 // * Should be usable at both build-time and launch??? An example is MainWirelet(String[] args)
 // What are the alternatives
-
-
 
 // Wirelet specification sites
 
@@ -106,7 +109,7 @@ import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 // So now the "User" wirelet is just plain wirelet
 
 // Specified class must be visible when querying
-@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@OnContextServiceInheritableVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
 public abstract class Wirelet {
 
     // How do com
@@ -176,9 +179,9 @@ public abstract class Wirelet {
     // Da det ikke er en statisk metode.
 
     /**
-     * Invoked by the runtime if the wirelet is not consumed. Either at build-time using
-     * {@link ContainerConfiguration#selectWirelets(Class)} or {@link app.packed.extension.Extension#selectWirelets(Class)}
-     * or at runtime using injection of {@link WireletSelection}.
+     * Invoked by the runtime if the wirelet is not consumed. Either by {@link ContainerConfiguration#selectWirelets(Class)}
+     * or {@link app.packed.extension.Extension#selectWirelets(Class)} or at runtime using injection of
+     * {@link WireletSelection}.
      */
     protected void onUnconsumed() {
         // Invoked by the runtime if the wirelet is not processed in some way
@@ -219,7 +222,7 @@ public abstract class Wirelet {
     // Skal den evalueres paa build time eller runtime???
     // Maaske 2 forskellige metoder
     // Hvad er usecasen?
-    static Wirelet lazy(Phase phase, Supplier<@Nullable Wirelet> supplier) {
+    static Wirelet lazy(Supplier<@Nullable Wirelet> supplier) {
         // We probably need a generic WrappingWirelet
         throw new UnsupportedOperationException();
     }
@@ -244,7 +247,7 @@ public abstract class Wirelet {
     // Mirror kun i forbindelse med Build
     //// Vil sige den her et mirror tror jeg. Selvom det er interessant om man kan angive den.
     public interface Descriptor {
-        EnumSet<Phase> phases();
+//        EnumSet<Phase> phases();
 
         Class<? extends Wirelet> wireletClass();
 
@@ -285,9 +288,9 @@ public abstract class Wirelet {
     // Maybe just have an ApplicationPhase.
     // What about condensors??? Do we need a further division??
     // And then we use Runtime instead of LaunchTime
-    public enum Phase {
-        BUILD_TIME, LAUNCH_TIME;
-    }
+//    public enum Phase {
+//        BUILD_TIME, LAUNCH_TIME;
+//    }
 }
 
 // A wirelet that is only applied

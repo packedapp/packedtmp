@@ -15,7 +15,9 @@
  */
 package internal.app.packed.concurrent.daemon;
 
+import app.packed.bean.Bean;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
@@ -69,8 +71,8 @@ public final class JobNamespaceHandle extends NamespaceHandle<BaseExtension, Thr
     @Override
     protected void onClose() {
         // Find all daemon operations in the namespace.
-        DaemonRuntimeConfiguration[] daemons = operations(DaemonOperationHandle.class).map(DaemonOperationHandle::runtimeConfiguration)
-                .toArray(DaemonRuntimeConfiguration[]::new);
+        DaemonRuntimeOperationConfiguration[] daemons = operations(DaemonOperationHandle.class).map(DaemonOperationHandle::runtimeConfiguration)
+                .toArray(DaemonRuntimeOperationConfiguration[]::new);
 
         // Is this general Useful??
         // Otherwise could have methods instead
@@ -83,8 +85,8 @@ public final class JobNamespaceHandle extends NamespaceHandle<BaseExtension, Thr
 
         // Install deamon manager if we have any operations.
         if (daemons.length > 0) {
-            BeanConfiguration b = new ProvidableBeanConfiguration<>(newBeanBuilderSelf(BeanKind.CONTAINER.template()).install(DaemonRuntimeManager.class));
-            b.bindServiceInstance(DaemonRuntimeConfiguration[].class, daemons);
+            BeanConfiguration b = new ProvidableBeanConfiguration<>(newBeanBuilderSelf(BeanKind.CONTAINER.template()).install(Bean.of(DaemonRuntimeManager.class), BeanHandle::new));
+            b.bindServiceInstance(DaemonRuntimeOperationConfiguration[].class, daemons);
         }
     }
 

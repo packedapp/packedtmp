@@ -27,7 +27,7 @@ import internal.app.packed.service.ServiceBeanIntrospector;
  *            the type of instances that are provided
  */
 @FunctionalInterface
-@BeanTrigger.OnExtensionServiceBeanTrigger(introspector = ServiceBeanIntrospector.class)
+@BeanTrigger.OnContextServiceVariable(introspector = ServiceBeanIntrospector.class)
 public interface Provider<T> {
 
     /**

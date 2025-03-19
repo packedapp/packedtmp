@@ -29,12 +29,12 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.bean.AttachmentConfiguration;
-import app.packed.bean.BeanBuildLocal.Accessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
+import app.packed.bean.sandbox.AttachmentConfiguration;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
@@ -61,7 +61,6 @@ import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariableUnwrapped;
 import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.util.PackedAnnotationList;
 
 /**
  * A bean introspector is the primary way for extensions are the primary way for extensions to interacts the
@@ -69,7 +68,7 @@ import internal.app.packed.util.PackedAnnotationList;
  * This class contains a number of overridable callback methods, all of them starting with {@code on}. TODO Make list
  * <p>
  * A bean introspector implementation must have a no-argument constructor. And must be located in the same module as the
- * extension itself. The implementation must be open for the framework
+ * extension itself. The implementation must be open for the frameworkxw
  */
 public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implements Accessor {
 
@@ -80,7 +79,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
     @Nullable
     private BeanIntrospectorSetup introspector;
 
-    // Hvornaar skal den laves?
+    // Hvornaar skal den laves? Hvis vi kun har en
     public final <T> AttachmentConfiguration<T> attach(Op<T> op) {
         throw new UnsupportedOperationException();
     }
@@ -106,12 +105,12 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      * by a {@link app.packed.bean.BeanBuildHook} before installing.
      */
     public final AnnotationList beanAnnotations() {
-        return new PackedAnnotationList(beanClass().getAnnotations());
+        return bean().bean.annotations();
     }
 
     /** {@return the bean class that is being introspected} */
     public final Class<?> beanClass() {
-        return bean().beanClass;
+        return bean().bean.beanClass;
     }
 
     /**
@@ -146,7 +145,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
 
     /** {@return the bean source kind.} */
     public final BeanSourceKind beanSourceKind() {
-        return bean().beanSourceKind;
+        return bean().bean.beanSourceKind;
     }
 
     /**
@@ -329,7 +328,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      * @see app.packed.context.ContextualServiceProvider
      * @see app.packed.context.InheritableContextualServiceProvider
      */
-    public void onExtensionService(Key<?> key, OnExtensionService service) {
+    public void onExtensionService(Key<?> key, OnContextService service) {
         throw new BeanInstallationException(extensionDescriptor().fullName() + " cannot handle type hook " + key);
     }
 
@@ -365,6 +364,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      *             if the extension is no longer configurable
      * @see BuildGoal#isCodeGenerating()
      */
+    // juse use extensionHandle??
     public final void runOnCodegen(Runnable action) {
         extensionHandle().runOnCodegen(action);
     }
@@ -490,7 +490,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         Key<?> toKey();
     }
 
-    public sealed interface OnExtensionService permits IntrospectorOnServiceProvision {
+    public sealed interface OnContextService permits IntrospectorOnServiceProvision {
 
         Class<?> baseClass();
 
@@ -500,6 +500,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
 
         Key<?> key();
 
+        // matchUnqualified
         default boolean matchNoQualifiers(Class<?> clazz) {
             if (key().rawType() == clazz) {
                 if (key().isQualified()) {
@@ -701,11 +702,10 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
          *
          * @return a key representing the field
          *
-         * @throws KeyException
-         *             if the field does not represent a valid key
+         * @throws InvalidKeyException
+         *             if the return type of the method does not represent a valid key
          */
         Key<?> toKey();
-
     }
 
     /**

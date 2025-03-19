@@ -36,7 +36,7 @@ final class LifetimeStoreSetup {
     }
 
     public int addBean(BeanSetup bean) {
-        if (bean.beanKind == BeanKind.CONTAINER && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+        if (bean.beanKind == BeanKind.CONTAINER && bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             entries.add(bean);
             return entries.size() - 1;
         }

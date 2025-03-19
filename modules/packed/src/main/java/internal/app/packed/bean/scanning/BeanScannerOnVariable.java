@@ -36,6 +36,7 @@ final class BeanScannerOnVariable {
     static void resolveVariable(BeanScanner scanner, OperationSetup operation, Variable v, int index) {
         // Extracts the variable we want to resolve
 
+        // First look for hook annotations on the field or parameter
         Annotation[] annotations = v.annotations().toArray();
         for (Annotation a1 : annotations) {
             Class<? extends Annotation> a1Type = a1.annotationType();

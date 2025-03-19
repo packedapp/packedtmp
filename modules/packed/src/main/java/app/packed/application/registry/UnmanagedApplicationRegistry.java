@@ -50,6 +50,9 @@ public interface UnmanagedApplicationRegistry<I, H extends ApplicationHandle<I, 
      * @return the installed application
      * @throws RuntimeException
      *             if the application failed to build, or could not be installed
+     *
+     * @throws UnsupportedOperationException
+     *             if dynamic installation of applications is not supported
      */
     Launcher<I> install(Consumer<? super ApplicationInstaller<H>> installer);
 

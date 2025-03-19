@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
+import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.lifecycle.Initialize;
@@ -71,7 +72,7 @@ public class Ddd extends BaseAssembly {
         MyEntityExtension child;
 
         public void addEntityBean(Class<?> entityBean) {
-            child().base().newBean(BeanKind.MANANGED.template()).install(entityBean, BeanHandle::new);
+            child().base().newBean(BeanKind.MANANGED.template()).install(Bean.of(entityBean), BeanHandle::new);
         }
 
         MyEntityExtension child() {

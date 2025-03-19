@@ -23,8 +23,7 @@ import java.lang.invoke.MethodType;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationPanicException;
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
@@ -36,14 +35,14 @@ import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
-import internal.app.packed.container.wirelets.WireletSelectionArray;
+import internal.app.packed.container.wirelets.WireletSelectionList;
 import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-@OnExtensionServiceBeanTrigger(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
 // Wait a bit with transforming this class to a record.
 // We might have some mutable fields such as name
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
@@ -59,9 +58,9 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
     /** Wirelets specified if instantiating an image. */
     @Nullable
-    private final WireletSelectionArray<?> wirelets;
+    private final WireletSelectionList<?> wirelets;
 
-    public ApplicationLaunchContext(ContainerRunner runner, ApplicationSetup application, WireletSelectionArray<?> wirelets) {
+    public ApplicationLaunchContext(ContainerRunner runner, ApplicationSetup application, WireletSelectionList<?> wirelets) {
         this.application = application;
         this.wirelets = wirelets;
         this.runner = runner;
@@ -93,10 +92,10 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         return application.container().servicesMain().newExportedServiceLocator(runner.pool());
     }
 
-    @SuppressWarnings("unused")
-    public static final <A> A checkedLaunch(ApplicationHandle<A, ?> handle, RunState state, Wirelet... wirelets) throws ApplicationPanicException {
-        return launch(handle, state, wirelets);
-    }
+//    @SuppressWarnings("unused")
+//    public static final <A> A checkedLaunch(ApplicationHandle<A, ?> handle, RunState state, Wirelet... wirelets) throws UnhandledApplicationException {
+//        return launch(handle, state, wirelets);
+//    }
 
     /**
      * Launches an instance of the application this handle represents.
@@ -121,7 +120,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
             throw new IllegalStateException("Cannot launch the application before it has finished building");
         }
 
-        WireletSelectionArray<Wirelet> ws = WireletSelectionArray.of(wirelets);
+        WireletSelectionList<Wirelet> ws = WireletSelectionList.of(wirelets);
         ContainerRunner runner = new ContainerRunner(application);
 
         // Create a launch context

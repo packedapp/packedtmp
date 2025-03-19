@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.registry.other.ManagedInstance;
+import app.packed.application.containerdynamic.ManagedInstance;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import internal.app.packed.application.repository.PackedInstalledApplication;
@@ -27,7 +27,6 @@ import internal.app.packed.application.repository.PackedInstalledApplication;
 /**
  * A single application that has been installed into an {@link ApplicationRepository}. Either at build-time using, or at
  * runtime using {@link ApplicationRepository#install(java.util.function.Consumer)}.
- *
  */
 public sealed interface LaunchableApplication<I> permits PackedInstalledApplication {
 

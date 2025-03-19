@@ -19,6 +19,7 @@ package app.packed.lifetime;
  *
  */
 public enum LifetimeStoreEntryKind {
+
     /** */
     ATTACHMENT, BEAN, SIDECAR;
 }

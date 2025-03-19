@@ -55,7 +55,7 @@ public final class PackedApplicationBuildLocal<T> extends PackedBuildLocal<Appli
         case ApplicationConfiguration a -> ApplicationSetup.crack(a);
         case ApplicationMirror a -> ApplicationSetup.crack(a);
         case ApplicationHandle<?, ?> a -> ApplicationSetup.crack(a);
-        case Assembly b -> throw new UnsupportedOperationException();
+        case Assembly _ -> throw new UnsupportedOperationException();
         case ContainerBuildLocal.Accessor b -> PackedContainerBuildLocal.crack(b).application;
         };
 

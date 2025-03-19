@@ -24,10 +24,6 @@ import app.packed.namespace.NamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
 
 /** Configuration of a component. */
-
-// I don't know about tag... We should probably prefix all with component
-// Or neither
-
 public abstract sealed class ComponentConfiguration
         permits ApplicationConfiguration, BeanConfiguration, ContainerConfiguration, NamespaceConfiguration, OperationConfiguration {
 
@@ -44,6 +40,7 @@ public abstract sealed class ComponentConfiguration
     }
 
     /** {@return the path of this component} */
+    // Why componentPath and not path if tags()
     public final ComponentPath componentPath() {
         return handle().componentPath();
     }

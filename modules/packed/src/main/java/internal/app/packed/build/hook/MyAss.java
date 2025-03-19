@@ -19,7 +19,7 @@ import app.packed.application.App;
 import app.packed.assembly.AssemblyBuildHook;
 import app.packed.assembly.AssemblyConfiguration;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.BeanBuildHook;
+import app.packed.bean.BeanHook;
 import app.packed.bean.BeanConfiguration;
 import app.packed.build.hook.ApplyBuildHook;
 import app.packed.lifetime.Main;
@@ -59,7 +59,7 @@ public class MyAss extends BaseAssembly {
 
     }
 
-    static class MyBe extends BeanBuildHook {
+    static class MyBe extends BeanHook {
 
         @Override
         public void onNew(BeanConfiguration configuration) {

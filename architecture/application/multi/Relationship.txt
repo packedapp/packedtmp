@@ -1,0 +1,5 @@
+Der er vel flere typer relationer.
+
+Der er noget parent<->child noget, hvor man "arver" noget funktionalitet.
+
+Og saa maa der vaere noget temporal noget.

@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.bean.AttachmentConfiguration;
+import app.packed.bean.sandbox.AttachmentConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 

@@ -1,0 +1,3 @@
+Okay we wrapper altid.
+
+i 99% af tilfaeldene er der ingenting man kan goere...

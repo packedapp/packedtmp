@@ -29,8 +29,8 @@ public class NameBasicsTest extends AbstractApplicationTest {
     @Disabled // TODO Enable again (After ComponentConfiguration gets a handle
     @Test
     public void basics() {
-        appOf(c -> {}, Wirelet.renameApplication("Boo")).nameIs("Boo");
-        appOf(c -> {}, Wirelet.renameApplication("Boo"), Wirelet.renameApplication("Goo")).nameIs("Goo");
+        appOf(_ -> {}, Wirelet.renameApplication("Boo")).nameIs("Boo");
+        appOf(_ -> {}, Wirelet.renameApplication("Boo"), Wirelet.renameApplication("Goo")).nameIs("Goo");
 
         // Tests that getName returns wirelet name
         appOf(c -> c.getNameIs("Boo"), Wirelet.renameApplication("Boo")).nameIs("Boo");
@@ -45,8 +45,8 @@ public class NameBasicsTest extends AbstractApplicationTest {
     @Test
     @Disabled // ENABLE again
     public void questionMarks() {
-        appOf(c -> {}, Wirelet.renameApplication("Boo?")).nameIs("Boo");
-        appOf(c -> {}, Wirelet.renameApplication("Boo?"), Wirelet.renameApplication("Goo?")).nameIs("Goo");
+        appOf(_ -> {}, Wirelet.renameApplication("Boo?")).nameIs("Boo");
+        appOf(_ -> {}, Wirelet.renameApplication("Boo?"), Wirelet.renameApplication("Goo?")).nameIs("Goo");
 
         // Tests that getName returns wirelet name
         appOf(c -> c.getNameIs("Boo"), Wirelet.renameApplication("Boo?")).nameIs("Boo");

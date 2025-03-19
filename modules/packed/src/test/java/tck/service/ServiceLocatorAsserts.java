@@ -75,7 +75,7 @@ public class ServiceLocatorAsserts {
         assertFalse(sl.contains(key));
         assertThat(sl.find(key)).isEmpty();
         assertThat(sl.findProvider(key)).isEmpty();
-        sl.ifPresent(key, c -> assertTrue(false));
+        sl.ifPresent(key, _ -> assertTrue(false));
         assertThat(sl.keys()).doesNotContain(key);
         assertThat(sl.toProviderMap().keySet()).doesNotContain(key);
         assertThrows(NoSuchElementException.class, () -> sl.use(key));
@@ -85,7 +85,7 @@ public class ServiceLocatorAsserts {
         assertFalse(sl.contains(key));
         assertThat(sl.find(key)).isEmpty();
         assertThat(sl.findProvider(key)).isEmpty();
-        sl.ifPresent(key, c -> assertTrue(false));
+        sl.ifPresent(key, _ -> assertTrue(false));
         assertThat(sl.keys()).doesNotContain(Key.of(key));
         assertThat(sl.toProviderMap().keySet()).doesNotContain(Key.of(key));
         assertThrows(NoSuchElementException.class, () -> sl.use(key));

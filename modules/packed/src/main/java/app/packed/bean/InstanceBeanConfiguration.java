@@ -153,9 +153,9 @@ class InstanceBeanConfigurationSandbox<T> {
      */
     // Nogen vil man vel gerne fx vaere injected
     InstanceBeanConfiguration<T> peek(BeanSetup bean, Consumer<? super T> consumer) {
-        if (bean.beanSourceKind == BeanSourceKind.SOURCELESS) {
+        if (bean.bean.beanSourceKind == BeanSourceKind.SOURCELESS) {
             throw new UnsupportedOperationException("Operation not supported for beans that have no source");
-        } else if (bean.beanSourceKind == BeanSourceKind.INSTANCE) {
+        } else if (bean.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
             throw new UnsupportedOperationException("Operation not supported for beans that have been registered with an instance");
         }
 

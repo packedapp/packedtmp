@@ -144,7 +144,7 @@ public final class OperationCodeGenerator {
             return MethodHandles.collectArguments(mh, 0, tmp);
         } else {
             System.out.println(p.getClass());
-            if (ClassUtil.isInnerOrLocal(operation.bean.beanClass)) {
+            if (ClassUtil.isInnerOrLocal(operation.bean.bean.beanClass)) {
                 System.err.println("Inner Bean");
             }
             throw new UnsupportedOperationException("" + p + " " + operation.target.target());

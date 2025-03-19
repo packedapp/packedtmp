@@ -17,7 +17,7 @@ package app.packed.component.guest;
 
 import java.util.Set;
 
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
@@ -29,7 +29,7 @@ import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
  * @see FromComponentGuest
  * @see OnComponentGuestLifecycle
  */
-@OnExtensionServiceBeanTrigger(introspector = BaseExtensionHostGuestBeanintrospector.class, requiresContext = ComponentHostContext.class)
+@OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class, requiresContext = ComponentHostContext.class)
 public interface ComponentHostContext extends Context<BaseExtension> {
 
     // Hvis vi teanker paa at faa injected selve bean instancen. Kan vi sagtens have Object, eller Entity som key

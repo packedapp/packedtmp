@@ -55,7 +55,7 @@ public class OperationMirrorTest extends AppAppTest {
     /** Tests a simple OperationMirror */
     @Test
     public void simple() {
-        hooks().onAnnotatedField((l, b) -> {
+        hooks().onAnnotatedField((_, b) -> {
             OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new);
             add(h);
         });
@@ -110,7 +110,7 @@ public class OperationMirrorTest extends AppAppTest {
             }
         }
 
-        hooks().onAnnotatedField((l, b) -> {
+        hooks().onAnnotatedField((_, b) -> {
             MyHandle h = b.newGetOperation(OperationTemplate.defaults()).install(MyHandle::new);
             add(h);
         });

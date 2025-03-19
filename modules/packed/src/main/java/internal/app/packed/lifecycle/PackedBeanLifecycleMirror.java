@@ -21,15 +21,15 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.lifecycle.BeanLifecycleModel;
 import app.packed.bean.lifecycle.BeanLifecycleMirror;
+import app.packed.bean.lifecycle.BeanLifecycleModel;
 import app.packed.bean.lifecycle.InitializeOperationMirror;
 import app.packed.bean.lifecycle.StartOperationMirror;
 import app.packed.bean.lifecycle.StopOperationMirror;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 
 /** Implementation of {@link BeanLifecycleMirror}. */
@@ -49,7 +49,7 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements BeanLifecycle
     // However custom bean templates may support it
     @Override
     public Optional<InitializeOperationMirror> factory() {
-        if (bean.beanKind != BeanKind.STATIC && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+        if (bean.beanKind != BeanKind.STATIC && bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             return Optional.of((InitializeOperationMirror) bean.operations.first().mirror());
         }
         return Optional.empty();

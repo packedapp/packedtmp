@@ -26,6 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
+import app.packed.runtime.errorhandling.UnhandledApplicationException;
 import internal.app.packed.lifecycle.lifetime.entrypoint.OldEntryPointSetup;
 
 /**
@@ -126,7 +127,8 @@ public final class RegionalManagedLifetime implements ManagedLifecycle {
                 lock.unlock();
             }
             // We never run any stop methods when an initialization method fails
-            throw t;
+            throw new UnhandledApplicationException(state, null, t);
+            // throw t;
         }
 
         lock.lock();

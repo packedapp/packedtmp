@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
@@ -78,7 +79,7 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         } else if (va.rawType().equals(ServiceLocator.class)) {
             v.bindOp(new Op1<ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});
         } else if (va.rawType().equals(ComponentHostContext.class)) {
-            v.bindOp(new Op1<ApplicationLaunchContext, ComponentHostContext>(a -> PackedComponentHostContext.DEFAULT) {});
+            v.bindOp(new Op1<ApplicationLaunchContext, ComponentHostContext>(_ -> PackedComponentHostContext.DEFAULT) {});
         } else {
             throw new UnsupportedOperationException("Unknown Container Guest Service " + va.rawType());
         }
@@ -92,12 +93,13 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         // Create a new installer for the bean
         BeanInstaller installer = APPLICATION_GUEST_BEAN_TEMPLATE.newInstaller(installingExtension, owner);
 
+
         // Install the bean and get a handle
         GuestBeanHandle h;
         if (template.op() == null) {
-            h = installer.install(template.guestClass(), GuestBeanHandle::new);
+            h = installer.install(Bean.of(template.guestClass()), GuestBeanHandle::new);
         } else {
-            h = installer.install((Op<?>) template.op(), GuestBeanHandle::new);
+            h = installer.install(Bean.of((Op<?>) template.op()), GuestBeanHandle::new);
         }
 
         // Cleanup

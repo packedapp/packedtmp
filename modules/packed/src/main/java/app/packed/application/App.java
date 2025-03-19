@@ -1,10 +1,10 @@
 package app.packed.application;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
+import app.packed.application.App.Launcher;
 import app.packed.assembly.Assembly;
-import app.packed.build.MirrorPrinter;
+import app.packed.binding.Key;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -38,7 +38,8 @@ import app.packed.runtime.StopOption;
  * @see RunState
  * @see Wirelet
  */
-public interface App extends AutoCloseable {
+// Rename to SimpleApp???
+public interface App extends AutoCloseable, ApplicationInterface {
 
     /**
      * Waits for the application to reach a specified state, with a timeout.
@@ -92,43 +93,6 @@ public interface App extends AutoCloseable {
     void stop(StopOption... options);
 
     /**
-     * Runs an application with exception checking, wrapping any unhandled exceptions in {@link ApplicationException}.
-     *
-     * <p>
-     * This method is similar to {@link #run(Assembly, Wirelet...)}, but provides additional safety by ensuring all
-     * exceptions are wrapped in {@link ApplicationException}.
-     *
-     * @param assembly
-     *            the application's assembly
-     * @param wirelets
-     *            optional wirelets for configuration
-     * @throws ApplicationException
-     *             if the application fails during execution
-     * @throws RuntimeException
-     *             if the application fails to build
-     */
-    static void checkedRun(Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException {
-        PackedApp.BOOTSTRAP_APP.checkedLaunch(RunState.TERMINATED, assembly, wirelets);
-    }
-
-    /**
-     * Starts an application with exception checking, wrapping any unhandled exceptions in {@link ApplicationException}.
-     *
-     * @param assembly
-     *            the application's assembly
-     * @param wirelets
-     *            optional wirelets for configuration
-     * @return a running instance of the application
-     * @throws ApplicationException
-     *             if the application fails to start
-     * @throws RuntimeException
-     *             if the application fails to build
-     */
-    static App checkedStart(Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException {
-        return PackedApp.BOOTSTRAP_APP.checkedLaunch(RunState.RUNNING, assembly, wirelets);
-    }
-
-    /**
      * Creates an application image that can be used to launch a single instance of the application.
      *
      * <p>
@@ -142,8 +106,13 @@ public interface App extends AutoCloseable {
      *            optional wirelets for configuration
      * @return an image that can be used to launch the application
      */
+    // By default I think it is single launchable...
     static App.Image imageOf(Assembly assembly, Wirelet... wirelets) {
         return new PackedApp.AppImage(PackedApp.BOOTSTRAP_APP.imageOf(assembly, wirelets));
+    }
+
+    static App.Launcher launcher(Assembly assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -163,7 +132,8 @@ public interface App extends AutoCloseable {
 
     /**
      * Builds an application and prints its structure to {@code System.out}.
-     *
+     * <p>
+     * If you need more detailed output you can use {@link ApplicationMirror#printer()}.
      * <p>
      * This is a convenience method for debugging and analysis purposes.
      *
@@ -174,19 +144,6 @@ public interface App extends AutoCloseable {
      */
     static void print(Assembly assembly, Wirelet... wirelets) {
         mirrorOf(assembly, wirelets).print();
-    }
-
-    /**
-     * Creates a printer for detailed application structure output.
-     *
-     * @param assembly
-     *            the application's assembly
-     * @param wirelets
-     *            optional wirelets for configuration
-     * @return a printer for the application structure
-     */
-    static MirrorPrinter printer(Assembly assembly, Wirelet... wirelets) {
-        return mirrorOf(assembly, wirelets).printer();
     }
 
     /**
@@ -214,8 +171,10 @@ public interface App extends AutoCloseable {
      * @param wirelets
      *            optional wirelets for configuration
      * @return the running application instance
-     * @throws RuntimeException
-     *             if the application fails to build or start
+     * @throws app.packed.build.BuildException
+     *             if the application failed to build
+     * @throws UnhandledApplicationException
+     *             if the application failed to start
      */
     static App start(Assembly assembly, Wirelet... wirelets) {
         return PackedApp.BOOTSTRAP_APP.launch(RunState.RUNNING, assembly, wirelets);
@@ -233,10 +192,11 @@ public interface App extends AutoCloseable {
      * @throws UnsupportedOperationException
      *             currently not implemented
      */
-    // Nej Jeg tror ikke den er der.
-    static void test(Assembly assembly, Consumer<? /* TestObject */> cno, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+    // Alternativ AppTester.of(Assembly, Wirelets)
+//
+//    static void test(Assembly assembly, Consumer<? /* TestObject */> cno, Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Builds and verifies an application without running it.
@@ -260,36 +220,44 @@ public interface App extends AutoCloseable {
      */
     interface Image {
 
-        /**
-         * Runs the application with exception checking.
-         *
-         * @param wirelets
-         *            optional runtime wirelets
-         * @throws ApplicationException
-         *             if the application fails during execution
-         */
-        void checkedRun(Wirelet... wirelets) throws ApplicationPanicException;
+        default App.Launcher launcher() {
+            throw new UnsupportedOperationException();
+        }
 
         /**
-         * Starts the application with exception checking.
-         *
-         * @param wirelets
-         *            optional runtime wirelets
-         * @return the running application instance
-         * @throws ApplicationException
-         *             if the application fails to start
+         * @return an application
+         * @throws IllegalStateException
+         *             the image is single usage, and has already been used.
          */
-        App checkedStart(Wirelet... wirelets) throws ApplicationPanicException;
+        // Virker ikke med Containers....
+        default ApplicationMirror mirror() {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * Builds an application and prints its structure to {@code System.out}.
+         *
+         * <p>
+         * This is a convenience method for debugging and analysis purposes.
+         *
+         * @param assembly
+         *            the application's assembly
+         * @param wirelets
+         *            optional wirelets for configuration
+         */
+        default void print() {
+            mirror().printer().print();
+        }
 
         /**
          * Runs the application to completion.
          *
          * @param wirelets
          *            optional runtime wirelets
-         * @throws RuntimeException
+         * @throws UnhandledApplicationException
          *             if the application failed during executing
          */
-        void run(Wirelet... wirelets);
+        void run();
 
         /**
          * Starts the application and waits until it is fully running.
@@ -297,9 +265,92 @@ public interface App extends AutoCloseable {
          * @param wirelets
          *            optional runtime wirelets
          * @return the running application instance
-         * @throws RuntimeException
+         * @throws UnhandledApplicationException
          *             if the application fails to start
          */
-        App start(Wirelet... wirelets);
+        App start();
+    }
+
+    interface Launcher {
+        Launcher alwaysRestart();
+
+        // rename to arg
+        <T> Launcher argument(Class<T> key, T value);
+        <T> Launcher argument(Key<T> key, T value);
+        Launcher argument(Object object);
+
+        Launcher ignoreAllExceptions();
+
+        App.Image image();
+
+        void run();
+
+        App start();
+    }
+
+    static void main(String[] args) {
+       CliLaunchers.mainArgs(App.launcher(null), args).start();
+
     }
 }
+
+// Det er jo kun images der er problemet...
+class CliLaunchers {
+
+    static Launcher mainArgs(Launcher launcher, String[] args) {
+        return launcher;
+    }
+
+}
+
+
+///**
+//* Creates a printer for detailed application structure output.
+//*
+//* @param assembly
+//*            the application's assembly
+//* @param wirelets
+//*            optional wirelets for configuration
+//* @return a printer for the application structure
+//*/
+//// Maybe skip this one, and only have print()
+//static MirrorPrinter printer(Assembly assembly, Wirelet... wirelets) {
+//  return mirrorOf(assembly, wirelets).printer();
+//}
+
+///**
+//* Runs an application with exception checking, wrapping any unhandled exceptions in {@link ApplicationException}.
+//*
+//* <p>
+//* This method is similar to {@link #run(Assembly, Wirelet...)}, but provides additional safety by ensuring all
+//* exceptions are wrapped in {@link ApplicationException}.
+//*
+//* @param assembly
+//*            the application's assembly
+//* @param wirelets
+//*            optional wirelets for configuration
+//* @throws ApplicationException
+//*             if the application fails during execution
+//* @throws RuntimeException
+//*             if the application fails to build
+//*/
+//static void checkedRun(Assembly assembly, Wirelet... wirelets) throws UnhandledApplicationException {
+//  PackedApp.BOOTSTRAP_APP.checkedLaunch(RunState.TERMINATED, assembly, wirelets);
+//}
+//
+///**
+//* Starts an application with exception checking, wrapping any unhandled exceptions in {@link ApplicationException}.
+//*
+//* @param assembly
+//*            the application's assembly
+//* @param wirelets
+//*            optional wirelets for configuration
+//* @return a running instance of the application
+//* @throws ApplicationException
+//*             if the application fails to start
+//* @throws RuntimeException
+//*             if the application fails to build
+//*/
+//static App checkedStart(Assembly assembly, Wirelet... wirelets) throws UnhandledApplicationException {
+//  return PackedApp.BOOTSTRAP_APP.checkedLaunch(RunState.RUNNING, assembly, wirelets);
+//}

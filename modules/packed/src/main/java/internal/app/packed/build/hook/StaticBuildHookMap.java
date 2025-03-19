@@ -32,7 +32,7 @@ public class StaticBuildHookMap implements BuildHookMap {
     private final BuildHookMap parent = null;
 
     public StaticBuildHookMap(Map<Class<? extends BuildHook>, List<BuildHook>> hooks) {
-        hooks.replaceAll((k, v) -> List.copyOf(v));
+        hooks.replaceAll((_, v) -> List.copyOf(v));
         this.hooks = Map.copyOf(hooks);
     }
 

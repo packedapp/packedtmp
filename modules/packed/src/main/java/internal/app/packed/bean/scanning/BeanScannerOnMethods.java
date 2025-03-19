@@ -90,7 +90,7 @@ class BeanScannerOnMethods {
                     case Modifier.PUBLIC:
                         continue; // we have already added the method in the first step
                     default: // default access
-                        HashSet<Package> pkg = types.computeIfAbsent(new MethodHelper(m), key -> new HashSet<>());
+                        HashSet<Package> pkg = types.computeIfAbsent(new MethodHelper(m), _ -> new HashSet<>());
                         if (pkg != packages && pkg.add(c.getPackage())) {
                             break;
                         } else {

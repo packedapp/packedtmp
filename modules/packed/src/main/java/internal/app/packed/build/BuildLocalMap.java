@@ -52,7 +52,7 @@ public final class BuildLocalMap {
         if (ivs == null) {
             return (T) locals.get(new LocalKey(local, key));
         } else {
-            return (T) locals.computeIfAbsent(new LocalKey(local, key), e -> ivs.get());
+            return (T) locals.computeIfAbsent(new LocalKey(local, key), _ -> ivs.get());
         }
     }
 

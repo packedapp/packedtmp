@@ -70,8 +70,6 @@ public sealed interface BaseImage<A> permits PackedBaseImage {
      */
     A launch(RunState state, Wirelet... wirelets);
 
-    A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationPanicException;
-
     /**
      * Returns a new base image that maps this image.
      *

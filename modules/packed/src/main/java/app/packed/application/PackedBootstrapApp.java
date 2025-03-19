@@ -79,17 +79,6 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         return handle.image();
     }
 
-    @Override
-    public A checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException {
-        ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.LAUNCH, launcher, wirelets);
-
-        // Build the application
-        H handle = installer.install(assembly);
-
-        // Create and return an instance of the application interface, wirelets have already been specified in the installer
-        return ApplicationLaunchContext.checkedLaunch(handle, state);
-    }
-
     /** {@inheritDoc} */
     @Override
     public A launch(RunState state, Assembly assembly, Wirelet... wirelets) {
@@ -171,3 +160,16 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         }
     }
 }
+
+
+//@Override
+//public A checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws UnhandledApplicationException {
+//  ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.LAUNCH, launcher, wirelets);
+//
+//  // Build the application
+//  H handle = installer.install(assembly);
+//
+//  // Create and return an instance of the application interface, wirelets have already been specified in the installer
+//  return ApplicationLaunchContext.checkedLaunch(handle, state);
+//}
+

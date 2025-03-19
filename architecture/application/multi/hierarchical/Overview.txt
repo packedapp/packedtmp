@@ -1,0 +1,6 @@
+Single Application
+
+Deployed at build time vs Deployed at runtime
+
+Application Instance Management vs other containers
+  Forskellen er lidt at applikationer kan afinstalleres

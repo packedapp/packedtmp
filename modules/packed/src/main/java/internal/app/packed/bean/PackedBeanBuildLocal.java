@@ -17,14 +17,14 @@ package internal.app.packed.bean;
 
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanBuildLocal;
-import app.packed.bean.BeanBuildLocal.Accessor;
+import app.packed.bean.BeanLocal;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.util.Nullable;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
 
 /** Implementation of BeanLocal. */
-public final class PackedBeanBuildLocal<T> extends PackedBuildLocal<Accessor, T> implements BeanBuildLocal<T> {
+public final class PackedBeanBuildLocal<T> extends PackedBuildLocal<Accessor, T> implements BeanLocal<T> {
 
     /**
      * @param initialValueSupplier

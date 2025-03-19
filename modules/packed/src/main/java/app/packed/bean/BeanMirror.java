@@ -12,9 +12,9 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
-import app.packed.bean.BeanBuildLocal.Accessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.lifecycle.BeanLifecycleMirror;
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceInheritableVariable;
 import app.packed.binding.Key;
 import app.packed.build.action.BuildActionMirror;
 import app.packed.component.ComponentMirror;
@@ -42,7 +42,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <p>
  * An instance of BeanMirror (or a subclass hereof) can be injected at runtime simply by declaring a dependency on it.
  */
-@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
+@OnContextServiceInheritableVariable(introspector = BaseExtensionMirrorBeanIntrospector.class)
 public non-sealed class BeanMirror implements Accessor, ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror {
 
     /** The handle of the bean we are mirroring. */
@@ -82,7 +82,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
      * @return the type (class) of the bean.
      */
     public final Class<?> beanClass() {
-        return handle.bean.beanClass;
+        return handle.bean.bean.beanClass;
     }
 
     /** {@return the bean kind} */
@@ -92,7 +92,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
 
     /** {@return the bean source kind} */
     public final BeanSourceKind beanSourceKind() {
-        return handle.bean.beanSourceKind;
+        return handle.bean.bean.beanSourceKind;
     }
 
     /** {@inheritDoc} */
@@ -222,7 +222,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
         public Collection<BeanMirror> beans() {
             HashSet<BeanSetup> set = new HashSet<>();
             for (OperationSetup os : bean.operations) {
-                os.forEachBinding(b -> {
+                os.forEachBinding(_ -> {
                     throw new UnsupportedOperationException();
                 });
             }

@@ -117,7 +117,7 @@ class BeanScannerOnFields {
                 if (p.af instanceof OnAnnotatedVariableCache) {
                     failOnIllegalVariable(field, l.stream().map(z -> z.af).toList());
                 }
-                map.computeIfAbsent(p.af.bim(), e -> new ArrayList<>(3)).add(p);
+                map.computeIfAbsent(p.af.bim(), _ -> new ArrayList<>(3)).add(p);
             }
 
             PackedAnnotationList pal = new PackedAnnotationList(annotations);

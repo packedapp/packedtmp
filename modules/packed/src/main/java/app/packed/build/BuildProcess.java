@@ -23,6 +23,8 @@ import internal.app.packed.build.PackedBuildProcess;
 /**
  * Only available while building the application.
  */
+// What about Codegen??? Don't think it is available there
+
 //Ideen er lidt at man kan faa access til Build info.
 
 //Og fx hvis vi har hot reload tilfoeje en klasse to watch udover selve assemblies

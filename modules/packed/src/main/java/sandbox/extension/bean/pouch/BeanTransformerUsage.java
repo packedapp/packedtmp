@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Inject;
-import app.packed.bean.scanning.BeanClassMutator;
+import app.packed.bean.scanning.BeanSynthesizer;
 import app.packed.binding.Variable;
 import app.packed.container.ContainerBuildHook;
 import app.packed.container.ContainerConfiguration;
@@ -60,7 +60,7 @@ public class BeanTransformerUsage {
 
         @Override
         public void onNew(ContainerConfiguration configuration) {
-            configuration.use(BaseExtension.class).transformBeans(c -> {
+            configuration.use(BaseExtension.class).transformBeans(_ -> {
 
                 // replace Jakarta.inject -> Doo.inject.class;
                 // if c.eachBeanField.isAnnotatedWith(Inject.class) -> Throw new UOE;
@@ -71,7 +71,7 @@ public class BeanTransformerUsage {
     public class MyBean {
 
         static {
-            BeanClassMutator.forceTransform(MethodHandles.lookup(), c -> {
+            BeanSynthesizer.forceTransform(MethodHandles.lookup(), c -> {
                 c.addFunction(Variable.of(Void.class), () -> {
                     System.out.println();
                     return null;

@@ -15,7 +15,7 @@
  */
 package tck.context;
 
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationHandle;
@@ -27,7 +27,7 @@ import tck.HookTestingExtensionBeanIntrospector;
 /** Various context class and their templates that can be used where applicable. */
 public class ContextsHelpers {
 
-    @OnExtensionServiceBeanTrigger(introspector = HookTestingExtensionBeanIntrospector.class)
+    @OnContextServiceVariable(introspector = HookTestingExtensionBeanIntrospector.class)
     public record NoImplContext(int i) implements Context<HookTestingExtension> {
         /** A template. */
         public static final ContextTemplate CT = ContextTemplate.of(NoImplContext.class);
@@ -45,7 +45,7 @@ public class ContextsHelpers {
             v.bindContext(NoImplContext.class);
         });
 
-        t.hooks().onAnnotatedMethod((l, b) -> {
+        t.hooks().onAnnotatedMethod((_, b) -> {
             OperationHandle<?> h = b.newOperation(ContextsHelpers.NoImplContext.OTINT).install(OperationHandle::new);
             t.add(h);
         });

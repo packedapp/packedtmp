@@ -27,7 +27,7 @@ public final class ComponentTagHolder {
     final HashMap<ComponentSetup, Set<String>> map = new HashMap<>();
 
     public void addComponentTags(ComponentSetup cs, String... tags) {
-        map.compute(cs, (k, v) -> {
+        map.compute(cs, (_, v) -> {
             if (v == null) {
                 return Set.of(tags);
             } else {

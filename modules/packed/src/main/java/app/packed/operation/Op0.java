@@ -25,7 +25,7 @@ import java.util.function.Supplier;
  * Can be used like this:
  *
  * <pre> {@code
- * Op<Long> f = new Op0<>(System::currentTimeMillis) {}};</pre>
+ * Op<Long> op = new Op0<>(System::currentTimeMillis) {}};</pre>
  * <p>
  * In this example we create an anonymous class inheriting from Op0 in order to capture information about the suppliers
  * type variable (in this case {@code Long}).

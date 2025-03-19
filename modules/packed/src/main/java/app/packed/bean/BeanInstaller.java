@@ -18,7 +18,6 @@ package app.packed.bean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.operation.Op;
 import internal.app.packed.bean.PackedBeanInstaller;
 
 /**
@@ -34,10 +33,6 @@ public sealed interface BeanInstaller permits PackedBeanInstaller {
 
     BeanInstaller componentTag(String... tags);
 
-    default BeanHandle<BeanConfiguration> install(Class<?> beanClass) {
-        return install(beanClass, BeanHandle::new);
-    }
-
     /**
      * Installs the bean using the specified class as the bean source.
      * <p>
@@ -50,32 +45,17 @@ public sealed interface BeanInstaller permits PackedBeanInstaller {
      * @param configurationCreator
      *            responsible for creating the configuration of the bean that is exposed to the end user.
      * @return a bean handle representing the installed bean
-     *
-     * @see app.packed.bean.BeanSourceKind#CLASS
      */
-    <H extends BeanHandle<?>> H install(Class<?> beanClass, Function<? super BeanInstaller, H> factory);
-
-    <H extends BeanHandle<?>> H install(Op<?> beanClass, Function<? super BeanInstaller, H> factory);
+    <H extends BeanHandle<?>> H install(Bean<?> bean, Function<? super BeanInstaller, H> factory);
 
     // These things can never be multi
     // AbsentInstalledComponent(boolean wasInstalled)
+
+    // Er det udelukken BeanClass vi reagere paa her???
+
+    //Shouldn't it be Consumer<? super H> onNew
     <H extends BeanHandle<T>, T extends BeanConfiguration> H installIfAbsent(Class<?> beanClass, Class<T> beanConfigurationClass,
             Function<? super BeanInstaller, H> configurationCreator, Consumer<? super BeanHandle<?>> onNew);
-
-    // instance = introspected bean
-    // constant = non-introspected bean
-    <H extends BeanHandle<?>> H installInstance(Object instance, Function<? super BeanInstaller, H> factory);
-
-    /**
-     * Creates a new bean without a source.
-     *
-     * @return a bean handle representing the new bean
-     *
-     * @throws IllegalStateException
-     *             if this builder was created with a base template other than {@link BeanTemplate#STATIC}
-     * @see app.packed.bean.BeanSourceKind#SOURCELESS
-     */
-    <H extends BeanHandle<?>> H installSourceless(Function<? super BeanInstaller, H> factory);
 
     BeanInstaller namePrefix(String prefix);
 
@@ -90,5 +70,5 @@ public sealed interface BeanInstaller permits PackedBeanInstaller {
      *            the value of the local
      * @return this builder
      */
-    <T> BeanInstaller setLocal(BeanBuildLocal<T> local, T value);
+    <T> BeanInstaller setLocal(BeanLocal<T> local, T value);
 }

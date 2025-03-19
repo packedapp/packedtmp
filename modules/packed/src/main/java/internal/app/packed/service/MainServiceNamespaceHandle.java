@@ -95,13 +95,13 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
             if (o.target instanceof BeanAccessOperationTarget) {
                 accessor = o.bean.lifetimeStoreIndex;
                 // test if prototype bean
-                if (accessor == -1 && o.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+                if (accessor == -1 && o.bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
                     o = o.bean.operations.first();
                 }
             }
-            if (!(o.target instanceof MemberOperationTarget) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
+            if (!(o.target instanceof MemberOperationTarget) && o.bean.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
                 // It is a a constant
-                mh = MethodHandles.constant(Object.class, o.bean.beanSource);
+                mh = MethodHandles.constant(Object.class, o.bean.bean.beanSource);
                 mh = MethodHandles.dropArguments(mh, 0, ExtensionContext.class);
             } else if (accessor >= 0) {
                 mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);

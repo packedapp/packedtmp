@@ -149,7 +149,6 @@ public abstract class AbstractDelegatingStream<T> implements Stream<T> {
         stream.forEachOrdered(action);
     }
 
-    @SuppressWarnings("preview")
     @Override
     public final <R> Stream<R> gather(Gatherer<? super T, ?, R> gatherer) {
         return stream.gather(gatherer);

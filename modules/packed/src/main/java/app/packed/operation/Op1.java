@@ -20,6 +20,16 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 /**
+ * An {@link Op} type that wraps a {@link Function} taking  a single argument.
+ * <p>
+ * Can be used like this:
+ *
+ * <pre> {@code
+ * Op<Long> op = new Op0<>(System::currentTimeMillis) {}};</pre>
+ * <p>
+ * In this example we create an anonymous class inheriting from Op0 in order to capture information about the suppliers
+ * type variable (in this case {@code Long}).
+ *
  * An {@link Op} type that wraps a {@link Function} taking a single argument.
  * <p>
  * Is typically used like this:
@@ -48,9 +58,9 @@ import java.util.function.Function;
  * type variable (in this case {@code Long}).
  *
  * @param <T>
- *            The type of the argument that this op takes
+ *            The type of the argument the op takes
  * @param <R>
- *            the type of objects this op returns
+ *            the type of objects the op returns
  * @see Op0
  * @see Op2
  */
@@ -68,10 +78,3 @@ public abstract class Op1<T, R> extends CapturingOp<R> {
         super(requireNonNull(function, "function is null"));
     }
 }
-
-//
-//// Casts the return value of function dynamically.. Hmmm
-//// Tror man selv maa skrive det
-//public static <T> Op<T> dynOp(Class<T> from, Class<?> returnValue, Function<T, ?> function) {
-//    throw new UnsupportedOperationException();
-//}

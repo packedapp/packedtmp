@@ -112,7 +112,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
                 OperationSetup os = OperationSetup.crack(this);
                 BeanSetup bean = os.bean;
                 if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
-                    assert (bean.beanSourceKind != BeanSourceKind.INSTANCE);
+                    assert (bean.bean.beanSourceKind != BeanSourceKind.INSTANCE);
                     MethodHandle mha = super.newMethodHandle();
 
                     // We store container beans in a generic object array.

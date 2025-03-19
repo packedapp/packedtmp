@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-import app.packed.application.ApplicationPanicException;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.BaseImage;
 import app.packed.container.Wirelet;
@@ -50,13 +49,13 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
             Function<? super F, ? extends E> andThen = this.mapper.andThen(mapper);
             return new ImageMapped<>(image, andThen);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationPanicException {
-            F result = image.checkedLaunch(state, wirelets);
-            return mapper.apply(result);
-        }
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        public A checkedLaunch(RunState state, Wirelet... wirelets) throws UnhandledApplicationException {
+//            F result = image.checkedLaunch(state, wirelets);
+//            return mapper.apply(result);
+//        }
     }
 
     /**
@@ -81,19 +80,19 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
             // Think we need to extract a launcher and call it
             return img.launch(state, wirelets);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationPanicException {
-            BaseImage<A> img = ref.getAndSet(null);
-            if (img == null) {
-                throw new IllegalStateException(
-                        "This image has already been used. You can use ApplicationWirelets.resuableImage() to allow repeatable usage of an application image");
-            }
-            // Not sure we can GC anything here
-            // Think we need to extract a launcher and call it
-            return img.checkedLaunch(state, wirelets);
-        }
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        public A checkedLaunch(RunState state, Wirelet... wirelets) throws UnhandledApplicationException {
+//            BaseImage<A> img = ref.getAndSet(null);
+//            if (img == null) {
+//                throw new IllegalStateException(
+//                        "This image has already been used. You can use ApplicationWirelets.resuableImage() to allow repeatable usage of an application image");
+//            }
+//            // Not sure we can GC anything here
+//            // Think we need to extract a launcher and call it
+//            return img.checkedLaunch(state, wirelets);
+//        }
     }
 
     /**
@@ -107,12 +106,6 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
         public A launch(RunState state, Wirelet... wirelets) {
             return ApplicationLaunchContext.launch(handle, state, wirelets);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationPanicException {
-            return ApplicationLaunchContext.checkedLaunch(handle, state, wirelets);
-        }
     }
 
     @ValueBased
@@ -125,13 +118,13 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
             ApplicationHandle<?, ?> ah = application.lazyBuild().handle();
             return (A) ApplicationLaunchContext.launch(ah, state, wirelets);
         }
-
-        /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
-        @Override
-        public A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationPanicException {
-            ApplicationHandle<?, ?> ah = application.lazyBuild().handle();
-            return (A) ApplicationLaunchContext.checkedLaunch(ah, state, wirelets);
-        }
+//
+//        /** {@inheritDoc} */
+//        @SuppressWarnings("unchecked")
+//        @Override
+//        public A checkedLaunch(RunState state, Wirelet... wirelets) throws UnhandledApplicationException {
+//            ApplicationHandle<?, ?> ah = application.lazyBuild().handle();
+//            return (A) ApplicationLaunchContext.checkedLaunch(ah, state, wirelets);
+//        }
     }
 }

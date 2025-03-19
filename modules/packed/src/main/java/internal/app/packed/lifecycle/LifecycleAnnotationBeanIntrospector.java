@@ -112,8 +112,8 @@ public final class LifecycleAnnotationBeanIntrospector extends PackedBeanIntrosp
 
     public static void checkForFactoryOp(BeanSetup bean) {
         // Creating an bean factory operation representing the Op if an Op was specified when creating the bean.
-        if (bean.beanSourceKind == BeanSourceKind.OP) {
-            PackedOp<?> op = (PackedOp<?>) bean.beanSource;
+        if (bean.bean.beanSourceKind == BeanSourceKind.OP) {
+            PackedOp<?> op = (PackedOp<?>) bean.bean.beanSource;
 
             PackedOperationTemplate ot = bean.template.initializationTemplate();
             // if (ot.returnKind == ReturnKind.DYNAMIC) {
@@ -138,7 +138,7 @@ public final class LifecycleAnnotationBeanIntrospector extends PackedBeanIntrosp
     }
 
     @Override
-    public void onExtensionService(Key<?> key, OnExtensionService service) {
+    public void onExtensionService(Key<?> key, OnContextService service) {
         if (service.matchNoQualifiers(OnStartContext.class)) {
             service.binder().bindContext(OnStartContext.class);
         } else if (service.matchNoQualifiers(StopContext.class)) {

@@ -48,7 +48,7 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         String prefix = namePrefix;
         if (prefix == null) {
             prefix = "Functional";
-            BeanModel beanModel = bean.beanSourceKind == BeanSourceKind.SOURCELESS ? null : new BeanModel(bean.beanClass);
+            BeanModel beanModel = bean.bean.beanSourceKind == BeanSourceKind.SOURCELESS ? null : new BeanModel(bean.bean.beanClass);
 
             if (beanModel != null) {
                 prefix = beanModel.simpleName();
@@ -59,8 +59,8 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
 
         n = prefixExtension(bean, n);
 
-        if (bean.beanClass != void.class) {
-            BeanClassKey key = new BeanClassKey(bean.owner.authority(), bean.beanClass);
+        if (bean.bean.beanClass != void.class) {
+            BeanClassKey key = new BeanClassKey(bean.owner.authority(), bean.bean.beanClass);
 
             BeanSetup existingBean = beanClasses.get(key);
             int counter = 0;

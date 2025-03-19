@@ -36,25 +36,25 @@ import app.packed.container.WireletSelection;
 // Maybe keep it and just be like. Advised to use this to get better exception messages
 public abstract class ExtensionWirelet<E extends Extension<E>> extends Wirelet {
 
-    /**
-     * Invoked by the runtime if the wirelet is not consumed. Either at build-time using
-     * {@link app.packed.extension.Extension#selectWirelets(Class)} or at runtime using injection of
-     * {@link WireletSelection}.
-     */
-    protected void onUnconsumed(Wirelet.Phase phase) {
-        // Invoked by the runtime if the wirelet is not selected
-
-        // look up extension member
-        // HOW to know from this method whether or not the extension is in use???
-        // Could use ThreadLocal...
-        // Nej vi er ligeglade. En unprocessed extension wirelet...
-        // Er automatisk en extension der ikke er registreret
-        // Alle extensions skal processere alle deres wirelets
-
-        // Either the extension is not registered or some other
-
-        // Tror vi tester om den er overskrevet
-    }
+//    /**
+//     * Invoked by the runtime if the wirelet is not consumed. Either at build-time using
+//     * {@link app.packed.extension.Extension#selectWirelets(Class)} or at runtime using injection of
+//     * {@link WireletSelection}.
+//     */
+//    protected void onUnconsumed() {
+//        // Invoked by the runtime if the wirelet is not selected
+//
+//        // look up extension member
+//        // HOW to know from this method whether or not the extension is in use???
+//        // Could use ThreadLocal...
+//        // Nej vi er ligeglade. En unprocessed extension wirelet...
+//        // Er automatisk en extension der ikke er registreret
+//        // Alle extensions skal processere alle deres wirelets
+//
+//        // Either the extension is not registered or some other
+//
+//        // Tror vi tester om den er overskrevet
+//    }
 
     Class<E> extensionClass() {
         // Can be public

@@ -23,7 +23,7 @@ import java.lang.reflect.AnnotatedElement;
 
 // Maybe AnnotationList.Transformer
 // <T> <- Where T is the target? IDK
-public interface AnnotationListTransformer {
+interface AnnotationListTransformer {
     // I think we want something about the target...
     // Target may have already been transformed... annotations contains the annotations that should be transformed
     AnnotationList transform(AnnotatedElement target, AnnotationList annotations);

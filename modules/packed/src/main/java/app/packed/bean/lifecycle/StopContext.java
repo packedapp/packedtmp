@@ -17,7 +17,7 @@ package app.packed.bean.lifecycle;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.StopInfo;
@@ -28,7 +28,7 @@ import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
  */
 // Bliver lavet per operation
 // BeanStopContext
-@OnExtensionServiceBeanTrigger(introspector = BaseExtensionHostGuestBeanintrospector.class, requiresContext = StopContext.class)
+@OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class, requiresContext = StopContext.class)
 public interface StopContext extends Context<BaseExtension> {
 
     /**

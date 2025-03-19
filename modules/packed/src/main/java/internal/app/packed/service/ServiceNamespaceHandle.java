@@ -108,11 +108,11 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
         // The same bean providing the same service
         if (existingOperation.bean == newOperation.bean) {
             return "This bean is already providing a service for " + key.toString() + ", beanClass = "
-                    + StringFormatter.format(existingOperation.bean.beanClass);
+                    + StringFormatter.format(existingOperation.bean.bean.beanClass);
         }
 
         if (existingProvider.binding() instanceof FromLifetimeArena) {
-            return "Cannot provide a service for " + key.toString() + ", as another bean of type " + StringFormatter.format(existingOperation.bean.beanClass)
+            return "Cannot provide a service for " + key.toString() + ", as another bean of type " + StringFormatter.format(existingOperation.bean.bean.beanClass)
                     + " is already providing a service for the same key";
 
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +

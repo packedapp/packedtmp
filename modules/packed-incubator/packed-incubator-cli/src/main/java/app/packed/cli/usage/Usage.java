@@ -35,7 +35,7 @@ public class Usage extends BaseAssembly {
 
 //        ServiceableBeanConfiguration<String> i = install(String.class);
 
-        e.addCliCommand(f -> {}).names("asdsad");
+        e.addCliCommand(_ -> {}).names("asdsad");
 
     }
 

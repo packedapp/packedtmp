@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceInheritableVariable;
 import app.packed.build.BuildGoal;
 import app.packed.build.Mirror;
 import app.packed.build.MirrorPrinter;
@@ -36,16 +36,13 @@ import internal.app.packed.util.PackedTreeView;
  * An application mirror instance is typically obtained by calling application mirror factory methods such as
  * {@link App#mirrorOf(Assembly, Wirelet...)}.
  * <p>
- * Instances of this class should never be created directly as the framework needs to perform initialization before it
- * can be used.
- * <p>
  * Instances of ApplicationMirror (or a subclass hereof) can be injected into any bean simply by declaring a dependency
  * on this class.
  * <p>
  * Like many other mirrors classes the type of application mirror being returned can be specialized. See
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
-@OnExtensionServiceInteritedBeanTrigger(introspector = BaseExtensionMirrorBeanIntrospector.class)
+@OnContextServiceInheritableVariable(introspector = BaseExtensionMirrorBeanIntrospector.class)
 public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationBuildLocal.Accessor {
 
     /** The application's handle. */
@@ -204,7 +201,8 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return Optional.empty();
     }
 
-    /** {@return a stream of all of the operations declared by the user in the application.} */
+    /** {@return a stream of all of the operations on beans owned by the user in the application.} */
+    // I think non-synthetic should also be filtered
     public OperationMirror.OfStream<OperationMirror> operations() {
         return OperationMirror.OfStream.of(beans().flatMap(BeanMirror::operations));
     }
@@ -228,7 +226,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         for (BeanSetup b : cs.beans) {
             StringBuilder sb = new StringBuilder();
             sb.append(b.componentPath()).append("");
-            sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.owner());
+            sb.append(" [").append(b.bean.beanClass.getName()).append("], owner = " + b.owner());
             sb.append("\n");
             for (OperationSetup os : b.operations) {
                 // sb.append(" ".repeat(b.path().depth()));

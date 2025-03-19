@@ -171,7 +171,7 @@ public class MapDelegate<K, F, T> implements Map<K, T> {
 
         @Override
         public <A> A[] toArray(A[] a) {
-            return stream().toArray(size -> a);
+            return stream().toArray(_ -> a);
         }
 
         @Override
@@ -310,7 +310,7 @@ public class MapDelegate<K, F, T> implements Map<K, T> {
 
         @Override
         public <A> A[] toArray(A[] a) {
-            return stream().toArray(size -> a);
+            return stream().toArray(_ -> a);
         }
 
         @Override

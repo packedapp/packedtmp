@@ -16,6 +16,7 @@
 package app.packed.cli.other;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationInterface;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.container.Wirelets;
@@ -24,12 +25,11 @@ import app.packed.container.Wirelets;
  *
  */
 // Maybe it is just a thin wrapper for App
-public interface CliApp {
+public interface CliApp extends ApplicationInterface {
 
     // But isn't this normally in the code???
     // Maybe a StopOption?
     // ObjectToInt(ApplicationException->int errorCode)
-
 
     static void run(Assembly assembly, Wirelet... wirelets) {
         // Maybe checked run...

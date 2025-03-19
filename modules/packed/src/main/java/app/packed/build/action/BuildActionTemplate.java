@@ -92,7 +92,7 @@ class MyExt extends NewBaseExtension<MyExt> {
     }
 
     public void setName2(String name) {
-        try (var ba = startClosable(UPDATE_NAME).log("updateName {s}", name)) {
+        try (var _ = startClosable(UPDATE_NAME).log("updateName {s}", name)) {
             this.name = name;
         }
     }
@@ -106,7 +106,7 @@ class MyExt extends NewBaseExtension<MyExt> {
     }
 
     public void setName5(String name) {
-        try (var ba = UPDATE_NAME.startCloseable().logTrace("updateName {s}", name)) {
+        try (var _ = UPDATE_NAME.startCloseable().logTrace("updateName {s}", name)) {
             this.name = name;
         }
     }

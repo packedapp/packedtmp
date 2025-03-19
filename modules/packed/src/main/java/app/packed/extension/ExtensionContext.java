@@ -15,7 +15,7 @@
  */
 package app.packed.extension;
 
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
 import app.packed.context.Context;
 import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
@@ -27,7 +27,7 @@ import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
  */
 // I don't know about this after we have gotten typed invokers...
 // I think they should be preferable
-@OnExtensionServiceBeanTrigger(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
 public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}
 
 

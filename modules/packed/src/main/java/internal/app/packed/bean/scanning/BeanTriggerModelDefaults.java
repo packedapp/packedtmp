@@ -21,8 +21,8 @@ import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedField;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
-import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
+import app.packed.bean.scanning.BeanTrigger.OnContextServiceInheritableVariable;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
 
@@ -99,8 +99,8 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
         @Override
         protected ParameterTypeCache computeValue(Class<?> type) {
-            OnExtensionServiceBeanTrigger h = type.getAnnotation(OnExtensionServiceBeanTrigger.class);
-            OnExtensionServiceInteritedBeanTrigger ih = type.getAnnotation(OnExtensionServiceInteritedBeanTrigger.class);
+            OnContextServiceVariable h = type.getAnnotation(OnContextServiceVariable.class);
+            OnContextServiceInheritableVariable ih = type.getAnnotation(OnContextServiceInheritableVariable.class);
 
             if (h == null && ih == null) {
                 return null;
@@ -108,7 +108,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
             if (h != null && ih != null) {
                 throw new InternalExtensionException(
-                        "Cannot use both " + OnExtensionServiceBeanTrigger.class + " and " + OnExtensionServiceInteritedBeanTrigger.class + " on @" + type);
+                        "Cannot use both " + OnContextServiceVariable.class + " and " + OnContextServiceInheritableVariable.class + " on @" + type);
             }
 
             if (h != null) {
@@ -121,7 +121,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
                 Class<?> inherited = type;
                 while (inherited != null) {
-                    if (inherited.getDeclaredAnnotation(OnExtensionServiceInteritedBeanTrigger.class) != null) {
+                    if (inherited.getDeclaredAnnotation(OnContextServiceInheritableVariable.class) != null) {
                         break;
                     }
                     inherited = inherited.getSuperclass();

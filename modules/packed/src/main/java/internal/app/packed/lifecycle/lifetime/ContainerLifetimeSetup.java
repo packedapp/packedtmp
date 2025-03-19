@@ -186,8 +186,8 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         if (instance == null) {
             throw new NullPointerException(" returned null");
         }
-        if (!bean.beanClass.isInstance(instance)) {
-            throw new Error("Expected " + bean.beanClass + ", was " + instance.getClass());
+        if (!bean.bean.beanClass.isInstance(instance)) {
+            throw new Error("Expected " + bean.bean.beanClass + ", was " + instance.getClass());
         }
 
         // Store the new bean in the context

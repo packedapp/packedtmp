@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
  */
 //Could return, RESTART, EXIT, SLEEP, CONTINUE
 
+// Tror det er noget den annoteret metode kan returnere
+
 interface DaemonJobAction {
 
     // The one problem here is cleanup...

@@ -87,17 +87,19 @@ public final class Wirelets {
         // Hmm I'm not super stocked, on the other hand explosion of methods
         // I think we might want an ApplicationBuilder???
         // Kan jo ikke bare bruge den med fx Entrypoints...
-        final class ApplicationBuildLazilyWirelet extends InternalBuildWirelet {
-            private static final ApplicationBuildLazilyWirelet INSTANCE = new ApplicationBuildLazilyWirelet();
 
-            /** {@inheritDoc} */
-            @Override
-            public  void onBuild(PackedContainerInstaller<?> installer) {
-                checkIsApplication(installer, this); // maybe explicit error msg
-                installer.applicationInstaller.optionBuildApplicationLazy = true;
-            }
-        }
         return ApplicationBuildLazilyWirelet.INSTANCE;
+    }
+
+    static final class ApplicationBuildLazilyWirelet extends InternalBuildWirelet {
+        private static final ApplicationBuildLazilyWirelet INSTANCE = new ApplicationBuildLazilyWirelet();
+
+        /** {@inheritDoc} */
+        @Override
+        public void onBuild(PackedContainerInstaller<?> installer) {
+            checkIsApplication(installer, this); // maybe explicit error msg
+            installer.applicationInstaller.optionBuildApplicationLazy = true;
+        }
     }
 
     // spawn 10 threads, that creates method handles...
@@ -126,17 +128,19 @@ public final class Wirelets {
         // Vi har droppet at lave flere metoder imageOf, imageResuableOf
         // Vi laver et image eagerly, og det kan launches 1 gang.
         // Saa faar vi fail-faster vi hvis vi proever fx at launche twice
-        final class ApplicationReusableImageWirelet extends InternalBuildWirelet {
-            private static final ApplicationReusableImageWirelet INSTANCE = new ApplicationReusableImageWirelet();
 
-            /** {@inheritDoc} */
-            @Override
-            public  void onBuild(PackedContainerInstaller<?> installer) {
-                checkIsApplication(installer, this); // maybe explicit error msg
-                installer.applicationInstaller.optionBuildReusableImage = true;
-            }
-        }
         return ApplicationReusableImageWirelet.INSTANCE;
+    }
+
+    static final class ApplicationReusableImageWirelet extends InternalBuildWirelet {
+        private static final ApplicationReusableImageWirelet INSTANCE = new ApplicationReusableImageWirelet();
+
+        /** {@inheritDoc} */
+        @Override
+        public void onBuild(PackedContainerInstaller<?> installer) {
+            checkIsApplication(installer, this); // maybe explicit error msg
+            installer.applicationInstaller.optionBuildReusableImage = true;
+        }
     }
 
     /**
@@ -158,7 +162,7 @@ public final class Wirelets {
 
             /** {@inheritDoc} */
             @Override
-            public  void onBuild(PackedContainerInstaller<?> installer) {}
+            public void onBuild(PackedContainerInstaller<?> installer) {}
         }
         return new ApplicationShutdownHookWirelet();
     }

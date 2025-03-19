@@ -7,7 +7,7 @@ import app.packed.util.AnnotationList;
 public class HookTestingExtensionBeanIntrospector extends BeanIntrospector<HookTestingExtension> {
 
     @Override
-    public void onExtensionService(Key<?> key, OnExtensionService service) {
+    public void onExtensionService(Key<?> key, OnContextService service) {
         OnVariableUnwrapped variable = service.binder();
         HookTestingExtension e = extension();
         if (e.onVariableType != null) {

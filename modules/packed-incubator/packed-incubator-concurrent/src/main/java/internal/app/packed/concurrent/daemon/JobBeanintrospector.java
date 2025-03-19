@@ -22,22 +22,30 @@ import app.packed.binding.Key;
 import app.packed.concurrent.job.DaemonJob;
 import app.packed.concurrent.job.DaemonJobContext;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.extension.PackedBeanIntrospector;
+import internal.app.packed.concurrent.ThreadNamespaceHandle;
 
 /**
  * Handles job annotations.
  */
-public final class JobBeanintrospector extends PackedBeanIntrospector<BaseExtension> {
+public final class JobBeanintrospector extends BeanIntrospector<BaseExtension> {
 
     /**
-     * Handles {@link DaemonJob}.
+     * Handles the {@link DaemonJob} method annotation.
      *
      * {@inheritDoc}
      */
     @Override
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
         if (annotation instanceof DaemonJob daemon) {
-            DaemonOperationHandle.onAnnotatedMethod(extensionHandle(), method, daemon);
+            ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(extensionHandle());
+
+            // Install the operation
+            method.newOperation(DaemonOperationHandle.DAEMON_OPERATION_TEMPLATE).install(namespace, (i, n) -> new DaemonOperationHandle(i, n, daemon));
+//
+//            method.newOperation(DaemonOperationHandle.DAEMON_OPERATION_TEMPLATE).install(namespace, (i, n) -> {
+//                DaemonOperationHandle doh = new DaemonOperationHandle(i, namespace, daemon);
+//            });
+
         } else {
             super.onAnnotatedMethod(annotation, method);
         }
@@ -49,8 +57,8 @@ public final class JobBeanintrospector extends PackedBeanIntrospector<BaseExtens
      * {@inheritDoc}
      */
     @Override
-    public void onExtensionService(Key<?> key, OnExtensionService service) {
-        if (service.baseClass() == DaemonJobContext.class) {
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        if (service.matchNoQualifiers(DaemonJobContext.class)) {
             service.binder().bindInvocationArgument(1);
         } else {
             super.onExtensionService(key, service);

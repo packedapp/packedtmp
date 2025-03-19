@@ -28,7 +28,7 @@ public class InjectorServicesTest {
 
     @Test
     public void services() {
-        assertThat(ServiceComposerLocator.of(c -> {}).keys()).isEmpty();
+        assertThat(ServiceComposerLocator.of(_ -> {}).keys()).isEmpty();
     }
 
 }

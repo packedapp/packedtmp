@@ -18,6 +18,7 @@ package app.packed.bean;
 /**
  *
  */
+// Normal use on runtime, fx for error handling
 public interface BeanInfo {
 
 }

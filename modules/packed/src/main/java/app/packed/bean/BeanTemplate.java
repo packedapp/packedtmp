@@ -116,7 +116,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      *            the value to set
      * @return this configurator
      */
-    <T> BeanTemplate withLocal(BeanBuildLocal<T> local, T value);
+    <T> BeanTemplate withLocal(BeanLocal<T> local, T value);
 
     static BeanTemplate of(BeanKind kind) {
         return new PackedBeanTemplate(kind);

@@ -87,7 +87,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
         }
 
         @Override
-        public void onExtensionService(Key<?> key, OnExtensionService service) {
+        public void onExtensionService(Key<?> key, OnContextService service) {
             OnVariableUnwrapped binding = service.binder();
 
             Class<?> hook = key.rawType();

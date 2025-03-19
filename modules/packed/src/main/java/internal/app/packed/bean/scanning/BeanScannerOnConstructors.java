@@ -184,7 +184,7 @@ final record BeanScannerOnConstructors(Constructor<?> constructor, OperationType
     /** Find a constructor on the bean and create an operation for it. */
     static void findConstructor(BeanScanner scanner, Class<?> beanClass) {
         // If a we have a (instantiating) class source, we need to find a constructor we can use
-        if (scanner.bean.beanSourceKind == BeanSourceKind.CLASS && scanner.bean.beanKind != BeanKind.STATIC) {
+        if (scanner.bean.bean.beanSourceKind == BeanSourceKind.CLASS && scanner.bean.beanKind != BeanKind.STATIC) {
 
             BeanScannerOnConstructors constructor = BeanScannerOnConstructors.CACHE.get(beanClass);
 

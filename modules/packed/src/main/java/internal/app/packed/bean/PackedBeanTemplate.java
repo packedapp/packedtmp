@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import app.packed.bean.BeanBuildLocal;
+import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.context.ContextTemplate;
@@ -72,7 +72,7 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
 
     /** {@inheritDoc} */
     @Override
-    public <T> PackedBeanTemplate withLocal(BeanBuildLocal<T> beanLocal, T value) {
+    public <T> PackedBeanTemplate withLocal(BeanLocal<T> beanLocal, T value) {
         return new PackedBeanTemplate(this.beanKind, this.lifetime, this.createAs,
                 PackedBuildLocal.initMap(this.locals, (PackedBeanBuildLocal<?>) beanLocal, value), this.initializationTemplate);
     }

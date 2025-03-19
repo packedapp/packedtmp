@@ -118,8 +118,13 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
      *            optional wirelets
      * @return a mirror of the container that was linked
      */
+    // Maybe have a link  <- that takes the simple name of assembly
     protected final void link(String name, Assembly assembly, Wirelet... wirelets) {
         base().link(name, assembly, wirelets);
+    }
+
+    protected final void link(Assembly assembly, Wirelet... wirelets) {
+        base().link(assembly.getClass().getSimpleName().replace("Assembly", ""), assembly, wirelets);
     }
 
     /**

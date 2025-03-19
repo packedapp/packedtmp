@@ -30,6 +30,12 @@ package app.packed.build;
 // Haha, hvad med ConfigException, den kan baade smides paa runtime og paa build time
 // IDK. Maaske drop den
 // ApplicationBuildException
+
+// CodegenException er ikke en BuildException... Hvis vi er lazy, saa skal den wrappes i UnhandledApplicationException
+
+// Maaske er BuildException ogsaa altid wrappable... Eller ogsaa have vi ApplicationBuildExcepcetion. IDK
+// Build exceptions er jo aldrig handable
+
 public class BuildException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

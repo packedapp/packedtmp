@@ -17,7 +17,7 @@ package internal.app.packed.bean.scanning;
 
 import java.util.Set;
 
-import app.packed.bean.scanning.BeanIntrospector.OnExtensionService;
+import app.packed.bean.scanning.BeanIntrospector.OnContextService;
 import app.packed.bean.scanning.BeanIntrospector.OnVariableUnwrapped;
 import app.packed.binding.Key;
 import app.packed.context.Context;
@@ -26,6 +26,6 @@ import app.packed.context.Context;
  *
  */
 public record IntrospectorOnServiceProvision(Key<?> key, Class<?> baseClass, Set<Class<? extends Context<?>>> contexts, OnVariableUnwrapped binder)
-        implements OnExtensionService {
+        implements OnContextService {
 
 }

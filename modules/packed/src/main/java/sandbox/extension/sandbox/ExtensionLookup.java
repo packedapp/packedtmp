@@ -35,7 +35,7 @@ import internal.app.packed.util.types.ClassUtil;
 // ContainerTemplateAction
 // Context
 // ComponentKind???
-public class ExtensionLookup {
+public final class ExtensionLookup {
 
     private final Class<? extends Extension<?>> extensionType;
 

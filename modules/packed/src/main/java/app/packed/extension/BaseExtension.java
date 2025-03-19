@@ -5,13 +5,13 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
+import app.packed.bean.Bean;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
-import app.packed.bean.scanning.BeanClassMutator;
-import app.packed.bean.scanning.SyntheticBean;
+import app.packed.bean.scanning.BeanSynthesizer;
 import app.packed.binding.Key;
 import app.packed.build.action.BuildActionable;
 import app.packed.container.ContainerBuildLocal;
@@ -123,6 +123,11 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // Ignores other exports
     // interacts with other exports in some way
 
+    public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
+        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(TEMPLATE).install(bean, ProvidableBeanHandle::new);
+        return h.configuration();
+    }
+
     /**
      * Installs a bean of the specified type. A single instance of the specified class will be instantiated when the
      * container is initialized.
@@ -134,8 +139,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     @BuildActionable("bean.install")
     public <T> ProvidableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(TEMPLATE).install(implementation, ProvidableBeanHandle::new);
-        return h.configuration();
+        return install(Bean.of(implementation));
     }
 
     /**
@@ -147,12 +151,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvidableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(TEMPLATE).install(op, ProvidableBeanHandle::new);
-        return h.configuration();
-    }
-
-    public <T> ProvidableBeanConfiguration<T> install(SyntheticBean<T> synthetic) {
-        throw new UnsupportedOperationException();
+        return install(Bean.of(op));
     }
 
     private PackedBeanInstaller install0(BeanTemplate template) {
@@ -171,38 +170,39 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return this configuration
      */
     public <T> ProvidableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(TEMPLATE).installInstance(instance, ProvidableBeanHandle::new);
+        return install(Bean.ofInstance(instance));
+    }
+
+    public <T> ProvidableBeanConfiguration<T> installLazy(Bean<T> bean) {
+        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(BeanKind.LAZY.template()).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
     public <T> ProvidableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(BeanKind.LAZY.template()).install(implementation, ProvidableBeanHandle::new);
-        return handle.configuration();
+        return installLazy(Bean.of(implementation));
     }
 
     public <T> ProvidableBeanConfiguration<T> installLazy(Op<T> op) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(BeanKind.LAZY.template()).install(op, ProvidableBeanHandle::new);
-        return h.configuration();
+        return installLazy(Bean.of(op));
     }
 
-    public <T> ProvidableBeanConfiguration<T> installLazy(SyntheticBean<T> synthetic) {
-        throw new UnsupportedOperationException();
+    public <T> ProvidableBeanConfiguration<T> installPrototype(Bean<T> bean) {
+        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(BeanKind.UNMANAGED.template()).install(bean, ProvidableBeanHandle::new);
+        return handle.configuration();
     }
 
     // Kan ikke se den her giver mening andet end som provide();
     public <T> ProvidableBeanConfiguration<T> installPrototype(Class<T> implementation) {
-        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(BeanKind.UNMANAGED.template()).install(implementation, ProvidableBeanHandle::new);
-        return handle.configuration();
+        return installPrototype(Bean.of(implementation));
     }
 
     public <T> ProvidableBeanConfiguration<T> installPrototype(Op<T> op) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(BeanKind.UNMANAGED.template()).install(op, ProvidableBeanHandle::new);
-        return h.configuration();
+        return installPrototype(Bean.of(op));
     }
 
-    public <T> ProvidableBeanConfiguration<T> installPrototype(SyntheticBean<T> synthetic) {
-        // fail for instance
-        throw new UnsupportedOperationException();
+    public <T> BeanConfiguration installStatic(Bean<T> bean) {
+        BeanHandle<BeanConfiguration> handle = install0(BeanKind.STATIC.template()).install(bean, BeanHandle::new);
+        return handle.configuration();
     }
 
     /**
@@ -216,12 +216,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        BeanHandle<BeanConfiguration> handle = install0(BeanKind.STATIC.template()).install(implementation);
-        return handle.configuration();
-    }
-
-    public <T> ProvidableBeanConfiguration<T> installStatic(SyntheticBean<T> synthetic) {
-        throw new UnsupportedOperationException();
+        return installStatic(Bean.of(implementation));
     }
 
     /**
@@ -233,7 +228,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         // Create a new bean that holds the ServiceLocator to export
         // will fail if installed multiple times
 
-        BeanHandle<ProvidableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(TEMPLATE).install(PackedServiceLocator.class,
+        BeanHandle<ProvidableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(TEMPLATE).install(Bean.of(PackedServiceLocator.class),
                 ProvidableBeanHandle::new);
         ha.configuration().exportAs(ServiceLocator.class);
 
@@ -246,7 +241,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
             BeanSetup.crack(bh).bindCodeGenerator(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.servicesMain().exportedServices());
         });
     }
-
 
     /**
      * Creates a new child container by linking the specified assembly.
@@ -351,7 +345,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     // transformAllBeans() <-- includes extension beans... (Must be open)
-    public Runnable transformAllBeans(Consumer<? super BeanClassMutator> transformer) {
+    public Runnable transformAllBeans(Consumer<? super BeanSynthesizer> transformer) {
         throw new UnsupportedOperationException();
     }
 
@@ -365,12 +359,12 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return A runnable that be can run after which the transformer will no longer be applied when installing beans.
      */
     // Also a version with BeanClass?? , Class<?>... beanClasses (
-    public Runnable transformBeans(Consumer<? super BeanClassMutator> transformer) {
+    public Runnable transformBeans(Consumer<? super BeanSynthesizer> transformer) {
         throw new UnsupportedOperationException();
     }
 
     // Har man brug for andet end class transformer? Er der nogle generalle bean properties??? IDK
-    <T> ProvidableBeanConfiguration<T> transformingInstall(Class<T> implementation, Consumer<? super BeanClassMutator> transformation) {
+    <T> ProvidableBeanConfiguration<T> transformingInstall(Class<T> implementation, Consumer<? super BeanSynthesizer> transformation) {
         throw new UnsupportedOperationException();
 
     }
@@ -386,7 +380,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // Det maa sgu blive en extra metode
     // BeanInstaller.forceOpBind("XOp", 2, "FooBar");
 
-    public void transformNextBean(Consumer<? super BeanClassMutator> transformer) {}
+    public void transformNextBean(Consumer<? super BeanSynthesizer> transformer) {}
 
     static class FromLinks {
         boolean exportServices;

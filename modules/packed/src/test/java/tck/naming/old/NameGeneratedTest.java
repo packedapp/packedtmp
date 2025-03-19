@@ -37,15 +37,15 @@ public class NameGeneratedTest extends AbstractApplicationTest {
     }
 
     private static void check(Function<Consumer<? super ContainerConfigurationTester>, ? extends BaseAssembly> cs, String defaultName) {
-        appOf(cs.apply(c -> {})).nameIs(defaultName);
-        appOf(cs.apply(c -> {})).nameIs(defaultName);
+        appOf(cs.apply(_ -> {})).nameIs(defaultName);
+        appOf(cs.apply(_ -> {})).nameIs(defaultName);
         // We can override default name
         appOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.renameApplication("Boo")).nameIs("Boo");
 
         // Images
-        imageOf(cs.apply(c -> {})).nameIs(defaultName);
-        imageOf(cs.apply(c -> {})).nameIs(defaultName);
-        imageOf(cs.apply(c -> {})).newApp().nameIs(defaultName);
+        imageOf(cs.apply(_ -> {})).nameIs(defaultName);
+        imageOf(cs.apply(_ -> {})).nameIs(defaultName);
+        imageOf(cs.apply(_ -> {})).newApp().nameIs(defaultName);
 
         // We can override default name from images
         imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.renameApplication("Boo")).nameIs("Boo");

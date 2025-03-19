@@ -25,27 +25,33 @@ import app.packed.extension.ExtensionContext;
 // Actually I think we need to install it in the managed lifetime
 public final class DaemonRuntimeManager {
 
-    final DaemonRuntimeConfiguration[] daemons;
+    final DaemonRuntimeOperationConfiguration[] daemons;
 
     final ExtensionContext extensionContext;
 
-    final ConcurrentHashMap<Thread, DaemonRunner> deamons = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<Thread, DaemonRuntimeOperationRunner> deamons = new ConcurrentHashMap<>();
 
-    public DaemonRuntimeManager(ExtensionContext extensionContext, DaemonRuntimeConfiguration[] daemons) {
+    public DaemonRuntimeManager(ExtensionContext extensionContext, DaemonRuntimeOperationConfiguration[] daemons) {
         this.extensionContext = extensionContext;
         this.daemons = daemons;
     }
 
-    // Okay, we should schedule this with callbacks actually
+    // Okay, we need to schedule this with callbacks actually
     // OperationHandle.onInitialize(DaemonManager.init(index));
+    // OperationHandle.onStart(DaemonManager dm -> dm.daemons.add(Op));
+
+    // Maaske har vi ikke en gang en bean????
+    // Men et mixin/sidecar????
+
     // No choice we need to obey dependency order...
+    // The actually bean must be started before we can start scheduling
     @OnStart
     public void onStart() {
         System.out.println("On Start");
 
-        for (DaemonRuntimeConfiguration d : daemons) {
+        for (DaemonRuntimeOperationConfiguration d : daemons) {
             // Okay need to keep track of these
-            d.threadFactory().newThread(new DaemonRunner(this, d.callMe())).start();
+            d.threadFactory().newThread(new DaemonRuntimeOperationRunner(this, d.callMe())).start();
         }
     }
 

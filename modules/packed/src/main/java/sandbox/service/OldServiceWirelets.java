@@ -70,7 +70,7 @@ public final class OldServiceWirelets {
      * @see BaseExtension#anchorAll()
      */
     public static Wirelet anchorAll() {
-        return anchorIf(t -> true);
+        return anchorIf(_ -> true);
     }
 
     // A service is accessible by a class or interface x. if the full key is Accessible

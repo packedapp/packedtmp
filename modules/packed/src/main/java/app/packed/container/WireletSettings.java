@@ -45,17 +45,6 @@ public class WireletSettings {
         // NamespaceRoot/DomainRoot   (Class+Name?)
     }
 
-    // Maybe this is more, when should the Wirelet be available
-    // Build_time -> well you can only specify it at build time
-    public enum SpecificationTime {
-
-        /** Can only be specified for the root container of the application. */
-        BUILD_TIME,
-
-        /** Can be specified at any link site. */
-        LAUNCH_TIME;
-    }
-
     /////////// SCOPE
 
     // Can only specify it for lifetime roots at runtime... For example, Session
@@ -81,3 +70,13 @@ public class WireletSettings {
     // We can actually catch those. There is a wirelet selection<AbstractWirelet> that catches the same wirelet
     // But what about at runtime?? Der giver den jo faktisk mening, som et flag der kan laeses flere gange
 }
+//// Maybe this is more, when should the Wirelet be available
+//// Build_time -> well you can only specify it at build time
+//public enum SpecificationTime {
+//
+//  /** Can only be specified for the root container of the application. */
+//  BUILD_TIME,
+//
+//  /** Can be specified at any link site. */
+//  LAUNCH_TIME;
+//}

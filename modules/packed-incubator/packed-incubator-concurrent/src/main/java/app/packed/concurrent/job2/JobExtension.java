@@ -86,7 +86,7 @@ public class JobExtension extends FrameworkExtension<JobExtension> {
     public static class MyI extends BeanIntrospector<JobExtension> {
 
         @Override
-        public void onExtensionService(Key<?> key, OnExtensionService service) {
+        public void onExtensionService(Key<?> key, OnContextService service) {
             OnVariableUnwrapped binding = service.binder();
 
             Class<?> hook = key.rawType();

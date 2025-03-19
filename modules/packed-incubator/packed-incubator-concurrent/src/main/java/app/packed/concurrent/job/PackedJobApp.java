@@ -18,7 +18,6 @@ package app.packed.concurrent.job;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.application.ApplicationPanicException;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
@@ -84,18 +83,18 @@ final class PackedJobApp implements JobApp {
             return image.launch(RunState.RUNNING, wirelets);
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public Object checkedRun(Wirelet... wirelets) throws ApplicationPanicException {
-            PackedJobApp a = image.checkedLaunch(RunState.TERMINATED, wirelets);
-            return a.result();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public JobApp checkedStart(Wirelet... wirelets) throws ApplicationPanicException {
-            return image.checkedLaunch(RunState.RUNNING, wirelets);
-        }
+//        /** {@inheritDoc} */
+//        @Override
+//        public Object checkedRun(Wirelet... wirelets) throws UnhandledApplicationException {
+//            PackedJobApp a = image.checkedLaunch(RunState.TERMINATED, wirelets);
+//            return a.result();
+//        }
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        public JobApp checkedStart(Wirelet... wirelets) throws UnhandledApplicationException {
+//            return image.checkedLaunch(RunState.RUNNING, wirelets);
+//        }
     }
 
     /** {@inheritDoc} */

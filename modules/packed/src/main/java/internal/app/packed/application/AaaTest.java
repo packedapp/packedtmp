@@ -18,7 +18,6 @@ package internal.app.packed.application;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationPanicException;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
@@ -28,7 +27,6 @@ import app.packed.bean.lifecycle.OnStart;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromGuest;
-import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -119,26 +117,14 @@ public class AaaTest extends BaseAssembly {
 
             /** {@inheritDoc} */
             @Override
-            public void run(Wirelet... wirelets) {
-                image.launch(RunState.TERMINATED, wirelets);
+            public void run() {
+                image.launch(RunState.TERMINATED);
             }
 
             /** {@inheritDoc} */
             @Override
-            public App start(Wirelet... wirelets) {
-                return image.launch(RunState.RUNNING, wirelets);
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public void checkedRun(Wirelet... wirelets) throws ApplicationPanicException {
-                image.checkedLaunch(RunState.TERMINATED, wirelets);
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public App checkedStart(Wirelet... wirelets) throws ApplicationPanicException {
-                return null;
+            public App start() {
+                return image.launch(RunState.RUNNING);
             }
         }
     }

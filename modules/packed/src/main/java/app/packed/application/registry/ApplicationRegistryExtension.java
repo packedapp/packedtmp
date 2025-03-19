@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
+import app.packed.bean.Bean;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.FrameworkExtension;
 import app.packed.service.ProvidableBeanConfiguration;
@@ -65,7 +66,7 @@ public final class ApplicationRegistryExtension extends FrameworkExtension<Appli
 
         // Create a new repository bean
         ApplicationRegistryBeanHandle<A, H> h = base().newBean(ApplicationRegistryBeanHandle.REPOSITORY_BEAN_TEMPLATE)
-                .install(AbstractApplicationRepository.repositoryClassFor(template), i -> new ApplicationRegistryBeanHandle<>(i, t));
+                .install(Bean.of(AbstractApplicationRepository.repositoryClassFor(template)), i -> new ApplicationRegistryBeanHandle<>(i, t));
 
         // Create a new installer for the guest bean
         h.repository.mh = GuestBeanHandle.install(t, ExtensionSetup.crack(this), ExtensionSetup.crack(this).container.assembly);

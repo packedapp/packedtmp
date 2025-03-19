@@ -34,7 +34,7 @@ public class LazyNamer {
 
         for (K k : values) {
             String s = stringifier.apply(k);
-            tmp.compute(s, (kk, vv) -> {
+            tmp.compute(s, (_, vv) -> {
                 if (vv == null) {
                     return k;
                 } else if (vv instanceof ArrayList l) {

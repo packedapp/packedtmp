@@ -23,7 +23,7 @@ import app.packed.operation.OperationConfiguration;
  * {@link app.packed.extension.BaseExtension#install(Class)}. It can also, for example, be obtained via
  * {@link app.packed.container.ContainerConfiguration#beans()}.
  */
-public non-sealed class BeanConfiguration extends ComponentConfiguration implements BeanBuildLocal.Accessor {
+public non-sealed class BeanConfiguration extends ComponentConfiguration implements BeanLocal.Accessor {
 
     /** The bean handle. */
     private final BeanHandle<?> handle;

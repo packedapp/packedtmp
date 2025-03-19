@@ -66,7 +66,7 @@ public final /* primitive */ class AssemblyModel {
                             throw ThrowableUtil.orUndeclared(t);
                         }
 
-                        hookMap.computeIfAbsent(hookType, c -> new ArrayList<>()).add(instance);
+                        hookMap.computeIfAbsent(hookType, _ -> new ArrayList<>()).add(instance);
                     }
                 }
             }

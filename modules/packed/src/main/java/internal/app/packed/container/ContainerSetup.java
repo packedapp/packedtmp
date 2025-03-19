@@ -46,7 +46,7 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.container.wirelets.WireletSelectionArray;
+import internal.app.packed.container.wirelets.WireletSelectionList;
 import internal.app.packed.container.wirelets.WireletWrapper;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
@@ -333,7 +333,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
                 l.add((T) w);
             }
         }
-        return WireletSelectionArray.of(l);
+        return WireletSelectionList.of(l);
     }
 
     public MainServiceNamespaceHandle servicesMain() {

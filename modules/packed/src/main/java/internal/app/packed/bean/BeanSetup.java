@@ -11,13 +11,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanBuildHook;
-import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanHook;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.BeanLifecycleModel;
@@ -69,9 +69,6 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 
     public final HashMap<PackedBeanAttachmentKey, PackedAttachmentOperationHandle> attachments = new HashMap<>();
 
-    /** The bean class. */
-    public final Class<?> beanClass;
-
     /** The kind of bean. */
     public final BeanKind beanKind;
 
@@ -80,13 +77,6 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 
     /** Services that have been bound specifically for this bean. */
     public final ServiceMap<BeanServiceProviderSetup> beanServices = new ServiceMap<>();
-
-    /** The source ({@code null}, {@link Class}, {@link PackedOp}, otherwise the bean instance) */
-    @Nullable
-    public final Object beanSource;
-
-    /** The type of source the installer is created from. */
-    public final BeanSourceKind beanSourceKind;
 
     /** The container this bean is installed in. */
     public final ContainerSetup container;
@@ -121,15 +111,15 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     @Nullable
     public BeanScanner scanner;
 
+    public final PackedBean<?> bean;
+
     /** The bean's template. */
     public final PackedBeanTemplate template;
 
     /** Create a new bean. */
-    private BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
+    private BeanSetup(PackedBeanInstaller installer, PackedBean<?> bean) {
         this.beanKind = requireNonNull(installer.template.beanKind());
-        this.beanClass = requireNonNull(beanClass);
-        this.beanSource = beanSource;
-        this.beanSourceKind = requireNonNull(beanSourceKind);
+        this.bean = requireNonNull(bean);
 
         this.template = installer.template;
         this.container = requireNonNull(installer.installledByExtension.container);
@@ -147,7 +137,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
             // containerLifetime.addDetachedChildBean(bls);
         }
 
-        if (beanSourceKind != BeanSourceKind.SOURCELESS) {
+        if (bean.beanSourceKind != BeanSourceKind.SOURCELESS) {
             scanner = new BeanScanner(this);
         }
 
@@ -158,7 +148,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 
     public PackedAttachmentOperationHandle attach(Class<? extends Extension<?>> extension, Op<?> op, boolean ifAbsent) {
         Key<?> key = op.type().returnVariable().toKey();
-        return attachments.compute(new PackedBeanAttachmentKey(extension, key), (k, v) -> {
+        return attachments.compute(new PackedBeanAttachmentKey(extension, key), (_, v) -> {
             if (v == null) {
 
             } else if (ifAbsent) {
@@ -169,10 +159,10 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     }
 
     public BindingAccessor beanInstanceBindingProvider() {
-        if (beanSourceKind == BeanSourceKind.INSTANCE) {
-            return new FromConstant(beanSource.getClass(), beanSource);
+        if (bean.beanSourceKind == BeanSourceKind.INSTANCE) {
+            return new FromConstant(bean.beanSource.getClass(), bean.beanSource);
         } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
-            return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, beanClass);
+            return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, bean.beanClass);
         } else if (beanKind == BeanKind.UNMANAGED) {
             return new FromOperationResult(operations.first());
         }
@@ -319,11 +309,13 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
      * @return a handle for the new bean
      */
     @SuppressWarnings("unchecked")
-    static <H extends BeanHandle<?>> H newBean(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
+    static <H extends BeanHandle<?>> H newBean(PackedBeanInstaller installer, PackedBean<?> bean,
             Function<? super BeanInstaller, H> handleFactory) {
+        requireNonNull(bean, "bean is null");
         requireNonNull(handleFactory, "handleFactory is null");
-        if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
-            throw new BeanInstallationException(beanClass + ", is not a valid type for a bean");
+        // Should be removeable as checked in Bean.of(...)
+        if (bean.beanSourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(bean.beanClass)) {
+            throw new BeanInstallationException(bean.beanClass + ", is not a valid type for a bean");
         }
 
         if (!installer.owner.isConfigurable()) {
@@ -333,26 +325,26 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         installer.checkNotInstalledYet();
 
         // Create the Bean, this also marks this installer as unconfigurable
-        BeanSetup bean = installer.install(new BeanSetup(installer, beanClass, sourceKind, source));
+        BeanSetup newBean = installer.install(new BeanSetup(installer, bean));
 
         // Create a handle for the new bean
-        BeanHandle<?> handle = bean.handle = handleFactory.apply(installer);
+        BeanHandle<?> handle = newBean.handle = handleFactory.apply(installer);
 
         // We need to install a factory operation, if an Op was specified when creating the bean.
-        LifecycleAnnotationBeanIntrospector.checkForFactoryOp(bean);
+        LifecycleAnnotationBeanIntrospector.checkForFactoryOp(newBean);
 
         // Scan the bean if needed
-        BeanScanner scanner = bean.scanner;
+        BeanScanner scanner = newBean.scanner;
         if (scanner != null) {
             scanner.introspect();
-            bean.scanner = null;
+            newBean.scanner = null;
         }
 
         // Add the bean to the container and initialize the name of the bean
-        bean.container.beans.installAndSetBeanName(bean, installer.namePrefix);
+        newBean.container.beans.installAndSetBeanName(newBean, installer.namePrefix);
 
         // Apply hooks to the bean. Hmm, I think may have hooks we need to apply before scanning
-        bean.container.assembly.model.hooks.forEach(BeanBuildHook.class, h -> h.onNew(handle.configuration()));
+        newBean.container.assembly.model.hooks.forEach(BeanHook.class, h -> h.onNew(handle.configuration()));
 
         // Return the handle of the new bean
         return (H) handle;

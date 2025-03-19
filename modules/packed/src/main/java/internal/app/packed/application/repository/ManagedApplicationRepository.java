@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.registry.other.ManagedInstance;
+import app.packed.application.containerdynamic.ManagedInstance;
 import app.packed.bean.lifecycle.LifecycleDependantOrder;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.bean.lifecycle.StopContext;

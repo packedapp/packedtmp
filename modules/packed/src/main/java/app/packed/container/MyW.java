@@ -17,6 +17,7 @@ package app.packed.container;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
+import app.packed.bean.Bean;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
@@ -81,7 +82,7 @@ public class MyW extends BaseAssembly {
         }
 
         void install() {
-            base().newBean(BeanKind.CONTAINER.template()).install(FFF.class, MyBeanHandle::new);
+            base().newBean(BeanKind.CONTAINER.template()).install(Bean.of(FFF.class), MyBeanHandle::new);
         }
     }
 }

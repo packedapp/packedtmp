@@ -11,3 +11,4 @@ dependency-reduced-pom.xml
 .DS_Store
 /trace*
 *.jfr
+*.versionsBackup

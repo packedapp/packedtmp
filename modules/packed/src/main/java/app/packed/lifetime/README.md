@@ -2,7 +2,9 @@ LifetimeStore
   Stores beans and other important information for a single lifetime
   Immutable after Initialization of the lifetime.
   Support Mutability via Lazy/StableValue/AtomicReference stored in the lifetime
-  
+    ?? IDK about this. Let us say we have 100 constructed session beans... Well then we construct a map where we store them, I assume 
+    
+    
   Implementation
     Object[], but may be specialized in the future
   

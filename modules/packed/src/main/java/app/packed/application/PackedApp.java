@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromGuest;
-import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -73,26 +72,26 @@ final class PackedApp implements App {
 
         /** {@inheritDoc} */
         @Override
-        public void run(Wirelet... wirelets) {
-            image.launch(RunState.TERMINATED, wirelets);
+        public void run() {
+            image.launch(RunState.TERMINATED);
         }
 
         /** {@inheritDoc} */
         @Override
-        public App start(Wirelet... wirelets) {
-            return image.launch(RunState.RUNNING, wirelets);
+        public App start() {
+            return image.launch(RunState.RUNNING);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public void checkedRun(Wirelet... wirelets) throws ApplicationPanicException {
-            image.checkedLaunch(RunState.TERMINATED, wirelets);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public App checkedStart(Wirelet... wirelets) throws ApplicationPanicException {
-            return image.checkedLaunch(RunState.RUNNING, wirelets);
-        }
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        public void checkedRun(Wirelet... wirelets) throws UnhandledApplicationException {
+//            image.checkedLaunch(RunState.TERMINATED, wirelets);
+//        }
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        public App checkedStart(Wirelet... wirelets) throws UnhandledApplicationException {
+//            return image.checkedLaunch(RunState.RUNNING, wirelets);
+//        }
     }
 }

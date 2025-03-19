@@ -15,11 +15,9 @@
  */
 package app.packed.concurrent.job;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationPanicException;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.BaseAssembly;
 import app.packed.container.Wirelet;
@@ -37,11 +35,6 @@ import internal.app.packed.util.types.GenericType;
 public interface JobApp<T> extends App {
 
     Future<T> asFuture();
-
-    static <T> T checkedRun(Class<T> resultType, Assembly assembly, Wirelet... wirelets) throws ApplicationPanicException {
-        PackedJobApp l = PackedJobApp.BOOTSTRAP_APP.withExpectsResult(resultType).checkedLaunch(RunState.TERMINATED, assembly, wirelets);
-        return resultType.cast(l.result());
-    }
 
     @SuppressWarnings("unchecked")
     static <T> JobApp.Image<T> imageOf(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
@@ -82,14 +75,22 @@ public interface JobApp<T> extends App {
     interface Image<T> {
 
         // Mindfuck
-        default Callable<T> asCallable(Wirelet... wirelets) {
-            // Nu kan vi ogsaa smide exceptions direkte
-            throw new UnsupportedOperationException();
-        }
+        // Do we unwrap UnhandledApplicationExtension? Hmm
+        // Maybe this is why we won't do it
+        // We basically just call run as I see it
+//        default Callable<T> asCallable(Wirelet... wirelets) {
+//            return new Callable<>() {
+//
+//                @Override
+//                public T call() throws Exception {
+//                    return run(wirelets);
+//                }
+//            };
+//        }
 
-        T checkedRun(Wirelet... wirelets) throws ApplicationPanicException;
-
-        JobApp<T> checkedStart(Wirelet... wirelets) throws ApplicationPanicException;
+//        T checkedRun(Wirelet... wirelets) throws UnhandledApplicationException;
+//
+//        JobApp<T> checkedStart(Wirelet... wirelets) throws UnhandledApplicationException;
 
         T run(Wirelet... wirelets);
 
@@ -107,7 +108,13 @@ class TestIt extends BaseAssembly {
 
     public static void main(String[] args) {
         String run = JobApp.run(String.class, new TestIt());
-        run = I.run();
+        String run2 = I.run();
         System.out.println(run);
+        System.out.println(run2);
     }
 }
+//
+//static <T> T checkedRun(Class<T> resultType, Assembly assembly, Wirelet... wirelets) throws UnhandledApplicationException {
+//  PackedJobApp l = PackedJobApp.BOOTSTRAP_APP.withExpectsResult(resultType).checkedLaunch(RunState.TERMINATED, assembly, wirelets);
+//  return resultType.cast(l.result());
+//}

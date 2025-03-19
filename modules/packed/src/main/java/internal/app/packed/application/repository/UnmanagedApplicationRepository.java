@@ -18,7 +18,7 @@ package internal.app.packed.application.repository;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.registry.other.ManagedInstance;
+import app.packed.application.containerdynamic.ManagedInstance;
 
 /**
  *

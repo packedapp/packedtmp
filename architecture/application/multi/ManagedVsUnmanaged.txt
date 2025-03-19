@@ -1,0 +1,5 @@
+Multi app er vel kun "svært" når man har managed applikationer.
+
+Når det er managed har man jo bare en reference.
+Det eneste er at man kan spawne en App fra en eksisterende app.
+Og den spawnede app kan så nedarve et eller andet

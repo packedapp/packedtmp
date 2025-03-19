@@ -33,7 +33,7 @@ import internal.app.packed.operation.OperationSetup;
 public final class BaseExtensionMirrorBeanIntrospector extends PackedBeanIntrospector<BaseExtension> {
 
     @Override
-    public void onExtensionService(Key<?> key, OnExtensionService service) {
+    public void onExtensionService(Key<?> key, OnContextService service) {
         Class<?> baseMirrorClass = service.baseClass();
         OnVariableUnwrapped binding = service.binder();
 
@@ -55,7 +55,7 @@ public final class BaseExtensionMirrorBeanIntrospector extends PackedBeanIntrosp
         }
     }
 
-    private void onExtensionService0(OnExtensionService service, Mirror mirror) {
+    private void onExtensionService0(OnContextService service, Mirror mirror) {
         OnVariableUnwrapped binding = service.binder();
         binding.bindInstance(mirror);
     }

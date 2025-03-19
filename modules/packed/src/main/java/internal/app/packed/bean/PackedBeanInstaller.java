@@ -20,21 +20,20 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.bean.BeanBuildLocal;
+import app.packed.bean.Bean;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanSourceKind;
 import app.packed.extension.InternalExtensionException;
-import app.packed.operation.Op;
 import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.operation.PackedOp;
 
 /** Implementation of {@link BeanTemplate.Installer}. */
 public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSetup, PackedBeanInstaller> implements BeanInstaller {
@@ -77,21 +76,6 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     }
 
     /** {@inheritDoc} */
-    @Override
-    public <H extends BeanHandle<?>> H install(Class<?> beanClass, Function<? super BeanInstaller, H> factory) {
-        requireNonNull(beanClass, "beanClass is null");
-        return BeanSetup.newBean(this, beanClass, BeanSourceKind.CLASS, beanClass, factory);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <H extends BeanHandle<?>> H install(Op<?> op, Function<? super BeanInstaller, H> factory) {
-        PackedOp<?> pop = PackedOp.crack(op);
-        Class<?> beanClass = pop.type.returnRawType();
-        return BeanSetup.newBean(this, beanClass, BeanSourceKind.OP, pop, factory);
-    }
-
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public <H extends BeanHandle<T>, T extends BeanConfiguration> H installIfAbsent(Class<?> beanClass, Class<T> beanConfigurationClass,
@@ -114,26 +98,10 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
             }
         }
 
-        BeanHandle<T> handle = BeanSetup.newBean(this, beanClass, BeanSourceKind.CLASS, beanClass, factory);
+        BeanHandle<T> handle = BeanSetup.newBean(this, PackedBean.of(beanClass), factory);
         onNew.accept(handle);
 
         return (H) handle;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <H extends BeanHandle<?>> H installInstance(Object instance, Function<? super BeanInstaller, H> factory) {
-        requireNonNull(instance, "instance is null");
-        return BeanSetup.newBean(this, instance.getClass(), BeanSourceKind.INSTANCE, instance, factory);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <H extends BeanHandle<?>> H installSourceless(Function<? super BeanInstaller, H> factory) {
-        if (template.beanKind() != BeanKind.STATIC) {
-            throw new InternalExtensionException("Only static beans can be source less");
-        }
-        return BeanSetup.newBean(this, void.class, BeanSourceKind.SOURCELESS, null, factory);
     }
 
     /** {@inheritDoc} */
@@ -146,7 +114,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
 
     /** {@inheritDoc} */
     @Override
-    public <T> PackedBeanInstaller setLocal(BeanBuildLocal<T> local, T value) {
+    public <T> PackedBeanInstaller setLocal(BeanLocal<T> local, T value) {
         return super.setLocal(local, value);
     }
 
@@ -164,4 +132,14 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
             return new ProvidableBeanConfiguration<>(this);
         }
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public <H extends BeanHandle<?>> H install(Bean<?> bean, Function<? super BeanInstaller, H> factory) {
+        if (template.beanKind() != BeanKind.STATIC && bean.beanSourceKind() == BeanSourceKind.SOURCELESS) {
+            throw new InternalExtensionException("Only static beans can be source less");
+        }
+        return BeanSetup.newBean(this, (PackedBean<?>) bean, factory);
+    }
+
 }

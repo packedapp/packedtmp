@@ -90,7 +90,7 @@ public final class BeanScanner {
 
     public BeanScanner(BeanSetup bean) {
         this.bean = bean;
-        this.beanClass = bean.beanClass;
+        this.beanClass = bean.bean.beanClass;
         this.customLookup = bean.container.assembly.customLookup;
         this.triggerModel = new BeanTriggerModelDefaults();
         this.accessor = new OpenClass(MethodHandles.lookup());
@@ -102,7 +102,7 @@ public final class BeanScanner {
         introspectClass();
 
         // If the bean is created using an Op, we need to resolve it as the first thing
-        if (bean.beanSourceKind == BeanSourceKind.OP) {
+        if (bean.bean.beanSourceKind == BeanSourceKind.OP) {
             resolveBindings(bean.operations.first());
         }
 
