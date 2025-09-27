@@ -25,7 +25,7 @@ import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 // Is executed exactly once. Must either be composable or maintain logic to guard against
 // multiple wirelets of the same type
-public abstract non-sealed class InternalBuildWirelet extends FrameworkWirelet {
+public abstract non-sealed class InternalBaseWirelet extends FrameworkWirelet {
 
     /**
      * Checks that the specified component is the root component (container) of an application.

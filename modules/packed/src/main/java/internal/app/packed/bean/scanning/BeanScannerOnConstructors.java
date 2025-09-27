@@ -25,7 +25,7 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.Inject;
 import app.packed.operation.OperationType;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
 import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
@@ -201,7 +201,7 @@ final record BeanScannerOnConstructors(Constructor<?> constructor, OperationType
             PackedOperationInstaller installer = ot.newInstaller(constructor.operationType(), scanner.bean, scanner.bean.installedBy);
 
             OperationSetup os = installer.newOperationFromMember(new OperationConstructorTarget(constructor.constructor()), mh,
-                    i -> new LifecycleOperationInitializeHandle(i, InternalBeanLifecycleKind.FACTORY));
+                    i -> new ForInitialize(i, InternalBeanLifecycleKind.FACTORY));
 
             scanner.bean.operations.addLifecycleHandle((BeanLifecycleOperationHandle) os.handle());
             scanner.resolveBindings(os);

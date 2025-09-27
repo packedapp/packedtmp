@@ -36,6 +36,26 @@ class BeanScannerOnFields {
         throw new BeanInstallationException("OOPS");
     }
 
+    static void fiendIntrospect(BeanScanner scanner, Class<?> clazzToScan) {
+        // We never process classes in the "java.base" module.
+        if (clazzToScan.getModule() != BeanScanner.JAVA_BASE_MODULE) {
+            // Recursively call into superclass, before processing own fields
+            fiendIntrospect(scanner, clazzToScan.getSuperclass());
+
+            // Iterate over all declared fields
+            for (Field field : clazzToScan.getDeclaredFields()) {
+                Annotation[] annotations = field.getAnnotations();
+                switch (annotations.length) {
+                case 0 -> {
+                }
+                case 1 -> fieldIntrospect1(scanner, field, annotations);
+                case 2 -> fieldIntrospect2(scanner, field, annotations);
+                default -> fieldIntrospectN(scanner, field, annotations);
+                }
+            }
+        }
+    }
+
     private static void fieldIntrospect1(BeanScanner scanner, Field field, Annotation[] annotations) {
         Annotation a = annotations[0];
 
@@ -112,7 +132,7 @@ class BeanScannerOnFields {
 //          // But if we want that we need to look up the ExtensionSetup. Because we have speciel sort
 //          // for extensions with same canonical name from different class loaders
 //          // But wait with the sort. Maybe we have queues and then sort somewhere else
-            Map<BeanIntrospectorModel, List<Pair>> map = new IdentityHashMap<>();
+            Map<BeanIntrospectorClassModel, List<Pair>> map = new IdentityHashMap<>();
             for (Pair p : l) {
                 if (p.af instanceof OnAnnotatedVariableCache) {
                     failOnIllegalVariable(field, l.stream().map(z -> z.af).toList());
@@ -129,23 +149,5 @@ class BeanScannerOnFields {
         }
     }
 
-    static void introspect(BeanScanner scanner, Class<?> clazzToScan) {
-        // We never process classes in the "java.base" module.
-        if (clazzToScan.getModule() != BeanScanner.JAVA_BASE_MODULE) {
-            // Recursively call into superclass, before processing own fields
-            introspect(scanner, clazzToScan.getSuperclass());
 
-            // Iterate over all declared fields
-            for (Field field : clazzToScan.getDeclaredFields()) {
-                Annotation[] annotations = field.getAnnotations();
-                switch (annotations.length) {
-                case 0 -> {
-                }
-                case 1 -> fieldIntrospect1(scanner, field, annotations);
-                case 2 -> fieldIntrospect2(scanner, field, annotations);
-                default -> fieldIntrospectN(scanner, field, annotations);
-                }
-            }
-        }
-    }
 }

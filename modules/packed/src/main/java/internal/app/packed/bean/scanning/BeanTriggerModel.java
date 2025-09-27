@@ -40,21 +40,21 @@ public interface BeanTriggerModel {
     @Nullable
     OnAnnotatedMethodCache testMethod(Class<? extends Annotation> annotationType);
 
-    record ParameterAnnotatedCache(BeanIntrospectorModel bim) {}
+    record ParameterAnnotatedCache(BeanIntrospectorClassModel bim) {}
 
-    record ParameterTypeCache(BeanIntrospectorModel bim, @Nullable Class<?> definingIfInherited) {}
+    record ParameterTypeCache(BeanIntrospectorClassModel bim, @Nullable Class<?> definingIfInherited) {}
 
     sealed interface FieldCache permits OnAnnotatedVariableCache, OnAnnotatedFieldCache {
         void handleOne(BeanScanner scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations);
 
-        BeanIntrospectorModel bim();
+        BeanIntrospectorClassModel bim();
     }
 
     /**
      *
      * Represents an annotated annotated with {@link AnnotatedVariableHook}.
      */
-    record OnAnnotatedVariableCache(BeanIntrospectorModel bim) implements FieldCache {
+    record OnAnnotatedVariableCache(BeanIntrospectorClassModel bim) implements FieldCache {
         public Class<? extends Extension<?>> extensionType() {
             return bim.extensionClass;
         }
@@ -65,7 +65,7 @@ public interface BeanTriggerModel {
         }
     }
 
-    record OnAnnotatedMethodCache(BeanIntrospectorModel bim, boolean isInvokable) {
+    record OnAnnotatedMethodCache(BeanIntrospectorClassModel bim, boolean isInvokable) {
         public Class<? extends Extension<?>> extensionType() {
             return bim.extensionClass;
         }
@@ -74,7 +74,7 @@ public interface BeanTriggerModel {
     /**
      * A cache for {@link app.packed.bean.scanning.BeanTrigger.OnAnnotatedField}.
      */
-    record OnAnnotatedFieldCache(BeanIntrospectorModel bim, boolean isGettable, boolean isSettable, Class<? extends Context<?>>[] requiresContext)
+    record OnAnnotatedFieldCache(BeanIntrospectorClassModel bim, boolean isGettable, boolean isSettable, Class<? extends Context<?>>[] requiresContext)
             implements FieldCache {
         public Class<? extends Extension<?>> extensionType() {
             return bim.extensionClass;

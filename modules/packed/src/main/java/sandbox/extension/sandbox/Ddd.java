@@ -27,7 +27,7 @@ import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.lifecycle.Initialize;
-import app.packed.bean.lifecycle.LifecycleDependantOrder;
+import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerTemplate;
@@ -96,7 +96,7 @@ public class Ddd extends BaseAssembly {
          * @return whether or not the annotated method should be run before or after dependencies in the same lifetime are
          *         initialized.
          */
-        LifecycleDependantOrder ordering() default LifecycleDependantOrder.BEFORE_DEPENDANTS;
+        DependantOrder ordering() default DependantOrder.RUN_BEFORE_DEPENDANTS;
     }
 
     public static class Oi {

@@ -38,7 +38,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     private Extension<?> instance;
 
     /** A static model of the extension. */
-    public final ExtensionModel model;
+    public final ExtensionClassModel model;
 
     /** The extension's injection manager. */
     private MainServiceNamespaceHandle sm;
@@ -96,7 +96,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     /** {@inheritDoc} */
     @Override
     public int compareTo(ExtensionSetup other) {
-        ExtensionModel otherModel = other.model;
+        ExtensionClassModel otherModel = other.model;
         if (other == this) {
             return 0;
         }
@@ -190,7 +190,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         return ExtensionHandlers.getExtensionHandle(extension);
     }
 
-    public static PackedExtensionUseSite crack(ExtensionPoint<?> extensionPoint) {
+    public static PackedExtensionPointHandle crack(ExtensionPoint<?> extensionPoint) {
         requireNonNull(extensionPoint, "extensionPoint is null");
         return ExtensionHandlers.getExtensionPointPackedExtensionUseSite(extensionPoint);
     }

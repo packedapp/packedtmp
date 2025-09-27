@@ -161,7 +161,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     /** The application has been successfully assembled. Now generate any required code. */
     public void close() {
         // Only generate code if needed
-        if (codegenActions != null) { // not mirrorOf or verify
+        if (codegenActions != null) { // dont run for mirrorOf or verify
             phase = ApplicationBuildPhase.CODEGEN;
 
             // Run through all code generating actions

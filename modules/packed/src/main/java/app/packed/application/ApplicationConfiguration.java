@@ -119,6 +119,7 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
         this.allowedAssemblies = List.of(assemblies);
     }
 
+    // Hmm, Bad naming with updates, It is so common
     public final void restrictUpdatesToThisAssembly() {
         allowedAssemblies = List.of(BuildProcess.current().currentAssembly().get());
     }

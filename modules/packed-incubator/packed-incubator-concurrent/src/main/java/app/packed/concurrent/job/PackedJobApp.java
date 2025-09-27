@@ -19,11 +19,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
+import app.packed.application.BootstrapImage;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromGuest;
-import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -68,19 +67,19 @@ final class PackedJobApp implements JobApp {
     }
 
     /** Implementation of {@link app.packed.application.App.Image}. */
-    record AppImage(BaseImage<PackedJobApp> image) implements JobApp.Image {
+    record AppImage(BootstrapImage<PackedJobApp> image) implements JobApp.Image {
 
         /** {@inheritDoc} */
         @Override
-        public Object run(Wirelet... wirelets) {
-            PackedJobApp a = image.launch(RunState.TERMINATED, wirelets);
+        public Object run() {
+            PackedJobApp a = image.launch(RunState.TERMINATED);
             return a.result();
         }
 
         /** {@inheritDoc} */
         @Override
-        public JobApp start(Wirelet... wirelets) {
-            return image.launch(RunState.RUNNING, wirelets);
+        public JobApp start() {
+            return image.launch(RunState.RUNNING);
         }
 
 //        /** {@inheritDoc} */

@@ -22,7 +22,7 @@ import app.packed.bean.lifecycle.BeanLifecycleModel;
 import app.packed.context.Context;
 import app.packed.runtime.StopOption;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.container.wirelets.InternalBuildWirelet;
+import internal.app.packed.container.wirelets.InternalBaseWirelet;
 
 /**
  * Wirelets that can be used when building an application.
@@ -91,7 +91,7 @@ public final class Wirelets {
         return ApplicationBuildLazilyWirelet.INSTANCE;
     }
 
-    static final class ApplicationBuildLazilyWirelet extends InternalBuildWirelet {
+    static final class ApplicationBuildLazilyWirelet extends InternalBaseWirelet {
         private static final ApplicationBuildLazilyWirelet INSTANCE = new ApplicationBuildLazilyWirelet();
 
         /** {@inheritDoc} */
@@ -132,7 +132,7 @@ public final class Wirelets {
         return ApplicationReusableImageWirelet.INSTANCE;
     }
 
-    static final class ApplicationReusableImageWirelet extends InternalBuildWirelet {
+    static final class ApplicationReusableImageWirelet extends InternalBaseWirelet {
         private static final ApplicationReusableImageWirelet INSTANCE = new ApplicationReusableImageWirelet();
 
         /** {@inheritDoc} */
@@ -158,7 +158,7 @@ public final class Wirelets {
     public static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, StopOption... options) {
         // When should we install it? Just after we have been fully initilized?
         // I think so, alternative is as the first operation when starting
-        final class ApplicationShutdownHookWirelet extends InternalBuildWirelet {
+        final class ApplicationShutdownHookWirelet extends InternalBaseWirelet {
 
             /** {@inheritDoc} */
             @Override

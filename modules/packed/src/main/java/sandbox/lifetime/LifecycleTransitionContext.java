@@ -15,7 +15,7 @@
  */
 package sandbox.lifetime;
 
-import app.packed.bean.lifecycle.LifecycleDependantOrder;
+import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopInfo.Reason;
 
@@ -45,7 +45,7 @@ public interface LifecycleTransitionContext {
      */
     void fork(Runnable r);
 
-    LifecycleDependantOrder order();
+    DependantOrder order();
 
     Reason startReason();
 

@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package internal.app.packed.extension;
 
-import app.packed.container.Wirelet;
+import app.packed.component.ComponentRealm;
+import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 
 /**
- * Extension wirelets are wirelets that are defined by a specific {@link Extension extension}.
  *
- * @param <E>
- *            The type of the extension this wirelet is a part up
- *
- * @see Extension#selectWirelets(Class)
  */
-public abstract non-sealed class ExtensionWirelet<E extends Extension<E>> extends Wirelet {
+public record PackedExtensionPointHandle(ExtensionSetup extension, ExtensionSetup usedBy) implements ExtensionPointHandle {
 
-    // Is invoked before Extension#onNew
-    protected abstract void onUsed(E extension);
-
-    protected void onUnused() {}
+    /** {@inheritDoc} */
+    @Override
+    public ComponentRealm author() {
+        return extension.authority();
+    }
 }

@@ -37,6 +37,7 @@ public @interface BeanTrigger {
     @Documented
     @BeanTrigger
     // Should we also have an Inherited version
+    // I think so
     public @interface OnAnnotatedClass {
 
         /** Whether or not the sidecar is allow to get the contents of a field. */

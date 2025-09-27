@@ -19,13 +19,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
 
 /** A mirror representing an {@link OnInitialize} operation. */
 public final class InitializeOperationMirror extends BeanLifecycleOperationMirror {
 
     /** A handle for the initialization operation. */
-    final LifecycleOperationInitializeHandle handle;
+    final ForInitialize handle;
 
     /**
      * Create a new mirror.
@@ -33,7 +33,7 @@ public final class InitializeOperationMirror extends BeanLifecycleOperationMirro
      * @param handle
      *            the operation's handle
      */
-    InitializeOperationMirror(LifecycleOperationInitializeHandle handle) {
+    InitializeOperationMirror(ForInitialize handle) {
         super(handle);
         this.handle = requireNonNull(handle);
     }

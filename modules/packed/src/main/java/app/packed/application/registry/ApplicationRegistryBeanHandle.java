@@ -31,12 +31,11 @@ final class ApplicationRegistryBeanHandle<I, H extends ApplicationHandle<I, ?>> 
     /** A bean template for a {@link ApplicationRepository} bean. */
     static final BeanTemplate REPOSITORY_BEAN_TEMPLATE = BeanTemplate.of(BeanKind.CONTAINER);
 
-
     final BuildApplicationRepository repository;
 
     ApplicationRegistryBeanHandle(BeanInstaller installer, PackedApplicationTemplate<H> template) {
-        super(installer);
         this.repository = new BuildApplicationRepository(template);
+        super(installer);
     }
 
     /** {@inheritDoc} */

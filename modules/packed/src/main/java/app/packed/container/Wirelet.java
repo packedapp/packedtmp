@@ -15,25 +15,14 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.function.Supplier;
-
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceInheritableVariable;
-import app.packed.util.Nullable;
+import app.packed.extension.ExtensionWirelet;
 import internal.app.packed.container.ContainerWirelets.ContainerOverrideNameWirelet;
 import internal.app.packed.container.wirelets.CompositeWirelet;
+import internal.app.packed.container.wirelets.FrameworkWirelet;
 import internal.app.packed.container.wirelets.WrappingWirelet;
-import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 
 /**
- * Wirelets are a small pieces of "glue code" that can be specified when wiring containers.
+ * Wirelets are a small pieces of "glue code" that can be specified when wiring containers at build time.
  * <p>
  * Wirelets are typically used to debug foobar, sdsd.
  *
@@ -104,31 +93,7 @@ import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 
 // Runtime : Launch
 
-// Was sealed and allowed ApplicationWirelet, ExtensionWirelet and Framework Wirelet.
-// But was really difficult to explain application vs extension wirelet.
-// So now the "User" wirelet is just plain wirelet
-
-// Specified class must be visible when querying
-@OnContextServiceInheritableVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
-public abstract class Wirelet {
-
-    // How do com
-    final int flags = 0;
-
-    /**
-     * Returns a combined wirelet that behaves, in sequence, as this wirelet followed by the {@code after} wirelet.
-     *
-     * @param after
-     *            the wirelet to process after this wirelet
-     * @return the combined wirelet
-     * @see #andThen(Wirelet...)
-     * @see #beforeThis(Wirelet...)
-     * @see #factoryOf(Wirelet...)
-     */
-    public final Wirelet andThen(Wirelet after) {
-        requireNonNull(after, "after is null");
-        return CompositeWirelet.of(this, after);
-    }
+public sealed abstract class Wirelet permits ExtensionWirelet, FrameworkWirelet {
 
     /**
      * Returns a combined wirelet that behaves, in sequence, as this wirelet followed by each of the specified wirelets.
@@ -183,20 +148,20 @@ public abstract class Wirelet {
      * or {@link app.packed.extension.Extension#selectWirelets(Class)} or at runtime using injection of
      * {@link WireletSelection}.
      */
-    protected void onUnconsumed() {
-        // Invoked by the runtime if the wirelet is not processed in some way
-
-        // look up extension member
-        // HOW to know from this method whether or not the extension is in use???
-        // Could use ThreadLocal...
-        // Nej vi er ligeglade. En unprocessed extension wirelet...
-        // Er automatisk en extension der ikke er registreret
-        // Alle extensions skal processere alle deres wirelets
-
-        // Either the extension is not registered or some other
-
-        // Tror vi tester om den er overskrevet
-    }
+//    protected void onUnconsumed() {
+//        // Invoked by the runtime if the wirelet is not processed in some way
+//
+//        // look up extension member
+//        // HOW to know from this method whether or not the extension is in use???
+//        // Could use ThreadLocal...
+//        // Nej vi er ligeglade. En unprocessed extension wirelet...
+//        // Er automatisk en extension der ikke er registreret
+//        // Alle extensions skal processere alle deres wirelets
+//
+//        // Either the extension is not registered or some other
+//
+//        // Tror vi tester om den er overskrevet
+//    }
 
     /**
      * Combines multiple wirelets into a single wirelet that behaves, in sequence, as each of the specified wirelets.
@@ -208,24 +173,19 @@ public abstract class Wirelet {
      * @see #andThen(Wirelet...)
      * @see #beforeThis(Wirelet...)
      */
+    // Should probably have a similar rollout of wirelets.
     public static Wirelet combine(Wirelet... wirelets) {
         return CompositeWirelet.of(wirelets);
     }
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    @Inherited
-    @Documented
-    @interface Flags {}
-
-    // Nullable -> ignore
-    // Skal den evalueres paa build time eller runtime???
-    // Maaske 2 forskellige metoder
-    // Hvad er usecasen?
-    static Wirelet lazy(Supplier<@Nullable Wirelet> supplier) {
-        // We probably need a generic WrappingWirelet
-        throw new UnsupportedOperationException();
-    }
+//    // Nullable -> ignore
+//    // Skal den evalueres paa build time eller runtime???
+//    // Maaske 2 forskellige metoder
+//    // Hvad er usecasen?
+//    static Wirelet lazy(Supplier<@Nullable Wirelet> supplier) {
+//        // We probably need a generic WrappingWirelet
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Returns a wirelet that will set the name of the application to the specified name.
@@ -238,22 +198,21 @@ public abstract class Wirelet {
      *            the name of the container
      * @return a wirelet that can be used to override the name of a container
      */
-    public static Wirelet renameApplication(String name) {
+    // I think named() is fine
+    public static Wirelet named(String name) {
         return new ContainerOverrideNameWirelet(name);
     }
 
-    // Mirror?
-    // Descriptor can laves fra en Wirelet...
-    // Mirror kun i forbindelse med Build
-    //// Vil sige den her et mirror tror jeg. Selvom det er interessant om man kan angive den.
-    public interface Descriptor {
-//        EnumSet<Phase> phases();
+//    // Mirror?
+//    // Descriptor can laves fra en Wirelet...
+//    // Mirror kun i forbindelse med Build
+//    //// Vil sige den her et mirror tror jeg. Selvom det er interessant om man kan angive den.
+//    public interface Descriptor {
+//
+//        Class<? extends Wirelet> wireletClass();
+//
+//    }
 
-        Class<? extends Wirelet> wireletClass();
-
-    }
-
-    //
     static Wirelet ignoreUnconsumed(Wirelet wirelet) {
 
         class IgnoreUnconsumedWirelet extends WrappingWirelet {
@@ -284,13 +243,6 @@ public abstract class Wirelet {
         // on the wirelet instance
         // throw new UnsupportedOperationException();
     }
-
-    // Maybe just have an ApplicationPhase.
-    // What about condensors??? Do we need a further division??
-    // And then we use Runtime instead of LaunchTime
-//    public enum Phase {
-//        BUILD_TIME, LAUNCH_TIME;
-//    }
 }
 
 // A wirelet that is only applied

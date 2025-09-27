@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.StructureViolationException;
 import java.util.concurrent.StructuredTaskScope;
+import java.util.concurrent.StructuredTaskScope.Joiner;
 
 import app.packed.bean.lifecycle.OnStartContext;
 import app.packed.extension.ExtensionContext;
@@ -43,7 +44,7 @@ final class StartRunner {
     final Thread startingThread = Thread.currentThread();
 
     /** A structured task scope, used if forking. */
-    StructuredTaskScope<Void> ts;
+    StructuredTaskScope<Void, Void> ts;
 
     StartRunner(Collection<LifecycleOnStartHandle> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
         this.operations = methodHandles;
@@ -71,20 +72,22 @@ final class StartRunner {
                 run(h);
             }
         }
-        StructuredTaskScope<Void> sts = ts;
+        StructuredTaskScope<Void, Void> sts = ts;
         if (sts != null) {
             try {
+                System.out.println(Thread.currentThread() == startingThread);
+                System.out.println(ts.toString());
                 ts.join();
                 System.out.println("Joined " + (System.currentTimeMillis() - start));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-  //      System.out.println("Start finished");
+        // System.out.println("Start finished");
     }
 
-    StructuredTaskScope<Void> ts() {
-        StructuredTaskScope<Void> sts = ts;
+    StructuredTaskScope<Void, Void> ts() {
+        StructuredTaskScope<Void, Void> sts = ts;
         if (sts != null) {
             return sts;
         }
@@ -92,7 +95,8 @@ final class StartRunner {
         if (Thread.currentThread() != startingThread) {
             throw new StructureViolationException();
         }
-        return ts = new StructuredTaskScope<>("AppStart", Thread.ofVirtual().name("CoolAppStartin", 0).factory());
+        return ts = StructuredTaskScope.open(Joiner.awaitAllSuccessfulOrThrow(),
+                c -> c.withName("AppStart").withThreadFactory(Thread.ofVirtual().name("CoolAppStartin", 0).factory()));
     }
 
     record PackedOnStartContext(StartRunner runner) implements OnStartContext {

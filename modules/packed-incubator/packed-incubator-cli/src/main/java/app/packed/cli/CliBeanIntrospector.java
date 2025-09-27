@@ -18,9 +18,9 @@ package app.packed.cli;
 import java.lang.annotation.Annotation;
 
 import app.packed.bean.scanning.BeanIntrospector;
-import internal.app.packed.extension.PackedBeanIntrospector;
+import internal.app.packed.extension.InternalBeanIntrospector;
 
-class CliBeanIntrospector extends PackedBeanIntrospector<CliExtension> {
+class CliBeanIntrospector extends InternalBeanIntrospector<CliExtension> {
 
     /** {@inheritDoc} */
     @Override

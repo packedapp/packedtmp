@@ -24,7 +24,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
+import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import tck.AppAppTest;
 
 /**
@@ -65,7 +65,7 @@ public class OnNewInstallExtensionTest extends AppAppTest {
         }
 
         @Override
-        protected Sub newExtensionPoint(ExtensionUseSite usesite) {
+        protected Sub newExtensionPoint(ExtensionPointHandle usesite) {
             return new Sub(usesite);
         }
 
@@ -79,7 +79,7 @@ public class OnNewInstallExtensionTest extends AppAppTest {
             /**
              * @param usesite
              */
-            protected Sub(ExtensionUseSite usesite) {
+            protected Sub(ExtensionPointHandle usesite) {
                 super(usesite);
             }
 
@@ -96,7 +96,7 @@ public class OnNewInstallExtensionTest extends AppAppTest {
         }
 
         @Override
-        protected Ex3ExtensionPoint newExtensionPoint(ExtensionUseSite usesite) {
+        protected Ex3ExtensionPoint newExtensionPoint(ExtensionPointHandle usesite) {
             return new Ex3ExtensionPoint(usesite);
         }
 
@@ -105,7 +105,7 @@ public class OnNewInstallExtensionTest extends AppAppTest {
             /**
              * @param usesite
              */
-            protected Ex3ExtensionPoint(ExtensionUseSite usesite) {
+            protected Ex3ExtensionPoint(ExtensionPointHandle usesite) {
                 super(usesite);
             }
 

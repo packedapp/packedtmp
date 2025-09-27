@@ -96,7 +96,6 @@ public final class AssemblyConfiguration {
     public void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
     }
-
 }
 
 //// Assembly mirrors cannot be specialized for now

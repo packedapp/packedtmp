@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.component.ComponentRealm;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.extension.PackedExtensionUseSite;
+import internal.app.packed.extension.PackedExtensionPointHandle;
 
 /**
  * Extension points are the main mechanism by which an extension can use another extension. Developers that do not
@@ -44,15 +44,15 @@ import internal.app.packed.extension.PackedExtensionUseSite;
 public abstract class ExtensionPoint<E extends Extension<E>> {
 
     /** The use site of this extension point. */
-    final PackedExtensionUseSite usesite;
+    final PackedExtensionPointHandle handle;
 
     /**
      * Create a new extension point.
      * <p>
      * Subclasses should never exposed any public constructors.
      */
-    protected ExtensionPoint(ExtensionUseSite usesite) {
-        this.usesite = (PackedExtensionUseSite) requireNonNull(usesite);
+    protected ExtensionPoint(ExtensionPointHandle handle) {
+        this.handle = (PackedExtensionPointHandle) requireNonNull(handle);
     }
 
     /**
@@ -68,25 +68,25 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         // We only check the extension that uses the extension point.
         // Because the extension the extension points belongs to, is always a direct
         // dependency and will be closed before the extension that provides the extension point.
-        ExtensionSetup extension = usesite.usedBy();
+        ExtensionSetup extension = handle.usedBy();
         if (!extension.isConfigurable()) {
             throw new IllegalStateException(extension.extensionType + " is no longer configurable");
         }
     }
 
-    protected final ExtensionUseSite context() {
-        return usesite;
+    protected final ExtensionPointHandle handle() {
+        return handle;
     }
 
     /** {@return the extension instance that this extension point is a part of} */
     @SuppressWarnings("unchecked")
     protected final E extension() {
-        return (E) usesite.extension().instance();
+        return (E) handle.extension().instance();
     }
 
     /** {@return the type of extension that are using the extension point.} */
     protected final Class<? extends Extension<?>> usedBy() {
-        return usesite.usedBy().extensionType;
+        return handle.usedBy().extensionType;
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     // Inner class: UseSite
     //// Er lidt underlig maaske med UseSite hvis man tager den som parameter
     //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
-    public sealed interface ExtensionUseSite permits PackedExtensionUseSite {
+    public sealed interface ExtensionPointHandle permits PackedExtensionPointHandle {
         ComponentRealm author();
     }
 }

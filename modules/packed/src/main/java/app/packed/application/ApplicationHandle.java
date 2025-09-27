@@ -21,8 +21,8 @@ import app.packed.component.ComponentPath;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
-import internal.app.packed.application.PackedBaseImage.ImageEager;
-import internal.app.packed.application.PackedBaseImage.ImageNonReusable;
+import internal.app.packed.application.PackedBootstrapImage.ImageEager;
+import internal.app.packed.application.PackedBootstrapImage.ImageNonReusable;
 
 /**
  * An application handle represents an installed application towards the person
@@ -39,7 +39,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
 
     /** An image if the application has been constructed using {@link BuildGoal#IMAGE}. */
     @Nullable
-    private final BaseImage<A> image;
+    private final BootstrapImage<A> image;
 
     /** The lazy generated application mirror. */
     @Nullable
@@ -56,7 +56,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
         this.application = inst.toSetup();
 
         // Build an image if that is the target.
-        BaseImage<A> img = null;
+        BootstrapImage<A> img = null;
         if (inst.buildProcess.goal() == BuildGoal.IMAGE) {
             img = new ImageEager<>(this);
             if (!inst.optionBuildReusableImage) {
@@ -109,8 +109,8 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
      *             if the application was build with {@link BuildGoal#IMAGE}.
      */
     // Tror jeg fjerner den her... BaseImage er kun noget man bruger ved rødder tænker jeg???
-    public final BaseImage<A> image() {
-        BaseImage<A> i = image;
+    public final BootstrapImage<A> image() {
+        BootstrapImage<A> i = image;
         if (i == null) {
             throw new IllegalStateException("The application must be installed with BuildImage, was " + application.goal);
         }

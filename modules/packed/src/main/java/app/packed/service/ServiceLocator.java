@@ -27,8 +27,8 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationInterface;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
+import app.packed.application.BootstrapImage;
 import app.packed.assembly.Assembly;
 import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
 import app.packed.binding.Key;
@@ -316,6 +316,7 @@ public interface ServiceLocator extends ApplicationInterface {
      * method.
      */
     private static BootstrapApp<ServiceLocator> bootstrap() {
+        // ServiceLocatorBootstrap because we cannot have private static fields on interfaces
         class ServiceLocatorBootstrap {
             private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
                     .of(ApplicationTemplate.ofUnmanaged(new Op1<@FromGuest ServiceLocator, ServiceLocator>(e -> e) {}));
@@ -376,25 +377,15 @@ public interface ServiceLocator extends ApplicationInterface {
     public static final class Image {
 
         /** The bootstrap image we are delegating to */
-        private final BaseImage<ServiceLocator> image;
+        private final BootstrapImage<ServiceLocator> image;
 
-        private Image(BaseImage<ServiceLocator> image) {
+        private Image(BootstrapImage<ServiceLocator> image) {
             this.image = image;
         }
 
         /** Creates a new service locator application from this image. */
         public ServiceLocator create() {
             return image.launch(RunState.INITIALIZED);
-        }
-
-        /**
-         * Creates a new service locator application from this image.
-         *
-         * @param wirelets
-         *            optional wirelets
-         */
-        public ServiceLocator create(Wirelet... wirelets) {
-            return image.launch(RunState.INITIALIZED, wirelets);
         }
     }
 }

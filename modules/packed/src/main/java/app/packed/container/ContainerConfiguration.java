@@ -12,7 +12,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.util.types.ClassUtil;
 
 /**
  * The configuration of a container.
@@ -144,17 +143,17 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * @param <W>
-     *            the type of wirelet to select
-     * @param wireletClass
-     *            the type of wirelet to select
-     * @return A wirelet selection
-     */
-    public final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        ClassUtil.checkProperSubclass(Wirelet.class, wireletClass, "wireletClass");
-        return handle.container.selectWireletsUnsafe(wireletClass);
-    }
+//    /**
+//     * @param <W>
+//     *            the type of wirelet to select
+//     * @param wireletClass
+//     *            the type of wirelet to select
+//     * @return A wirelet selection
+//     */
+//    public final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+//        ClassUtil.checkProperSubclass(Wirelet.class, wireletClass, "wireletClass");
+//        return handle.container.selectWireletsUnsafe(wireletClass);
+//    }
 
     /** {@inheritDoc} */
     @Override

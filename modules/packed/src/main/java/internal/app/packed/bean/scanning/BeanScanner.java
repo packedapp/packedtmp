@@ -59,7 +59,7 @@ public final class BeanScanner {
 
     /** The various bean introspectors that have been encountered. */
     // We sort it in the end
-    private final IdentityHashMap<BeanIntrospectorModel, BeanIntrospectorSetup> introspectors = new IdentityHashMap<>();
+    private final IdentityHashMap<BeanIntrospectorClassModel, BeanIntrospectorSetup> introspectors = new IdentityHashMap<>();
 
     boolean isConfigurable;
 
@@ -112,7 +112,7 @@ public final class BeanScanner {
             BeanScannerOnConstructors.findConstructor(this, beanClass);
 
             // Introspect all fields on the bean and its super classes
-            BeanScannerOnFields.introspect(this, beanClass);
+            BeanScannerOnFields.fiendIntrospect(this, beanClass);
 
             // Introspect all methods on the bean and its super classes
             BeanScannerOnMethods.introspect(this, beanClass);
@@ -123,7 +123,7 @@ public final class BeanScanner {
 
         // Call into every BeanIntrospector and tell them it is all over
         for (BeanIntrospectorSetup introspector : introspectors.values()) {
-            introspector.instance.onScanStop();
+            introspector.introspector.onStop();
         }
     }
 
@@ -135,7 +135,7 @@ public final class BeanScanner {
      *            the introspector model
      * @return the introspector
      */
-    BeanIntrospectorSetup introspector(BeanIntrospectorModel model) {
+    BeanIntrospectorSetup introspector(BeanIntrospectorClassModel model) {
         return introspectors.computeIfAbsent(model, im -> BeanIntrospectorSetup.create(this, im));
     }
 

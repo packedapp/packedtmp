@@ -16,9 +16,6 @@
 package app.packed.container;
 
 /**
- * An exception that is thrown if attempting to use a wirelet at runtime that is only intended to be used when building
- * the application.
- * <p>
  * This exception is typically through in one of the following situations:
  *
  * Attempting to launch an application or lifetime with a wirelet that does not have the launch phase as targetted phase.
@@ -42,8 +39,6 @@ package app.packed.container;
 
 // Was BuildTimeWireletNotAllowedException
 // LaunchTimeWireletRequiredException
-
-// Do we want an InvalidWireletScopeException??
 public class WireletException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

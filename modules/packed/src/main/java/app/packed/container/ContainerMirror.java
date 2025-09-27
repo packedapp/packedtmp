@@ -25,8 +25,8 @@ import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
-import internal.app.packed.extension.ExtensionModel;
+import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
+import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.PackedTreeView;
 import internal.app.packed.util.types.ClassUtil;
@@ -40,7 +40,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected
  */
-@OnContextServiceInheritableVariable(introspector = BaseExtensionMirrorBeanIntrospector.class)
+@OnContextServiceInheritableVariable(introspector = MirrorImplementationBeanIntrospector.class)
 public non-sealed class ContainerMirror implements ComponentMirror, ContainerBuildLocal.Accessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
@@ -52,7 +52,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
         /** {@inheritDoc} */
         @Override
         protected Class<? extends Extension<?>> computeValue(Class<?> type) {
-            return ExtensionModel.extractE(EXTRACTOR, type);
+            return ExtensionClassModel.extractE(EXTRACTOR, type);
         }
     };
 

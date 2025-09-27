@@ -69,7 +69,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         /** {@inheritDoc} */
         @Override
         protected Class<? extends Extension<?>> computeValue(Class<?> type) {
-            return ExtensionModel.extractE(EXTRACTOR, type);
+            return ExtensionClassModel.extractE(EXTRACTOR, type);
         }
     };
 
@@ -93,7 +93,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
 
         ExtensionSetup otherExtension = extension.container.useExtension(otherExtensionClass, extension);
 
-        PackedExtensionUseSite c = new PackedExtensionUseSite(otherExtension, extension);
+        PackedExtensionPointHandle c = new PackedExtensionPointHandle(otherExtension, extension);
         // Create a new extension point
         ExtensionPoint<?> newExtensionPoint = ExtensionHandlers.newExtensionPoint(otherExtension.instance(), c);
 

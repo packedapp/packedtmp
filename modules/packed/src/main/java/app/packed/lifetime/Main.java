@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import internal.app.packed.lifecycle.lifetime.entrypoint.MainBeanintrospector;
+import internal.app.packed.lifecycle.lifetime.entrypoint.MainAnnotationBeanintrospector;
 
 
 // Maybe move to app.packed.application?
@@ -46,7 +46,7 @@ import internal.app.packed.lifecycle.lifetime.entrypoint.MainBeanintrospector;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@OnAnnotatedMethod(introspector = MainBeanintrospector.class, allowInvoke = true)
+@OnAnnotatedMethod(introspector = MainAnnotationBeanintrospector.class, allowInvoke = true)
 public @interface Main {}
 
 //A single method. Will be executed.

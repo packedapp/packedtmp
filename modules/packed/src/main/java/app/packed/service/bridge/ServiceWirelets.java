@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 
 import app.packed.binding.Key;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtension;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.BaseExtensionWirelet;
 
@@ -105,6 +106,10 @@ public final class ServiceWirelets {
         public void onBuild(ContainerSetup container) {
             container.wireletSpecs.newServiceNamespace = true;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public void onUsed(BaseExtension extension) {}
     }
 
     static class ServiceWirelet extends BaseExtensionWirelet {
@@ -119,5 +124,9 @@ public final class ServiceWirelets {
         public void onBuild(ContainerSetup container) {
             System.out.println("Provide key " + key);
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public void onUsed(BaseExtension extension) {}
     }
 }

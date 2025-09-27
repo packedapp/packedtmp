@@ -21,30 +21,29 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.BaseImage;
-import app.packed.container.Wirelet;
+import app.packed.application.BootstrapImage;
 import app.packed.runtime.RunState;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.deployment.FutureApplicationSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /** Various implementations of {@link BaseImage} */
-public sealed interface PackedBaseImage<A> extends BaseImage<A> {
+public sealed interface PackedBootstrapImage<A> extends BootstrapImage<A> {
 
     /** A application image that maps the result of a launch. */
     @ValueBased
-    public record ImageMapped<A, F>(BaseImage<F> image, Function<? super F, ? extends A> mapper) implements PackedBaseImage<A> {
+    public record ImageMapped<A, F>(BootstrapImage<F> image, Function<? super F, ? extends A> mapper) implements PackedBootstrapImage<A> {
 
         /** {@inheritDoc} */
         @Override
-        public A launch(RunState state, Wirelet... wirelets) {
-            F result = image.launch(state, wirelets);
+        public A launch(RunState state) {
+            F result = image.launch(state);
             return mapper.apply(result);
         }
 
         /** {@inheritDoc} */
         @Override
-        public <E> BaseImage<E> map(Function<? super A, ? extends E> mapper) {
+        public <E> BootstrapImage<E> map(Function<? super A, ? extends E> mapper) {
             requireNonNull(mapper, "mapper is null");
             Function<? super F, ? extends E> andThen = this.mapper.andThen(mapper);
             return new ImageMapped<>(image, andThen);
@@ -62,23 +61,23 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
      * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
      */
     @ValueBased
-    public record ImageNonReusable<A>(AtomicReference<BaseImage<A>> ref) implements PackedBaseImage<A> {
+    public record ImageNonReusable<A>(AtomicReference<BootstrapImage<A>> ref) implements PackedBootstrapImage<A> {
 
-        public ImageNonReusable(BaseImage<A> image) {
+        public ImageNonReusable(BootstrapImage<A> image) {
             this(new AtomicReference<>(image));
         }
 
         /** {@inheritDoc} */
         @Override
-        public A launch(RunState state, Wirelet... wirelets) {
-            BaseImage<A> img = ref.getAndSet(null);
+        public A launch(RunState state) {
+            BootstrapImage<A> img = ref.getAndSet(null);
             if (img == null) {
                 throw new IllegalStateException(
                         "This image has already been used. You can use ApplicationWirelets.resuableImage() to allow repeatable usage of an application image");
             }
             // Not sure we can GC anything here
             // Think we need to extract a launcher and call it
-            return img.launch(state, wirelets);
+            return img.launch(state);
         }
 //
 //        /** {@inheritDoc} */
@@ -99,24 +98,24 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
      * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
      */
     @ValueBased
-    public record ImageEager<A>(ApplicationHandle<A, ?> handle) implements PackedBaseImage<A> {
+    public record ImageEager<A>(ApplicationHandle<A, ?> handle) implements PackedBootstrapImage<A> {
 
         /** {@inheritDoc} */
         @Override
-        public A launch(RunState state, Wirelet... wirelets) {
-            return ApplicationLaunchContext.launch(handle, state, wirelets);
+        public A launch(RunState state) {
+            return ApplicationLaunchContext.launch(handle, state);
         }
     }
 
     @ValueBased
-    public record ImageLazy<A>(PackedApplicationTemplate<?> template, FutureApplicationSetup application) implements PackedBaseImage<A> {
+    public record ImageLazy<A>(PackedApplicationTemplate<?> template, FutureApplicationSetup application) implements PackedBootstrapImage<A> {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        public A launch(RunState state, Wirelet... wirelets) {
+        public A launch(RunState state) {
             ApplicationHandle<?, ?> ah = application.lazyBuild().handle();
-            return (A) ApplicationLaunchContext.launch(ah, state, wirelets);
+            return (A) ApplicationLaunchContext.launch(ah, state);
         }
 //
 //        /** {@inheritDoc} */

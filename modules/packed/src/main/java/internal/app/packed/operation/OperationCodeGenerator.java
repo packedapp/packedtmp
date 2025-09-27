@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 
+import app.packed.binding.ProvisionException;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.binding.BindingAccessor.FromCodeGenerated;
 import internal.app.packed.binding.BindingAccessor.FromConstant;
@@ -43,7 +44,7 @@ public final class OperationCodeGenerator {
 
     public static MethodHandle newMethodHandle(OperationSetup operation) {
         operation.bean.container.application.checkInCodegenPhase();
-       return new OperationCodeGenerator().generate(operation, operation.target.methodHandle());
+        return new OperationCodeGenerator().generate(operation, operation.target.methodHandle());
     }
 
     MethodHandle generate(OperationSetup operation, MethodHandle initial) {
@@ -64,7 +65,8 @@ public final class OperationCodeGenerator {
             // System.out.println(mh.type());
             if (binding.resolver() == null) {
                 System.out.println(operation.type);
-                requireNonNull(binding.resolver());
+                // Should really be here where we fail, much earlier
+                throw new ProvisionException("Oops");
             }
             mh = provide(operation, mh, binding.resolver());
         }
@@ -119,7 +121,7 @@ public final class OperationCodeGenerator {
         } else if (p instanceof FromLifetimeArena fla) {
             permuters.add(0); // ExtensionContext is always 0
             MethodHandle tmp = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, fla.index());
-            assert(tmp.type().returnType()==Object.class);
+            assert (tmp.type().returnType() == Object.class);
 //            System.out.println("FLA ->" + fla.type());
 //            System.out.println(mh.type());
 //
@@ -129,7 +131,7 @@ public final class OperationCodeGenerator {
             // We need to convert it from Object to the expected type
             tmp = tmp.asType(tmp.type().changeReturnType(fla.type()));
 
-            //            if (tmp.type().parameterCount() == 1) {
+            // if (tmp.type().parameterCount() == 1) {
 //                if (tmp.type().returnType() == Hmm2.RAR.class) {
 //                 //  tmp = tmp.asType(tmp.type().changeReturnType(Hmm2.AR.class));
 //                }

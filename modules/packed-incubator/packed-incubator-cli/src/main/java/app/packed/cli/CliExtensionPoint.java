@@ -25,11 +25,11 @@ public class CliExtensionPoint extends ExtensionPoint<CliExtension> {
     /**
      * @param usesite
      */
-    protected CliExtensionPoint(ExtensionUseSite usesite) {
-        super(usesite);
+    protected CliExtensionPoint(ExtensionPointHandle handle) {
+        super(handle);
     }
 
     public CliNamespaceConfiguration namespace() {
-        return extension().ns().configuration(extension(), context());
+        return extension().ns().configuration(extension(), handle());
     }
 }

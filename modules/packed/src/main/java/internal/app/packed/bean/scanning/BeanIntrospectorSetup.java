@@ -38,14 +38,14 @@ public final class BeanIntrospectorSetup implements Comparable<BeanIntrospectorS
     private boolean hasFullAccess;
 
     /** The bean introspector instance. */
-    final BeanIntrospector<?> instance;
+    final BeanIntrospector<?> introspector;
 
     /** The bean scanner. */
     public final BeanScanner scanner;
 
-    private BeanIntrospectorSetup(Class<? extends Extension<?>> extensionClass, BeanScanner scanner, BeanIntrospector<?> instance) {
+    private BeanIntrospectorSetup(Class<? extends Extension<?>> extensionClass, BeanScanner scanner, BeanIntrospector<?> introspector) {
         this.extensionClass = extensionClass;
-        this.instance = instance;
+        this.introspector = introspector;
         this.scanner = scanner;
     }
 
@@ -67,7 +67,7 @@ public final class BeanIntrospectorSetup implements Comparable<BeanIntrospectorS
         return hasFullAccess;
     }
 
-    static BeanIntrospectorSetup create(BeanScanner scanner, BeanIntrospectorModel bim) {
+    static BeanIntrospectorSetup create(BeanScanner scanner, BeanIntrospectorClassModel bim) {
         BeanIntrospector<?> introspector = bim.newInstance();
 
         BeanIntrospectorSetup setup = new BeanIntrospectorSetup(bim.extensionClass, scanner, introspector);
@@ -76,7 +76,7 @@ public final class BeanIntrospectorSetup implements Comparable<BeanIntrospectorS
         BeanHandlers.invokeBeanIntrospectorInitialize(introspector, setup);
 
         // Notify the bean introspector that it is being used
-        introspector.onScanStart();
+        introspector.onStart();
 
         return setup;
     }

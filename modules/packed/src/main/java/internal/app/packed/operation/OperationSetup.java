@@ -235,7 +235,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
      */
     static OperationSetup newOperation(PackedOperationInstaller installer, Function<? super OperationInstaller, OperationHandle<?>> handleFactory) {
         // Cannot reuse an installer
-        installer.checkNotInstalledYet();
+        installer.checkNotUsed();
 
         // Create the new operation, and set it on the installer. This must be done in order to create the handle in next step.
         OperationSetup operation = installer.install(new OperationSetup(installer));

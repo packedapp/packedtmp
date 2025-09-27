@@ -15,11 +15,9 @@
  */
 package app.packed.assembly;
 
-import java.util.Optional;
-
+import app.packed.bean.Bean;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
@@ -64,6 +62,10 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
         base().exportAll();
     }
 
+    protected final <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
+        return base().install(bean);
+    }
+
     /**
      * Installs a component that will use the specified {@link Op} to instantiate the component instance.
      * <p>
@@ -77,7 +79,7 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
     protected final <T> ProvidableBeanConfiguration<T> install(Class<T> implementation) {
-        return base().install(implementation);
+        return install(Bean.of(implementation));
     }
 
     /**
@@ -109,6 +111,10 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
         return base().installInstance(instance);
     }
 
+    protected final void link(Assembly assembly, Wirelet... wirelets) {
+        base().link(assembly.getClass().getSimpleName().replace("Assembly", ""), assembly, wirelets);
+    }
+
     /**
      * Links the specified assembly as part of the same application and container that this container is part of.
      *
@@ -118,13 +124,9 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
      *            optional wirelets
      * @return a mirror of the container that was linked
      */
-    // Maybe have a link  <- that takes the simple name of assembly
-    protected final void link(String name, Assembly assembly, Wirelet... wirelets) {
+    // Maybe have a link <- that takes the simple name of assembly
+    protected final void link(Assembly assembly, String name, Wirelet... wirelets) {
         base().link(name, assembly, wirelets);
-    }
-
-    protected final void link(Assembly assembly, Wirelet... wirelets) {
-        base().link(assembly.getClass().getSimpleName().replace("Assembly", ""), assembly, wirelets);
     }
 
     /**
@@ -210,24 +212,24 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
         return base().installPrototype(factory).provide();
     }
 
-    protected final <T extends Wirelet> Optional<T> selectWirelet(Class<T> wireletClass) {
-        return selectWirelets(wireletClass).last();
-    }
+//    protected final <T extends Wirelet> Optional<T> selectWirelet(Class<T> wireletClass) {
+//        return selectWirelets(wireletClass).last();
+//    }
 
-    /**
-     * Selects all wirelets that available and {@link Class#isAssignableFrom(Class) assignable} to the specified wirelet
-     * class.
-     *
-     * @param <W>
-     *            the type of wirelets to select
-     * @param wireletClass
-     *            the type of wirelets to select
-     * @return a wirelet selection
-     * @see ContainerConfiguration#selectWirelets(Class)
-     */
-    protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        return container().selectWirelets(wireletClass);
-    }
+//    /**
+//     * Selects all wirelets that available and {@link Class#isAssignableFrom(Class) assignable} to the specified wirelet
+//     * class.
+//     *
+//     * @param <W>
+//     *            the type of wirelets to select
+//     * @param wireletClass
+//     *            the type of wirelets to select
+//     * @return a wirelet selection
+//     * @see ContainerConfiguration#selectWirelets(Class)
+//     */
+//    protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+//        return container().selectWirelets(wireletClass);
+//    }
 
     /**
      * Returns an extension of the specified type.

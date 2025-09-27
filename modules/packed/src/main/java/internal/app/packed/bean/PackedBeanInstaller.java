@@ -107,7 +107,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     /** {@inheritDoc} */
     @Override
     public PackedBeanInstaller namePrefix(String prefix) {
-        checkNotInstalledYet();
+        checkNotUsed();
         this.namePrefix = requireNonNull(prefix, "prefix is null");
         return this;
     }

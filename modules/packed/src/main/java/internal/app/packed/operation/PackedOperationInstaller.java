@@ -24,7 +24,7 @@ import java.util.function.Function;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.scanning.InstanceMembersDisallowedException;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
+import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
@@ -76,7 +76,7 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
 
     /** {@inheritDoc} */
     @Override
-    public OperationInstaller delegateTo(ExtensionUseSite extension) {
+    public OperationInstaller delegateTo(ExtensionPointHandle extension) {
         return null;
     }
 
@@ -88,7 +88,7 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
 
     @Override
     public <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super OperationInstaller, N, H> factory) {
-        checkNotInstalledYet();
+        checkNotUsed();
         this.addToNamespace = requireNonNull(namespace);
         return install(f -> factory.apply(f, namespace));
     }

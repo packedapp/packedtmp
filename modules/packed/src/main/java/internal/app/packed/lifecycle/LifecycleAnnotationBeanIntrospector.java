@@ -34,9 +34,9 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnField;
-import internal.app.packed.extension.PackedBeanIntrospector;
+import internal.app.packed.extension.InternalBeanIntrospector;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
@@ -46,7 +46,7 @@ import internal.app.packed.operation.PackedOperationTemplate;
 /**
  * Used by {@link app.packed.extension.BaseExtension} for its {@link app.packed.bean.scanning.BeanIntrospector}.
  */
-public final class LifecycleAnnotationBeanIntrospector extends PackedBeanIntrospector<BaseExtension> {
+public final class LifecycleAnnotationBeanIntrospector extends InternalBeanIntrospector<BaseExtension> {
 
     /** A context template for {@link StartContext}. */
     private static final ContextTemplate CONTEXT_ON_START_TEMPLATE = ContextTemplate.of(OnStartContext.class);
@@ -73,7 +73,7 @@ public final class LifecycleAnnotationBeanIntrospector extends PackedBeanIntrosp
 
             // TODO we need wrap/unwrap
             BeanLifecycleOperationHandle handle = field.newSetOperation(OPERATION_LIFECYCLE_TEMPLATE)
-                    .install(i -> new LifecycleOperationInitializeHandle(i, InternalBeanLifecycleKind.INJECT));
+                    .install(i -> new ForInitialize(i, InternalBeanLifecycleKind.INJECT));
 
             bean().operations.addLifecycleHandle(handle);
 
@@ -93,10 +93,10 @@ public final class LifecycleAnnotationBeanIntrospector extends PackedBeanIntrosp
         if (annotation instanceof Inject) {
             checkNotStaticBean(bean(), Inject.class);
             handle = method.newOperation(OPERATION_LIFECYCLE_TEMPLATE)
-                    .install(i -> new LifecycleOperationInitializeHandle(i, InternalBeanLifecycleKind.INJECT));
+                    .install(i -> new ForInitialize(i, InternalBeanLifecycleKind.INJECT));
         } else if (annotation instanceof Initialize oi) {
             checkNotStaticBean(bean(), Initialize.class);
-            handle = method.newOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new LifecycleOperationInitializeHandle(i, oi));
+            handle = method.newOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new ForInitialize(i, oi));
         } else if (annotation instanceof OnStart oi) {
             checkNotStaticBean(bean(), OnStart.class);
             handle = method.newOperation(OPERATION_ON_START_TEMPLATE).install(i -> new LifecycleOnStartHandle(i, oi));
@@ -124,7 +124,7 @@ public final class LifecycleAnnotationBeanIntrospector extends PackedBeanIntrosp
 
             // What if no scanning and OP?????
             OperationSetup os = op.newOperationSetup(
-                    new NewOperation(bean, bean.installedBy, ot, i -> new LifecycleOperationInitializeHandle(i, InternalBeanLifecycleKind.FACTORY), null));
+                    new NewOperation(bean, bean.installedBy, ot, i -> new ForInitialize(i, InternalBeanLifecycleKind.FACTORY), null));
             bean.operations.addLifecycleHandle((BeanLifecycleOperationHandle) os.handle());
         }
 
@@ -148,7 +148,7 @@ public final class LifecycleAnnotationBeanIntrospector extends PackedBeanIntrosp
 
     static void testMethodAnnotation(NewIntrospector<BaseExtension> ni) {
         ni.onAnnotatedMethod(Initialize.class).install(OPERATION_LIFECYCLE_TEMPLATE, i -> {
-            LifecycleOperationInitializeHandle h = new LifecycleOperationInitializeHandle(i, i.value());
+            ForInitialize h = new ForInitialize(i, i.value());
             // hack.bean.operations.addHandle(h);
             return h;
         });

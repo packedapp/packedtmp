@@ -24,7 +24,7 @@ import app.packed.build.BuildException;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import internal.app.packed.application.PackedApplicationInstaller;
-import internal.app.packed.assembly.AssemblyModel;
+import internal.app.packed.assembly.AssemblyClassModel;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;
 
@@ -51,7 +51,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
     @Override
     AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller<?> containerInstaller) {
         // Treat it as parent assembly?? Nah we have an Assembly instance. Anyone can get a hold of one.
-        AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
+        AssemblyClassModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
         // Maybe allow if opens or same module
 
         // Problem with relying on StackOverflowException is that you cannot really see what assembly
@@ -84,7 +84,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
     protected abstract Assembly delegateTo();
 
     Assembly extractAssembly(PackedContainerInstaller<?> containerBuilder) {
-        AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
+        AssemblyClassModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
 
         // Problem with relying on StackOverflowException is that you cannot really what assembly
         // is causing the problems

@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 // Ideen er lidt det kan vaere en reference til en klasse eller lignende.
 // Som ikke noedvendigvis er tilgaengelig foerend senere.
 
-// Replace with ComputedConstant???
+// Replace with ComputedConstant??? Nej det er ogsaa bare en Supplier
 // Maybe it is PotentiallyBuildGenerated...
 // Sometimes we might reference, for example, String.
 // One concrete Example is ProxyField.type...

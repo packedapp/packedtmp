@@ -26,7 +26,7 @@ import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
+import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.PackedTreeView;
 
@@ -42,7 +42,7 @@ import internal.app.packed.util.PackedTreeView;
  * Like many other mirrors classes the type of application mirror being returned can be specialized. See
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
-@OnContextServiceInheritableVariable(introspector = BaseExtensionMirrorBeanIntrospector.class)
+@OnContextServiceInheritableVariable(introspector = MirrorImplementationBeanIntrospector.class)
 public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationBuildLocal.Accessor {
 
     /** The application's handle. */

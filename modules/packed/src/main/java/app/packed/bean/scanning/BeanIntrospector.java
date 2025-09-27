@@ -29,10 +29,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.sandbox.AttachmentConfiguration;
 import app.packed.binding.BindingMirror;
@@ -337,9 +337,9 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      * <p>
      * This method can be used to setup data structures or perform validation.
      *
-     * @see #beforeScan()
+     * @see #onStop()
      */
-    public void onScanStart() {}
+    public void onStart() {}
 
     /**
      * A callback method that is called after any other callback methods on this class.
@@ -348,9 +348,9 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      * <p>
      * If an exception is thrown at any time doing processing of the bean this method will not be called.
      *
-     * @see #afterHooks()
+     * @see #onStart()
      */
-    public void onScanStop() {}
+    public void onStop() {}
 
     /**
      * Registers a action to run doing the code generation phase of the application.

@@ -31,10 +31,8 @@ import app.packed.build.BuildCodeSource;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerHandle;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.ExtensionProperty;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
+import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
@@ -42,7 +40,6 @@ import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
-import internal.app.packed.util.types.ClassUtil;
 
 /**
  * Extensions are main mechanism by which the framework can be extended with new features.
@@ -78,6 +75,9 @@ import internal.app.packed.util.types.ClassUtil;
  */
 
 //Nooooo, if fx Logging is a custom BindingHook on Assembly.
+// Maybe it is just defaults for everyone. I mean extensions should be written from the ground up
+// Yeah, we need some kind of BaseExtension to make it consistant with @JavaDefaults
+
 // We also need to have this fucker on Extension. Or maybe allow no customization on extension beans
 // ContainerLocalSource?
 public non-sealed abstract class Extension<E extends Extension<E>> implements BuildCodeSource {
@@ -260,7 +260,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      * @throws InternalExtensionException
      *             if the extension defines an extension point but does not override this method.
      */
-    protected ExtensionPoint<E> newExtensionPoint(ExtensionUseSite usesite) {
+    protected ExtensionPoint<E> newExtensionPoint(ExtensionPointHandle usesite) {
         throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
 
@@ -383,25 +383,25 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
 
     // Maybe have a forEach method as well? forEachWirelet(Class, Consumer);
 
-    protected final <T extends Wirelet> Optional<T> selectWirelet(Class<T> wireletClass) {
-        return selectWirelets(wireletClass).last();
-    }
-
-    protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        // Check that we are a proper subclass of ExtensionWirelet
-        ClassUtil.checkProperSubclass(ExtensionWirelet.class, wireletClass, "wireletClass");
-
-        // We only allow selection of wirelets in the same module as the extension itself
-        // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
-        // Would probably be test the wirelet that defines <E> Then people could have an abstract shared wirelet.
-        if (getClass().getModule() != wireletClass.getModule()) {
-            throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + getClass().getModule().getName() + ") as '"
-                    + /* simple extension name */ extension.model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
-        }
-        // At runtime we have already checked that T is in the same module as the extension when building the application
-
-        return extension.container.selectWireletsUnsafe(wireletClass);
-    }
+//    protected final <T extends Wirelet> Optional<T> selectWirelet(Class<T> wireletClass) {
+//        return selectWirelets(wireletClass).last();
+//    }
+//
+//    protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+//        // Check that we are a proper subclass of ExtensionWirelet
+//        ClassUtil.checkProperSubclass(ExtensionWirelet.class, wireletClass, "wireletClass");
+//
+//        // We only allow selection of wirelets in the same module as the extension itself
+//        // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
+//        // Would probably be test the wirelet that defines <E> Then people could have an abstract shared wirelet.
+//        if (getClass().getModule() != wireletClass.getModule()) {
+//            throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + getClass().getModule().getName() + ") as '"
+//                    + /* simple extension name */ extension.model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
+//        }
+//        // At runtime we have already checked that T is in the same module as the extension when building the application
+//
+//        return extension.container.selectWireletsUnsafe(wireletClass);
+//    }
 
     /**
      * Returns an extension point of the specified type.

@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.Initialize;
-import app.packed.bean.lifecycle.LifecycleDependantOrder;
+import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.bean.lifecycle.OnStart;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.operation.OperationConfiguration;
@@ -70,10 +70,10 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
     }
 
     /** A handle for initialization lifecycle operation. */
-    public static final class LifecycleOperationInitializeHandle extends BeanLifecycleOperationHandle {
+    public static final class ForInitialize extends BeanLifecycleOperationHandle {
 
-        LifecycleOperationInitializeHandle(OperationInstaller installer, @Nullable Initialize annotation) {
-            super(installer, annotation.order() == LifecycleDependantOrder.BEFORE_DEPENDANTS ? InternalBeanLifecycleKind.INITIALIZE_PRE_ORDER
+        ForInitialize(OperationInstaller installer, @Nullable Initialize annotation) {
+            super(installer, annotation.order() == DependantOrder.RUN_BEFORE_DEPENDANTS ? InternalBeanLifecycleKind.INITIALIZE_PRE_ORDER
                     : InternalBeanLifecycleKind.INITIALIZE_POST_ORDER);
         }
 
@@ -84,15 +84,15 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
             BeanSetup bean = method.bean();
 
 //            checkNotStaticBean(bean, Initialize.class);
-            LifecycleOperationInitializeHandle handle = method.newOperation(OPERATION_LIFECYCLE_TEMPLATE)
-                    .install(i -> new LifecycleOperationInitializeHandle(i, annotation));
+            ForInitialize handle = method.newOperation(OPERATION_LIFECYCLE_TEMPLATE)
+                    .install(i -> new ForInitialize(i, annotation));
             bean.operations.addLifecycleHandle(handle);
         }
 
         /**
          * @param installer
          */
-        public LifecycleOperationInitializeHandle(OperationInstaller installer, InternalBeanLifecycleKind lifecycleKind) {
+        public ForInitialize(OperationInstaller installer, InternalBeanLifecycleKind lifecycleKind) {
             super(installer, lifecycleKind);
         }
 
@@ -140,7 +140,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
          * @param installer
          */
         LifecycleOnStartHandle(OperationInstaller installer, OnStart annotation) {
-            super(installer, annotation.order() == LifecycleDependantOrder.BEFORE_DEPENDANTS ? InternalBeanLifecycleKind.START_PRE_ORDER
+            super(installer, annotation.order() == DependantOrder.RUN_BEFORE_DEPENDANTS ? InternalBeanLifecycleKind.START_PRE_ORDER
                     : InternalBeanLifecycleKind.START_POST_ORDER);
             this.stopOnFailure = annotation.stopOnFailure();
             this.interruptOnStopping = annotation.interruptOnStopping();
@@ -166,7 +166,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
          * @param installer
          */
         LifecycleOperationStopHandle(OperationInstaller installer, Stop annotation) {
-            super(installer, annotation.order() == LifecycleDependantOrder.BEFORE_DEPENDANTS ? InternalBeanLifecycleKind.STOP_PRE_ORDER
+            super(installer, annotation.order() == DependantOrder.RUN_BEFORE_DEPENDANTS ? InternalBeanLifecycleKind.STOP_PRE_ORDER
                     : InternalBeanLifecycleKind.STOP_POST_ORDER);
             this.fork = annotation.fork();
         }

@@ -19,4 +19,7 @@ package app.packed.build;
  *
  */
 // Ideen er at det at bygge en application udgoers af code sources og config sources...
+
+// Problemet lidt med BuildConfigSource, er nok at det ikke noedvendigvis kun er build
+// Men kunne ogsaa vaere runtime
 public sealed interface BuildSource permits BuildCodeSource, BuildConfigSource {}

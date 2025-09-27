@@ -22,9 +22,9 @@ import java.lang.invoke.VarHandle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
+import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.extension.PackedExtensionUseSite;
+import internal.app.packed.extension.PackedExtensionPointHandle;
 
 /** Var and method handles for the app.packed.extension package. */
 public final class ExtensionHandlers extends Handlers {
@@ -35,7 +35,7 @@ public final class ExtensionHandlers extends Handlers {
 
     /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_EXTENSION_POINT = method(MethodHandles.lookup(), Extension.class, "newExtensionPoint",
-            ExtensionPoint.class, ExtensionUseSite.class);
+            ExtensionPoint.class, ExtensionPointHandle.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_CLOSE = method(MethodHandles.lookup(), Extension.class, "onClose", void.class);
@@ -47,8 +47,8 @@ public final class ExtensionHandlers extends Handlers {
     private static final MethodHandle MH_EXTENSION_ON_NEW = method(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
     /** A handle that can access {@link ContainerHandleHandle#container}. */
-    private static final VarHandle VH_EXTENSION_POINT_TO_USESITE = field(MethodHandles.lookup(), ExtensionPoint.class, "usesite",
-            PackedExtensionUseSite.class);
+    private static final VarHandle VH_EXTENSION_POINT_TO_USESITE = field(MethodHandles.lookup(), ExtensionPoint.class, "handle",
+            PackedExtensionPointHandle.class);
 
     /** A var handle for {@link #getExtensionHandle(Extension)}. */
     private static final VarHandle VH_EXTENSION_TO_HANDLE = field(MethodHandles.lookup(), Extension.class, "extension", ExtensionSetup.class);
@@ -57,8 +57,8 @@ public final class ExtensionHandlers extends Handlers {
         return (ExtensionSetup) VH_EXTENSION_TO_HANDLE.get(extension);
     }
 
-    public static PackedExtensionUseSite getExtensionPointPackedExtensionUseSite(ExtensionPoint<?> extensionPoint) {
-        return (PackedExtensionUseSite) VH_EXTENSION_POINT_TO_USESITE.get(extensionPoint);
+    public static PackedExtensionPointHandle getExtensionPointPackedExtensionUseSite(ExtensionPoint<?> extensionPoint) {
+        return (PackedExtensionPointHandle) VH_EXTENSION_POINT_TO_USESITE.get(extensionPoint);
     }
 
     public static ExtensionMirror<?> invokeExtensionNewExtensionMirror(Extension<?> extension) {
@@ -95,7 +95,7 @@ public final class ExtensionHandlers extends Handlers {
     }
 
     /** Call {@link Extension#onAssemblyClose()}. */
-    public static ExtensionPoint<?> newExtensionPoint(Extension<?> extension, ExtensionUseSite usesite) {
+    public static ExtensionPoint<?> newExtensionPoint(Extension<?> extension, ExtensionPointHandle usesite) {
         try {
             return (ExtensionPoint<?>) MH_EXTENSION_NEW_EXTENSION_POINT.invokeExact(extension, usesite);
         } catch (Throwable t) {

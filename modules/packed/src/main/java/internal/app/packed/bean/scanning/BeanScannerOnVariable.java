@@ -45,7 +45,7 @@ final class BeanScannerOnVariable {
                 BeanIntrospectorSetup ei = scanner.introspector(hook.bim());
 
                 IntrospectorOnVariable h = new IntrospectorOnVariable(scanner, operation, index, ei.extension(), v);
-                ei.instance.onAnnotatedVariable(a1, h);
+                ei.introspector.onAnnotatedVariable(a1, h);
                 return;
             }
         }
@@ -64,7 +64,7 @@ final class BeanScannerOnVariable {
             Set<Class<? extends Context<?>>> contexts = Set.of();
             IntrospectorOnServiceProvision pcs = new IntrospectorOnServiceProvision(k, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(), contexts,
                     new IntrospectorOnVariableUnwrapped(h));
-            contributor.instance.onExtensionService(k, pcs);
+            contributor.introspector.onExtensionService(k, pcs);
 
 //            contributor.introspector.onProvide(k, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(), contexts,
 //                    new PackedBindableWrappedVariable(h));

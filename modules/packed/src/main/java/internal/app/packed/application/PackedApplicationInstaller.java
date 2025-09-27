@@ -81,15 +81,17 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
     @SuppressWarnings("unchecked")
     @Override
     public H install(Assembly assembly, Wirelet... wirelets) {
-        checkNotInstalledYet();
+        checkNotUsed();
         requireNonNull(assembly, "assembly is null");
 
-        // Prepare the ScopedValue.Carrier that sets the for setting the build process for the build thread
+        // Prepare the ScopedValue.Carrier that sets the build process for the build thread
         Carrier c = buildProcess.carrier();
 
         ContainerSetup container;
         try {
-            container = c.call(() -> containerInstaller.invokeAssemblyBuild(assembly));
+            container = c.call(() -> {
+                return containerInstaller.invokeAssemblyBuild(assembly);
+            });
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         } finally {

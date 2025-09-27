@@ -59,7 +59,7 @@ public @interface Stop {
      *
      * @return
      */
-    LifecycleDependantOrder order() default LifecycleDependantOrder.AFTER_DEPENDANTS;
+    DependantOrder order() default DependantOrder.RUN_AFTER_DEPENDANTS;
 
     // Timeout?
     public enum ForkPolicy {

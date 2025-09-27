@@ -27,4 +27,6 @@ import app.packed.bean.scanning.ForeignBeanTrigger.JavaBaseSupport;
  */
 @JavaBaseSupport
 //Open for testing?? Testing classes boer vaere i samme modul???
-public abstract class BaseAssembly extends AbstractBaseAssembly {}
+// RootAssembly?? And ChildAssembly
+public abstract class BaseAssembly extends AbstractBaseAssembly {
+}

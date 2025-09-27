@@ -20,7 +20,7 @@ import java.lang.module.ModuleDescriptor.Version;
 import java.util.Optional;
 import java.util.Set;
 
-import internal.app.packed.extension.ExtensionModel;
+import internal.app.packed.extension.ExtensionClassModel;
 
 /**
  * An immutable extension descriptor.
@@ -32,7 +32,7 @@ import internal.app.packed.extension.ExtensionModel;
  * The information provided by this descriptor are static information about the extension itself.
  */
 // Rename to ExtensionModel????
-public sealed interface ExtensionDescriptor permits ExtensionModel {
+public sealed interface ExtensionDescriptor permits ExtensionClassModel {
 
     /** {@return an immutable unordered set containing every dependency the extension declares.} */
     Set<Class<? extends Extension<?>>> dependencies();
@@ -119,7 +119,7 @@ public sealed interface ExtensionDescriptor permits ExtensionModel {
      *             dependency hierarchy.
      */
     static ExtensionDescriptor of(Class<? extends Extension<?>> extensionType) {
-        return ExtensionModel.of(extensionType);
+        return ExtensionClassModel.of(extensionType);
     }
 }
 

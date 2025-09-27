@@ -15,11 +15,11 @@
  */
 package internal.app.packed.integration.devtools;
 
-import internal.app.packed.container.wirelets.InternalBuildWirelet;
+import internal.app.packed.container.wirelets.InternalBaseWirelet;
 
 /**
  *
  */
-public abstract class DevToolsWirelet extends InternalBuildWirelet {
+public abstract class DevToolsWirelet extends InternalBaseWirelet {
 
 }

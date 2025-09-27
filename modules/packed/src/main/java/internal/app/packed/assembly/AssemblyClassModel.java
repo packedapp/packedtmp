@@ -22,13 +22,13 @@ import internal.app.packed.build.hook.StaticBuildHookMap;
 import internal.app.packed.util.ThrowableUtil;
 
 /** A model of an {@link Assembly} class. */
-public final /* primitive */ class AssemblyModel {
+public final /* primitive */ class AssemblyClassModel {
 
     /** Cached models of assembly classes. */
-    private final static ClassValue<AssemblyModel> MODELS = new ClassValue<>() {
+    private final static ClassValue<AssemblyClassModel> MODELS = new ClassValue<>() {
 
         @Override
-        protected AssemblyModel computeValue(Class<?> type) {
+        protected AssemblyClassModel computeValue(Class<?> type) {
             HashMap<Class<? extends BuildHook>, List<BuildHook>> hookMap = new HashMap<>();
             for (Annotation a : type.getAnnotations()) {
                 if (a instanceof ApplyBuildHook h) {
@@ -36,8 +36,8 @@ public final /* primitive */ class AssemblyModel {
                         Class<? extends BuildHook> hookType = BuildHookMap.classOf(b);
                         MethodHandle constructor;
 
-                        if (!AssemblyModel.class.getModule().canRead(type.getModule())) {
-                            AssemblyModel.class.getModule().addReads(type.getModule());
+                        if (!AssemblyClassModel.class.getModule().canRead(type.getModule())) {
+                            AssemblyClassModel.class.getModule().addReads(type.getModule());
                         }
 
                         Lookup privateLookup;
@@ -73,7 +73,7 @@ public final /* primitive */ class AssemblyModel {
             if (!hookMap.isEmpty() && DelegatingAssembly.class.isAssignableFrom(type)) {
                 throw new BuildException("Delegating assemblies cannot use @" + ApplyBuildHook.class.getSimpleName() + " annotations, assembly type =" + type);
             }
-            return new AssemblyModel(type,  new StaticBuildHookMap(hookMap));
+            return new AssemblyClassModel(type,  new StaticBuildHookMap(hookMap));
         }
     };
 
@@ -81,7 +81,7 @@ public final /* primitive */ class AssemblyModel {
 
     public final StaticBuildHookMap hooks;
 
-    private AssemblyModel(Class<?> assemblyClass, StaticBuildHookMap hm) {
+    private AssemblyClassModel(Class<?> assemblyClass, StaticBuildHookMap hm) {
         this.hookModel = BeanTriggerModelCustom.of(assemblyClass);
         this.hooks = hm;
     }
@@ -97,7 +97,7 @@ public final /* primitive */ class AssemblyModel {
      *            the type of assembly to return a model for
      * @return a model for the specified assembly
      */
-    public static AssemblyModel of(Class<? extends Assembly> assemblyClass) {
+    public static AssemblyClassModel of(Class<? extends Assembly> assemblyClass) {
         return MODELS.get(assemblyClass);
     }
 }

@@ -29,13 +29,13 @@ import app.packed.operation.OperationTemplate;
 import app.packed.service.Export;
 import app.packed.service.Provide;
 import internal.app.packed.binding.BindingAccessor.FromOperationResult;
-import internal.app.packed.extension.PackedBeanIntrospector;
+import internal.app.packed.extension.InternalBeanIntrospector;
 import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-public final class ServiceBeanIntrospector extends PackedBeanIntrospector<BaseExtension> {
+public final class ServiceBeanIntrospector extends InternalBeanIntrospector<BaseExtension> {
 
     static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withReturnTypeDynamic();
 

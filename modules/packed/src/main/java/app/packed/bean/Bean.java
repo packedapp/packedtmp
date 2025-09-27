@@ -15,11 +15,8 @@
  */
 package app.packed.bean;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Set;
-import java.util.function.Consumer;
 
-import app.packed.bean.scanning.BeanSynthesizer;
 import app.packed.operation.Op;
 import app.packed.util.AnnotationList;
 import internal.app.packed.bean.PackedBean;
@@ -52,18 +49,15 @@ import internal.app.packed.bean.PackedBean;
 
 /// foreignBeanTriggers er jo lidt problemet med eager scan...
 
+// I think classes in the java. namespace are always ignored
 
 // Skal vi have et withLookup???
 // Vi kunne ogsaa godt supportere lazy scan her, Saa kan man faa debug info, og det kan genbruges paa runtime
 
-// I don't know if we expose Bean bean()???
+// I don't know if we expose Bean bean()??? I don't think so. If we allow registration of Lookup objects
 // Problem is for example, component tags. If you override it via BeanConfiguration.componentTags it will not match
 
 public sealed interface Bean<T> permits PackedBean {
-
-    default Set<String> componentTags() {
-        return Set.of();
-    }
 
     /** {@return a list of annotations on the bean} */
     AnnotationList annotations();
@@ -71,16 +65,15 @@ public sealed interface Bean<T> permits PackedBean {
     /** {@return the source kind the bean was created from} */
     BeanSourceKind beanSourceKind();
 
+    default Set<String> componentTags() {
+        return Set.of();
+    }
+
     // I think we do it now...
     // withTransformation???
-    Bean<T> transform(Consumer<? super BeanSynthesizer> action);
 
     // Hvordan interakter vi med Annoteringer her?
     default Bean<T> withComponentTags(Set<String> tags) {
-        return this;
-    }
-
-    default Bean<T> withLookup(MethodHandles.Lookup lookup) {
         return this;
     }
 
@@ -98,34 +91,26 @@ public sealed interface Bean<T> permits PackedBean {
     }
 
     // Like instance it is fairly limited what you can do
+
+    // This should probably only return the Op as single construtor
     static <T> Bean<T> of(Op<?> op) {
         return PackedBean.of(op);
     }
 
     // I think it is more of a builder you return
+    /**
+     * Creates a new bean based on the specified bean instance.
+     *
+     * @param <T>
+     *            the type of the bean instance
+     * @param instance
+     *            the bean instance
+     * @return the new bean
+     */
+    // I think we return 0 constructors
     static <T> Bean<T> ofInstance(T instance) {
         return PackedBean.ofInstance(instance);
     }
-
-    interface BeanField {}
-    interface BeanMethod {}
-    interface BeanConstructor {}
-//  // Altsaa kan vi bare aendre den??
-//  // Maybe just Bean.of(class).synthesize(c->c....)
-//  static <T> Bean<T> of(Class<T> beanClass, Consumer<? super BeanSynthesizer> action) {
-//      throw new UnsupportedOperationException();
-//  }
-//
-//  // What is the beanClass()? SyntheticBean
-//  static <T> Bean<T> of(Consumer<? super BeanSynthesizer> action) {
-//      throw new UnsupportedOperationException();
-//  }
-//
-//  // Like instance it is fairly limited what you can do
-//  static <T> Bean<T> of(Op<?> op, Consumer<? super BeanSynthesizer> action) {
-//      throw new UnsupportedOperationException();
-//  }
-
 }
 
 //Alternativ hedder den noget andet ala BeanFactory (or just Bean).. Og vi laver den fra alle metoder install(Class)->BeanFactory.of(Class)->install(BeanFactory)

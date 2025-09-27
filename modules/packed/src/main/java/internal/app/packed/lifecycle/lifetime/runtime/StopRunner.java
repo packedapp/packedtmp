@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.Collection;
 import java.util.concurrent.StructureViolationException;
 import java.util.concurrent.StructuredTaskScope;
+import java.util.concurrent.StructuredTaskScope.Joiner;
 
 import app.packed.bean.lifecycle.StopContext;
 import app.packed.extension.ExtensionContext;
@@ -44,7 +45,7 @@ final class StopRunner {
     final RegionalManagedLifetime runtime;
 
     /** A structured task scope, used if forking. */
-    StructuredTaskScope<Void> ts;
+    StructuredTaskScope<Void, Void> ts;
 
     @SuppressWarnings("unchecked")
     StopRunner(Collection<?> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
@@ -88,7 +89,7 @@ final class StopRunner {
                 run(h);
             }
         }
-        StructuredTaskScope<Void> sts = ts;
+        StructuredTaskScope<Void, Void> sts = ts;
         if (sts != null) {
             try {
                 ts.join();
@@ -100,8 +101,8 @@ final class StopRunner {
   //      System.out.println("Start finished");
     }
 
-    StructuredTaskScope<Void> ts() {
-        StructuredTaskScope<Void> sts = ts;
+    StructuredTaskScope<Void, Void> ts() {
+        StructuredTaskScope<Void, Void> sts = ts;
         if (sts != null) {
             return sts;
         }
@@ -109,7 +110,8 @@ final class StopRunner {
         if (Thread.currentThread() != startingThread) {
             throw new StructureViolationException();
         }
-        return ts = new StructuredTaskScope<>("AppStopping", Thread.ofVirtual().name("CoolAppStartin", 0).factory());
+        return ts = StructuredTaskScope.open(Joiner.awaitAllSuccessfulOrThrow(),
+                c -> c.withName("AppStopping").withThreadFactory(Thread.ofVirtual().name("CoolAppStartin", 0).factory()));
     }
 
     record PackedOnStopContext(StopRunner runner, LifecycleOperationStopHandle handle) implements StopContext {

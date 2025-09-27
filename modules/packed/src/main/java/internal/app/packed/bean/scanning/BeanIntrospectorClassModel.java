@@ -29,28 +29,23 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
-import internal.app.packed.extension.ExtensionModel;
+import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
-/**
- * A model of a {@link BeanIntrospector}.
- *
- * @implNote This could have been a record, but there are so many fields that that we get a better overview as a plain
- *           class.
- */
-final class BeanIntrospectorModel {
+/** A class model for a {@link BeanIntrospector} implementation. */
+final class BeanIntrospectorClassModel {
 
     /** A cache of all encountered extension models. */
-    private static final ClassValue<BeanIntrospectorModel> MODELS = new ClassValue<>() {
+    private static final ClassValue<BeanIntrospectorClassModel> MODELS = new ClassValue<>() {
         /** A type variable extractor. */
         private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(BeanIntrospector.class);
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked" })
         @Override
-        protected BeanIntrospectorModel computeValue(Class<?> beanInspectorClass) {
+        protected BeanIntrospectorClassModel computeValue(Class<?> beanInspectorClass) {
             // new Exception().printStackTrace();
 //            ClassUtil.checkProperSubclass(Extension.class, extensionClass, s -> new InternalExtensionException(s));
 //            // Check that framework extensions are in a framework module
@@ -62,9 +57,9 @@ final class BeanIntrospectorModel {
 //                }
 //            }
 
-            Class<? extends Extension<?>> e = ExtensionModel.extractE(EXTRACTOR, beanInspectorClass);
+            Class<? extends Extension<?>> e = ExtensionClassModel.extractE(EXTRACTOR, beanInspectorClass);
             MethodHandle mh = getConstructor((Class<? extends BeanIntrospector<?>>) beanInspectorClass);
-            return new BeanIntrospectorModel(e, mh);
+            return new BeanIntrospectorClassModel(e, mh);
         }
     };
 
@@ -79,7 +74,7 @@ final class BeanIntrospectorModel {
      * @param builder
      *            the builder of the model
      */
-    private BeanIntrospectorModel(Class<? extends Extension<?>> extensionClass, MethodHandle mhConstructor) {
+    private BeanIntrospectorClassModel(Class<? extends Extension<?>> extensionClass, MethodHandle mhConstructor) {
         this.mhConstructor = mhConstructor;
         this.extensionClass = extensionClass;
     }
@@ -152,7 +147,7 @@ final class BeanIntrospectorModel {
      * @throws InternalExtensionException
      *             if a valid model for the bean introspector could not be created
      */
-    public static BeanIntrospectorModel of(Class<? extends BeanIntrospector<?>> beanIntrospectorType) {
+    public static BeanIntrospectorClassModel of(Class<? extends BeanIntrospector<?>> beanIntrospectorType) {
         return MODELS.get(beanIntrospectorType);
     }
 

@@ -24,7 +24,7 @@ import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
+import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.util.TreeView;
 import internal.app.packed.namespace.NamespaceSetup;
@@ -86,8 +86,8 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k, ComponentRealm.application()));
     }
 
-    public final C configuration(E e, ExtensionUseSite useSite) {
-        return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k, useSite.author()));
+    public final C configuration(E e, ExtensionPointHandle handle) {
+        return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k, handle.author()));
     }
 
     /** {@return a tree view of all the extensions in the namespace} */

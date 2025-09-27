@@ -31,7 +31,6 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
@@ -46,7 +45,6 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.container.wirelets.WireletSelectionList;
 import internal.app.packed.container.wirelets.WireletWrapper;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
@@ -318,23 +316,23 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
 
     WireletWrapper ws;
 
-    @SuppressWarnings("unchecked")
-    public <T extends Wirelet> WireletSelection<T> selectWireletsUnsafe(Class<T> wireletClass) {
-//        if (module != wireletClass.getModule()) {
-//            throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
+//    @SuppressWarnings("unchecked")
+//    public <T extends Wirelet> WireletSelection<T> selectWireletsUnsafe(Class<T> wireletClass) {
+////        if (module != wireletClass.getModule()) {
+////            throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
+////        }
+//        WireletWrapper wirelets = ws;
+//        if (wirelets == null || wirelets.unconsumed() == 0) {
+//            return WireletSelection.of();
 //        }
-        WireletWrapper wirelets = ws;
-        if (wirelets == null || wirelets.unconsumed() == 0) {
-            return WireletSelection.of();
-        }
-        ArrayList<T> l = new ArrayList<>();
-        for (Wirelet w : this.wirelets) {
-            if (wireletClass.isInstance(w)) {
-                l.add((T) w);
-            }
-        }
-        return WireletSelectionList.of(l);
-    }
+//        ArrayList<T> l = new ArrayList<>();
+//        for (Wirelet w : this.wirelets) {
+//            if (wireletClass.isInstance(w)) {
+//                l.add((T) w);
+//            }
+//        }
+//        return WireletSelectionList.of(l);
+//    }
 
     public MainServiceNamespaceHandle servicesMain() {
         MainServiceNamespaceHandle s = sm;
@@ -433,7 +431,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     public static <H extends ContainerHandle<?>> ContainerSetup newContainer(PackedContainerInstaller<?> installer, ApplicationSetup application,
             AssemblySetup assembly) {
         // Cannot reuse an installer
-        installer.checkNotInstalledYet();
+        installer.checkNotUsed();
 
         // Create the new container using this installer
         ContainerSetup container = installer.install(new ContainerSetup(installer, application, assembly));

@@ -19,12 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import app.packed.bean.Bean;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.scanning.BeanSynthesizer;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.operation.Op;
@@ -36,6 +34,18 @@ import internal.app.packed.util.PackedAnnotationList;
 /**
  *
  */
+// Implementering
+// En masse fields, som vi overskriver
+// Delta updates extending DeltaBean, med en parent
+// A Map<?, Object> with all the properties
+
+// Der er nogle maader man kan implementere denne paa.
+// Enten har vi altid det rigtige.
+// Eller ogsaa har vi versioner
+
+
+
+
 public final class PackedBean<T> implements Bean<T> {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
@@ -68,12 +78,6 @@ public final class PackedBean<T> implements Bean<T> {
     @Override
     public BeanSourceKind beanSourceKind() {
         return beanSourceKind;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Bean<T> transform(Consumer<? super BeanSynthesizer> action) {
-        return null;
     }
 
     /**

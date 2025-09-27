@@ -29,7 +29,7 @@ import app.packed.bean.lifecycle.StopOperationMirror;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 
 /** Implementation of {@link BeanLifecycleMirror}. */
@@ -63,7 +63,7 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements BeanLifecycle
     /** {@inheritDoc} */
     @Override
     public Stream<InitializeOperationMirror> initializers() {
-        return stream(LifecycleOperationInitializeHandle.class);
+        return stream(ForInitialize.class);
     }
 
     /** {@inheritDoc} */

@@ -57,7 +57,6 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      * <li>Finally, {@link AssemblyConfiguration#USED} is set to indicate that the assembly has been used.</li>
      * </ul>
      * <p>
-     * This field is updated via var handle {@link #VH_CONFIGURATION}.
      */
     @Nullable
     private AssemblyConfiguration configuration;

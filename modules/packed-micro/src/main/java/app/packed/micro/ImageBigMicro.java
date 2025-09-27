@@ -48,14 +48,14 @@ public class ImageBigMicro {
             // install(A.class);
             // install(NeedsA.class);
             for (int i = 0; i < 10; i++) {
-                link("child" + i, new BaseAssembly() {
+                link(new BaseAssembly() {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
                         provide(A.class);
                         install(NeedsA.class);
                     }
-                });
+                }, "child" + i);
             }
         }
     });
@@ -65,34 +65,34 @@ public class ImageBigMicro {
         public void build() {
             lookup(MethodHandles.lookup());
             for (int i = 0; i < 4; i++) {
-                link("child" + i, new BaseAssembly() {
+                link(new BaseAssembly() {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
                         provide(A.class);
                         install(NeedsA.class);
                         for (int i = 0; i < 4; i++) {
-                            link("child" + i, new BaseAssembly() {
+                            link(new BaseAssembly() {
                                 @Override
                                 public void build() {
                                     lookup(MethodHandles.lookup());
                                     provide(A.class);
                                     install(NeedsA.class);
                                     for (int i = 0; i < 4; i++) {
-                                        link("child" + i, new BaseAssembly() {
+                                        link(new BaseAssembly() {
                                             @Override
                                             public void build() {
                                                 lookup(MethodHandles.lookup());
                                                 provide(A.class);
                                                 install(NeedsA.class);
                                             }
-                                        });
+                                        }, "child" + i);
                                     }
                                 }
-                            });
+                            }, "child" + i);
                         }
                     }
-                });
+                }, "child" + 1);
             }
         }
     });
@@ -101,34 +101,34 @@ public class ImageBigMicro {
         public void build() {
             lookup(MethodHandles.lookup());
             for (int i = 0; i < 4; i++) {
-                link("child" + i, new BaseAssembly() {
+                link( new BaseAssembly() {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
                         provideInstance(new A());
                         installInstance(new NeedsA(new A()));
                         for (int i = 0; i < 4; i++) {
-                            link("child" + i, new BaseAssembly() {
+                            link( new BaseAssembly() {
                                 @Override
                                 public void build() {
                                     lookup(MethodHandles.lookup());
                                     provideInstance(new A());
                                     installInstance(new NeedsA(new A()));
                                     for (int i = 0; i < 4; i++) {
-                                        link("child" + i, new BaseAssembly() {
+                                        link( new BaseAssembly() {
                                             @Override
                                             public void build() {
                                                 lookup(MethodHandles.lookup());
                                                 provideInstance(new A());
                                                 installInstance(new NeedsA(new A()));
                                             }
-                                        });
+                                        }, "child" + i);
                                     }
                                 }
-                            });
+                            }, "child" + i);
                         }
                     }
-                });
+                }, "child" + i);
             }
         }
     });

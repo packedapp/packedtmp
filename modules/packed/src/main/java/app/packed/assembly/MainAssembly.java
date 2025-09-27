@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.deprecated;
+package app.packed.assembly;
 
-import app.packed.assembly.BaseAssembly;
+import app.packed.application.App;
 
 /**
  *
  */
-public class Usage extends BaseAssembly {
+public abstract class MainAssembly extends BaseAssembly {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
+    // Hah, vi kan ikke se applikationen i stack tracet
+    // Totalt ubrugligt
+    public void cli(String[] args) {
+//        Boot.run(this);
 
-//        base().prep(String.class).ignoreMethodsStartingWith("foo").install();
-
-
-        // base().install(String.class);
-        // base().install(Bean.of(String.class));
-//        base().install(Bean.of(String.class, c -> c.ignoreMethodsStartingWith("foo")));
-
+  //      Cli.run.
+        //        Boot.run()
+//        Cli.run()
+//        Run.cli(
+//        App.launcherOf(this).args(args).run();
+        // Problemet er vel lidt imaged....
+        // Skal vi saa ogsaa have en cliImage???
+        // Maaske have en
+        // Cli.imageOf
+        // Cli.run
+        App.run(this);
     }
 }

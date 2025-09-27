@@ -82,7 +82,7 @@ public @interface Initialize {
      * @return whether or not the annotated method should be run before or after dependent beans in the same lifetime are
      *         initialized.
      */
-    LifecycleDependantOrder order() default LifecycleDependantOrder.BEFORE_DEPENDANTS;
+    DependantOrder order() default DependantOrder.RUN_BEFORE_DEPENDANTS;
 }
 
 //How do we say I want to run this after the application has finished installing

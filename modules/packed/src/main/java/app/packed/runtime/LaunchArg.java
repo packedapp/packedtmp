@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.lifecycle;
+package app.packed.runtime;
 
 /**
  *
- * @see OnInitialize
- * @see OnStart
- * @see OnStop
  */
-// BeanLifecycleOrder
-// DependencyOrder <---
-// In app.packed.lifetime/lifecycle?
+// Ideen er lidt at dette er runtime Wirelet
 
-//PreOrder, PostOrder | OperationDependencyORder->DependencyOrder (Or just Ordering)
-public enum LifecycleDependantOrder {
+// Needs to be well integrated with application.properties
+public @interface LaunchArg {
 
-    /** The operation will be executed before any other operation on beans that have this bean as a dependency. */
-    BEFORE_DEPENDANTS,
-
-    /** The operation will be executed after any dependencies. */
-    AFTER_DEPENDANTS;
 }

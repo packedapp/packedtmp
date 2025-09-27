@@ -59,4 +59,4 @@ public final class CliNamespaceMirror extends NamespaceMirror<CliExtension> {
 // Filter on Namespaces
 
 // Global Namespace = Global Commands + Global Operations
-/// Some Command namespace = Operations Applicable only for that command
+// Some Command namespace = Operations Applicable only for that command

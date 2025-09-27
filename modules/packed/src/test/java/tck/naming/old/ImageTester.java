@@ -17,7 +17,7 @@ package tck.naming.old;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.application.BaseImage;
+import app.packed.application.BootstrapImage;
 import app.packed.assembly.BaseAssembly;
 import app.packed.container.Wirelet;
 import sandbox.program.ProgramX;
@@ -27,17 +27,17 @@ import sandbox.program.ProgramX;
  */
 public class ImageTester {
 
-    private final BaseImage<ProgramX> image;
+    private final BootstrapImage<ProgramX> image;
 
     public ImageTester(BaseAssembly source, Wirelet... wirelets) {
         this(ProgramX.imageOf(source, wirelets));
     }
 
-    public AppTester newApp(Wirelet... wirelets) {
-        return new AppTester(image, wirelets);
+    public AppTester newApp() {
+        return new AppTester(image);
     }
 
-    public ImageTester(BaseImage<ProgramX> image) {
+    public ImageTester(BootstrapImage<ProgramX> image) {
         this.image = requireNonNull(image);
     }
 

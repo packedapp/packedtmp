@@ -33,7 +33,7 @@ public class AssemblyFinderUsage extends BaseAssembly {
         // beanFinder
         // Maybe it should be used standalone here
         AssemblyFinder f = assembly().assemblyFinder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin");
-        link("child", f.findOne("app.packed.usage", "app.packed.application.usage.HelloWorldAssembly"));
+        link(f.findOne("app.packed.usage", "app.packed.application.usage.HelloWorldAssembly"), "child");
     }
 
     public static void main(String[] args) {

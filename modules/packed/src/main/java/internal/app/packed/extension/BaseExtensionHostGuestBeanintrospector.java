@@ -28,7 +28,7 @@ import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 /**
  *
  */
-public final class BaseExtensionHostGuestBeanintrospector extends PackedBeanIntrospector<BaseExtension> {
+public final class BaseExtensionHostGuestBeanintrospector extends InternalBeanIntrospector<BaseExtension> {
 
     /** Handles {@link ContainerGuest}. */
     @Override

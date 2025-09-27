@@ -42,4 +42,4 @@ public enum SuppliedBindingKind {
 //// Namespace (Name)
 
 
-//// Hvis jeg går ind og overskriver med en Operation saa virker et evt. service mirror jo ikke
+// Hvis jeg går ind og overskriver med en Operation saa virker et evt. service mirror jo ikke

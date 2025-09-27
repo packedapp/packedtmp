@@ -20,7 +20,7 @@ import internal.app.packed.bean.BeanSetup;
 /**
  *
  */
-public sealed abstract class IntrospectorOn permits IntrospectorOnField, IntrospectorOnClass, IntrospectorOnMember, IntrospectorOnVariable {
+sealed abstract class IntrospectorOn permits IntrospectorOnClass, IntrospectorOnMember, IntrospectorOnVariable {
 
     public abstract BeanSetup bean();
 }

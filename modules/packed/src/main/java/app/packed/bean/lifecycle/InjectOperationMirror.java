@@ -19,14 +19,14 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
 
 /** A mirror representing an {@link OnInitialize} operation. */
 // Vi prøvede vist at samle alle Initialization handles. Men maaske er det fint at de har hver deres
 public final class InjectOperationMirror extends BeanLifecycleOperationMirror {
 
     /** A handle for the initialization operation. */
-    final LifecycleOperationInitializeHandle handle;
+    final ForInitialize handle;
 
     /**
      * Create a new mirror.
@@ -34,9 +34,9 @@ public final class InjectOperationMirror extends BeanLifecycleOperationMirror {
      * @param handle
      *            the operation's handle
      */
-    InjectOperationMirror(LifecycleOperationInitializeHandle handle) {
-        super(handle);
+    InjectOperationMirror(ForInitialize handle) {
         this.handle = requireNonNull(handle);
+        super(handle);
     }
 
     // ListWithPointer bean()

@@ -18,7 +18,7 @@ package tck.naming.old;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import app.packed.application.BaseImage;
+import app.packed.application.BootstrapImage;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
@@ -39,8 +39,8 @@ public class AppTester {
         this(ProgramX.start(source, wirelets));
     }
 
-    public AppTester(BaseImage<ProgramX> img, Wirelet... wirelets) {
-        this(img.launch(RunState.RUNNING, wirelets));
+    public AppTester(BootstrapImage<ProgramX> img) {
+        this(img.launch(RunState.RUNNING));
     }
 
     public void assertPathExist(CharSequence s) {

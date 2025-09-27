@@ -16,7 +16,7 @@
 package internal.app.packed.container;
 
 import app.packed.container.Wirelet;
-import internal.app.packed.container.wirelets.InternalBuildWirelet;
+import internal.app.packed.container.wirelets.InternalBaseWirelet;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /**
@@ -28,7 +28,7 @@ public class ContainerWirelets {
         throw new UnsupportedOperationException();
     }
 
-    public static final class ContainerOverrideNameWirelet extends InternalBuildWirelet {
+    public static final class ContainerOverrideNameWirelet extends InternalBaseWirelet {
 
         /** The (validated) name to override with. */
         private final String name;

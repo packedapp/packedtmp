@@ -24,7 +24,7 @@ import app.packed.bean.lifecycle.StartOperationConfiguration;
 import app.packed.bean.lifecycle.StartOperationMirror;
 import app.packed.bean.lifecycle.StopOperationConfiguration;
 import app.packed.bean.lifecycle.StopOperationMirror;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 
@@ -35,9 +35,9 @@ public class BeanLifecycleHandlers extends Handlers {
 
     /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_NEW_INITIALIZATION_MIRROR = constructor(MethodHandles.lookup(), InitializeOperationMirror.class,
-            LifecycleOperationInitializeHandle.class);
+            ForInitialize.class);
 
-    public static InitializeOperationMirror newInitializeOperationMirror(LifecycleOperationInitializeHandle handle) {
+    public static InitializeOperationMirror newInitializeOperationMirror(ForInitialize handle) {
         try {
             return (InitializeOperationMirror) MH_NEW_INITIALIZATION_MIRROR.invokeExact(handle);
         } catch (Throwable t) {
@@ -73,9 +73,9 @@ public class BeanLifecycleHandlers extends Handlers {
 
     /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_NEW_INITIALIZATION_CONFIGURATION = constructor(MethodHandles.lookup(), InitializeOperationConfiguration.class,
-            LifecycleOperationInitializeHandle.class);
+            ForInitialize.class);
 
-    public static InitializeOperationConfiguration newInitializeOperationConfiguration(LifecycleOperationInitializeHandle handle) {
+    public static InitializeOperationConfiguration newInitializeOperationConfiguration(ForInitialize handle) {
         try {
             return (InitializeOperationConfiguration) MH_NEW_INITIALIZATION_CONFIGURATION.invokeExact(handle);
         } catch (Throwable t) {

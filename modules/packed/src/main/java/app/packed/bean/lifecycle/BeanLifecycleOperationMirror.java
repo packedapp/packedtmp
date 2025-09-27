@@ -42,7 +42,7 @@ public sealed class BeanLifecycleOperationMirror extends OperationMirror
         return bean().lifetime();
     }
 
-    public LifecycleDependantOrder isNaturalOrder() {
+    public DependantOrder isNaturalOrder() {
         throw new UnsupportedOperationException();
     }
 

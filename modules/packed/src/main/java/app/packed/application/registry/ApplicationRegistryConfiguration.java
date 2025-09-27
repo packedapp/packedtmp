@@ -51,8 +51,8 @@ public final class ApplicationRegistryConfiguration<I, H extends ApplicationHand
      *            the bean's handle
      */
     ApplicationRegistryConfiguration(ApplicationRegistryBeanHandle<I, H> handle) {
-        super(handle);
         this.handle = handle;
+        super(handle);
     }
 
     /**

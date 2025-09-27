@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.BaseImage;
+import app.packed.application.BootstrapImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
@@ -127,7 +127,7 @@ interface ProgramY extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see BootstrapApp#newImage(Assembly, Wirelet...)
      */
-    static BaseImage<ProgramY> imageOf(Assembly assembly, Wirelet... wirelets) {
+    static BootstrapImage<ProgramY> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets).map(e -> e);
     }
 

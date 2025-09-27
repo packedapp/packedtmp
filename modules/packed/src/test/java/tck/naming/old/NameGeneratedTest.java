@@ -40,7 +40,7 @@ public class NameGeneratedTest extends AbstractApplicationTest {
         appOf(cs.apply(_ -> {})).nameIs(defaultName);
         appOf(cs.apply(_ -> {})).nameIs(defaultName);
         // We can override default name
-        appOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.renameApplication("Boo")).nameIs("Boo");
+        appOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.named("Boo")).nameIs("Boo");
 
         // Images
         imageOf(cs.apply(_ -> {})).nameIs(defaultName);
@@ -48,8 +48,8 @@ public class NameGeneratedTest extends AbstractApplicationTest {
         imageOf(cs.apply(_ -> {})).newApp().nameIs(defaultName);
 
         // We can override default name from images
-        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.renameApplication("Boo")).nameIs("Boo");
-        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.renameApplication("Boo")).newApp().nameIs("Boo");
+        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.named("Boo")).nameIs("Boo");
+        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.named("Boo")).newApp().nameIs("Boo");
 
         // As a child
         appOf(new AbstractConsumableAssembly(c -> {

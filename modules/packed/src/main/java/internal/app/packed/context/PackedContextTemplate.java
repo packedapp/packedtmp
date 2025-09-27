@@ -18,7 +18,7 @@ package internal.app.packed.context;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
-import internal.app.packed.extension.ExtensionModel;
+import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
 /** Implementation of {@link ContextTemplate}. */
@@ -34,7 +34,7 @@ public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass
         /** {@inheritDoc} */
         @Override
         protected Class<? extends Extension<?>> computeValue(Class<?> type) {
-            return ExtensionModel.extractE(EXTRACTOR, type);
+            return ExtensionClassModel.extractE(EXTRACTOR, type);
         }
     };
 

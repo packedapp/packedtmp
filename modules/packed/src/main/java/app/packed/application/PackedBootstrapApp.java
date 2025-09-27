@@ -69,7 +69,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
 
     /** {@inheritDoc} */
     @Override
-    public BaseImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
+    public BootstrapImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
         ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.IMAGE, launcher, wirelets);
 
         // Build the application

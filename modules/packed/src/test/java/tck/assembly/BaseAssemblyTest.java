@@ -49,7 +49,7 @@ public class BaseAssemblyTest extends AppAppTest {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
-                link("child", this);
+                link(this, "child");
             }
         };
         assertThatThrownBy(() -> App.run(b)).isExactlyInstanceOf(IllegalStateException.class);

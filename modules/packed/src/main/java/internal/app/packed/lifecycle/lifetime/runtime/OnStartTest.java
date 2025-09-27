@@ -17,7 +17,7 @@ package internal.app.packed.lifecycle.lifetime.runtime;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.LifecycleDependantOrder;
+import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.bean.lifecycle.OnStart;
 import app.packed.bean.lifecycle.OnStartContext;
 
@@ -38,7 +38,7 @@ public class OnStartTest extends BaseAssembly {
 
     public static class Mine {
 
-        @OnStart(order = LifecycleDependantOrder.BEFORE_DEPENDANTS)
+        @OnStart(order = DependantOrder.RUN_BEFORE_DEPENDANTS)
         public void onStart(OnStartContext context) {
             System.out.println("1 - NICE " + Thread.currentThread());
         }

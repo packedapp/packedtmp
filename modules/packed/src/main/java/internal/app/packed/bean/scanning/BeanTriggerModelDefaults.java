@@ -45,7 +45,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
                 throw new InternalExtensionException(type + " cannot both be annotated with " + OnAnnotatedField.class + " and " + OnAnnotatedVariable.class);
             }
 
-            BeanIntrospectorModel bim = bim(type, annotation.introspector());
+            BeanIntrospectorClassModel bim = bim(type, annotation.introspector());
             return new OnAnnotatedFieldCache(bim, annotation.allowGet(), annotation.allowSet(), annotation.requiresContext());
         }
     };
@@ -60,7 +60,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
                 return null; // Annotation not annotated with AnnotatedVariableHook
             }
 
-            BeanIntrospectorModel bim = bim(type, annotation.introspector());
+            BeanIntrospectorClassModel bim = bim(type, annotation.introspector());
             return new OnAnnotatedVariableCache(bim);
         }
     };
@@ -75,7 +75,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
                 return null;
             }
 
-            BeanIntrospectorModel bim = bim(type, annotation.introspector());
+            BeanIntrospectorClassModel bim = bim(type, annotation.introspector());
             return new OnAnnotatedMethodCache(bim, annotation.allowInvoke());
         }
     };
@@ -89,7 +89,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
             if (annotation == null) {
                 return null;
             }
-            BeanIntrospectorModel bim = bim(type, annotation.introspector());
+            BeanIntrospectorClassModel bim = bim(type, annotation.introspector());
             return new ParameterAnnotatedCache(bim);
         }
     };
@@ -112,12 +112,12 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
             }
 
             if (h != null) {
-                BeanIntrospectorModel bim = bim(type, h.introspector());
+                BeanIntrospectorClassModel bim = bim(type, h.introspector());
                 return new ParameterTypeCache(bim, null);
             } else {
 //                throw new InternalExtensionException("@" + OnExtensionServiceInteritedBeanTrigger.class.getSimpleName()
 //                        + " cannot be used on interfaces as interface annotations are never inherited, class = " + type);
-                BeanIntrospectorModel bim = bim(type, ih.introspector());
+                BeanIntrospectorClassModel bim = bim(type, ih.introspector());
 
                 Class<?> inherited = type;
                 while (inherited != null) {
@@ -163,8 +163,8 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
         return PARAMETER_TYPE_CACHE.get(parameterType);
     }
 
-    private static BeanIntrospectorModel bim(Class<?> annotationType, Class<? extends BeanIntrospector<?>> beanIntrospectorType) {
-        BeanIntrospectorModel bim = BeanIntrospectorModel.of(beanIntrospectorType);
+    private static BeanIntrospectorClassModel bim(Class<?> annotationType, Class<? extends BeanIntrospector<?>> beanIntrospectorType) {
+        BeanIntrospectorClassModel bim = BeanIntrospectorClassModel.of(beanIntrospectorType);
         if (bim.extensionClass.getModule() != annotationType.getModule()) {
             // System.out.println(bim.extensionClass.getModule());
             // System.out.println(annotationType.getModule());

@@ -46,7 +46,7 @@ import app.packed.service.mirror.ServiceProviderMirror;
 import app.packed.service.mirrorold.ServiceProviderIsThisUsefulMirror;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.context.ContextSetup;
-import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
+import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
 import internal.app.packed.util.AbstractDelegatingStream;
 import sandbox.operation.mirror.DependenciesMirror;
 
@@ -61,7 +61,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@OnContextServiceInheritableVariable(introspector = BaseExtensionMirrorBeanIntrospector.class)
+@OnContextServiceInheritableVariable(introspector = MirrorImplementationBeanIntrospector.class)
 public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror {
 
     /** The handle of the operation we are mirroring. */

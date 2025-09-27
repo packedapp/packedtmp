@@ -37,7 +37,7 @@ public final class ExtensionTree {
     boolean isConfigurable = true;
 
     /** A model of the extension. */
-    final ExtensionModel model;
+    final ExtensionClassModel model;
 
     public final String name;
 
@@ -58,7 +58,7 @@ public final class ExtensionTree {
      */
     ExtensionTree(ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
         this.applicationExtensionId = application.extensionIdCounter++;
-        this.model = ExtensionModel.of(extensionType);
+        this.model = ExtensionClassModel.of(extensionType);
         String name = model.name();
         int suffix = 1;
         while (application.extensions.putIfAbsent(name, extensionType) != null) {

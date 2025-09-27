@@ -18,7 +18,7 @@ import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.BaseExtensionMirrorBeanIntrospector;
+import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
 import internal.app.packed.util.PackedTreeView;
 
 /**
@@ -31,7 +31,7 @@ import internal.app.packed.util.PackedTreeView;
  * @see ApplicationMirror#assembly()
  * @see ContainerMirror#assembly()
  */
-@OnContextServiceVariable(introspector = BaseExtensionMirrorBeanIntrospector.class)
+@OnContextServiceVariable(introspector = MirrorImplementationBeanIntrospector.class)
 public final class AssemblyMirror implements BuildCodeSourceMirror {
 
     /** The assembly we are mirroring. */

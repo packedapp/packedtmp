@@ -28,7 +28,7 @@ import app.packed.binding.Key;
 import internal.app.packed.ValueBased;
 
 /**
- *
+ * A simple map to hold services.
  */
 @ValueBased
 public final class ServiceMap<V> implements Iterable<V> {
@@ -95,10 +95,6 @@ public final class ServiceMap<V> implements Iterable<V> {
             tmp.put(e.getKey(), mapper.apply(e.getValue()));
         }
         return Collections.unmodifiableSequencedMap(tmp);
-
-    }
-
-    public interface Entry {
 
     }
 }

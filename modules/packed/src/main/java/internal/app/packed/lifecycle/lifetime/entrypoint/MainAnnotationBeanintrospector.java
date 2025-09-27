@@ -20,12 +20,12 @@ import java.lang.annotation.Annotation;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.scanning.IntrospectorOnMethod;
-import internal.app.packed.extension.PackedBeanIntrospector;
+import internal.app.packed.extension.InternalBeanIntrospector;
 
 /**
  *
  */
-public final class MainBeanintrospector extends PackedBeanIntrospector<BaseExtension> {
+public final class MainAnnotationBeanintrospector extends InternalBeanIntrospector<BaseExtension> {
 
     /**
      * {@inheritDoc}

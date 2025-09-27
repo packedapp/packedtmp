@@ -31,7 +31,6 @@ import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedFieldCache;
 import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
@@ -40,8 +39,7 @@ import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** Implementation of {@link BeanIntrospector.OnField}. */
-// Previous we had a PackedBeanMember, but there are actually only 2-3 common operations. So don't go that road again.
-public final class IntrospectorOnField extends IntrospectorOn implements BeanIntrospector.OnField, Comparable<IntrospectorOnField> {
+public final class IntrospectorOnField extends IntrospectorOnMember<Field> implements BeanIntrospector.OnField, Comparable<IntrospectorOnField> {
 
     /** Whether or not operations that read from the field can be created. */
     private final boolean allowGet;
@@ -49,24 +47,13 @@ public final class IntrospectorOnField extends IntrospectorOn implements BeanInt
     /** Whether or not operations that write to the field can be created. */
     private final boolean allowSet;
 
-    /** Annotations on the field. */
-    private final PackedAnnotationList annotations;
-
-    /** The field. */
-    private final Field field;
-
-    /** The bean introspector that was triggered. */
-    private final BeanIntrospectorSetup introspector;
-
     /** Triggering annotations on the field (for the given introspector). */
     private final PackedAnnotationList triggeringAnnotations;
 
     // Field, FieldAnnotations, Type, TypeAnnotations
     private IntrospectorOnField(BeanIntrospectorSetup introspector, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations,
             OnAnnotatedFieldCache... annotatedFields) {
-        this.introspector = introspector;
-        this.field = field;
-        this.annotations = annotations;
+        super(introspector, field, annotations);
 
         boolean allowGet = introspector.hasFullAccess();
         boolean allowSet = allowGet;
@@ -80,29 +67,10 @@ public final class IntrospectorOnField extends IntrospectorOn implements BeanInt
         this.triggeringAnnotations = triggeringAnnotations;
     }
 
-    /** {@return a list of annotations on the member.} */
-    @Override
-    public AnnotationList annotations() {
-        return annotations;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanSetup bean() {
-        return introspector.scanner.bean;
-    }
-
-    /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
-    void checkConfigurable() {
-        if (!introspector.extension().isConfigurable()) {
-            throw new IllegalStateException("This method must be called before the extension is closed");
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public int compareTo(IntrospectorOnField o) {
-        return field.getName().compareTo(o.field.getName());
+        return member.getName().compareTo(o.member.getName());
     }
 
     /** {@inheritDoc} */
@@ -114,13 +82,7 @@ public final class IntrospectorOnField extends IntrospectorOn implements BeanInt
     /** {@inheritDoc} */
     @Override
     public Field field() {
-        return field;
-    }
-
-    /** {@return the modifiers of the member.} */
-    @Override
-    public int modifiers() {
-        return field.getModifiers();
+        return member;
     }
 
     /** {@inheritDoc} */
@@ -132,23 +94,23 @@ public final class IntrospectorOnField extends IntrospectorOn implements BeanInt
             throw new IllegalStateException("" + triggeringAnnotations);
         }
         // Get A direct method handle to a getter for the field
-        AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
+        AccessMode accessMode = Modifier.isVolatile(modifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
 
         if (t.returnKind == ReturnKind.DYNAMIC) {
-            t = t.withReturnType(field.getType());
+            t = t.withReturnType(member.getType());
         }
 
 //        template = template.reconfigure(c -> c.returnType(field.getType()));
-        MethodHandle directMH = introspector.scanner.unreflectGetter(field);
+        MethodHandle directMH = introspector.scanner.unreflectGetter(member);
         return newOperation(t, directMH, accessMode);
     }
 
     private OperationInstaller newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         PackedOperationTemplate t = (PackedOperationTemplate) template;
-        OperationType ft = OperationType.fromField(field, accessMode);
+        OperationType ft = OperationType.fromField(member, accessMode);
 
         // We should be able to create the method handle lazily
-        return t.newInstaller(introspector, mh, new OperationFieldTarget(field, accessMode), ft);
+        return t.newInstaller(introspector, mh, new OperationFieldTarget(member, accessMode), ft);
     }
 
     /** {@inheritDoc} */
@@ -157,7 +119,7 @@ public final class IntrospectorOnField extends IntrospectorOn implements BeanInt
         requireNonNull(template, "template is null");
         checkConfigurable();
 
-        VarHandle varHandle = introspector.scanner.unreflectVarHandle(field);
+        VarHandle varHandle = introspector.scanner.unreflectVarHandle(member);
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
 
         return newOperation(template, mh, accessMode);
@@ -171,8 +133,8 @@ public final class IntrospectorOnField extends IntrospectorOn implements BeanInt
         if (!allowSet) {
             throw new IllegalStateException();
         }
-        MethodHandle mh = introspector.scanner.unreflectSetter(field);
-        AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
+        MethodHandle mh = introspector.scanner.unreflectSetter(member);
+        AccessMode accessMode = Modifier.isVolatile(member.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
 
         return newOperation(template, mh, accessMode);
     }
@@ -180,7 +142,7 @@ public final class IntrospectorOnField extends IntrospectorOn implements BeanInt
     /** {@inheritDoc} */
     @Override
     public Key<?> toKey() {
-        return Key.fromField(field);
+        return Key.fromField(member);
     }
 
     /** {@inheritDoc} */
@@ -192,12 +154,12 @@ public final class IntrospectorOnField extends IntrospectorOn implements BeanInt
     /** {@inheritDoc} */
     @Override
     public Variable variable() {
-        return new PackedVariable(annotations, field.getGenericType());
+        return new PackedVariable(annotations, member.getGenericType());
     }
 
     static void process(BeanIntrospectorSetup introspector, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations,
             OnAnnotatedFieldCache... annotatedFields) {
         IntrospectorOnField f = new IntrospectorOnField(introspector, field, annotations, triggeringAnnotations, annotatedFields);
-        introspector.instance.onAnnotatedField(triggeringAnnotations, f);
+        introspector.introspector.onAnnotatedField(triggeringAnnotations, f);
     }
 }

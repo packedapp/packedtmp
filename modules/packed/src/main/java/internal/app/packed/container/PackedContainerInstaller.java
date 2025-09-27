@@ -36,7 +36,7 @@ import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.container.wirelets.CompositeWirelet;
-import internal.app.packed.container.wirelets.InternalBuildWirelet;
+import internal.app.packed.container.wirelets.InternalBaseWirelet;
 import internal.app.packed.util.handlers.AssemblyHandlers;
 
 /** Implementation of {@link ContainerTemplate.Installer} */
@@ -98,7 +98,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     @SuppressWarnings("unchecked")
     @Override
     public H install(Assembly assembly, Wirelet... wirelets) {
-        checkNotInstalledYet();
+        checkNotUsed();
         // TODO can install container (assembly.isConfigurable());
         this.isFromAssembly = true;
         processBuildWirelets(wirelets);
@@ -110,7 +110,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     @SuppressWarnings("unchecked")
     @Override
     public H install(Wirelet... wirelets) {
-        checkNotInstalledYet();
+        checkNotUsed();
         // TODO can install container
         processBuildWirelets(wirelets);
         ContainerSetup container = ContainerSetup.newContainer(this, parent.application, parent.assembly);
@@ -167,7 +167,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
             requireNonNull(wirelet, "wirelet is null");
             switch (wirelet) {
             case CompositeWirelet w -> processBuildWirelets(w.wirelets);
-            case InternalBuildWirelet w -> w.onBuild(this);
+            case InternalBaseWirelet w -> w.onBuild(this);
 
             // Too map or not to map...
 

@@ -19,10 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
-import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
-import internal.app.packed.application.PackedBaseImage;
-import internal.app.packed.application.PackedBaseImage.ImageMapped;
+import internal.app.packed.application.PackedBootstrapImage;
+import internal.app.packed.application.PackedBootstrapImage.ImageMapped;
 
 /**
  * A base image represents a pre-built application.
@@ -30,7 +29,7 @@ import internal.app.packed.application.PackedBaseImage.ImageMapped;
  * Instances of this class are typically not exposed to end-users. Instead it is typically wrapped in another image
  * class such as {@link App.Image}.
  */
-public sealed interface BaseImage<A> permits PackedBaseImage {
+public sealed interface BootstrapImage<A> permits PackedBootstrapImage {
 
     // Descriptors??? iisLazy, Mirror?
 
@@ -68,7 +67,7 @@ public sealed interface BaseImage<A> permits PackedBaseImage {
      *
      * @see BootstrapApp#launch(Assembly, Wirelet...)
      */
-    A launch(RunState state, Wirelet... wirelets);
+    A launch(RunState state);
 
     /**
      * Returns a new base image that maps this image.
@@ -79,7 +78,7 @@ public sealed interface BaseImage<A> permits PackedBaseImage {
      *            the mapper
      * @return a new base image that maps the result of this image
      */
-    default <E> BaseImage<E> map(Function<? super A, ? extends E> mapper) {
+    default <E> BootstrapImage<E> map(Function<? super A, ? extends E> mapper) {
         requireNonNull(mapper, "mapper is null");
         return new ImageMapped<>(this, mapper);
     }

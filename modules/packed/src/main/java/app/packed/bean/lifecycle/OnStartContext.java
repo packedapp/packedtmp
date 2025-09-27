@@ -21,14 +21,14 @@ import java.util.concurrent.StructuredTaskScope;
 import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
+import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
 
 /** A context object that can be injected into methods annotated with {@link OnStart}. */
 
 // Okay, den eneste maade vi supportere join er via OnStart
 // De forskellige scheduling operationer kan ikke supportere det
 // Det store problemer er phases
-@OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class, requiresContext = OnStartContext.class)
+@OnContextServiceVariable(introspector = LifecycleAnnotationBeanIntrospector.class, requiresContext = OnStartContext.class)
 public interface OnStartContext extends Context<BaseExtension> {
 
     default OnStart.ForkMode forkMode() {
@@ -85,7 +85,7 @@ interface Sandbox {
 
     // openTaskScope
 
-    default StructuredTaskScope<?> openTaskScope() {
+    default StructuredTaskScope<?,?> openTaskScope() {
         throw new UnsupportedOperationException();
     }
 

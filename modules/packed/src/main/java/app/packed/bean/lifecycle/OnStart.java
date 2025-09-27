@@ -98,7 +98,7 @@ public @interface OnStart {
      * {@link OperationDependencyOrder#AFTER_DEPENDENCIES}. If the bean order are identical the framework may invoke them in
      * any order.
      * <p>
-     * NOTE: Specifically this attribute can not be used to control any ordering with regards to operations on other beans.
+     * NOTE: This attribute cannot be used to control ordering with regards to other beans.
      *
      * @return the bean order
      * @implNote current the framework will invoked them in the order returned by {@link Class#getMethods()}
@@ -132,7 +132,8 @@ public @interface OnStart {
      */
     // Jeg tror after_dependencies kraever vi monitorer bean state...
     // Fordi vi siger koer denne metode efter x-bean er started
-    LifecycleDependantOrder order() default LifecycleDependantOrder.BEFORE_DEPENDANTS;
+    // Maybe RUN_AFTER_DEPENDENCIES
+    DependantOrder order() default DependantOrder.RUN_BEFORE_DEPENDANTS;
 
     /**
      * Whether or not the bean should be marked as failed to start if the method throws

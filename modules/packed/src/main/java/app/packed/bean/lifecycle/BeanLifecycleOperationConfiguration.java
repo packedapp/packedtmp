@@ -31,7 +31,7 @@ public abstract sealed class BeanLifecycleOperationConfiguration extends Operati
         super(handle);
     }
 
-    public LifecycleDependantOrder isNaturalOrder() {
+    public DependantOrder isNaturalOrder() {
         throw new UnsupportedOperationException();
     }
 }

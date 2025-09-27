@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.BaseImage;
+import app.packed.application.BootstrapImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
@@ -113,7 +113,7 @@ public class AaaTest extends BaseAssembly {
         }
 
         /** Implementation of {@link app.packed.application.App.Image}. */
-        public record AppImage(BaseImage<AApp> image) implements App.Image {
+        public record AppImage(BootstrapImage<AApp> image) implements App.Image {
 
             /** {@inheritDoc} */
             @Override

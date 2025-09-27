@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -14,7 +13,6 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHook;
-import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal.Accessor;
@@ -23,7 +21,6 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.BeanLifecycleModel;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
-import app.packed.binding.Provider;
 import app.packed.build.hook.BuildHook;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
@@ -62,10 +59,6 @@ import internal.app.packed.util.handlers.BeanHandlers;
 
 /** The internal configuration of a bean. */
 public final class BeanSetup implements ContextualizedComponentSetup, BuildLocalSource, ComponentSetup {
-
-    /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
-    // TODO Align with Key and allowed classes
-    public static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Class.class, Key.class, Op.class, Optional.class, Provider.class);
 
     public final HashMap<PackedBeanAttachmentKey, PackedAttachmentOperationHandle> attachments = new HashMap<>();
 
@@ -111,6 +104,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     @Nullable
     public BeanScanner scanner;
 
+    /** The registered bean. */
     public final PackedBean<?> bean;
 
     /** The bean's template. */
@@ -294,38 +288,34 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     }
 
     /**
-     * Create a new bean.
+     * Installs a new bean.
      *
      * @param <H>
      *            the type of bean handle that is created to represent the bean
-     * @param beanClass
-     *            the bean class
-     * @param sourceKind
-     *            the source of the bean
-     * @param source
-     *            the source of the bean
+     * @param installer
+     *            the bean installer used to install the bean
+     * @param bean
+     *            the bean that is being installed
      * @param handleFactory
      *            a function responsible for creating the bean's handle
      * @return a handle for the new bean
      */
     @SuppressWarnings("unchecked")
-    static <H extends BeanHandle<?>> H newBean(PackedBeanInstaller installer, PackedBean<?> bean,
-            Function<? super BeanInstaller, H> handleFactory) {
+    static <H extends BeanHandle<?>> H newBean(PackedBeanInstaller installer, PackedBean<?> bean, Function<? super BeanInstaller, H> handleFactory) {
         requireNonNull(bean, "bean is null");
         requireNonNull(handleFactory, "handleFactory is null");
-        // Should be removeable as checked in Bean.of(...)
-        if (bean.beanSourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(bean.beanClass)) {
-            throw new BeanInstallationException(bean.beanClass + ", is not a valid type for a bean");
-        }
 
         if (!installer.owner.isConfigurable()) {
             throw new IllegalStateException();
         }
 
-        installer.checkNotInstalledYet();
+        installer.checkNotUsed();
 
-        // Create the Bean, this also marks this installer as unconfigurable
-        BeanSetup newBean = installer.install(new BeanSetup(installer, bean));
+        // Create the internal bean
+        BeanSetup newBean = new BeanSetup(installer, bean);
+
+        // Install it, this also marks this installer as unconfigurable
+        newBean = installer.install(newBean);
 
         // Create a handle for the new bean
         BeanHandle<?> handle = newBean.handle = handleFactory.apply(installer);

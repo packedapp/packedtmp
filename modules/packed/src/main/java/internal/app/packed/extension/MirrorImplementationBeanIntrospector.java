@@ -30,7 +30,7 @@ import internal.app.packed.operation.OperationSetup;
 /**
  * Handles the various base {@link app.packed.build.Mirror} classes.
  */
-public final class BaseExtensionMirrorBeanIntrospector extends PackedBeanIntrospector<BaseExtension> {
+public final class MirrorImplementationBeanIntrospector extends InternalBeanIntrospector<BaseExtension> {
 
     @Override
     public void onExtensionService(Key<?> key, OnContextService service) {

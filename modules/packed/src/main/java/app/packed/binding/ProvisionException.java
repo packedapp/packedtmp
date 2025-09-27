@@ -33,7 +33,6 @@ public class ProvisionException extends RuntimeException {
      */
     public ProvisionException(String message) {
         super(message);
-
     }
 
     /**

@@ -78,7 +78,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
     private AssemblyMirror mirror;
 
     /** A model of the assembly. */
-    public final AssemblyModel model;
+    public final AssemblyClassModel model;
 
     /**
      * Create a new assembly setup.
@@ -92,7 +92,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
         super(installer.parent == null ? null : installer.parent.assembly, new ArrayList<>());
         assert (!(assembly instanceof DelegatingAssembly));
         this.assembly = assembly;
-        this.model = AssemblyModel.of(assembly.getClass());
+        this.model = AssemblyClassModel.of(assembly.getClass());
         this.delegatingAssemblies = installer.delegatingAssemblies == null ? List.of() : List.copyOf(installer.delegatingAssemblies);
     }
 

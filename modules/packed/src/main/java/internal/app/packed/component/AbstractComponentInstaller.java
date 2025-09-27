@@ -60,10 +60,12 @@ public sealed abstract class AbstractComponentInstaller<C extends ComponentSetup
 
     protected abstract ApplicationSetup application(C component);
 
+
     /**
      *
      */
-    public final void checkNotInstalledYet() {
+    // checkUnused?
+    public final void checkNotUsed() {
         if (isUsed) {
             throw new IllegalStateException("This installer has already been used to install a new component");
         }
@@ -71,7 +73,7 @@ public sealed abstract class AbstractComponentInstaller<C extends ComponentSetup
 
     @SuppressWarnings("unchecked")
     public final I componentTag(String... tags) {
-        checkNotInstalledYet();
+        checkNotUsed();
         this.componentTags = ComponentTagHolder.copyAndAdd(componentTags, tags);
         return (I) this;
     }
@@ -93,7 +95,7 @@ public sealed abstract class AbstractComponentInstaller<C extends ComponentSetup
 
     @SuppressWarnings("unchecked")
     public <T> I setLocal(BuildLocal<?, T> local, T value) {
-        checkNotInstalledYet();
+        checkNotUsed();
         this.locals.put((PackedBuildLocal<?, ?>) requireNonNull(local, "local is null"), requireNonNull(value, "value is null"));
         return (I) this;
     }

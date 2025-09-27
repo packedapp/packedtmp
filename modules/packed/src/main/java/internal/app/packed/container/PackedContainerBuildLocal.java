@@ -27,7 +27,7 @@ import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
-import internal.app.packed.container.wirelets.InternalBuildWirelet;
+import internal.app.packed.container.wirelets.InternalBaseWirelet;
 
 /** Implementation of {@link ContainerLocal}. */
 public final class PackedContainerBuildLocal<T> extends PackedBuildLocal<ContainerBuildLocal.Accessor, T> implements ContainerBuildLocal<T> {
@@ -47,7 +47,7 @@ public final class PackedContainerBuildLocal<T> extends PackedBuildLocal<Contain
     @Override
     public Wirelet wireletSetter(T value) {
         requireNonNull(value, "value is null");
-        final class ContainerSetLocalWirelet extends InternalBuildWirelet {
+        final class ContainerSetLocalWirelet extends InternalBaseWirelet {
 
             @Override
             public void onBuild(PackedContainerInstaller<?> installer) {

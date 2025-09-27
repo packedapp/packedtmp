@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BaseImage;
+import app.packed.application.BootstrapImage;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
@@ -76,7 +76,7 @@ interface BootstrapLauncher<A> {
         // Could do sneaky throws instead
         A throwingUse(Wirelet... wirelets) throws Throwable;
 
-        default BaseImage<A> with(Wirelet... wirelets) {
+        default BootstrapImage<A> with(Wirelet... wirelets) {
             // Egentlig er den kun her pga Launcher
             throw new UnsupportedOperationException();
         }
@@ -91,7 +91,7 @@ interface BootstrapLauncher<A> {
          *             if the specified image was not build with BuildWirelets.retainApplicationMirror()
          */
         // Eller bare Optional<Mirror>
-        static ApplicationMirror extractMirror(BaseImage<?> image) {
+        static ApplicationMirror extractMirror(BootstrapImage<?> image) {
             throw new UnsupportedOperationException();
         }
 

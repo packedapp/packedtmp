@@ -27,8 +27,10 @@ public class Ffff extends BaseAssembly {
     @Override
     protected void build() {
         System.out.println("OK " + BuildProcess.current().currentAssembly());
+
+        // Maybe we have a RootAssembly and ChildAssembly
         assembly().application().restrictUpdatesToThisAssembly();
-        link("child", new Other());
+        link(new Other(), "child");
     }
 
 
@@ -41,7 +43,7 @@ public class Ffff extends BaseAssembly {
             System.out.println("OK " + BuildProcess.current().currentAssembly());
         }
     }
-    public static void main(String[] args) {
+    void main() {
         App.mirrorOf(new Ffff());
     }
 }

@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.containerdynamic.ManagedInstance;
-import app.packed.bean.lifecycle.LifecycleDependantOrder;
+import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.bean.lifecycle.StopContext;
 import app.packed.runtime.RunState;
@@ -54,14 +54,14 @@ public final class ManagedApplicationRepository<I, H extends ApplicationHandle<I
         return instances.values().stream();
     }
 
-    @Stop(order = LifecycleDependantOrder.AFTER_DEPENDANTS)
+    @Stop(order = DependantOrder.RUN_AFTER_DEPENDANTS)
     public void stopAfterDependencis(StopContext c) {
         for (ManagedInstance<I> i : instances.values()) {
             c.await((l, u) -> i.await(RunState.TERMINATED, l, u));
         }
     }
 
-    @Stop(order = LifecycleDependantOrder.BEFORE_DEPENDANTS)
+    @Stop(order = DependantOrder.RUN_BEFORE_DEPENDANTS)
     // Need to wait on any installs to finish
     public void stopBeforeDependencies() {
         isStopped = true;

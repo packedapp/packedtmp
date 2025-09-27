@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
+import app.packed.binding.Key;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import internal.app.packed.application.PackedApplicationTemplate;
@@ -92,7 +93,7 @@ public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootst
      * @throws RuntimeException
      *             if the image could not be build
      */
-    BaseImage<I> imageOf(Assembly assembly, Wirelet... wirelets);
+    BootstrapImage<I> imageOf(Assembly assembly, Wirelet... wirelets);
 
     /**
      * Builds an application, launches it and returns an application interface instance (possible {@code void})
@@ -194,6 +195,14 @@ public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootst
     static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> of(ApplicationTemplate<H> template) {
         return PackedBootstrapApp.of((PackedApplicationTemplate<H>) template);
     }
+
+    interface BaseLauncher<I> {
+        BaseLauncher<I> args(String... args);
+
+        BaseLauncher<I> provide(Object object);
+        <T> BaseLauncher<I> provide(Class<T> key, T value);
+        <T> BaseLauncher<I> provide(Key<T> key, T value);
+    }
 }
 
 // I don't if we have any usecases Maybe just skip it
@@ -213,8 +222,8 @@ record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? exten
 
     /** {@inheritDoc} */
     @Override
-    public BaseImage<E> imageOf(Assembly assembly, Wirelet... wirelets) {
-        BaseImage<A> ba = app.imageOf(assembly, wirelets);
+    public BootstrapImage<E> imageOf(Assembly assembly, Wirelet... wirelets) {
+        BootstrapImage<A> ba = app.imageOf(assembly, wirelets);
         return ba.map(mapper);
     }
 

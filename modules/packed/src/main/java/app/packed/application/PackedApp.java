@@ -68,7 +68,7 @@ final class PackedApp implements App {
     }
 
     /** Implementation of {@link app.packed.application.App.Image}. */
-    record AppImage(BaseImage<PackedApp> image) implements App.Image {
+    record AppImage(BootstrapImage<PackedApp> image) implements App.Image {
 
         /** {@inheritDoc} */
         @Override

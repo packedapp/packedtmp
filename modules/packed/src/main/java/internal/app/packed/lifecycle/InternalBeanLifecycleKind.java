@@ -15,7 +15,7 @@
  */
 package internal.app.packed.lifecycle;
 
-import app.packed.bean.lifecycle.LifecycleDependantOrder;
+import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.runtime.RunState;
 
 /**
@@ -23,22 +23,22 @@ import app.packed.runtime.RunState;
  */
 public enum InternalBeanLifecycleKind {
 
-    FACTORY(RunState.INITIALIZING, LifecycleDependantOrder.BEFORE_DEPENDANTS),
-    INJECT(RunState.INITIALIZING, LifecycleDependantOrder.BEFORE_DEPENDANTS),
-    INITIALIZE_PRE_ORDER(RunState.INITIALIZING, LifecycleDependantOrder.BEFORE_DEPENDANTS),
-    INITIALIZE_POST_ORDER(RunState.INITIALIZING, LifecycleDependantOrder.AFTER_DEPENDANTS),
+    FACTORY(RunState.INITIALIZING, DependantOrder.RUN_BEFORE_DEPENDANTS),
+    INJECT(RunState.INITIALIZING, DependantOrder.RUN_BEFORE_DEPENDANTS),
+    INITIALIZE_PRE_ORDER(RunState.INITIALIZING, DependantOrder.RUN_BEFORE_DEPENDANTS),
+    INITIALIZE_POST_ORDER(RunState.INITIALIZING, DependantOrder.RUN_AFTER_DEPENDANTS),
 
-    START_PRE_ORDER(RunState.STARTING, LifecycleDependantOrder.BEFORE_DEPENDANTS),
-    START_POST_ORDER(RunState.STARTING, LifecycleDependantOrder.AFTER_DEPENDANTS),
+    START_PRE_ORDER(RunState.STARTING, DependantOrder.RUN_BEFORE_DEPENDANTS),
+    START_POST_ORDER(RunState.STARTING, DependantOrder.RUN_AFTER_DEPENDANTS),
 
-    STOP_PRE_ORDER(RunState.STOPPING, LifecycleDependantOrder.BEFORE_DEPENDANTS),
-    STOP_POST_ORDER(RunState.STOPPING, LifecycleDependantOrder.AFTER_DEPENDANTS);
+    STOP_PRE_ORDER(RunState.STOPPING, DependantOrder.RUN_BEFORE_DEPENDANTS),
+    STOP_POST_ORDER(RunState.STOPPING, DependantOrder.RUN_AFTER_DEPENDANTS);
 
     public final RunState runState;
 
-    public final LifecycleDependantOrder ordering;
+    public final DependantOrder ordering;
 
-    InternalBeanLifecycleKind(RunState runState, LifecycleDependantOrder ordering) {
+    InternalBeanLifecycleKind(RunState runState, DependantOrder ordering) {
         this.runState = runState;
         this.ordering=ordering;
     }

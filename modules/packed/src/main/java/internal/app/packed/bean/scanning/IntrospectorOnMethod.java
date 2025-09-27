@@ -57,10 +57,10 @@ public final class IntrospectorOnMethod extends IntrospectorOnExecutable<Method>
         }
 
         // Attempt to unreflect the method (Create a direct method handle for it)
-        MethodHandle methodHandle = participant.scanner.unreflectMethod(member);
+        MethodHandle methodHandle = introspector.scanner.unreflectMethod(member);
 
         // We should be able to create this lazily
-        return t.newInstaller(participant, methodHandle, new OperationMethodTarget(member), type);
+        return t.newInstaller(introspector, methodHandle, new OperationMethodTarget(member), type);
     }
 
     /** {@inheritDoc} */
@@ -87,7 +87,7 @@ public final class IntrospectorOnMethod extends IntrospectorOnExecutable<Method>
 
                 IntrospectorOnMethod pbm = new IntrospectorOnMethod(contributor, method, annotations, am.isInvokable());
                 PackedAnnotationList pac = new PackedAnnotationList(a1);
-                contributor.instance.onAnnotatedMethod(pac, pbm);
+                contributor.introspector.onAnnotatedMethod(pac, pbm);
             }
         }
     }

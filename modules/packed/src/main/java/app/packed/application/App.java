@@ -107,11 +107,12 @@ public interface App extends AutoCloseable, ApplicationInterface {
      * @return an image that can be used to launch the application
      */
     // By default I think it is single launchable...
+    // Mayb
     static App.Image imageOf(Assembly assembly, Wirelet... wirelets) {
         return new PackedApp.AppImage(PackedApp.BOOTSTRAP_APP.imageOf(assembly, wirelets));
     }
 
-    static App.Launcher launcher(Assembly assembly, Wirelet... wirelets) {
+    static App.Launcher launcherOf(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -218,11 +219,7 @@ public interface App extends AutoCloseable, ApplicationInterface {
     /**
      * Represents a pre-built application image that can be used to launch application instances.
      */
-    interface Image {
-
-        default App.Launcher launcher() {
-            throw new UnsupportedOperationException();
-        }
+    interface Image extends App.Launcher {
 
         /**
          * @return an application
@@ -248,6 +245,38 @@ public interface App extends AutoCloseable, ApplicationInterface {
         default void print() {
             mirror().printer().print();
         }
+    }
+
+    interface Launcher {
+        default <T> Launcher provide(Class<T> key, T value) {
+            return this;
+        }
+
+        default <T> Launcher provide(Key<T> key, T value) {
+            return this;
+        }
+
+        default Launcher provide(Object object) {
+            return this;
+        }
+
+        default Launcher args(String... args) {
+            return this;
+        }
+
+        // Config also
+
+        default Launcher alwaysRestart() {
+            return this;
+        }
+
+        // rename to arg
+
+        // @LaunchArgument/@LaunchArg <--- Injectable
+
+        default Launcher ignoreAllExceptions() {
+            return this;
+        }
 
         /**
          * Runs the application to completion.
@@ -271,26 +300,9 @@ public interface App extends AutoCloseable, ApplicationInterface {
         App start();
     }
 
-    interface Launcher {
-        Launcher alwaysRestart();
-
-        // rename to arg
-        <T> Launcher argument(Class<T> key, T value);
-        <T> Launcher argument(Key<T> key, T value);
-        Launcher argument(Object object);
-
-        Launcher ignoreAllExceptions();
-
-        App.Image image();
-
-        void run();
-
-        App start();
-    }
-
     static void main(String[] args) {
-       CliLaunchers.mainArgs(App.launcher(null), args).start();
-
+        // launcher(
+        CliLaunchers.mainArgs(App.launcherOf(null), args).start();
     }
 }
 
@@ -302,7 +314,6 @@ class CliLaunchers {
     }
 
 }
-
 
 ///**
 //* Creates a printer for detailed application structure output.

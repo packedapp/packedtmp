@@ -5,7 +5,7 @@ import app.packed.extension.ExtensionPoint;
 
 public class JobExtensionPoint extends ExtensionPoint<JobExtension> {
 
-    JobExtensionPoint(ExtensionUseSite usesite) {
+    JobExtensionPoint(ExtensionPointHandle usesite) {
         super(usesite);
     }
 

@@ -16,7 +16,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import extensions.IncubatorExtension;
 import extensions.time.TimeExtension;
-import internal.app.packed.extension.PackedBeanIntrospector;
+import internal.app.packed.extension.InternalBeanIntrospector;
 
 // Tror den er separat fra Time extension
 
@@ -66,7 +66,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
 
     // Creates a new instance on every invocation
 
-    public static class ScheduledJobBeanIntrospector extends PackedBeanIntrospector<ScheduledJobExtension> {
+    public static class ScheduledJobBeanIntrospector extends InternalBeanIntrospector<ScheduledJobExtension> {
         @SuppressWarnings("unused")
         @Override
         public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {

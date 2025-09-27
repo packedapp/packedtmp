@@ -29,7 +29,7 @@ import app.packed.extension.ExtensionHandle;
 /**
  *
  */
-public class MyW extends BaseAssembly {
+public class MyAss extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
@@ -38,11 +38,13 @@ public class MyW extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        App.run(new MyW());
+        App.run(new MyAss());
     }
 
     public static class FFF {
-        FFF(MyBeanMirror m) {}
+        FFF(MyBeanMirror m) {
+            System.out.println(m.installedByExtension());
+        }
     }
 
     static class MyBeanMirror extends BeanMirror {

@@ -55,15 +55,15 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  *           class.
  */
 // Kan kalde dem Info klasser istedet for, hvis vi vil brug model externt i APIen
-public final class ExtensionModel implements ExtensionDescriptor {
+public final class ExtensionClassModel implements ExtensionDescriptor {
 
     /** A cache of all encountered extension models. */
-    private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
+    private static final ClassValue<ExtensionClassModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected ExtensionModel computeValue(Class<?> extensionClass) {
+        protected ExtensionClassModel computeValue(Class<?> extensionClass) {
             // new Exception().printStackTrace();
             ClassUtil.checkProperSubclass(Extension.class, extensionClass, s -> new InternalExtensionException(s));
             // Check that framework extensions are in a framework module
@@ -94,7 +94,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     private final String nameFull;
 
     /** The {@link ExtensionDescriptor#orderingDepth() depth} of this extension. */
-    private final int ordringDepth;
+    private final int orderingDepth;
 
     private final ComponentRealm realm;
 
@@ -104,11 +104,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * @param builder
      *            the builder of the model
      */
-    private ExtensionModel(Builder builder) {
+    private ExtensionClassModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
         this.realm = ComponentRealm.extension(extensionClass);
         this.mhConstructor = builder.mhConstructor;
-        this.ordringDepth = builder.depth;
+        this.orderingDepth = builder.depth;
         this.dependencies = Set.copyOf(builder.dependencies);
 
         // Cache some frequently used strings.
@@ -117,7 +117,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /**
-     * Returns any value of nest annotation.
+     * Checks that the specified extension is the same module as the extension represented by this model.
      *
      * @param eType
      *            the type look for an ExtensionMember annotation on
@@ -138,13 +138,13 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     public int compareTo(ExtensionDescriptor descriptor) {
-        ExtensionModel m = (ExtensionModel) descriptor;
+        ExtensionClassModel m = (ExtensionClassModel) descriptor;
         // if (m.getClassLoader()!=this.getClassLoader())
         // Start comparing by name
 
         // First we compare the depth of each extension
         // We do this first because it is fast
-        int d = ordringDepth - m.ordringDepth;
+        int d = orderingDepth - m.orderingDepth;
         if (d != 0) {
             return d;
         }
@@ -172,7 +172,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         // Same canonical name and depth but loaded with two different class loaders.
         // We do not support this
         // Maybe not support extensions with same name independently of weather the depth is equivalent
-        throw new IllegalArgumentException("Cannot compare two extensions with the same depth '" + ordringDepth + "' and fullname '" + nameFull
+        throw new IllegalArgumentException("Cannot compare two extensions with the same depth '" + orderingDepth + "' and fullname '" + nameFull
                 + "' but loaded by different class loaders. " + "ClassLoader(this) = " + extensionClass.getClassLoader() + ", ClassLoader(other) = "
                 + m.extensionClass.getClassLoader());
     }
@@ -211,7 +211,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
                     + extensionClass + ", but was in '" + type.getModule() + "'");
         }
 
-        return ExtensionDescriptor.of(extensionClass).type(); // Check that the extension is valid
+        ExtensionClassModel.of(extensionClass); // Check that the extension is valid
+
+        return extensionClass;
     }
 
     /**
@@ -240,7 +242,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * @return the depth of the extension
      */
     public int orderingDepth() {
-        return ordringDepth;
+        return orderingDepth;
     }
 
     public ComponentRealm realm() {
@@ -280,7 +282,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * @throws InternalExtensionException
      *             if a valid model for the extension could not be created
      */
-    public static ExtensionModel of(Class<? extends Extension<?>> extensionType) {
+    public static ExtensionClassModel of(Class<? extends Extension<?>> extensionType) {
         return MODELS.get(extensionType);
     }
 
@@ -315,7 +317,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
          *
          * @return the extension model
          */
-        private ExtensionModel build(Loader loader) {
+        private ExtensionClassModel build(Loader loader) {
             DependsOn depende = extensionClass.getAnnotation(DependsOn.class);
             if (depende != null) {
                 dependsOn(false, depende.extensions());
@@ -324,8 +326,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 pendingLoadDependencies.add(BaseExtension.class);
             }
             for (Class<? extends Extension<?>> dependencyType : pendingLoadDependencies) {
-                ExtensionModel model = Loader.load(dependencyType, loader);
-                depth = Math.max(depth, model.ordringDepth + 1);
+                ExtensionClassModel model = Loader.load(dependencyType, loader);
+                depth = Math.max(depth, model.orderingDepth + 1);
                 dependencies.add(dependencyType);
             }
 
@@ -362,7 +364,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 throw new InternalExtensionException(extensionClass + " must be open to '" + getClass().getModule().getName() + "'", e);
             }
 
-            return new ExtensionModel(this);
+            return new ExtensionClassModel(this);
         }
 
         /**
@@ -408,7 +410,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
             Class<? extends Extension<?>> dependency = (Class<? extends Extension<?>>) c;
 
-            ExtensionModel.of(dependency);
+            ExtensionClassModel.of(dependency);
             dependsOn(true, dependency);
             return Optional.of(dependency);
         }
@@ -434,7 +436,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
          */
         private final ArrayDeque<Class<? extends Extension<?>>> stack = new ArrayDeque<>();
 
-        private ExtensionModel loadLocked(Class<? extends Extension<?>> extensionClass) {
+        private ExtensionClassModel loadLocked(Class<? extends Extension<?>> extensionClass) {
             // Check for cyclic dependencies between extensions
             if (stack.peek() != extensionClass) {
                 if (!stack.isEmpty() && stack.contains(extensionClass)) {
@@ -445,11 +447,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
             stack.push(extensionClass);
 
-            ExtensionModel model;
+            ExtensionClassModel model;
             try {
                 // Ensure that the class initializer of the extension has been run before we progress
                 try {
-                    ExtensionModel.class.getModule().addReads(extensionClass.getModule());
+                    ExtensionClassModel.class.getModule().addReads(extensionClass.getModule());
                     Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
                     l.ensureInitialized(extensionClass);
                 } catch (IllegalAccessException e) {
@@ -464,7 +466,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 // Get any bootstrap data that was create as part of the class initialization
 
                 Object object = DATA.get(extensionClass);
-                if (object instanceof ExtensionModel m) {
+                if (object instanceof ExtensionClassModel m) {
                     // Typically from call to l.ensureInitialized(extensionClass);
                     // where the class initializer tries to create
                     // FooExtension
@@ -523,7 +525,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
         }
 
-        private static ExtensionModel load(Class<? extends Extension<?>> extensionClass, @Nullable Loader loader) {
+        private static ExtensionClassModel load(Class<? extends Extension<?>> extensionClass, @Nullable Loader loader) {
             // The creation of an Extension model is a bit complex because we need to
             // create the models of dependencies recursively while also checking for cyclic dependencies
 
@@ -531,7 +533,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             try {
                 // Check if we have attempted to load (possible unsuccessful) the extension
                 Object data = DATA.get(extensionClass);
-                if (data instanceof ExtensionModel model) {
+                if (data instanceof ExtensionClassModel model) {
                     return model;
                 } else if (data instanceof Throwable t) {
                     throw new InternalExtensionException("Extension " + extensionClass + " failed to load previously", t);

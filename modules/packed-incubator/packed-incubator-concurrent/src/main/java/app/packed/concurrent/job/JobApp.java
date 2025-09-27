@@ -92,9 +92,9 @@ public interface JobApp<T> extends App {
 //
 //        JobApp<T> checkedStart(Wirelet... wirelets) throws UnhandledApplicationException;
 
-        T run(Wirelet... wirelets);
+        T run();
 
-        JobApp<T> start(Wirelet... wirelets);
+        JobApp<T> start();
     }
 }
 

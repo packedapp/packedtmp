@@ -12,7 +12,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
-import app.packed.bean.lifecycle.LifecycleDependantOrder;
+import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
@@ -28,7 +28,7 @@ import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.extension.PackedExtensionUseSite;
+import internal.app.packed.extension.PackedExtensionPointHandle;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
@@ -53,12 +53,12 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
             .build();
 
     /** Creates a new base extension point. */
-    BaseExtensionPoint(ExtensionUseSite usesite) {
+    BaseExtensionPoint(ExtensionPointHandle usesite) {
         super(usesite);
     }
 
     public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = newBean(CONTAINER, context()).install(bean, ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> h = newBean(CONTAINER, handle()).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -97,7 +97,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public <T> ProvidableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ProvidableBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
         Function<BeanInstaller, ProvidableBeanHandle<?>> f = ProvidableBeanHandle::new;
-        BeanHandle<?> handle = newBean(CONTAINER, context()).installIfAbsent(clazz, ProvidableBeanConfiguration.class, (Function) f,
+        BeanHandle<?> handle = newBean(CONTAINER, handle()).installIfAbsent(clazz, ProvidableBeanConfiguration.class, (Function) f,
                 h -> action.accept((ProvidableBeanConfiguration<T>) h.configuration()));
         return (ProvidableBeanConfiguration<T>) handle.configuration();
     }
@@ -123,7 +123,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        return newBean(BeanKind.STATIC.template(), context()).install(Bean.of(beanClass), BeanHandle::new).configuration();
+        return newBean(BeanKind.STATIC.template(), handle()).install(Bean.of(beanClass), BeanHandle::new).configuration();
     }
 
     /**
@@ -135,7 +135,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public BeanInstaller newBean(BeanTemplate template) {
         PackedBeanTemplate t = (PackedBeanTemplate) template;
-        ExtensionSetup e = usesite.usedBy();
+        ExtensionSetup e = handle.usedBy();
         return t.newInstaller(e, e.container.assembly);
     }
 
@@ -146,10 +146,10 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a bean template representing the behaviour of the new bean
      * @return the installer
      */
-    public BeanInstaller newBean(BeanTemplate template, ExtensionUseSite forExtension) {
+    public BeanInstaller newBean(BeanTemplate template, ExtensionPointHandle forExtension) {
         requireNonNull(forExtension, "forExtension is null");
         PackedBeanTemplate t = (PackedBeanTemplate) template;
-        return t.newInstaller(extension().extension, ((PackedExtensionUseSite) forExtension).usedBy());
+        return t.newInstaller(extension().extension, ((PackedExtensionPointHandle) forExtension).usedBy());
     }
 
     /**
@@ -162,12 +162,12 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     public ContainerInstaller<?> newContainer(ContainerTemplate<?> template) {
         // Kan only use channels that are direct dependencies of the usage extension
-        ExtensionSetup es = usesite.usedBy();
+        ExtensionSetup es = handle.usedBy();
         return PackedContainerInstaller.of((PackedContainerTemplate<?>) template, es.extensionType, es.container.application, es.container);
     }
 
     public int registerEntryPoint(Class<?> hook) {
-        return usesite.extension().container.lifetime.entryPoints.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
+        return handle.extension().container.lifetime.entryPoints.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
     }
 
     private static OldContainerTemplateLink.Configurator baseBuilder(String name) {
@@ -197,11 +197,11 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
 class unknown {
 
-    public OperationConfiguration runLifecycleOperation(OperationInstaller operation, RunState state, LifecycleDependantOrder ordering) {
+    public OperationConfiguration runLifecycleOperation(OperationInstaller operation, RunState state, DependantOrder ordering) {
         throw new UnsupportedOperationException();
     }
 
-    public OperationConfiguration runOnBeanInitialization(OperationInstaller operation, LifecycleDependantOrder ordering) {
+    public OperationConfiguration runOnBeanInitialization(OperationInstaller operation, DependantOrder ordering) {
         requireNonNull(ordering, "ordering is null");
         throw new UnsupportedOperationException();
 //        OperationHandle handle = h.newOperation(OperationTemplate.defaults(), context());

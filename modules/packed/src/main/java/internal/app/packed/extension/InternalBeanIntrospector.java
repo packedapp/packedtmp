@@ -21,9 +21,9 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.util.handlers.BeanHandlers;
 
 /**
- *
+ * An interna bean introspector that gives easy access to the introspected {@link BeanSetup bean};
  */
-public abstract class PackedBeanIntrospector<E extends Extension<E>> extends BeanIntrospector<E> {
+public abstract class InternalBeanIntrospector<E extends Extension<E>> extends BeanIntrospector<E> {
 
     protected final BeanSetup bean() {
         return BeanHandlers.invokeBeanIntrospectorBean(this);

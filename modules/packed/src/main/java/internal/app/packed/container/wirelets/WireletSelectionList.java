@@ -17,18 +17,15 @@ package internal.app.packed.container.wirelets;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 
 import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
 import internal.app.packed.ValueBased;
 
 /**
  * An implementation of {@link WireletSelection} based on a list.
  */
 @ValueBased
-public final class WireletSelectionList<W extends Wirelet> implements WireletSelection<W> {
+public final class WireletSelectionList<W extends Wirelet> implements Iterable<W> {
 
     /** An empty selection. */
     public static final WireletSelectionList<?> EMPTY = new WireletSelectionList<>(List.of());
@@ -38,54 +35,6 @@ public final class WireletSelectionList<W extends Wirelet> implements WireletSel
 
     WireletSelectionList(List<W> wirelets) {
         this.wirelets = wirelets;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<W> first() {
-        return Optional.empty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Iterator<W> iterator() {
-        return wirelets.iterator();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<W> last() {
-        return Optional.empty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<W> last(Class<? extends W> wireletClass) {
-        return Optional.empty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <E> E lastOrElse(Function<? super W, ? extends E> mapper, E ifEmpty) {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<W> toList() {
-        return wirelets;
     }
 
     public static <W extends Wirelet> WireletSelectionList<W> of(List<W> wirelets) {
@@ -98,5 +47,11 @@ public final class WireletSelectionList<W extends Wirelet> implements WireletSel
 
     public static <W extends Wirelet> WireletSelectionList<W> ofTrusted(W[] wirelets) {
         return new WireletSelectionList<>(List.of(wirelets));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Iterator<W> iterator() {
+        return wirelets.iterator();
     }
 }

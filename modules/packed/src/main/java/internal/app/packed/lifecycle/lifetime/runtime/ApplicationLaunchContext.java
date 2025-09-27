@@ -24,18 +24,14 @@ import java.lang.invoke.MethodType;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
-import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
-import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
-import internal.app.packed.container.wirelets.InternalBuildWirelet;
-import internal.app.packed.container.wirelets.WireletSelectionList;
 import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -56,13 +52,8 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
     public final ContainerRunner runner;
 
-    /** Wirelets specified if instantiating an image. */
-    @Nullable
-    private final WireletSelectionList<?> wirelets;
-
-    public ApplicationLaunchContext(ContainerRunner runner, ApplicationSetup application, WireletSelectionList<?> wirelets) {
+    public ApplicationLaunchContext(ContainerRunner runner, ApplicationSetup application) {
         this.application = application;
-        this.wirelets = wirelets;
         this.runner = runner;
     }
 
@@ -113,27 +104,18 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
      * @see #launch(GuestManager, Wirelet...)
      */
     @SuppressWarnings("unchecked")
-    public static final <A> A launch(ApplicationHandle<A, ?> handle, RunState state, Wirelet... wirelets) {
+    public static <A> A launch(ApplicationHandle<A, ?> handle, RunState state) {
         ApplicationSetup application = ApplicationSetup.crack(handle);
         requireNonNull(state, "state is null");
         if (application.phase != ApplicationBuildPhase.COMPLETED) {
             throw new IllegalStateException("Cannot launch the application before it has finished building");
         }
 
-        WireletSelectionList<Wirelet> ws = WireletSelectionList.of(wirelets);
         ContainerRunner runner = new ContainerRunner(application);
 
         // Create a launch context
-        ApplicationLaunchContext context = new ApplicationLaunchContext(runner, application, ws);
+        ApplicationLaunchContext context = new ApplicationLaunchContext(runner, application);
 
-        // Apply all internal wirelets
-        if (ws != null) {
-            for (Wirelet w : ws) {
-                if (w instanceof InternalBuildWirelet iw) {
-                    iw.onImageLaunch(application.container(), context);
-                }
-            }
-        }
 
         context.runner.run(state);
 

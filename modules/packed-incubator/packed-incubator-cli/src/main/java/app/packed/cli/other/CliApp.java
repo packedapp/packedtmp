@@ -25,6 +25,11 @@ import app.packed.container.Wirelets;
  *
  */
 // Maybe it is just a thin wrapper for App
+
+// Maybe an assembly instead of an interface????
+// CliAssembly / MainAssembly
+
+@Deprecated
 public interface CliApp extends ApplicationInterface {
 
     // But isn't this normally in the code???

@@ -28,7 +28,7 @@ public enum BuildGoal {
     IMAGE,
 
     /**
-     * The goal is to build an application and then immediately launch it.
+     * The goal is to build an application and then launch it once.
      *
      * @see App#run(Assembly, Wirelet...)
      */
@@ -53,12 +53,3 @@ public enum BuildGoal {
         return this == LAUNCH || this == IMAGE;
     }
 }
-
-
-
-///**
-//* The goal is to build an application image that can be launched multiple times.
-//*
-//* @see App#newImage(Assembly, Wirelet...)
-//*/
-//LAUNCH_REPEATABLE,

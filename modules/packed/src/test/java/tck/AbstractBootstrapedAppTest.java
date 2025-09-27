@@ -85,16 +85,13 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
     }
 
     /** {@return launches and returns the application.} */
-    protected final A launch() {
-        return launch(new Wirelet[0]);
-    }
-
     @SuppressWarnings("unchecked")
-    protected final A launch(Wirelet... wirelets) {
+    protected final A launch() {
+
         State3Build b = stateBuild();
         ApplicationSetup as = b.application;
 
-        A app = (A) ApplicationLaunchContext.launch(as.handle(), RunState.TERMINATED, wirelets);
+        A app = (A) ApplicationLaunchContext.launch(as.handle(), RunState.TERMINATED);
         // Right now we do not support runtime wirelets
 //        ApplicationLaunchContext alc = ApplicationLaunchContext.launch(RunState.TERMINATED, as, WireletSelectionArray.of(wirelets));
 //

@@ -56,7 +56,7 @@ public class CannotCallFromConstructorExtensionTest {
         }
 
         class TestExtension1ExtensionPoint extends ExtensionPoint<TestExtension1> {
-            protected TestExtension1ExtensionPoint(ExtensionUseSite usesite) {
+            protected TestExtension1ExtensionPoint(ExtensionPointHandle usesite) {
                 super(usesite);
             }
         }

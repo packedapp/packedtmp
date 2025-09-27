@@ -17,8 +17,8 @@ package app.packed.cli.other;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
+import app.packed.application.BootstrapImage;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
@@ -89,25 +89,15 @@ public final class PackedCliApp {
     public static final class Image {
 
         /** The bootstrap image we are delegating to */
-        private final BaseImage<?> image;
+        private final BootstrapImage<?> image;
 
-        private Image(BaseImage<?> image) {
+        private Image(BootstrapImage<?> image) {
             this.image = image;
         }
 
         /** Runs the application represented by this image. */
         public void run(String[] args) {
             image.launch(RunState.TERMINATED);
-        }
-
-        /**
-         * Runs the application represented by this image.
-         *
-         * @param wirelets
-         *            optional wirelets
-         */
-        public void run(String[] args, Wirelet... wirelets) {
-            image.launch(RunState.TERMINATED, wirelets);
         }
     }
 

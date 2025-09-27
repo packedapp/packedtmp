@@ -20,7 +20,7 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
+import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
@@ -32,7 +32,6 @@ import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.extension.BaseExtensionWirelet;
 import internal.app.packed.service.util.PackedServiceLocator;
 
 /**
@@ -200,24 +199,24 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         return installPrototype(Bean.of(op));
     }
 
-    public <T> BeanConfiguration installStatic(Bean<T> bean) {
-        BeanHandle<BeanConfiguration> handle = install0(BeanKind.STATIC.template()).install(bean, BeanHandle::new);
-        return handle.configuration();
-    }
-
-    /**
-     * Installs a new {@link BeanKind#STATIC static} bean.
-     *
-     * @param implementation
-     *            the static bean class
-     * @return a configuration for the bean
-     *
-     * @see BeanKind#STATIC
-     * @see BeanSourceKind#CLASS
-     */
-    public BeanConfiguration installStatic(Class<?> implementation) {
-        return installStatic(Bean.of(implementation));
-    }
+//    public <T> BeanConfiguration installStatic(Bean<T> bean) {
+//        BeanHandle<BeanConfiguration> handle = install0(BeanKind.STATIC.template()).install(bean, BeanHandle::new);
+//        return handle.configuration();
+//    }
+//
+//    /**
+//     * Installs a new {@link BeanKind#STATIC static} bean.
+//     *
+//     * @param implementation
+//     *            the static bean class
+//     * @return a configuration for the bean
+//     *
+//     * @see BeanKind#STATIC
+//     * @see BeanSourceKind#CLASS
+//     */
+//    public BeanConfiguration installStatic(Class<?> implementation) {
+//        return installStatic(Bean.of(implementation));
+//    }
 
     /**
      * Installs an exported service locator.
@@ -303,7 +302,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** {@inheritDoc} */
     @Override
-    protected BaseExtensionPoint newExtensionPoint(ExtensionUseSite usesite) {
+    protected BaseExtensionPoint newExtensionPoint(ExtensionPointHandle usesite) {
         return new BaseExtensionPoint(usesite);
     }
 
@@ -322,12 +321,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         if (isLifetimeRoot()) {
             extension.container.lifetime.orderDependencies();
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onNew() {
-        selectWirelets(BaseExtensionWirelet.class).forEach(w -> w.onBuild(extension.container));
     }
 
     /** {@return the container's main service namespace} */

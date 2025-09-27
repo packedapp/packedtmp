@@ -38,7 +38,7 @@ public non-sealed abstract class BeanHook extends BuildHook {
 
     // Could add preSynthesize and postSynthsize if we want to support
     // Maybe just transform?
-    public Bean<?> synthesize(Bean<?> bean) {
+    public Bean<?> transform(Bean<?> bean) {
         //bean.synthesize(c->c.)
         return bean;
     }

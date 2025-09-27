@@ -30,7 +30,7 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
@@ -61,9 +61,9 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     /** An object that is shared between all entry point extensions in the same application. */
     public final EntryPointManager entryPoints = new EntryPointManager();
 
-    public final List<LifecycleOperationInitializeHandle> initializationPost = new ArrayList<>();
+    public final List<ForInitialize> initializationPost = new ArrayList<>();
 
-    public final List<LifecycleOperationInitializeHandle> initializationPre = new ArrayList<>();
+    public final List<ForInitialize> initializationPre = new ArrayList<>();
 
     // Er ikke noedvendigvis fra et entrypoint, kan ogsaa vaere en completer
     public final Class<?> resultType;
@@ -99,7 +99,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     }
 
     public void initialize(ExtensionContext pool) {
-        for (LifecycleOperationInitializeHandle mh : initializationPre) {
+        for (ForInitialize mh : initializationPre) {
             try {
                 mh.methodHandle.invokeExact(pool);
             } catch (Throwable e) {
@@ -107,7 +107,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
             }
         }
 
-        for (LifecycleOperationInitializeHandle mh : initializationPost) {
+        for (ForInitialize mh : initializationPost) {
             try {
                 mh.methodHandle.invokeExact(pool);
             } catch (Throwable e) {
@@ -152,7 +152,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         for (List<BeanLifecycleOperationHandle> lop : bean.operations.lifecycleHandles.values()) {
             for (BeanLifecycleOperationHandle h : lop) {
                 switch (h.lifecycleKind) {
-                case FACTORY, INJECT, INITIALIZE_PRE_ORDER -> initializationPre.add((LifecycleOperationInitializeHandle) h);
+                case FACTORY, INJECT, INITIALIZE_PRE_ORDER -> initializationPre.add((ForInitialize) h);
                 case INITIALIZE_POST_ORDER -> startersPost.addFirst((LifecycleOnStartHandle) h);
                 case START_PRE_ORDER -> startersPre.add((LifecycleOnStartHandle) h);
                 case START_POST_ORDER -> startersPost.addFirst((LifecycleOnStartHandle) h);

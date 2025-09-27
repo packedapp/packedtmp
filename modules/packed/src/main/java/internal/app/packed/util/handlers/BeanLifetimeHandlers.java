@@ -27,6 +27,7 @@ import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
  *
  */
 public class BeanLifetimeHandlers extends Handlers {
+
     /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_NEW_BEAN_LIFETIME_MIRROR = constructor(MethodHandles.lookup(), BeanLifetimeMirror.class,
             BeanLifetimeSetup.class);

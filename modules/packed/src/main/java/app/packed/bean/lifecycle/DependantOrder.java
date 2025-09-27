@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.extension;
-
-import app.packed.component.ComponentRealm;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
+package app.packed.bean.lifecycle;
 
 /**
  *
+ * @see OnInitialize
+ * @see OnStart
+ * @see OnStop
  */
-public record PackedExtensionUseSite(ExtensionSetup extension, ExtensionSetup usedBy) implements ExtensionUseSite {
+// BeanLifecycleOrder
+// DependencyOrder <---
+// In app.packed.lifetime/lifecycle?
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentRealm author() {
-        return extension.authority();
-    }
+//PreOrder, PostOrder | OperationDependencyORder->DependencyOrder (Or just Ordering)
+public enum DependantOrder {
+
+    /** The operation will be executed before any other operation on beans that have this bean as a dependency. */
+    RUN_BEFORE_DEPENDANTS,
+
+    /** The operation will be executed after any dependencies. */
+    RUN_AFTER_DEPENDANTS;
 }

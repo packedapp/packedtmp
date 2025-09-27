@@ -15,7 +15,7 @@
  */
 package app.packed.bean.lifecycle;
 
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
 
 /**
  *
@@ -25,7 +25,7 @@ public final class InjectOperationConfiguration extends BeanLifecycleOperationCo
     /**
      * @param handle
      */
-    InjectOperationConfiguration(LifecycleOperationInitializeHandle handle) {
+    InjectOperationConfiguration(ForInitialize handle) {
         super(handle);
     }
 }

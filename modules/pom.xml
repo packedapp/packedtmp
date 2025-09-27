@@ -28,9 +28,6 @@
     <version.test.junit>5.11.4</version.test.junit>
     <version.test.jmh>1.37</version.test.jmh>
     
-    <maven.compiler.source>24</maven.compiler.source>
-    <maven.compiler.target>24</maven.compiler.target>
-    
     <!-- Pluging Versions -->
     <version.plugin.jacoco>0.8.8</version.plugin.jacoco>
   </properties>

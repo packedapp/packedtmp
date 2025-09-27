@@ -18,9 +18,10 @@ package app.packed.build;
 /**
  * An exception that is typically thrown during the code generating phase of an application.
  * <p>
- * If the application is lazily built, the application may also be thrown during the "runtime" of the application.
+ * If the application is lazily built, the application may also be thrown while running the application.
  */
 // This is abnormal. Kind of like if C2 failed
+// Igen problemet er her BuildException, men ogsaa paa runtime..
 public class CodegenException extends BuildException {
 
     private static final long serialVersionUID = -9153170517785461951L;

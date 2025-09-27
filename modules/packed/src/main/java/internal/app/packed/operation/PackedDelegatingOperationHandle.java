@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
+import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
@@ -28,7 +28,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanScanner;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.extension.PackedExtensionUseSite;
+import internal.app.packed.extension.PackedExtensionPointHandle;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 
 /**
@@ -80,8 +80,8 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle<?> newOperation(OperationTemplate template, ExtensionUseSite context) {
-        PackedExtensionUseSite c = (PackedExtensionUseSite) context;
+    public OperationHandle<?> newOperation(OperationTemplate template, ExtensionPointHandle context) {
+        PackedExtensionPointHandle c = (PackedExtensionPointHandle) context;
         return newOperation(c.usedBy(), (PackedOperationTemplate) template);
     }
 

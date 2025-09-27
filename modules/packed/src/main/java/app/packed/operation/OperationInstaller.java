@@ -30,7 +30,7 @@ import app.packed.namespace.NamespaceHandle;
 public interface OperationInstaller /* permits PackedOperationInstaller */ {
 
     // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);
-    OperationInstaller delegateTo(ExtensionPoint.ExtensionUseSite extension);
+    OperationInstaller delegateTo(ExtensionPoint.ExtensionPointHandle extension);
 
     /**
      * Creates the operation.

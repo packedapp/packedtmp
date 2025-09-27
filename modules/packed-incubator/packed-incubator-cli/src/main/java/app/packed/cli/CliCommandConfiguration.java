@@ -33,8 +33,8 @@ public class CliCommandConfiguration extends OperationConfiguration {
      * @param handle
      */
     CliCommandConfiguration(CliCommandHandle handle) {
-        super(handle);
         this.handle = requireNonNull(handle);
+        super(handle);
     }
 
     // replace or add? I think replace

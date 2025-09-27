@@ -26,7 +26,7 @@ import app.packed.concurrent.job2.impl.ScheduledOperationHandle;
 import app.packed.concurrent.other.SchedulingContext;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
+import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.extension.FrameworkExtension;
 import internal.app.packed.concurrent.ScheduleImpl;
 import internal.app.packed.concurrent.SchedulingTaskManager;
@@ -120,7 +120,7 @@ public class JobExtension extends FrameworkExtension<JobExtension> {
 
     /** {@inheritDoc} */
     @Override
-    protected ExtensionPoint<JobExtension> newExtensionPoint(ExtensionUseSite usesite) {
+    protected ExtensionPoint<JobExtension> newExtensionPoint(ExtensionPointHandle usesite) {
         return new JobExtensionPoint(usesite);
     }
 

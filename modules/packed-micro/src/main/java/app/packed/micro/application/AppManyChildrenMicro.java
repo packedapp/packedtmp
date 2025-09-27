@@ -51,7 +51,7 @@ public class AppManyChildrenMicro {
             @Override
             protected void build() {
                 for (int i = 0; i < size; i++) {
-                    link("test", new TAssembly(Integer.toString(i)));
+                    link(new TAssembly(Integer.toString(i)), "test");
                 }
             }
         });

@@ -29,32 +29,32 @@ public class NameBasicsTest extends AbstractApplicationTest {
     @Disabled // TODO Enable again (After ComponentConfiguration gets a handle
     @Test
     public void basics() {
-        appOf(_ -> {}, Wirelet.renameApplication("Boo")).nameIs("Boo");
-        appOf(_ -> {}, Wirelet.renameApplication("Boo"), Wirelet.renameApplication("Goo")).nameIs("Goo");
+        appOf(_ -> {}, Wirelet.named("Boo")).nameIs("Boo");
+        appOf(_ -> {}, Wirelet.named("Boo"), Wirelet.named("Goo")).nameIs("Goo");
 
         // Tests that getName returns wirelet name
-        appOf(c -> c.getNameIs("Boo"), Wirelet.renameApplication("Boo")).nameIs("Boo");
-        appOf(c -> c.getNameIs("Goo"), Wirelet.renameApplication("Boo"), Wirelet.renameApplication("Goo")).nameIs("Goo");
+        appOf(c -> c.getNameIs("Boo"), Wirelet.named("Boo")).nameIs("Boo");
+        appOf(c -> c.getNameIs("Goo"), Wirelet.named("Boo"), Wirelet.named("Goo")).nameIs("Goo");
 
         appOf(c -> c.setName("Foo").getNameIs("Foo")).nameIs("Foo");
-        appOf(c -> c.setName("Foo").getNameIs("Boo"), Wirelet.renameApplication("Boo")).nameIs("Boo");
-        appOf(c -> c.setName("Foo").getNameIs("Goo"), Wirelet.renameApplication("Boo"), Wirelet.renameApplication("Goo")).nameIs("Goo");
+        appOf(c -> c.setName("Foo").getNameIs("Boo"), Wirelet.named("Boo")).nameIs("Boo");
+        appOf(c -> c.setName("Foo").getNameIs("Goo"), Wirelet.named("Boo"), Wirelet.named("Goo")).nameIs("Goo");
     }
 
     /** Tests that we can use question marks in names */
     @Test
     @Disabled // ENABLE again
     public void questionMarks() {
-        appOf(_ -> {}, Wirelet.renameApplication("Boo?")).nameIs("Boo");
-        appOf(_ -> {}, Wirelet.renameApplication("Boo?"), Wirelet.renameApplication("Goo?")).nameIs("Goo");
+        appOf(_ -> {}, Wirelet.named("Boo?")).nameIs("Boo");
+        appOf(_ -> {}, Wirelet.named("Boo?"), Wirelet.named("Goo?")).nameIs("Goo");
 
         // Tests that getName returns wirelet name
-        appOf(c -> c.getNameIs("Boo"), Wirelet.renameApplication("Boo?")).nameIs("Boo");
-        appOf(c -> c.getNameIs("Goo"), Wirelet.renameApplication("Boo?"), Wirelet.renameApplication("Goo")).nameIs("Goo");
+        appOf(c -> c.getNameIs("Boo"), Wirelet.named("Boo?")).nameIs("Boo");
+        appOf(c -> c.getNameIs("Goo"), Wirelet.named("Boo?"), Wirelet.named("Goo")).nameIs("Goo");
 
         appOf(c -> c.setName("Foo?").getNameIs("Foo")).nameIs("Foo");
-        appOf(c -> c.setName("Foo?").getNameIs("Boo"), Wirelet.renameApplication("Boo?")).nameIs("Boo");
-        appOf(c -> c.setName("Foo?").getNameIs("Goo"), Wirelet.renameApplication("Boo?"), Wirelet.renameApplication("Goo?")).nameIs("Goo");
+        appOf(c -> c.setName("Foo?").getNameIs("Boo"), Wirelet.named("Boo?")).nameIs("Boo");
+        appOf(c -> c.setName("Foo?").getNameIs("Goo"), Wirelet.named("Boo?"), Wirelet.named("Goo?")).nameIs("Goo");
     }
 
     /** Tests valid names for components. */

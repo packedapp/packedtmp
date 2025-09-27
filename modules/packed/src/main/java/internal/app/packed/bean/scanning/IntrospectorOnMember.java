@@ -24,18 +24,18 @@ import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** The super class of operational members. The inheritance hierarchy follows that of {@link Member}. */
-abstract sealed class IntrospectorOnMember<M extends Member> extends IntrospectorOn permits IntrospectorOnExecutable {
+abstract sealed class IntrospectorOnMember<M extends Member> extends IntrospectorOn permits IntrospectorOnField, IntrospectorOnExecutable {
 
     /** Annotations on the member. */
-    private final PackedAnnotationList annotations;
+    final PackedAnnotationList annotations;
 
     /** The member. */
     final M member;
 
-    final BeanIntrospectorSetup participant;
+    final BeanIntrospectorSetup introspector;
 
-    IntrospectorOnMember(BeanIntrospectorSetup participant, M member, PackedAnnotationList annotations) {
-        this.participant = participant;
+    IntrospectorOnMember(BeanIntrospectorSetup introspector, M member, PackedAnnotationList annotations) {
+        this.introspector = introspector;
         this.member = member;
         this.annotations = annotations;
     }
@@ -47,7 +47,7 @@ abstract sealed class IntrospectorOnMember<M extends Member> extends Introspecto
 
     @Override
     public final BeanSetup bean() {
-        return participant.scanner.bean;
+        return introspector.scanner.bean;
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
@@ -55,7 +55,7 @@ abstract sealed class IntrospectorOnMember<M extends Member> extends Introspecto
         // TODO we need to check the Authority instead of the assemvly
         BeanSetup bean = bean();
         if (bean.owner instanceof AssemblySetup) {
-            if (!participant.extension().container.assembly.isConfigurable()) {
+            if (!introspector.extension().container.assembly.isConfigurable()) {
                 throw new IllegalStateException("This method must be called before the assembly is closed");
             }
         } else {

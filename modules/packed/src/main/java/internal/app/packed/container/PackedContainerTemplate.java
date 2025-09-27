@@ -51,6 +51,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
         return i -> (H) new ContainerHandle<>(i);
     }
 
+    @Override
     public boolean isManaged() {
         if (kind == PackedContainerKind.UNMANAGED) {
             return false;

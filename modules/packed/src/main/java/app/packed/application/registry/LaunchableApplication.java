@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.containerdynamic.ManagedInstance;
-import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import internal.app.packed.application.repository.PackedInstalledApplication;
 
@@ -28,6 +27,7 @@ import internal.app.packed.application.repository.PackedInstalledApplication;
  * A single application that has been installed into an {@link ApplicationRepository}. Either at build-time using, or at
  * runtime using {@link ApplicationRepository#install(java.util.function.Consumer)}.
  */
+// Basicallly an image that can be uninstalled and jas managed instances...
 public sealed interface LaunchableApplication<I> permits PackedInstalledApplication {
 
     /**
@@ -76,7 +76,7 @@ public sealed interface LaunchableApplication<I> permits PackedInstalledApplicat
         return handle().name();
     }
 
-    I startNew(Wirelet... wirelets);
+    I startNew();
 
     /**
      *
@@ -102,9 +102,9 @@ public sealed interface LaunchableApplication<I> permits PackedInstalledApplicat
          *            optional wirelets
          * @return the new application instance
          */
-        I initialize(Wirelet... wirelets);
+        I initialize();
 
-        ManagedInstance<I> launch(RunState state, Wirelet... wirelets);
+        ManagedInstance<I> launch(RunState state);
 
         /**
          * @param wirelets
@@ -112,7 +112,7 @@ public sealed interface LaunchableApplication<I> permits PackedInstalledApplicat
          * @throws UnsupportedOperationException
          *             if the application is unmanaged.
          */
-        ManagedInstance<I> launch(Wirelet... wirelets);
+        ManagedInstance<I> launch();
 
         /**
          * s Names the application instance to be launched.

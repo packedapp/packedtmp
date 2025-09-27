@@ -16,8 +16,8 @@
 package sandbox.application;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
+import app.packed.application.BootstrapImage;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
@@ -83,9 +83,9 @@ public interface AppANew extends AutoCloseable {
     public static final class Image {
 
         /** The bootstrap image we are delegating to */
-        private final BaseImage<AppANew> image;
+        private final BootstrapImage<AppANew> image;
 
-        private Image(BaseImage<AppANew> image) {
+        private Image(BootstrapImage<AppANew> image) {
             this.image = image;
         }
 
@@ -94,14 +94,5 @@ public interface AppANew extends AutoCloseable {
             return image.launch(RunState.RUNNING);
         }
 
-        /**
-         * Runs the application represented by this image.
-         *
-         * @param wirelets
-         *            optional wirelets
-         */
-        public AppANew start(Wirelet... wirelets) {
-            return image.launch(RunState.RUNNING, wirelets);
-        }
     }
 }
