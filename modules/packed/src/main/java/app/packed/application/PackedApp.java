@@ -17,6 +17,7 @@ package app.packed.application;
 
 import java.util.concurrent.TimeUnit;
 
+import app.packed.binding.Key;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromGuest;
 import app.packed.runtime.ManagedLifecycle;
@@ -68,7 +69,7 @@ final class PackedApp implements App {
     }
 
     /** Implementation of {@link app.packed.application.App.Image}. */
-    record AppImage(BootstrapImage<PackedApp> image) implements App.Image {
+    record AppImage(BootstrapApp.Image<PackedApp> image) implements App.Image {
 
         /** {@inheritDoc} */
         @Override
@@ -93,5 +94,23 @@ final class PackedApp implements App {
 //        public App checkedStart(Wirelet... wirelets) throws UnhandledApplicationException {
 //            return image.checkedLaunch(RunState.RUNNING, wirelets);
 //        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ApplicationMirror mirror() {
+            return image.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return image.name();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T> ApplicationLauncher provide(Key<? super T> key, T value) {
+            return image.provide(key, value);
+        }
     }
 }

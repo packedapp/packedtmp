@@ -41,6 +41,8 @@ import app.packed.service.ProvidableBeanConfiguration;
 // Maybe it is a BaseExtension bean
 // But a service it is a service...
 
+// Maybe it does not extend ProvidableBeanConfiguration but wraps it instead
+// Maybe
 public final class ApplicationRegistryConfiguration<I, H extends ApplicationHandle<I, ?>> extends ProvidableBeanConfiguration<ApplicationRegistry<I, H>> {
 
     /** The application repository bean handle. */

@@ -69,7 +69,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
 
     /** {@inheritDoc} */
     @Override
-    public BootstrapImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
+    public Image<A> imageOf(Assembly assembly, Wirelet... wirelets) {
         ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.IMAGE, launcher, wirelets);
 
         // Build the application
@@ -159,8 +159,13 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
             this.mh = GuestBeanHandle.install(template, es, es.container.assembly);
         }
     }
-}
 
+    /** {@inheritDoc} */
+    @Override
+    public Launcher<A> launcher(Assembly assembly, Wirelet... wirelets) {
+        return imageOf(assembly, wirelets);
+    }
+}
 
 //@Override
 //public A checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws UnhandledApplicationException {
@@ -172,4 +177,3 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
 //  // Create and return an instance of the application interface, wirelets have already been specified in the installer
 //  return ApplicationLaunchContext.checkedLaunch(handle, state);
 //}
-

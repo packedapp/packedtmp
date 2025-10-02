@@ -17,7 +17,6 @@ package sandbox.application;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
-import app.packed.application.BootstrapImage;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
@@ -83,9 +82,9 @@ public interface AppANew extends AutoCloseable {
     public static final class Image {
 
         /** The bootstrap image we are delegating to */
-        private final BootstrapImage<AppANew> image;
+        private final BootstrapApp.Image<AppANew> image;
 
-        private Image(BootstrapImage<AppANew> image) {
+        private Image(BootstrapApp.Image<AppANew> image) {
             this.image = image;
         }
 

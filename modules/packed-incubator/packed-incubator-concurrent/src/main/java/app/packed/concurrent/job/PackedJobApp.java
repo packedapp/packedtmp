@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import app.packed.application.BootstrapImage;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromGuest;
 import app.packed.runtime.ManagedLifecycle;
@@ -67,7 +66,7 @@ final class PackedJobApp implements JobApp {
     }
 
     /** Implementation of {@link app.packed.application.App.Image}. */
-    record AppImage(BootstrapImage<PackedJobApp> image) implements JobApp.Image {
+    record AppImage(BootstrapApp.Image<PackedJobApp> image) implements JobApp.Image {
 
         /** {@inheritDoc} */
         @Override

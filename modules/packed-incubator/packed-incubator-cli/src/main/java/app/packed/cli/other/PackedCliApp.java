@@ -18,7 +18,6 @@ package app.packed.cli.other;
 import app.packed.application.App;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import app.packed.application.BootstrapImage;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
@@ -89,9 +88,9 @@ public final class PackedCliApp {
     public static final class Image {
 
         /** The bootstrap image we are delegating to */
-        private final BootstrapImage<?> image;
+        private final BootstrapApp.Image<?> image;
 
-        private Image(BootstrapImage<?> image) {
+        private Image(BootstrapApp.Image<?> image) {
             this.image = image;
         }
 

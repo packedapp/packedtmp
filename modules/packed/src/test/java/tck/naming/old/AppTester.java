@@ -18,7 +18,7 @@ package tck.naming.old;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import app.packed.application.BootstrapImage;
+import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
@@ -39,7 +39,7 @@ public class AppTester {
         this(ProgramX.start(source, wirelets));
     }
 
-    public AppTester(BootstrapImage<ProgramX> img) {
+    public AppTester(BootstrapApp.Image<ProgramX> img) {
         this(img.launch(RunState.RUNNING));
     }
 

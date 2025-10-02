@@ -13,37 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.registry;
+package app.packed.application.registry.v2;
 
-import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.containerdynamic.ManagedInstance;
-import internal.app.packed.application.repository.AbstractApplicationRepository;
 
 /**
- * An application registry is used to manage installed applications at runtime.
- * <p>
- * Applications can be installed into a repository at build time using
- * {@link ApplicationRepositoryConfiguration#installChildApplication(Consumer)}. Or at runtime using
- * {@link #install(Consumer)}.
- * <p>
- * If an application is no longer needed it can be uninstalled from the repository by calling
- * {@link InstalledApplication#uninstall()}.
+ *
  */
-// Rename to repository
-public sealed interface ApplicationRegistry<I, H extends ApplicationHandle<I, ?>> permits AbstractApplicationRepository {
+// Tror ideen er at alt ligger i det vi gemmer i I.
+// Og så må I være noget specielt En slags super image...
 
-    /**
-     * {@return a concatenated stream of all application instances managed by every managed application in this repository}
-     */
-    default Stream<ManagedInstance<I>> allManagedInstances() {
-        return applications().filter(LaunchableApplication::isManaged).flatMap(l -> l.managedInstances());
-    }
+// Så den kan bruges både af managed or unmanaged
+
+// maybe I extends ApplicationImage (name(), uninstall) ApplicationInterface, ApplicationImage, ApplicationLauncher, ...
+
+// image(sf).
+
+// Så er basically bare en Collection
+public interface ApplicationRepository<I extends ApplicationImage, H extends ApplicationHandle<I, ?>> extends Iterable<I> {
+
+    // I::instances()
+    <R> Stream<R> flatMap(Function<? super I, ? extends Stream<? extends R>> mapper);
 
     /**
      * {@return an application with the specified name if present in this repository, otherwise empty}
@@ -51,10 +48,7 @@ public sealed interface ApplicationRegistry<I, H extends ApplicationHandle<I, ?>
      * @param name
      *            the name of the application
      */
-    Optional<LaunchableApplication<I>> application(String name);
-
-    /** {@return a stream of all installed applications in this repository} */
-    Stream<LaunchableApplication<I>> applications();
+    I image(String name);
 
     /**
      * Installs a new application in the repository based on {@link #template()}.
@@ -68,8 +62,11 @@ public sealed interface ApplicationRegistry<I, H extends ApplicationHandle<I, ?>
      * @throws RuntimeException
      *             if the application failed to build, or could not be installed
      */
-    LaunchableApplication<I> install(Consumer<? super ApplicationInstaller<H>> installer);
+    I install(Consumer<? super ApplicationInstaller<H>> installer);
 
-    /** {@return the underlying application template that every application in this repository uses} */
+    /** {@return a stream of all installed applications in this repository} */
+    Stream<I> stream();
+
+    /** {@return the underlying application template that every application in this repository must use} */
     ApplicationTemplate<H> template();
 }

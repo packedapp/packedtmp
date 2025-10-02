@@ -28,7 +28,7 @@ public class SubApplication extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        System.out.println("Building sub app");
+        IO.println("Building sub app");
         install(SomeBean.class);
     }
 
@@ -36,17 +36,17 @@ public class SubApplication extends BaseAssembly {
 
         @Initialize
         public void doo() {
-            System.out.println("Sub initialied!!! YOU ARE FUCKING AWESOME");
+            IO.println("Sub initialied!!! YOU ARE FUCKING AWESOME");
         }
 
         @OnStart
         public void start() {
-            System.out.println("Sub Started!!! YOU ARE FUCKING AWESOME");
+            IO.println("Sub Started!!! YOU ARE FUCKING AWESOME");
         }
 
         @Stop
         public void stop() {
-            System.out.println("Sub Stopped!!! YOU ARE FUCKING AWESOME");
+            IO.println("Sub Stopped!!! YOU ARE FUCKING AWESOME");
         }
     }
 

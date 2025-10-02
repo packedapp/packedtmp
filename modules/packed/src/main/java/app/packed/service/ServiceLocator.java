@@ -28,7 +28,6 @@ import app.packed.application.ApplicationInterface;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import app.packed.application.BootstrapImage;
 import app.packed.assembly.Assembly;
 import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
 import app.packed.binding.Key;
@@ -377,14 +376,14 @@ public interface ServiceLocator extends ApplicationInterface {
     public static final class Image {
 
         /** The bootstrap image we are delegating to */
-        private final BootstrapImage<ServiceLocator> image;
+        private final BootstrapApp.Image<ServiceLocator> image;
 
-        private Image(BootstrapImage<ServiceLocator> image) {
+        private Image(BootstrapApp.Image<ServiceLocator> image) {
             this.image = image;
         }
 
         /** Creates a new service locator application from this image. */
-        public ServiceLocator create() {
+        public ServiceLocator initialize() {
             return image.launch(RunState.INITIALIZED);
         }
     }

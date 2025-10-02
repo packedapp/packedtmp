@@ -15,36 +15,30 @@
  */
 package app.packed.application;
 
-import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Inject;
+import app.packed.binding.Key;
 
 /**
  *
  */
-public class STest extends BaseAssembly {
+public interface ApplicationLauncher {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
-        provide(A.class);
-        provide(Foo.class);
+    default ApplicationLauncher args(String... args) {
+        throw new UnsupportedOperationException();
     }
 
-    public static void main(String[] args) {
-        App.run(new STest());
-        IO.println("Bye");
+    // Kan vi vel smide på imaged
+    default ApplicationLauncher named(String name) {
+        throw new UnsupportedOperationException();
     }
 
-    public record Foo(A a) {
-        public Foo(A a) {
-            throw new RuntimeException();
-        }
+    default <T> ApplicationLauncher provide(Class<? super T> key, T value) {
+        return provide(Key.of(key), value);
     }
 
-    public record A(String v) {
-        @Inject
-        public A() {
-            this("Container");
-        }
+    <T> ApplicationLauncher provide(Key<? super T> key, T value);
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    default ApplicationLauncher provide(Object object) {
+        return provide((Class) object.getClass(), object);
     }
 }

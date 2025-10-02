@@ -17,7 +17,6 @@ package sandbox.program;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.BootstrapImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
@@ -123,7 +122,7 @@ public interface ProgramX extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see BootstrapApp#newImage(Assembly, Wirelet...)
      */
-    static BootstrapImage<ProgramX> imageOf(Assembly assembly, Wirelet... wirelets) {
+    static BootstrapApp.Image<ProgramX> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets).map(e -> e);
     }
 

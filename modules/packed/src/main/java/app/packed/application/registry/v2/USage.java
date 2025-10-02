@@ -13,38 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.registry.v2;
 
+import app.packed.application.ApplicationImage;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Inject;
+import app.packed.service.ServiceLocator;
 
 /**
  *
  */
-public class STest extends BaseAssembly {
+public class USage extends BaseAssembly {
+
+    void foo(ApplicationRepository<Image, ?> repo) {
+        repo.image("df").initialize();
+
+        repo.image("df").named("haha").initialize();
+
+        repo.install(i -> i.named("blabla").install(new USage()));
+    }
 
     /** {@inheritDoc} */
     @Override
-    protected void build() {
-        provide(A.class);
-        provide(Foo.class);
-    }
+    protected void build() {}
 
-    public static void main(String[] args) {
-        App.run(new STest());
-        IO.println("Bye");
-    }
+    interface Image extends ApplicationImage {
 
-    public record Foo(A a) {
-        public Foo(A a) {
-            throw new RuntimeException();
-        }
-    }
+        @Override
+        Image named(String name);
 
-    public record A(String v) {
-        @Inject
-        public A() {
-            this("Container");
-        }
+        /** Creates a new service locator application from this image. */
+        ServiceLocator initialize();
     }
 }

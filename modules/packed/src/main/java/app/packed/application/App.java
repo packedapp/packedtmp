@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App.Launcher;
 import app.packed.assembly.Assembly;
-import app.packed.binding.Key;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -108,12 +107,17 @@ public interface App extends AutoCloseable, ApplicationInterface {
      */
     // By default I think it is single launchable...
     // Mayb
-    static App.Image imageOf(Assembly assembly, Wirelet... wirelets) {
+    static Image imageOf(Assembly assembly, Wirelet... wirelets) {
         return new PackedApp.AppImage(PackedApp.BOOTSTRAP_APP.imageOf(assembly, wirelets));
     }
 
-    static App.Launcher launcherOf(Assembly assembly, Wirelet... wirelets) {
+    static Launcher launcherOf(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
+    }
+
+    static void main(String[] args) {
+        // launcher(
+        CliLaunchers.mainArgs(App.launcherOf(null), args).start();
     }
 
     /**
@@ -165,23 +169,6 @@ public interface App extends AutoCloseable, ApplicationInterface {
     }
 
     /**
-     * Builds and starts an application, returning when it reaches the {@link RunState#RUNNING} state.
-     *
-     * @param assembly
-     *            the application's assembly
-     * @param wirelets
-     *            optional wirelets for configuration
-     * @return the running application instance
-     * @throws app.packed.build.BuildException
-     *             if the application failed to build
-     * @throws UnhandledApplicationException
-     *             if the application failed to start
-     */
-    static App start(Assembly assembly, Wirelet... wirelets) {
-        return PackedApp.BOOTSTRAP_APP.launch(RunState.RUNNING, assembly, wirelets);
-    }
-
-    /**
      * Tests an application using the provided test consumer.
      *
      * @param assembly
@@ -198,6 +185,23 @@ public interface App extends AutoCloseable, ApplicationInterface {
 //    static void test(Assembly assembly, Consumer<? /* TestObject */> cno, Wirelet... wirelets) {
 //        throw new UnsupportedOperationException();
 //    }
+
+    /**
+     * Builds and starts an application, returning when it reaches the {@link RunState#RUNNING} state.
+     *
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets for configuration
+     * @return the running application instance
+     * @throws app.packed.build.BuildException
+     *             if the application failed to build
+     * @throws UnhandledApplicationException
+     *             if the application failed to start
+     */
+    static App start(Assembly assembly, Wirelet... wirelets) {
+        return PackedApp.BOOTSTRAP_APP.launch(RunState.RUNNING, assembly, wirelets);
+    }
 
     /**
      * Builds and verifies an application without running it.
@@ -219,50 +223,9 @@ public interface App extends AutoCloseable, ApplicationInterface {
     /**
      * Represents a pre-built application image that can be used to launch application instances.
      */
-    interface Image extends App.Launcher {
+    interface Image extends ApplicationImage, App.Launcher {}
 
-        /**
-         * @return an application
-         * @throws IllegalStateException
-         *             the image is single usage, and has already been used.
-         */
-        // Virker ikke med Containers....
-        default ApplicationMirror mirror() {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * Builds an application and prints its structure to {@code System.out}.
-         *
-         * <p>
-         * This is a convenience method for debugging and analysis purposes.
-         *
-         * @param assembly
-         *            the application's assembly
-         * @param wirelets
-         *            optional wirelets for configuration
-         */
-        default void print() {
-            mirror().printer().print();
-        }
-    }
-
-    interface Launcher {
-        default <T> Launcher provide(Class<T> key, T value) {
-            return this;
-        }
-
-        default <T> Launcher provide(Key<T> key, T value) {
-            return this;
-        }
-
-        default Launcher provide(Object object) {
-            return this;
-        }
-
-        default Launcher args(String... args) {
-            return this;
-        }
+    interface Launcher extends ApplicationLauncher {
 
         // Config also
 
@@ -298,11 +261,6 @@ public interface App extends AutoCloseable, ApplicationInterface {
          *             if the application fails to start
          */
         App start();
-    }
-
-    static void main(String[] args) {
-        // launcher(
-        CliLaunchers.mainArgs(App.launcherOf(null), args).start();
     }
 }
 

@@ -15,6 +15,7 @@
  */
 package app.packed.application;
 
+import app.packed.application.BootstrapApp.Image;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
@@ -39,7 +40,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
 
     /** An image if the application has been constructed using {@link BuildGoal#IMAGE}. */
     @Nullable
-    private final BootstrapImage<A> image;
+    private final Image<A> image;
 
     /** The lazy generated application mirror. */
     @Nullable
@@ -56,7 +57,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
         this.application = inst.toSetup();
 
         // Build an image if that is the target.
-        BootstrapImage<A> img = null;
+        BootstrapApp.Image<A> img = null;
         if (inst.buildProcess.goal() == BuildGoal.IMAGE) {
             img = new ImageEager<>(this);
             if (!inst.optionBuildReusableImage) {
@@ -109,8 +110,8 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
      *             if the application was build with {@link BuildGoal#IMAGE}.
      */
     // Tror jeg fjerner den her... BaseImage er kun noget man bruger ved rødder tænker jeg???
-    public final BootstrapImage<A> image() {
-        BootstrapImage<A> i = image;
+    public final BootstrapApp.Image<A> image() {
+        BootstrapApp.Image<A> i = image;
         if (i == null) {
             throw new IllegalStateException("The application must be installed with BuildImage, was " + application.goal);
         }

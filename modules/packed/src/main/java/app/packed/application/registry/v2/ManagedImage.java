@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.registry.v2;
+
+import java.util.stream.Stream;
+
+import app.packed.application.ApplicationImage;
 
 /**
  *
  */
-// Temporary Marker interface.
-public interface ApplicationInterface {}
+// Ideen er lidt at registrere et intermediate image
+public interface ManagedImage<I, A extends ApplicationImage> {
 
-//App       (void)
-//JobApp    (Noget med et <T> result)
-//CliApp    (Noget med exit codes, default install shutdown handler)
-//TestApp
-//ServiceLocator (Unmanaged)
-// Kan vel baade vaere App og Pod
-
-//DaemonApp <-- App, Job or CliApp, med restart?
+    Stream<I> instances();
+}

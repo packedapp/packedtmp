@@ -16,16 +16,22 @@
 package app.packed.application;
 
 /**
- *
+ * A
  */
-// Temporary Marker interface.
-public interface ApplicationInterface {}
+public interface ApplicationImage extends ApplicationLauncher {
 
-//App       (void)
-//JobApp    (Noget med et <T> result)
-//CliApp    (Noget med exit codes, default install shutdown handler)
-//TestApp
-//ServiceLocator (Unmanaged)
-// Kan vel baade vaere App og Pod
+    /** {@return a mirror of the application} */
+    ApplicationMirror mirror();
 
-//DaemonApp <-- App, Job or CliApp, med restart?
+    /** {@return the name of the application} */
+    String name();
+
+    /**
+     * Prints the structure of the application to {@code System.out}.
+     * <p>
+     * This is a convenience method for debugging and analysis purposes.
+     */
+    default void print() {
+        mirror().printer().print();
+    }
+}

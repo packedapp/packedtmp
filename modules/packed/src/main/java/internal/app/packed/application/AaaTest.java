@@ -18,13 +18,15 @@ package internal.app.packed.application;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationLauncher;
+import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.BootstrapImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.OnStart;
 import app.packed.bean.lifecycle.Stop;
+import app.packed.binding.Key;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromGuest;
 import app.packed.runtime.ManagedLifecycle;
@@ -111,9 +113,8 @@ public class AaaTest extends BaseAssembly {
         public String toString() {
             return state().toString();
         }
-
         /** Implementation of {@link app.packed.application.App.Image}. */
-        public record AppImage(BootstrapImage<AApp> image) implements App.Image {
+        public record AppImage(BootstrapApp.Image<AApp> image) implements App.Image {
 
             /** {@inheritDoc} */
             @Override
@@ -125,6 +126,24 @@ public class AaaTest extends BaseAssembly {
             @Override
             public App start() {
                 return image.launch(RunState.RUNNING);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public ApplicationMirror mirror() {
+                return image.mirror();
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public String name() {
+                return image.name();
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public <T> ApplicationLauncher provide(Key<? super T> key, T value) {
+                return image;
             }
         }
     }

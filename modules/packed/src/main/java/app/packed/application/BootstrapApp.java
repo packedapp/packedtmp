@@ -20,10 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
-import app.packed.binding.Key;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.application.PackedBootstrapImage;
+import internal.app.packed.application.PackedBootstrapImage.ImageMapped;
 
 /**
  * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) applications.
@@ -45,7 +46,7 @@ import internal.app.packed.application.PackedApplicationTemplate;
  * @param <E>
  *            the type of applications this bootstrap app creates
  */
-public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootstrapApp {
+public sealed interface BootstrapApp<I> extends ApplicationInterface permits PackedBootstrapApp, MappedBootstrapApp {
 
 //    // Thrown on an Unhandled exception
 //    // Alternativ APE er Runtime... Yeah I think so
@@ -93,7 +94,7 @@ public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootst
      * @throws RuntimeException
      *             if the image could not be build
      */
-    BootstrapImage<I> imageOf(Assembly assembly, Wirelet... wirelets);
+    Image<I> imageOf(Assembly assembly, Wirelet... wirelets);
 
     /**
      * Builds an application, launches it and returns an application interface instance (possible {@code void})
@@ -111,6 +112,8 @@ public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootst
      * @see App#run(Assembly, Wirelet...)
      */
     I launch(RunState state, Assembly assembly, Wirelet... wirelets);
+
+    Launcher<I> launcher(Assembly assembly, Wirelet... wirelets);
 
     /**
      * Creates a new bootstrap app that maps the application using the specified mapper.
@@ -196,13 +199,73 @@ public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootst
         return PackedBootstrapApp.of((PackedApplicationTemplate<H>) template);
     }
 
-    interface BaseLauncher<I> {
-        BaseLauncher<I> args(String... args);
+    /**
+     * A base image represents a pre-built application.
+     * <p>
+     * Instances of this class are typically not exposed to end-users. Instead it is typically wrapped in another image
+     * class such as {@link App.Image}.
+     */
+    sealed interface Image<A> extends ApplicationImage, BootstrapApp.Launcher<A> permits PackedBootstrapImage {
 
-        BaseLauncher<I> provide(Object object);
-        <T> BaseLauncher<I> provide(Class<T> key, T value);
-        <T> BaseLauncher<I> provide(Key<T> key, T value);
+        // Descriptors??? iisLazy, Mirror?
+
+        // Do we want a more specific ApplicationResult? Something where the state is??
+        // Maybe we can take a BiConsumer(ErrorContext, A)
+
+        // Problem is here when is
+
+        // Meningen er at prøve at styre fejl håndteringen bedre
+        // <T> T BiFunction<@Nullable A, ErrorHandle e>
+        //
+//        default Result<A> compute(Object unhandledErrorHandler, Wirelet... wirelets) {
+//            throw new UnsupportedOperationException();
+//        }
+        //
+//        // Failure before A is created,
+//        // Failure after A is created
+//        // Action -> Return something, or throw something
+//        // Tror ikke det giver mening foerend vi har en god error handling story
+//        default Result<A> compute(Wirelet... wirelets) {
+//            throw new UnsupportedOperationException();
+//        }
+
+        /**
+         * Returns a new base image that maps this image.
+         *
+         * @param <E>
+         *            the type to map the image to
+         * @param mapper
+         *            the mapper
+         * @return a new base image that maps the result of this image
+         */
+        default <E> Image<E> map(Function<? super A, ? extends E> mapper) {
+            requireNonNull(mapper, "mapper is null");
+            return new ImageMapped<>(this, mapper);
+        }
     }
+
+    /**
+    *
+    */
+    interface Launcher<A> extends ApplicationLauncher {
+
+        /**
+         * Launches an instance of the application that this image represents in the specified state.
+         * <p>
+         * What happens here is dependent on the underlying application template. The behaviour of this method is identical to
+         * {@link BootstrapApp#launch(Assembly, Wirelet...)}.
+         *
+         * @param state
+         *            the state the application should launch into
+         * @param wirelets
+         *            optional wirelets
+         * @return an application instance
+         *
+         * @see BootstrapApp#launch(Assembly, Wirelet...)
+         */
+        A launch(RunState state);
+    }
+
 }
 
 // I don't if we have any usecases Maybe just skip it
@@ -222,8 +285,8 @@ record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? exten
 
     /** {@inheritDoc} */
     @Override
-    public BootstrapImage<E> imageOf(Assembly assembly, Wirelet... wirelets) {
-        BootstrapImage<A> ba = app.imageOf(assembly, wirelets);
+    public Image<E> imageOf(Assembly assembly, Wirelet... wirelets) {
+        Image<A> ba = app.imageOf(assembly, wirelets);
         return ba.map(mapper);
     }
 
@@ -255,4 +318,10 @@ record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? exten
 //        return e;
 //
 //    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Launcher<E> launcher(Assembly assembly, Wirelet... wirelets) {
+        return null;
+    }
 }
