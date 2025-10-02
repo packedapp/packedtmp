@@ -63,12 +63,12 @@ public final class PackedExtensionContext implements ExtensionContext {
     }
 
     public void print() {
-        System.out.println("--");
+        IO.println("--");
         for (int i = 0; i < objects.length; i++) {
-            System.out.println(i + " = " + objects[i]);
+            IO.println(i + " = " + objects[i]);
         }
 
-        System.out.println("--");
+        IO.println("--");
     }
 
     public Object read(int index) {
@@ -77,7 +77,7 @@ public final class PackedExtensionContext implements ExtensionContext {
             throw new InternalExtensionException("Bean with index " + index + " has not been initialized");
         }
         return value;
-        // System.out.println("Reading index " + index + " value= " + value);
+        // IO.println("Reading index " + index + " value= " + value);
         // new Exception().printStackTrace();
     }
 

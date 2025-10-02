@@ -98,7 +98,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     @Override
     protected void onClose() {
-        System.out.println("Have commands for " + ns().commands.keySet());
+        IO.println("Have commands for " + ns().commands.keySet());
 
         super.onClose();
     }

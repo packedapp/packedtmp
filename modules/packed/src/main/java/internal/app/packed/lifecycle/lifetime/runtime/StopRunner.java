@@ -79,7 +79,7 @@ final class StopRunner {
 
     void start() {
         long start = System.currentTimeMillis();
-    //    System.out.println("Starting app from " + Thread.currentThread());
+    //    IO.println("Starting app from " + Thread.currentThread());
         // Run all Startup methods
         // We run in a OnStartContext
         for (LifecycleOperationStopHandle h : operations) {
@@ -93,12 +93,12 @@ final class StopRunner {
         if (sts != null) {
             try {
                 ts.join();
-                System.out.println("Joined " + (System.currentTimeMillis() - start));
+                IO.println("Joined " + (System.currentTimeMillis() - start));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-  //      System.out.println("Start finished");
+  //      IO.println("Start finished");
     }
 
     StructuredTaskScope<Void, Void> ts() {

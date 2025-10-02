@@ -43,7 +43,7 @@ public class CliCommandConfiguration extends OperationConfiguration {
         List<String> ns = List.of(names);
 
         for (String name : names) {
-            System.out.println(name);
+            IO.println(name);
             // handle.namespace.commands
             // check not exists
         }

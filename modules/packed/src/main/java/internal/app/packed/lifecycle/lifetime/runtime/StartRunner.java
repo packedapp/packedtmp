@@ -75,15 +75,15 @@ final class StartRunner {
         StructuredTaskScope<Void, Void> sts = ts;
         if (sts != null) {
             try {
-                System.out.println(Thread.currentThread() == startingThread);
-                System.out.println(ts.toString());
+                IO.println(Thread.currentThread() == startingThread);
+                IO.println(ts.toString());
                 ts.join();
-                System.out.println("Joined " + (System.currentTimeMillis() - start));
+                IO.println("Joined " + (System.currentTimeMillis() - start));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        // System.out.println("Start finished");
+        // IO.println("Start finished");
     }
 
     StructuredTaskScope<Void, Void> ts() {

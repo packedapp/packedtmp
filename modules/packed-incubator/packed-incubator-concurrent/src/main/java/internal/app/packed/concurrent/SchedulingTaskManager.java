@@ -46,7 +46,7 @@ public class SchedulingTaskManager {
 
     @OnStart
     public void onStart() {
-        System.out.println("On Start");
+        IO.println("On Start");
 
         for (ScheduledOperation p : mhs) {
             vts.schedule(p.callMe(), p.s().d());
@@ -62,7 +62,7 @@ public class SchedulingTaskManager {
 
     @OnStart
     public void onStop() {
-        System.out.println("Bye");
+        IO.println("Bye");
     }
 
 }

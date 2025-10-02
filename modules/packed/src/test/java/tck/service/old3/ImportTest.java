@@ -41,7 +41,7 @@ public class ImportTest {
             c.link("london1", new London(), OldServiceWirelets.transformExports(t -> t.rekey(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {})));
             c.link("london2", new London(), OldServiceWirelets.transformExports(t -> t.rekey(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {})));
         });
-        System.out.println(i);
+        IO.println(i);
     }
 
     public static final class I extends BaseAssembly {

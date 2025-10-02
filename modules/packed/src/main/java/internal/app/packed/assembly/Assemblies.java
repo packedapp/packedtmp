@@ -25,8 +25,8 @@ public final class Assemblies {
     private Assemblies() {}
 
 //    static void main(Assembly a) {
-//        Assemblies.verifyRecursively(a, ContainerMirror.class, t -> System.out.println(t.componentPath() + " Number of beans = " + t.beans().count()));
-//        DelegatingAssembly.applyBuildHook(a, s -> s.traverseRecursively().verify(ContainerMirror.class, t -> System.out.println(t.componentPath() + " Number of beans = " + t.beans().count())));
+//        Assemblies.verifyRecursively(a, ContainerMirror.class, t -> IO.println(t.componentPath() + " Number of beans = " + t.beans().count()));
+//        DelegatingAssembly.applyBuildHook(a, s -> s.traverseRecursively().verify(ContainerMirror.class, t -> IO.println(t.componentPath() + " Number of beans = " + t.beans().count())));
 //    }
 //
 //    public static Assembly observe(Assembly assembly, AssemblyPropagator ap, BuildHook... hooks) {

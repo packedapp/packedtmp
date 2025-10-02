@@ -61,8 +61,8 @@ public class MethodHandleUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(OPTIONAL_DOUBLE_OF.type());
-        System.out.println(optionalOfTo(String.class).type());
+        IO.println(OPTIONAL_DOUBLE_OF.type());
+        IO.println(optionalOfTo(String.class).type());
     }
 
     private static final MethodHandle INIT_METHOD_HANDLE;

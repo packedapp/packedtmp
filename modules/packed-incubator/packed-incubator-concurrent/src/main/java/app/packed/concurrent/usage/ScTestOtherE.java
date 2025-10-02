@@ -83,7 +83,7 @@ public class ScTestOtherE extends BaseAssembly {
 
         @ScheduleOther("PT0.01S")
         public static void sch(SchedulingContext sc) {
-            System.out.println("SCHED " + sc.invocationCount());
+            IO.println("SCHED " + sc.invocationCount());
         }
     }
 }

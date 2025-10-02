@@ -36,7 +36,7 @@ public class MyCliApp extends BaseAssembly {
 
     public static class Spp {
         Spp() {
-            System.out.println("New");
+            IO.println("New");
         }
 
         @CliCommand(name = "foo")

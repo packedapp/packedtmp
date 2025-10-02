@@ -35,17 +35,17 @@ public class Xdd extends BaseAssembly {
     public static void main(String[] args) {
         App.run(new Xdd());
         ServiceContract sc = ServiceContract.of(new Xdd());
-        System.out.println(sc);
+        IO.println(sc);
     }
 
     public record Foo(String s, Integer i) {
         public Foo {
-            System.out.println(s + " " + i);
+            IO.println(s + " " + i);
         }
 
         @Initialize
         public void dd(Long l) {
-            System.out.println(s + " " + l);
+            IO.println(s + " " + l);
         }
     }
 

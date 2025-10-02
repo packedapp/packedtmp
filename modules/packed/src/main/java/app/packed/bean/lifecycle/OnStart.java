@@ -33,7 +33,7 @@ import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
  * <pre>
  * &#064;OnStart()
  * public void executeOnBeanStart() {
- *     System.out.println(&quot;Bean is starting&quot;);
+ *     IO.println(&quot;Bean is starting&quot;);
  * }
  * </pre>
  *
@@ -43,7 +43,7 @@ import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
  * <pre>
  * &#064;OnStart()
  * public void hello(Container container) {
- *     System.out.println(&quot;The current state of container &quot; + container.getName() + &quot; is &quot; + container.getState());
+ *     IO.println(&quot;The current state of container &quot; + container.getName() + &quot; is &quot; + container.getState());
  * }
  * </pre>
  * <p>

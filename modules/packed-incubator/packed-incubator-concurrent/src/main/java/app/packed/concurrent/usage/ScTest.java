@@ -44,22 +44,22 @@ public class ScTest extends BaseAssembly {
 
         @DaemonJob
         public static void dae(DaemonJobContext sc) throws InterruptedException {
-            System.out.println("Daemon");
+            IO.println("Daemon");
             Thread.sleep(100);
         }
 
         @ScheduleJob(withFixedDelay = 10)
         public static void schd(SchedulingContext sc, ScheduledOperationMirror op) {
-            System.out.println("SCHs®ED " + op.target());
+            IO.println("SCHs®ED " + op.target());
         }
 
         @ScheduleJob(withFixedDelay = 88)
         public static void sch(SchedulingContext sc, ScheduledOperationMirror op) {
-            System.out.println("SCHED " + sc.invocationCount());
-//            System.out.println(op.target());
+            IO.println("SCHED " + sc.invocationCount());
+//            IO.println(op.target());
             if (sc.invocationCount() == 10) {
                 sc.cancel();
-                System.out.println("Bye");
+                IO.println("Bye");
             }
         }
     }

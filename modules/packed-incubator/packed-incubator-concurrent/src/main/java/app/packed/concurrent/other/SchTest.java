@@ -25,9 +25,9 @@ public class SchTest extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-//        use(ScheduledJobExtension.class).schedule(new Op0<>(() -> System.out.println("Hi")) {});
+//        use(ScheduledJobExtension.class).schedule(new Op0<>(() -> IO.println("Hi")) {});
 //
-//        use(ScheduledJobExtension.class).schedule(Op.ofRunnable(() -> System.out.println("Hi")));
+//        use(ScheduledJobExtension.class).schedule(Op.ofRunnable(() -> IO.println("Hi")));
     }
 
 }

@@ -47,7 +47,7 @@ public class FailtureTest {
         public static class MyBean {
 
             public MyBean(AR repo) {
-                System.out.println(repo);
+                IO.println(repo);
             }
         }
     }

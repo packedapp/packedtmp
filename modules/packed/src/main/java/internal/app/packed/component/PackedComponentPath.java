@@ -68,7 +68,7 @@ public final class PackedComponentPath implements ComponentPath {
 
     public static void main(String[] args) {
         ComponentPath cp = ComponentKind.APPLICATION.pathNew("sfoo");
-        System.out.println(cp);
+        IO.println(cp);
     }
 
     /**

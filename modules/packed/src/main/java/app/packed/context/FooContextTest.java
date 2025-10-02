@@ -32,13 +32,13 @@ public class FooContextTest extends BaseAssembly {
     protected void build() {
         use(MyExt.class);
         installInstance(123);
-        System.out.println(NewExt.class.getPermittedSubclasses()[0]);
+        IO.println(NewExt.class.getPermittedSubclasses()[0]);
     }
 
     public static void main(String[] args) {
         ApplicationMirror m = App.mirrorOf(new FooContextTest());
-        m.container().allBeans().forEach(e -> System.out.println(e.contexts()));
-        System.out.println("BYE");
+        m.container().allBeans().forEach(e -> IO.println(e.contexts()));
+        IO.println("BYE");
     }
 
     public sealed interface NewExt permits MyExt {}
@@ -52,7 +52,7 @@ public class FooContextTest extends BaseAssembly {
         @Override
         protected void onNew() {
             BeanConfiguration b = base().installInstance("sdf");
-            System.out.println(b);
+            IO.println(b);
         }
     }
 }

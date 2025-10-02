@@ -49,25 +49,25 @@ public class TestNew extends BaseAssembly {
         App.run(new TestNew());
 
         App.mirrorOf(new TestNew()).print();
-        System.out.println("_---");
+        IO.println("_---");
 
         for (BeanMirror b : App.mirrorOf(new TestNew()).container().beans().toList()) {
             b.operations().ofType(ProvidedServiceMirror.class).forEach(e -> {
                 List<ServiceBindingMirror> sbm = e.useSites().toList();
-                System.out.println(sbm);
-                System.out.println("Bean " + b.componentPath() + " provides services for key " + e.key());
+                IO.println(sbm);
+                IO.println("Bean " + b.componentPath() + " provides services for key " + e.key());
                 for (var v : sbm) {
-                    System.out.println("Bound to " + v.operation().target());
+                    IO.println("Bound to " + v.operation().target());
                 }
             });
         }
         //
-        System.out.println("Bye");
+        IO.println("Bye");
     }
 
     public static class Gop {
         public Gop(Integer i) {
-            System.out.println("New Gop " + i);
+            IO.println("New Gop " + i);
         }
 
 //
@@ -82,7 +82,7 @@ public class TestNew extends BaseAssembly {
 
         @Provide
         public static Integer foo(@XX("Nice") String s) {
-            System.out.println("Got " + s);
+            IO.println("Got " + s);
             return 34;
         }
     }

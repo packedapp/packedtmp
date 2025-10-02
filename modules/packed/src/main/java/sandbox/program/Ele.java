@@ -47,7 +47,7 @@ public class Ele extends BaseAssembly {
 
     record Foo() {
         Foo {
-            System.out.println("Foox");
+            IO.println("Foox");
         }
     }
 }

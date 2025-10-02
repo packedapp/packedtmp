@@ -45,7 +45,7 @@ public abstract class PackedDevToolsIntegration {
 
         @Override
         public void goo() {
-            System.out.println("No DevTools");
+            IO.println("No DevTools");
         }
     }
 }

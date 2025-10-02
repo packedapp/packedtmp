@@ -46,7 +46,7 @@ public sealed abstract class AuthoritySetup<T extends AbstractTreeNode<T>> exten
     public void resolve() {
         if (this instanceof ExtensionSetup es) {
             if (es.treeParent != null) {
-                System.out.println(es.treeParent);
+                IO.println(es.treeParent);
                 throw new Error();
             }
         }

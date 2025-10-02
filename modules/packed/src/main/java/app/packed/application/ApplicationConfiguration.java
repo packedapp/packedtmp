@@ -110,7 +110,7 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
      */
     public void named(String name) {
         checkUpdatable();
-        System.out.println("Setting name");
+        IO.println("Setting name");
     }
 
     @SafeVarargs

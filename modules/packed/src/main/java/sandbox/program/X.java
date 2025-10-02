@@ -38,44 +38,44 @@ public class X extends BaseAssembly {
     public static class Xa {
         @Main
         public void s() {
-            // System.out.println("New f");
+            // IO.println("New f");
         }
 
     }
     public static void main(String[] args) {
         ProgramX p = ProgramX.start(new X());
-        System.out.println(p.runtime().currentState());
+        IO.println(p.runtime().currentState());
     }
 
     public static class F {
         public F() {
-            // System.out.println("New f");
+            // IO.println("New f");
         }
 
         @Initialize
         public static void init() {
-            System.out.println("Init F");
+            IO.println("Init F");
         }
 
         @OnStart
       //  @Fork
         public static void start() {
-            System.out.println("start F");
+            IO.println("start F");
         }
 
         @OnStart(fork = true)
         public static void stardt() {
-            System.out.println("start F");
+            IO.println("start F");
         }
 
         @Stop
         public static void stop() {
-            System.out.println("stop F");
+            IO.println("stop F");
         }
 
         @Main
         public void ff() {
-            System.out.println("MAIN");
+            IO.println("MAIN");
         }
     }
 
@@ -86,17 +86,17 @@ public class X extends BaseAssembly {
 
         @Initialize
         public static void init() {
-            System.out.println("Init NeedsF");
+            IO.println("Init NeedsF");
         }
 
         @OnStart
         public static void start() {
-            System.out.println("start NeedsF");
+            IO.println("start NeedsF");
         }
 
         @Stop
         public static void stop() {
-            System.out.println("stop NeedsF");
+            IO.println("stop NeedsF");
         }
     }
 }

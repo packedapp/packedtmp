@@ -39,9 +39,9 @@ public class LookupUsage {
             }
         });
         for (var e : hits.entrySet()) {
-            System.out.println("\n------" + e.getKey() + " parameter");
+            IO.println("\n------" + e.getKey() + " parameter");
             e.getValue().forEach(v -> {
-                System.out.println(v.cm.thisClass().asInternalName() + "." + v.mm.methodName()
+                IO.println(v.cm.thisClass().asInternalName() + "." + v.mm.methodName()
                         + v.mm.methodTypeSymbol().parameterList().stream().map(f -> f.displayName()).collect(Collectors.joining(", ", "(", ")")));
             });
         }

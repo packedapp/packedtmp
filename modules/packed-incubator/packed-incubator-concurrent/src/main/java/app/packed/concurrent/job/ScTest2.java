@@ -33,7 +33,7 @@ public class ScTest2 extends BaseAssembly {
         Optional<ThreadNamespaceMirror> o = m.namespace(ThreadNamespaceMirror.class);
 
 //        o.get().daemons().forEach(c -> {
-//            System.out.println(c.name() + ":" + c.isInteruptAtStop());
+//            IO.println(c.name() + ":" + c.isInteruptAtStop());
 //        });
 
         App.run(new ScTest2());
@@ -51,7 +51,7 @@ public class ScTest2 extends BaseAssembly {
 
         @DaemonJob
         public static void dae(DaemonJobContext sc) throws InterruptedException {
-            System.out.println("Daemon");
+            IO.println("Daemon");
             Thread.sleep(100);
         }
     }

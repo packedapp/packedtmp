@@ -33,13 +33,13 @@ public class STest extends BaseAssembly {
 
     public static void main(String[] args) {
         App.run(new STest());
-        System.out.println("Bye");
+        IO.println("Bye");
     }
 
     public record Foo(A a) {
         public Foo(@ServiceResolver(order = ServiceProviderKind.NAMESPACE_SERVICE) A a) {
             this.a = a;
-            System.out.println(a);
+            IO.println(a);
         }
     }
 

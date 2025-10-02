@@ -51,7 +51,7 @@ public interface BuildHookMap {
 
 
     static void main(String[] args) {
-        System.out.println(classOf(MyAss.class));
+        IO.println(classOf(MyAss.class));
     }
 
     static class MyAss extends AssemblyBuildHook {}

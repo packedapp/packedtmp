@@ -13,9 +13,9 @@ public class StackWalkerUtil {
 
     public static boolean inConstructorOfSubclass(Class<?> clazz) {
         SW.forEach(c->{
-            System.out.println(c.getMethodName());
+            IO.println(c.getMethodName());
         });
-        //Object o = SW.walk(s -> s.anyMatch(f -> System.out.println(f.getMethodName());return null;));
+        //Object o = SW.walk(s -> s.anyMatch(f -> IO.println(f.getMethodName());return null;));
         return SW.walk(s -> s.anyMatch(f -> clazz.isAssignableFrom(f.getDeclaringClass()) && f.getMethodName().equals("<init>")));
     }
 }

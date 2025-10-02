@@ -45,7 +45,7 @@ public final class LifetimeWirelets {
         // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java
 //        ActorSystem<Void> system = ActorSystem.create(root, "RoundRobin");
 //        try {
-//          System.out.println("Press ENTER to exit [the application/job/program/...]");
+//          IO.println("Press ENTER to exit [the application/job/program/...]");
 //          System.in.read();
 //        } finally {
 //          system.terminate();

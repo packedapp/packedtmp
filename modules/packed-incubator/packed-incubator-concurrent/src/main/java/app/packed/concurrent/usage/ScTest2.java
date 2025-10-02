@@ -35,17 +35,17 @@ public class ScTest2 extends BaseAssembly {
     public static void main(String[] args) throws Exception {
         ApplicationMirror m = App.mirrorOf(new ScTest2());
         m.operations().ofType(ScheduledOperationMirror.class).forEach(c -> {
-            System.out.println(c.name() + ":" + c.schedule());
+            IO.println(c.name() + ":" + c.schedule());
         });
         Optional<ThreadNamespaceMirror> o = m.namespace(ThreadNamespaceMirror.class);
 
 //        o.get().daemons().forEach(c -> {
-//            System.out.println(c.name() + ":" + c.isInteruptAtStop());
+//            IO.println(c.name() + ":" + c.isInteruptAtStop());
 //        });
 
 
-        System.out.println(o.get());
-        System.out.println();
+        IO.println(o.get());
+        IO.println();
 
         App.run(new ScTest2());
         Thread.sleep(1000);
@@ -62,17 +62,17 @@ public class ScTest2 extends BaseAssembly {
 
         @DaemonJob
         public static void dae(DaemonJobContext sc) throws InterruptedException {
-            System.out.println("Daemon");
+            IO.println("Daemon");
             Thread.sleep(100);
         }
 
         @ScheduleJob(withFixedDelay = 88)
         public static void sch(SchedulingContext sc, ScheduledOperationMirror op) {
-//            System.out.println("SCHED " + sc.invocationCount());
-//            System.out.println(op.target());
+//            IO.println("SCHED " + sc.invocationCount());
+//            IO.println(op.target());
             if (sc.invocationCount() == 10) {
                 sc.cancel();
-                System.out.println("Bye");
+                IO.println("Bye");
             }
         }
     }

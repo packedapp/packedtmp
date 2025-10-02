@@ -46,13 +46,13 @@ public record DaemonRuntimeOperationRunner(DaemonRuntimeManager manager, MethodH
         /** {@inheritDoc} */
         @Override
         public void awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException {
-            System.out.println("AWAIT");
+            IO.println("AWAIT");
         }
 
         /** {@inheritDoc} */
         @Override
         public void awaitShutdown() throws InterruptedException {
-            System.out.println("AWAIT");
+            IO.println("AWAIT");
         }
     }
 }

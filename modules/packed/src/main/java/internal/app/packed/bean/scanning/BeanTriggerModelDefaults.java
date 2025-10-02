@@ -166,8 +166,8 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
     private static BeanIntrospectorClassModel bim(Class<?> annotationType, Class<? extends BeanIntrospector<?>> beanIntrospectorType) {
         BeanIntrospectorClassModel bim = BeanIntrospectorClassModel.of(beanIntrospectorType);
         if (bim.extensionClass.getModule() != annotationType.getModule()) {
-            // System.out.println(bim.extensionClass.getModule());
-            // System.out.println(annotationType.getModule());
+            // IO.println(bim.extensionClass.getModule());
+            // IO.println(annotationType.getModule());
             throw new InternalExtensionException(
                     "The annotation " + annotationType + " and the extension " + bim.extensionClass + " must be declared in the same module");
         }

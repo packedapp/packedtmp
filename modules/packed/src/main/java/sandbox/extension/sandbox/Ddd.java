@@ -51,13 +51,13 @@ public class Ddd extends BaseAssembly {
     public static void main(String[] args) {
         App.run(new Ddd());
         ApplicationMirror m = App.mirrorOf(new Ddd());
-        System.out.println(Ddd.class.getCanonicalName() + ".build(Ddd.java:44)");
+        IO.println(Ddd.class.getCanonicalName() + ".build(Ddd.java:44)");
         m.print();
     }
 
     public static class Foo {
         Foo() {
-            System.out.println("New foo");
+            IO.println("New foo");
         }
     }
 
@@ -103,12 +103,12 @@ public class Ddd extends BaseAssembly {
 
         @Initialize
         public void onInit() {
-            System.out.println("ASDASD");
+            IO.println("ASDASD");
         }
 
         @MyOnInitialize
         public void onInixt() {
-            System.out.println("xxASDASD");
+            IO.println("xxASDASD");
         }
     }
 }

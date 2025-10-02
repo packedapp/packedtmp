@@ -16,7 +16,7 @@ public class CronSchedulerExample {
         CronExpression cronExpression = CronExpression.of(cronExpressionStr);
 
         ScheduledFuture<?> future = scheduler.schedule(() -> {
-            System.out.println("Task executed at " + ZonedDateTime.now(zoneId));
+            IO.println("Task executed at " + ZonedDateTime.now(zoneId));
         }, null, cronExpression, zoneId);
 
         // Let the task run for 5 minutes

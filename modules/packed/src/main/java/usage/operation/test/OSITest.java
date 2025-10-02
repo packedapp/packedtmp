@@ -47,17 +47,17 @@ public class OSITest extends BaseAssembly {
     public static class BB {
 
         public BB(@Now LocalDateTime i2) {
-            System.out.println(i2);
+            IO.println(i2);
         }
 
         @Initialize
         public void sd(@Now LocalDateTime i2, @BuildTime LocalDateTime i24) {
-            System.out.println(i2);
+            IO.println(i2);
         }
 
         @Initialize
         public static void fsd(@Now LocalDateTime i2, @BuildTime LocalDateTime i24) {
-            System.out.println(i2 + " " + i24);
+            IO.println(i2 + " " + i24);
         }
     }
 

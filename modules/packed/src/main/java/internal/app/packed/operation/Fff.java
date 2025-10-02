@@ -41,12 +41,12 @@ public class Fff extends BaseAssembly {
         ApplicationMirror am = App.mirrorOf(new Fff());
         List<BeanMirror> list = am.container().beans().toList();
         for (BeanMirror b : list) {
-            System.out.println("-----");
-            System.out.println(b);
-            b.operations().forEach(c -> System.out.println("  " + c.name()));
+            IO.println("-----");
+            IO.println(b);
+            b.operations().forEach(c -> IO.println("  " + c.name()));
         }
 
-        System.out.println("asd");
+        IO.println("asd");
     }
 
     public static class Mb {

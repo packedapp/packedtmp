@@ -47,7 +47,7 @@ public class CheckCycles extends BaseAssembly {
 
         ApplicationMirror am = App.mirrorOf(new CheckCycles());
         for (var b : am.container().beans().toList()) {
-            System.out.println(b.beanClass().getSimpleName() + " " + b.lifecycle().factory().get().target());
+            IO.println(b.beanClass().getSimpleName() + " " + b.lifecycle().factory().get().target());
         }
 
 //        Collection<ProvidedServiceMirror> c = am.use(BaseExtensionMirror.class).serviceProviders().values();
@@ -56,11 +56,11 @@ public class CheckCycles extends BaseAssembly {
 
         BeanMirror b = am.container().beans().iterator().next();
 
-        System.out.println(b.componentPath() + " " + b.dependencies().extensions());
+        IO.println(b.componentPath() + " " + b.dependencies().extensions());
 
-       // c.forEach(e -> System.out.println(e.bean().componentPath() + " provided by " + e.key()));
+       // c.forEach(e -> IO.println(e.bean().componentPath() + " provided by " + e.key()));
 
-        ex.forEach(e -> System.out.println(e.bean().componentPath() + " exported by " + e.key()));
+        ex.forEach(e -> IO.println(e.bean().componentPath() + " exported by " + e.key()));
     }
 
     public record DD() {}

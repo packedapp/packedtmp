@@ -40,19 +40,19 @@ public class OnStartTest extends BaseAssembly {
 
         @OnStart(order = DependantOrder.RUN_BEFORE_DEPENDANTS)
         public void onStart(OnStartContext context) {
-            System.out.println("1 - NICE " + Thread.currentThread());
+            IO.println("1 - NICE " + Thread.currentThread());
         }
 
         @OnStart(fork = true)
         public void onStartdx(OnStartContext context) throws InterruptedException {
-            System.out.println("2 - Started " + Thread.currentThread());
+            IO.println("2 - Started " + Thread.currentThread());
             context.fork(() -> {
-                System.out.println("2 - NICE from " + Thread.currentThread());
+                IO.println("2 - NICE from " + Thread.currentThread());
                 context.fork(() -> {
-                    System.out.println("2 - NICE2 from " + Thread.currentThread());
+                    IO.println("2 - NICE2 from " + Thread.currentThread());
                 });
                 context.fork(() -> {
-                    System.out.println("2 - NICE2 from " + Thread.currentThread());
+                    IO.println("2 - NICE2 from " + Thread.currentThread());
                 });
 
             });
@@ -61,9 +61,9 @@ public class OnStartTest extends BaseAssembly {
 
         @OnStart(fork = true)
         public void onStart2(OnStartContext context) throws InterruptedException {
-            System.out.println("3 - Started " + Thread.currentThread());
+            IO.println("3 - Started " + Thread.currentThread());
             context.fork(() -> {
-                System.out.println("3 - NICE " + Thread.currentThread());
+                IO.println("3 - NICE " + Thread.currentThread());
             });
             Thread.sleep(300);
         }

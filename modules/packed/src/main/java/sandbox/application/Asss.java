@@ -39,19 +39,19 @@ public class Asss extends BaseAssembly {
         install(Boo.class);
 
         use(MyExt.class);
-        container().beans().forEach(e -> System.out.println(e.operations().toList()));
+        container().beans().forEach(e -> IO.println(e.operations().toList()));
 
-        container().beans().forEach(e -> System.out.println(e.toString()));
+        container().beans().forEach(e -> IO.println(e.toString()));
 
-        System.out.println("Build ID " + BuildProcess.current().processId());
+        IO.println("Build ID " + BuildProcess.current().processId());
     }
 
     public static void main(String[] args) {
         ApplicationMirror am = App.mirrorOf(new Asss());
-        System.out.println();
-        am.container().allBeans().forEach(e -> System.out.println(e.name()));
-        System.out.println();
-        am.container().beans().forEach(e -> System.out.println(e.name()));
+        IO.println();
+        am.container().allBeans().forEach(e -> IO.println(e.name()));
+        IO.println();
+        am.container().beans().forEach(e -> IO.println(e.name()));
 
         App.run(new Asss());
     }
@@ -60,7 +60,7 @@ public class Asss extends BaseAssembly {
 
         @Initialize
         public void onStart() {
-            System.out.println("Initized!!");
+            IO.println("Initized!!");
         }
     }
 
@@ -92,7 +92,7 @@ public class Asss extends BaseAssembly {
 
         @Initialize
         public void onStart() {
-            System.out.println("Initized");
+            IO.println("Initized");
         }
     }
 }

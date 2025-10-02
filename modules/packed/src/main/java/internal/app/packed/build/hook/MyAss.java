@@ -45,7 +45,7 @@ public class MyAss extends BaseAssembly {
 
         @Main
         public void runMeAndExit() {
-            System.out.println("HelloWorld");
+            IO.println("HelloWorld");
         }
     }
 
@@ -54,7 +54,7 @@ public class MyAss extends BaseAssembly {
         @Override
         public void beforeBuild(AssemblyConfiguration configuration) {
             new Exception().printStackTrace();
-            System.out.println("ASDSD");
+            IO.println("ASDSD");
         }
 
     }
@@ -63,7 +63,7 @@ public class MyAss extends BaseAssembly {
 
         @Override
         public void onNew(BeanConfiguration configuration) {
-            System.out.println("Bean Added of type " + configuration.beanClass());
+            IO.println("Bean Added of type " + configuration.beanClass());
         }
 
     }

@@ -70,7 +70,7 @@ import internal.app.packed.service.util.PackedServiceLocator;
  * <pre>
  * Container c = ...;
  * Injector injector = c.getService(Injector.class);
- * System.out.println(&quot;Available services: &quot; + Injector.services());
+ * IO.println(&quot;Available services: &quot; + Injector.services());
  * </pre>
  *
  * <h3>Annotated method, such as OnStart or OnStop</h3> When using annotations such as OnStart or OnStop. An injected
@@ -79,7 +79,7 @@ import internal.app.packed.service.util.PackedServiceLocator;
  * <pre>
  * &#064;RunOnStart()
  * public void onStart(ServiceManager ServiceManager) {
- *     System.out.println(&quot;The following services can be injected: &quot; + ServiceManager.getAvailableServices());
+ *     IO.println(&quot;The following services can be injected: &quot; + ServiceManager.getAvailableServices());
  * }
  * </pre>
  *
@@ -89,7 +89,7 @@ import internal.app.packed.service.util.PackedServiceLocator;
  * <pre>
  * public class MyService {
  *     public MyService(ServiceManager ServiceManager) {
- *         System.out.println(&quot;The following services can be injected: &quot; + ServiceManager.getAvailableServices());
+ *         IO.println(&quot;The following services can be injected: &quot; + ServiceManager.getAvailableServices());
  *     }
  * }
  * </pre>

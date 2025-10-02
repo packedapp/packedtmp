@@ -43,7 +43,7 @@ public class MyAss extends BaseAssembly {
 
     public static class FFF {
         FFF(MyBeanMirror m) {
-            System.out.println(m.installedByExtension());
+            IO.println(m.installedByExtension());
         }
     }
 

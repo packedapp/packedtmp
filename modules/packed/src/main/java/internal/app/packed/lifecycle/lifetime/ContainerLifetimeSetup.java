@@ -141,7 +141,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         }
 
         if (dependencyOrderedBeans.add(bean)) {
-            // System.out.println("Codegen " + bean.path());
+            // IO.println("Codegen " + bean.path());
             orderDependenciesBeans0(bean);
             // addFactory, that installs the bean into Object[]
             // then all initiali

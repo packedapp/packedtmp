@@ -124,7 +124,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
 
     static class HB {
         public HB() {
-            System.out.println("HMMM");
+            IO.println("HMMM");
         }
     }
 

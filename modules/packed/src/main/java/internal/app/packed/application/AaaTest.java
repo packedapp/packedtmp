@@ -47,7 +47,7 @@ public class AaaTest extends BaseAssembly {
     public static void main(String[] args) throws InterruptedException {
         App a = AApp.BOOTSTRAP_APP.launch(RunState.STARTING, new AaaTest());
 
-        System.out.println("STate " + a.state());
+        IO.println("STate " + a.state());
         Thread.sleep(4000);
     }
 
@@ -55,21 +55,21 @@ public class AaaTest extends BaseAssembly {
 
         @Initialize
         public void init() {
-            System.out.println("INIT");
-            System.out.println(Thread.currentThread());
+            IO.println("INIT");
+            IO.println(Thread.currentThread());
         }
 
         @OnStart
         public void onStart() throws InterruptedException {
             Thread.sleep(1000);
-            System.out.println("STARTING");
-            System.out.println(Thread.currentThread());
+            IO.println("STARTING");
+            IO.println(Thread.currentThread());
         }
 
         @Stop
         public void onstop() throws InterruptedException {
             Thread.sleep(1000);
-            System.out.println("soppping");
+            IO.println("soppping");
         }
     }
 

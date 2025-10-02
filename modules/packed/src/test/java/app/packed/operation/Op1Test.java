@@ -56,7 +56,7 @@ public class Op1Test {
                 return 123;
             }
         });
-        System.out.println(ff.type());
+        IO.println(ff.type());
         assertEquals(OperationType.of(Variable.of(Integer.class), v), ff.type());
 
     }

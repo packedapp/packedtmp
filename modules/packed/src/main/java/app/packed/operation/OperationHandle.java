@@ -99,7 +99,7 @@ import internal.app.packed.util.MethodHandleUtil.LazyResolable;
 //Non-Top
 //Embedded
 // interceptor().add(...);
-// interceptor().peek(e->System.out.println(e));
+// interceptor().peek(e->IO.println(e));
 public non-sealed class OperationHandle<C extends OperationConfiguration> extends ComponentHandle implements InvokerFactory {
 
     /** The lazy generated operation configuration. */

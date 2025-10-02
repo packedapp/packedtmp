@@ -69,7 +69,7 @@ public final class ManagedApplicationRepository<I, H extends ApplicationHandle<I
         // Disable all existing launchers
         applications().forEach(l -> l.disable());
 
-        System.out.println(instances.size());
+        IO.println(instances.size());
         // Propbably need to have some kind of limit if we have millions of applications.
         // But than again virtual virtual threads really scale. But micro apps
         allManagedInstances().forEach(a -> {

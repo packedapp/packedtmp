@@ -48,7 +48,7 @@ public class MhExt extends BaseAssembly {
 
     public static class FFF {
         FFF() {
-            System.out.println("New fff");
+            IO.println("New fff");
         }
     }
 
@@ -56,8 +56,8 @@ public class MhExt extends BaseAssembly {
         final MethodHandle mh;
 
         public EBean(ExtensionContext context, MethodHandle f) throws Throwable {
-            System.out.println("Got computed F");
-            System.out.println(f.type());
+            IO.println("Got computed F");
+            IO.println(f.type());
             this.mh = f;
         }
 
@@ -65,7 +65,7 @@ public class MhExt extends BaseAssembly {
         public void onInit(ExtensionContext ec) throws Throwable {
             FFF fff = (FFF) mh.invokeExact(ec);
 
-            System.out.println(fff);
+            IO.println(fff);
         }
     }
 

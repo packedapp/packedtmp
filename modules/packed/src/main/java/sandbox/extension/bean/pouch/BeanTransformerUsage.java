@@ -45,7 +45,7 @@ public class BeanTransformerUsage {
 
             Runnable cancel = base().transformBeans(c -> {
                 if (c.beanClass().getPackageName().equals("foobar")) {
-                    System.out.println(c.beanClass());
+                    IO.println(c.beanClass());
                 }
                 c.hideAllFields(f -> f.isAnnotationPresent(Inject.class));
             });
@@ -73,7 +73,7 @@ public class BeanTransformerUsage {
         static {
             BeanSynthesizer.forceTransform(MethodHandles.lookup(), c -> {
                 c.addFunction(Variable.of(Void.class), () -> {
-                    System.out.println();
+                    IO.println();
                     return null;
                 });
             });

@@ -40,7 +40,7 @@ public class ApplicationShutdownWireletTest extends AppAppTest {
         // It is registered when we start the application
         // test img, launch
 
-                System.out.println(w);
+                IO.println(w);
         // Not ready to be implemented yet, as we still need
 //        App.imageOf(null, null)
     }

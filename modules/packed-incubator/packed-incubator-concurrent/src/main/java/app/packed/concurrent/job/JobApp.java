@@ -109,8 +109,8 @@ class TestIt extends BaseAssembly {
     public static void main(String[] args) {
         String run = JobApp.run(String.class, new TestIt());
         String run2 = I.run();
-        System.out.println(run);
-        System.out.println(run2);
+        IO.println(run);
+        IO.println(run2);
     }
 }
 //

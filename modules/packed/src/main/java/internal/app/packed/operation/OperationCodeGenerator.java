@@ -61,10 +61,10 @@ public final class OperationCodeGenerator {
 
         // debug(mh.type());
         for (BindingSetup binding : operation.bindings) {
-//            System.out.println(binding.resolver().getClass());
-            // System.out.println(mh.type());
+//            IO.println(binding.resolver().getClass());
+            // IO.println(mh.type());
             if (binding.resolver() == null) {
-                System.out.println(operation.type);
+                IO.println(operation.type);
                 // Should really be here where we fail, much earlier
                 throw new ProvisionException("Oops");
             }
@@ -122,11 +122,11 @@ public final class OperationCodeGenerator {
             permuters.add(0); // ExtensionContext is always 0
             MethodHandle tmp = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, fla.index());
             assert (tmp.type().returnType() == Object.class);
-//            System.out.println("FLA ->" + fla.type());
-//            System.out.println(mh.type());
+//            IO.println("FLA ->" + fla.type());
+//            IO.println(mh.type());
 //
 //            // (LifetimePool)Object -> (LifetimePool)type
-//            System.out.println("TMP Before " +tmp.type());
+//            IO.println("TMP Before " +tmp.type());
 
             // We need to convert it from Object to the expected type
             tmp = tmp.asType(tmp.type().changeReturnType(fla.type()));
@@ -136,16 +136,16 @@ public final class OperationCodeGenerator {
 //                 //  tmp = tmp.asType(tmp.type().changeReturnType(Hmm2.AR.class));
 //                }
 //            }
-//            System.out.println("TMP After" +tmp.type());
+//            IO.println("TMP After" +tmp.type());
 
-//            System.out.println(tmp.type());
-//            System.out.println(tmp.type().returnType());
-//            System.out.println();
-//            System.out.println(operation.type);
-//            System.out.println();
+//            IO.println(tmp.type());
+//            IO.println(tmp.type().returnType());
+//            IO.println();
+//            IO.println(operation.type);
+//            IO.println();
             return MethodHandles.collectArguments(mh, 0, tmp);
         } else {
-            System.out.println(p.getClass());
+            IO.println(p.getClass());
             if (ClassUtil.isInnerOrLocal(operation.bean.bean.beanClass)) {
                 System.err.println("Inner Bean");
             }

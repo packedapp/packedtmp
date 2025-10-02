@@ -43,7 +43,7 @@ public class Sss {
                 for (int i = 0; i < beanCount; i++) {
                     base().installInstance(new MyClass()).allowMultiClass();
                 }
-               // System.out.println((System.nanoTime() - start) / C);
+               // IO.println((System.nanoTime() - start) / C);
             }
         };
     }
@@ -51,6 +51,6 @@ public class Sss {
     public static void main(String[] args) {
         long start = System.nanoTime();
         App.run(of(C));
-        System.out.println(System.nanoTime() - start);
+        IO.println(System.nanoTime() - start);
     }
 }

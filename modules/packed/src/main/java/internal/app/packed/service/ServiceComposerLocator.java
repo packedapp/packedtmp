@@ -161,7 +161,7 @@ public class ServiceComposerLocator {
          *   c.provideAll(importFrom);
          * });
          *
-         * System.out.println(importTo.with(String.class));// prints "foostring"}}
+         * IO.println(importTo.with(String.class));// prints "foostring"}}
          * </pre>
          * <p>
          * It is possible to specify one or import stages that can restrict or transform the imported services.

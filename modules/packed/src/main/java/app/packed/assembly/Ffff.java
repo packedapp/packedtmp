@@ -26,7 +26,7 @@ public class Ffff extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        System.out.println("OK " + BuildProcess.current().currentAssembly());
+        IO.println("OK " + BuildProcess.current().currentAssembly());
 
         // Maybe we have a RootAssembly and ChildAssembly
         assembly().application().restrictUpdatesToThisAssembly();
@@ -40,7 +40,7 @@ public class Ffff extends BaseAssembly {
         @Override
         protected void build() {
             super.assembly().application().named("asd");
-            System.out.println("OK " + BuildProcess.current().currentAssembly());
+            IO.println("OK " + BuildProcess.current().currentAssembly());
         }
     }
     void main() {

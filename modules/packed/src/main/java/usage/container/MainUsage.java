@@ -43,7 +43,7 @@ public class MainUsage extends BaseAssembly {
     public static void main(String[] args) {
         long l = System.nanoTime();
         App.Image i = App.imageOf(new MainUsage(), Wirelets.buildApplicationLazily());
-        System.out.println(System.nanoTime() - l);
+        IO.println(System.nanoTime() - l);
         i.run();
 
     }
@@ -52,7 +52,7 @@ public class MainUsage extends BaseAssembly {
 
         @Main
         public void hello() {
-            System.out.println("HelloWorld");
+            IO.println("HelloWorld");
         }
     }
 }

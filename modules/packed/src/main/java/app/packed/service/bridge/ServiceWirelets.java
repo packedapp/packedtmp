@@ -122,7 +122,7 @@ public final class ServiceWirelets {
         /** {@inheritDoc} */
         @Override
         public void onBuild(ContainerSetup container) {
-            System.out.println("Provide key " + key);
+            IO.println("Provide key " + key);
         }
 
         /** {@inheritDoc} */

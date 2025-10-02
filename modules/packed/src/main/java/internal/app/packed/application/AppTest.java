@@ -31,6 +31,6 @@ public class AppTest extends BaseAssembly {
 
     public static void main(String[] args) {
         App.run(new AppTest());
-        System.out.println("ByeBye");
+        IO.println("ByeBye");
     }
 }

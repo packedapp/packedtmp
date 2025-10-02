@@ -27,8 +27,8 @@ public class TestIt {
 
     public static void main(String[] args) {
         TypeVariableExtractor tve = TypeVariableExtractor.of(Consumer.class);
-        // System.out.println(tve.extract(Y.class));
-        System.out.println(tve.extractType(Z.class, IllegalStateException::new));
+        // IO.println(tve.extract(Y.class));
+        IO.println(tve.extractType(Z.class, IllegalStateException::new));
     }
 
     interface X<T> extends Consumer<T> {}

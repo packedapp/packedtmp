@@ -54,7 +54,7 @@ public interface TreeView<N> {
 
     default void print() {
         streamNodes().forEach(n -> {
-            System.out.println("  ".repeat(n.depth()) + "  " + n);
+            IO.println("  ".repeat(n.depth()) + "  " + n);
         });
     }
 

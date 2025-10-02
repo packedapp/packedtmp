@@ -28,14 +28,14 @@ public class MirrorUsage {
     public static void main(ApplicationMirror m) {
         CliNamespaceMirror cm = m.namespace(CliNamespaceMirror.class).get();
         for (CliCommandMirror c : cm.commands().toList()) {
-            System.out.println(c);
+            IO.println(c);
         }
 
         cm.commands().map(e -> e.bean().container()).distinct().toList();
 
         ServiceNamespaceMirror sn = m.namespace(ServiceNamespaceMirror.class).get();
 
-        System.out.println(sn);
+        IO.println(sn);
     }
 
 

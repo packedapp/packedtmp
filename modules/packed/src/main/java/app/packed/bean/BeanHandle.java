@@ -244,7 +244,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     public final List<InvokerFactory> lifecycleInvokers() {
         if (beanKind() != BeanKind.STATIC && beanSourceKind() != BeanSourceKind.SOURCELESS) {
 //            debug();
-//            System.out.println(bean.operations.first().template.methodType);
+//            IO.println(bean.operations.first().template.methodType);
             return List.of(bean.operations.first().handle());
         }
         return List.of();

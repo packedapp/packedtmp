@@ -59,8 +59,8 @@ class X {
     public static void main(String[] args) {
         LifetimeTemplate SESSION = LifetimeTemplate.APPLICATION.newChild("WebSession").withRequiresManaged();
         LifetimeTemplate REQUEST = LifetimeTemplate.APPLICATION.newChild("WebRequest").withRequiresManaged();
-        System.out.println(SESSION);
-        System.out.println(REQUEST);
+        IO.println(SESSION);
+        IO.println(REQUEST);
     }
 }
 // Session er Managed

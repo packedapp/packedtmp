@@ -96,8 +96,8 @@ public final class TypeVariableExtractor {
 //        TypeVariableExtractor tvex = TypeVariableExtractor.of(CapturingOp);
 //        tvex.extractAllTypes(, null)
 
-        System.out.println(tve.extractAllVariables(o.getClass(), Error::new)[0]);
-        System.out.println(tve.extractAllVariables(o.getClass(), Error::new)[1]);
+        IO.println(tve.extractAllVariables(o.getClass(), Error::new)[0]);
+        IO.println(tve.extractAllVariables(o.getClass(), Error::new)[1]);
     }
 
     /** Check that we can have an intermediate abstract class. */
@@ -193,7 +193,7 @@ public final class TypeVariableExtractor {
                 }
 
                 for (Type tt : pt.getActualTypeArguments()) {
-                    System.out.println(tt);
+                    IO.println(tt);
                     // Ahh fuck skal lave noget ledt her ogsaa....
                 }
             } else if (t instanceof Class<?> cl) {

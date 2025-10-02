@@ -47,7 +47,7 @@ public final class DaemonRuntimeManager {
     // The actually bean must be started before we can start scheduling
     @OnStart
     public void onStart() {
-        System.out.println("On Start");
+        IO.println("On Start");
 
         for (DaemonRuntimeOperationConfiguration d : daemons) {
             // Okay need to keep track of these
@@ -57,6 +57,6 @@ public final class DaemonRuntimeManager {
 
     @OnStart
     public void onStop() {
-        System.out.println("Bye");
+        IO.println("Bye");
     }
 }
