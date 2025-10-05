@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanSourceKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
@@ -30,7 +30,7 @@ import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.LazyNamer;
-import internal.app.packed.util.handlers.OperationHandlers;
+import internal.app.packed.util.accesshelper.OperationAccessHandler;
 
 /** This class manages all operations declared by a bean. */
 public final class BeanOperationStore implements Iterable<OperationSetup> {
@@ -79,18 +79,18 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
         if (handle.lifecycleKind == InternalBeanLifecycleKind.FACTORY) {
             OperationSetup os = OperationSetup.crack(handle);
             BeanSetup bean = os.bean;
-            if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
+            if (bean.beanKind == BeanLifetime.SINGLETON /*|| bean.beanKind == BeanLifetime.LAZY*/) {
                 assert (bean.bean.beanSourceKind != BeanSourceKind.INSTANCE);
 //                handle.setMethodHandle(handle.methodHandle());
 
                 // Problemet er hvor vi laver vi bedst adaption af method Handle???
 
                 bean.container.application.addCodegenAction(() -> {
-                    handle.setMethodHandle(OperationHandlers.invokeOperationHandleNewMethodHandle(handle));
+                    handle.setMethodHandle(OperationAccessHandler.instance().invokeOperationHandleNewMethodHandle(handle));
                 });
             }
         } else {
-            handle.setMethodHandle(handle.invokerAsMethodHandle());
+            handle.setMethodHandle(handle.invoker().asMethodHandle());
         }
         return handle;
     }

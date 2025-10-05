@@ -35,8 +35,8 @@ import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.CircularServiceDependencyChecker;
-import internal.app.packed.util.handlers.AssemblyHandlers;
-import internal.app.packed.util.handlers.NamespaceHandlers;
+import internal.app.packed.util.accesshelper.AssemblyAccessHandler;
+import internal.app.packed.util.accesshelper.NamespaceAccessHandler;
 
 /** The internal configuration of an assembly. */
 public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implements BuildLocalSource {
@@ -134,7 +134,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
     public AssemblyMirror mirror() {
         AssemblyMirror m = mirror;
         if (m == null) {
-            m = mirror = AssemblyHandlers.newAssemblyMirror(this);
+            m = mirror = AssemblyAccessHandler.instance().newAssemblyMirror(this);
         }
         return m;
     }
@@ -161,7 +161,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
 
                 for (NamespaceSetup nss = e.tree.namespacesToClose.pollLast(); nss != null; nss = e.tree.namespacesToClose.pollLast()) {
                     if (nss.root == e) {
-                        NamespaceHandlers.invokeNamespaceOnNamespaceClose(nss.handle());
+                        NamespaceAccessHandler.instance().invokeNamespaceOnNamespaceClose(nss.handle());
                     }
                 }
 

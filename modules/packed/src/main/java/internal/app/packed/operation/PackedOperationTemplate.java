@@ -35,7 +35,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     // Where it doesn't really make sense to talk about the position
     public final List<Class<?>> args;
 
-    /** Of the operation takes a bean instance. What type of instance does it take */
+    /** If the operation takes a bean instance. What type of instance does it take */
     @Nullable
     public final Class<?> beanClass;
 

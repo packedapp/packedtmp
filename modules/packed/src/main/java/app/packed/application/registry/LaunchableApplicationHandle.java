@@ -17,8 +17,7 @@ package app.packed.application.registry;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanKind;
-import app.packed.bean.BeanTemplate;
+import app.packed.bean.BeanLifetime;
 import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.bean.PackedBeanTemplate;
 
@@ -26,7 +25,7 @@ import internal.app.packed.bean.PackedBeanTemplate;
 final class LaunchableApplicationHandle<T> extends BeanHandle<ProvidableBeanConfiguration<T>> {
 
     @SuppressWarnings("unused")
-    private static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = (PackedBeanTemplate) BeanTemplate.of(BeanKind.CONTAINER);
+    private static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = PackedBeanTemplate.builder(BeanLifetime.SINGLETON).build();
 
     /**
      * @param installer

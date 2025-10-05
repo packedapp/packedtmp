@@ -25,9 +25,9 @@ import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
 import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
 import internal.app.packed.util.PackedTreeView;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
@@ -57,7 +57,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
     };
 
     /** The container we are mirroring. */
-    private final ContainerHandle<?> handle;
+    final ContainerHandle<?> handle;
 
     /**
      * Create a new container mirror.

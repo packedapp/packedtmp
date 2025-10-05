@@ -30,6 +30,7 @@ import internal.app.packed.ValueBased;
 final class PackedApp implements App {
 
     /** The bootstrap app for this application. */
+    // Hmm, read of constructor, think we need module expose to packed, should probably be in the docs somewhere
     public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.ofManaged(PackedApp.class));
 
     /** Manages the lifecycle of the app. */
@@ -106,11 +107,28 @@ final class PackedApp implements App {
         public String name() {
             return image.name();
         }
+    }
+
+    /** Implementation of {@link app.packed.application.App.Image}. */
+    record AppLauncher(BootstrapApp.Launcher<PackedApp> launcher) implements App.Launcher {
 
         /** {@inheritDoc} */
         @Override
-        public <T> ApplicationLauncher provide(Key<? super T> key, T value) {
-            return image.provide(key, value);
+        public <T> AppLauncher provide(Key<? super T> key, T value) {
+            return this;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public void run() {
+            launcher.launch(RunState.TERMINATED);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public App start() {
+            return launcher.launch(RunState.RUNNING);
+        }
+
     }
 }

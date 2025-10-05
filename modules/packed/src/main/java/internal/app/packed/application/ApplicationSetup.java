@@ -42,7 +42,7 @@ import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
-import internal.app.packed.util.handlers.ApplicationHandlers;
+import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
 
 /** The internal configuration of an application. */
 public final class ApplicationSetup implements BuildLocalSource, ComponentSetup {
@@ -209,15 +209,15 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     }
 
     public static ApplicationSetup crack(ApplicationConfiguration configuration) {
-        return crack(ApplicationHandlers.getApplicationConfigurationHandle(configuration));
+        return crack(ApplicationAccessHandler.instance().getApplicationConfigurationHandle(configuration));
     }
 
     public static ApplicationSetup crack(ApplicationHandle<?, ?> handle) {
-        return ApplicationHandlers.getApplicationHandleApplication(handle);
+        return ApplicationAccessHandler.instance().getApplicationHandleApplication(handle);
     }
 
     public static ApplicationSetup crack(ApplicationMirror mirror) {
-        return crack(ApplicationHandlers.getApplicationMirrorHandle(mirror));
+        return crack(ApplicationAccessHandler.instance().getApplicationMirrorHandle(mirror));
     }
 
     /**

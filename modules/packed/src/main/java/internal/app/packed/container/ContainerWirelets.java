@@ -17,7 +17,6 @@ package internal.app.packed.container;
 
 import app.packed.container.Wirelet;
 import internal.app.packed.container.wirelets.InternalBaseWirelet;
-import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /**
  *
@@ -42,14 +41,14 @@ public class ContainerWirelets {
         public ContainerOverrideNameWirelet(String name) {
             this.name = NameCheck.checkComponentName(name); // throws IAE
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public void onImageLaunch(ContainerSetup c, ApplicationLaunchContext ic) {
-            // Don't know if we have the context of runnable names
-            throw new UnsupportedOperationException();
-            // ic.name = name;
-        }
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        public void onImageLaunch(ContainerSetup c, ApplicationLaunchContext ic) {
+//            // Don't know if we have the context of runnable names
+//            throw new UnsupportedOperationException();
+//            // ic.name = name;
+//        }
 
         /** {@inheritDoc} */
         @Override

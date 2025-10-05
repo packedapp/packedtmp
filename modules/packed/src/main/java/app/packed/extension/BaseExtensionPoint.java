@@ -10,7 +10,7 @@ import app.packed.bean.Bean;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTemplate;
 import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.component.guest.OldContainerTemplateLink;
@@ -123,7 +123,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        return newBean(BeanKind.STATIC.template(), handle()).install(Bean.of(beanClass), BeanHandle::new).configuration();
+        return newBean(BeanLifetime.STATIC.template(), handle()).install(Bean.of(beanClass), BeanHandle::new).configuration();
     }
 
     /**

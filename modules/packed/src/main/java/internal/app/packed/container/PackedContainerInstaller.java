@@ -37,7 +37,7 @@ import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.container.wirelets.CompositeWirelet;
 import internal.app.packed.container.wirelets.InternalBaseWirelet;
-import internal.app.packed.util.handlers.AssemblyHandlers;
+import internal.app.packed.util.accesshelper.AssemblyAccessHandler;
 
 /** Implementation of {@link ContainerTemplate.Installer} */
 public final class PackedContainerInstaller<H extends ContainerHandle<?>> extends AbstractComponentInstaller<ContainerSetup, PackedContainerInstaller<H>>
@@ -135,7 +135,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
      */
     public ContainerSetup invokeAssemblyBuild(Assembly assembly) {
         requireNonNull(assembly, "assembly is null");
-        AssemblySetup s = AssemblyHandlers.invokeAssemblyBuild(assembly, applicationInstaller, this);
+        AssemblySetup s = AssemblyAccessHandler.instance().invokeAssemblyBuild(assembly, applicationInstaller, this);
         return s.container;
     }
 

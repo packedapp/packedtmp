@@ -14,7 +14,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHook;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
@@ -55,7 +55,8 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
 import internal.app.packed.service.util.ServiceMap;
-import internal.app.packed.util.handlers.BeanHandlers;
+import internal.app.packed.util.accesshelper.BeanAccessHandler;
+import internal.app.packed.util.accesshelper.BeanScanningAccessHandler;
 
 /** The internal configuration of a bean. */
 public final class BeanSetup implements ContextualizedComponentSetup, BuildLocalSource, ComponentSetup {
@@ -63,7 +64,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     public final HashMap<PackedBeanAttachmentKey, PackedAttachmentOperationHandle> attachments = new HashMap<>();
 
     /** The kind of bean. */
-    public final BeanKind beanKind;
+    public final BeanLifetime beanKind;
 
     /** The lifecycle kind of the bean. */
     public final BeanLifecycleModel beanLifecycleKind = BeanLifecycleModel.UNMANAGED_LIFECYCLE;
@@ -121,7 +122,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         this.owner = requireNonNull(installer.owner);
 
         ContainerLifetimeSetup containerLifetime = container.lifetime;
-        if (beanKind == BeanKind.CONTAINER) {
+        if (beanKind == BeanLifetime.SINGLETON) {
             this.lifetime = containerLifetime;
             this.lifetimeStoreIndex = container.lifetime.addBean(this);
         } else {
@@ -155,9 +156,9 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     public BindingAccessor beanInstanceBindingProvider() {
         if (bean.beanSourceKind == BeanSourceKind.INSTANCE) {
             return new FromConstant(bean.beanSource.getClass(), bean.beanSource);
-        } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
+        } else if (beanKind == BeanLifetime.SINGLETON) { // we've already checked if instance
             return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, bean.beanClass);
-        } else if (beanKind == BeanKind.UNMANAGED) {
+        } else if (beanKind == BeanLifetime.UNMANAGED) {
             return new FromOperationResult(operations.first());
         }
         throw new Error();
@@ -272,19 +273,19 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
      * @return the bean setup
      */
     public static BeanSetup crack(BeanConfiguration configuration) {
-        return crack(BeanHandlers.getBeanConfigurationHandle(configuration));
+        return crack(BeanAccessHandler.instance().getBeanConfigurationHandle(configuration));
     }
 
     public static BeanSetup crack(BeanHandle<?> handle) {
-        return BeanHandlers.getBeanHandleBean(handle);
+        return BeanAccessHandler.instance().getBeanHandleBean(handle);
     }
 
     public static BeanSetup crack(BeanIntrospector<?> introspector) {
-        return BeanHandlers.invokeBeanIntrospectorBean(introspector);
+        return BeanScanningAccessHandler.instance().invokeBeanIntrospectorBean(introspector);
     }
 
     public static BeanSetup crack(BeanMirror mirror) {
-        return crack(BeanHandlers.getBeanMirrorHandle(mirror));
+        return crack(BeanAccessHandler.instance().getBeanMirrorHandle(mirror));
     }
 
     /**

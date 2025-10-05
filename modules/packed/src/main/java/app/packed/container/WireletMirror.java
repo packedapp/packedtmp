@@ -31,10 +31,11 @@ import app.packed.extension.Extension;
 // Maybe better something a.la. visitor.
 public interface WireletMirror extends Mirror {
 
-    // If this extension an extension wirelet. The extension the wirelet is a part of
+    /** {@return the extension that defines the wirelet, or empty if defined by the framework} */
     Optional<Class<? extends Extension<?>>> extension();
 
     /** {@return any wirelet that was specified immediately after this wirelet} */
+    // Nah just a list I think...
     Optional<WireletMirror> next();
 
     /** {@return any wirelet that was specified immediately before this wirelet} */

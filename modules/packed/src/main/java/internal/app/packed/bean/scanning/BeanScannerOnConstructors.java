@@ -20,7 +20,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.Inject;
 import app.packed.operation.OperationType;
@@ -184,7 +184,7 @@ final record BeanScannerOnConstructors(Constructor<?> constructor, OperationType
     /** Find a constructor on the bean and create an operation for it. */
     static void findConstructor(BeanScanner scanner, Class<?> beanClass) {
         // If a we have a (instantiating) class source, we need to find a constructor we can use
-        if (scanner.bean.bean.beanSourceKind == BeanSourceKind.CLASS && scanner.bean.beanKind != BeanKind.STATIC) {
+        if (scanner.bean.bean.beanSourceKind == BeanSourceKind.CLASS && scanner.bean.beanKind != BeanLifetime.STATIC) {
 
             BeanScannerOnConstructors constructor = BeanScannerOnConstructors.CACHE.get(beanClass);
 

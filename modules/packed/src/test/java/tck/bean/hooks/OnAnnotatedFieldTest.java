@@ -45,7 +45,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
         hooks().onAnnotatedField((_, b) -> {
 
             OperationHandle<?> h = b.newGetOperation(T).install(OperationHandle::new);
-            assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invokerType());
+            assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invoker().type());
             assertSame(HookTestingExtension.class, h.installedByExtension());
 
             if (h.target() instanceof OperationTarget.OfField f) {

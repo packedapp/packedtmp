@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 import app.packed.binding.Variable;
 import app.packed.util.Nullable;
-import internal.app.packed.binding.InternalDependency;
+import internal.app.packed.binding.PackedDependency;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.SamType;
 import internal.app.packed.operation.TerminalOp.FunctionInvocationOp;
@@ -144,14 +144,14 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
     private static class Top {
         final Base base;
         @SuppressWarnings("unused")
-        final List<InternalDependency> deps;
+        final List<PackedDependency> deps;
 
         final OperationType ot;
 
         Top(Base base, OperationType ot) {
             this.base = base;
             this.ot = ot;
-            this.deps = InternalDependency.fromOperationType(ot);
+            this.deps = PackedDependency.fromOperationType(ot);
 
         }
 

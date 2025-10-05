@@ -35,7 +35,7 @@ import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.util.ServiceMap;
 import internal.app.packed.util.StringFormatter;
-import internal.app.packed.util.handlers.ServiceHandlers;
+import internal.app.packed.util.accesshelper.ServiceAccessHandler;
 
 /**
  *
@@ -59,13 +59,13 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
     /** {@inheritDoc} */
     @Override
     protected final ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e, ComponentRealm actor) {
-        return ServiceHandlers.newServiceNamespaceConfiguration(this, e);
+        return ServiceAccessHandler.instance().newServiceNamespaceConfiguration(this, e);
     }
 
     /** {@inheritDoc} */
     @Override
     protected final ServiceNamespaceMirror newNamespaceMirror() {
-        return ServiceHandlers.newServiceNamespaceMirror(this);
+        return ServiceAccessHandler.instance().newServiceNamespaceMirror(this);
     }
 
     /**

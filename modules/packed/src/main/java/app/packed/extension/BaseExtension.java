@@ -9,7 +9,7 @@ import app.packed.bean.Bean;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTemplate;
 import app.packed.bean.scanning.BeanSynthesizer;
 import app.packed.binding.Key;
@@ -67,7 +67,9 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // But right now we only have a single field
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
 
-    static final BeanTemplate TEMPLATE = BeanKind.CONTAINER.template().withInitialization(OperationTemplate.defaults().withReturnTypeDynamic());
+    static final BeanTemplate TEMPLATE = BeanTemplate.builder(BeanLifetime.SINGLETON)
+            .initialization(OperationTemplate.defaults().withReturnTypeDynamic())
+            .build();
 
     /**
      * All your base are belong to us.
@@ -172,21 +174,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         return install(Bean.ofInstance(instance));
     }
 
-    public <T> ProvidableBeanConfiguration<T> installLazy(Bean<T> bean) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(BeanKind.LAZY.template()).install(bean, ProvidableBeanHandle::new);
-        return h.configuration();
-    }
-
-    public <T> ProvidableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        return installLazy(Bean.of(implementation));
-    }
-
-    public <T> ProvidableBeanConfiguration<T> installLazy(Op<T> op) {
-        return installLazy(Bean.of(op));
-    }
-
     public <T> ProvidableBeanConfiguration<T> installPrototype(Bean<T> bean) {
-        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(BeanKind.UNMANAGED.template()).install(bean, ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(BeanLifetime.UNMANAGED.template()).install(bean, ProvidableBeanHandle::new);
         return handle.configuration();
     }
 

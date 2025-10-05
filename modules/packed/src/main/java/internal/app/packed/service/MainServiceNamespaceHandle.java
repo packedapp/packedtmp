@@ -39,7 +39,7 @@ import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.util.PackedServiceLocator;
 import internal.app.packed.service.util.ServiceMap;
-import internal.app.packed.util.handlers.OperationHandlers;
+import internal.app.packed.util.accesshelper.OperationAccessHandler;
 
 /** Manages services in a single container. */
 public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
@@ -106,7 +106,7 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
             } else if (accessor >= 0) {
                 mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
             } else {
-                mh = OperationHandlers.invokeOperationHandleNewMethodHandle(o.handle());
+                mh = OperationAccessHandler.instance().invokeOperationHandleNewMethodHandle(o.handle());
             }
             mh = mh.asType(mh.type().changeReturnType(Object.class));
             assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionContext.class)));

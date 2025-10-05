@@ -75,7 +75,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
             OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
 
             InstanceBeanConfiguration<SchedulingBean> bean = extension().lifetimeRoot().base().installIfAbsent(SchedulingBean.class, handle -> {
-                handle.bindServiceInstance(MethodHandle.class, operation.invokerAsMethodHandle());
+                handle.bindServiceInstance(MethodHandle.class, operation.invoker().asMethodHandle());
             });
             // bean, add scheduling +
             // Manytons dur ikke direkte

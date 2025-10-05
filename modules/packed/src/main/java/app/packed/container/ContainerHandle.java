@@ -25,6 +25,8 @@ import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.ContainerAccessHandler;
 import sandbox.extension.context.ContextSpanKind;
 
 /**
@@ -44,7 +46,6 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
 
     /** The lazy generated container mirror. */
     private ContainerMirror mirror;
-
 
     /**
      * Creates a new container handle.
@@ -181,6 +182,31 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     public String toString() {
         // Should ComponentPath
         return "Container: " + container.name();
+    }
+
+    static {
+        AccessHelper.initHandler(ContainerAccessHandler.class, new ContainerAccessHandler() {
+
+            @Override
+            public ContainerHandle<?> getContainerConfigurationHandle(ContainerConfiguration configuration) {
+                return configuration.handle;
+            }
+
+            @Override
+            public ContainerSetup getContainerHandleContainer(ContainerHandle<?> handle) {
+                return handle.container;
+            }
+
+            @Override
+            public ContainerHandle<?> getContainerMirrorHandle(ContainerMirror mirror) {
+                return mirror.handle;
+            }
+
+            @Override
+            public void invokeContainerHandleDoClose(ContainerHandle<?> handle) {
+                handle.doClose();
+            }
+        });
     }
 }
 

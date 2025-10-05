@@ -71,7 +71,7 @@ public abstract class AbstractComposer {
         AssemblyConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
-        } else if (c == Assembly.USED) {
+        } else if (c == AssemblyConfiguration.USED) {
             throw new IllegalStateException("Cannot call this method outside of ComposerAction::build(Composer)");
         }
         return c.assembly.container.configuration();
@@ -153,11 +153,11 @@ public abstract class AbstractComposer {
                     a.model.postBuild(existing);
                 } finally {
                     // Sets #configuration to a marker object that indicates the assembly has been used
-                    composer.configuration = Assembly.USED;
+                    composer.configuration = AssemblyConfiguration.USED;
                 }
                 a.postBuild();
                 return a;
-            } else if (existing == Assembly.USED) {
+            } else if (existing == AssemblyConfiguration.USED) {
                 // Assembly has already been used (successfully or unsuccessfully)
                 throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
             } else {

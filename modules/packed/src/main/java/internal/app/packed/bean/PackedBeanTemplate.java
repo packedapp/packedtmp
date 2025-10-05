@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal;
-import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationTemplate;
@@ -32,49 +32,11 @@ import internal.app.packed.operation.PackedOperationTemplate;
 import sandbox.application.LifetimeTemplate;
 
 /** Implementation of {@link BeanTemplate}. */
-public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @Nullable Class<?> createAs, Map<PackedBeanBuildLocal<?>, Object> locals,
+public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetime, @Nullable Class<?> createAs, Map<PackedBeanBuildLocal<?>, Object> locals,
         @Nullable PackedOperationTemplate initializationTemplate) implements BeanTemplate {
 
-    public PackedBeanTemplate(BeanKind kind) {
-        this(kind, LifetimeTemplate.APPLICATION, null, Map.of(), (PackedOperationTemplate) OperationTemplate.defaults());
-    }
-
-    public PackedBeanTemplate withBeanClass(Class<?> beanClass) {
-        return new PackedBeanTemplate(this.beanKind, this.lifetime, beanClass, this.locals, this.initializationTemplate);
-    }
-
-    public PackedBeanTemplate withLifetimeTemplate(LifetimeTemplate lifetime) {
-        return new PackedBeanTemplate(this.beanKind, lifetime, this.createAs, this.locals, this.initializationTemplate);
-    }
-
-    /**
-     * @param initialization
-     * @return
-     */
-    public PackedBeanTemplate witInitialization(Function<OperationTemplate, OperationTemplate> configure) {
-        PackedOperationTemplate ot = (PackedOperationTemplate) configure.apply(initializationTemplate);
-
-        // We need to filter on some valid bean types I think
-        // if (template.createAs.isPrimitive() || BeanSetup.ILLEGAL_BEAN_CLASSES.contains(template.createAs)) {
-//      throw new IllegalArgumentException(template.createAs + " is not valid argument");
-//  }
-
-        return new PackedBeanTemplate(this.beanKind, this.lifetime, this.createAs, this.locals, ot);
-    }
-
-    /**
-     * @param initialization
-     * @return
-     */
-    public PackedBeanTemplate witInitialization(OperationTemplate ot) {
-        return new PackedBeanTemplate(this.beanKind, this.lifetime, this.createAs, this.locals, (PackedOperationTemplate) ot);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> PackedBeanTemplate withLocal(BeanLocal<T> beanLocal, T value) {
-        return new PackedBeanTemplate(this.beanKind, this.lifetime, this.createAs,
-                PackedBuildLocal.initMap(this.locals, (PackedBeanBuildLocal<?>) beanLocal, value), this.initializationTemplate);
+    public static PackedBuilder builder(BeanLifetime kind) {
+        return new PackedBuilder(kind);
     }
 
     /**
@@ -92,18 +54,6 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
 
     /** {@inheritDoc} */
     @Override
-    public PackedBeanTemplate withInitialization(OperationTemplate initialization) {
-        return witInitialization(initialization);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedBeanTemplate withLifetime(LifetimeTemplate lifetime) {
-        return withLifetimeTemplate(lifetime);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Optional<OperationTemplate> initializationX() {
         return Optional.ofNullable(initializationTemplate);
     }
@@ -116,7 +66,54 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Class<?>> createAsX() {
+    public Optional<Class<?>> createAsSpecificClass() {
         return Optional.ofNullable(createAs);
+    }
+
+    public static final class PackedBuilder implements BeanTemplate.Builder {
+        private final BeanLifetime beanKind;
+        private LifetimeTemplate lifetime = LifetimeTemplate.APPLICATION;
+        private Class<?> createAs = null;
+        private Map<PackedBeanBuildLocal<?>, Object> locals = Map.of();
+        private PackedOperationTemplate initializationTemplate = (PackedOperationTemplate) OperationTemplate.defaults();
+
+        PackedBuilder(BeanLifetime beanKind) {
+            this.beanKind = beanKind;
+        }
+
+        @Override
+        public PackedBuilder beanClass(Class<?> beanClass) {
+            this.createAs = beanClass;
+            return this;
+        }
+
+        @Override
+        public PackedBuilder lifetime(LifetimeTemplate lifetime) {
+            this.lifetime = lifetime;
+            return this;
+        }
+
+        @Override
+        public PackedBuilder initialization(OperationTemplate initialization) {
+            this.initializationTemplate = (PackedOperationTemplate) initialization;
+            return this;
+        }
+
+        @Override
+        public PackedBuilder initialization(Function<OperationTemplate, OperationTemplate> configure) {
+            this.initializationTemplate = (PackedOperationTemplate) configure.apply(this.initializationTemplate);
+            return this;
+        }
+
+        @Override
+        public <T> PackedBuilder setLocal(BeanLocal<T> beanLocal, T value) {
+            this.locals = PackedBuildLocal.initMap(this.locals, (PackedBeanBuildLocal<?>) beanLocal, value);
+            return this;
+        }
+
+        @Override
+        public PackedBeanTemplate build() {
+            return new PackedBeanTemplate(beanKind, lifetime, createAs, locals, initializationTemplate);
+        }
     }
 }

@@ -54,6 +54,7 @@ import internal.app.packed.build.PackedBuildLocal;
 // Namespace same
 // The others are maybe okay.
 // Probably ContainerLocal mostly for communication
+// Alternative BuildLocal.OfApplication
 public sealed interface BuildLocal<A, T> permits PackedBuildLocal, ApplicationBuildLocal, ContainerBuildLocal, BeanLocal {
 
     /**

@@ -36,6 +36,8 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.util.MethodHandleUtil;
 import internal.app.packed.util.MethodHandleUtil.LazyResolable;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.OperationAccessHandler;
 
 /**
  * A container handle is a build-time reference to an installed container. They are created by the framework when an
@@ -100,17 +102,17 @@ import internal.app.packed.util.MethodHandleUtil.LazyResolable;
 //Embedded
 // interceptor().add(...);
 // interceptor().peek(e->IO.println(e));
-public non-sealed class OperationHandle<C extends OperationConfiguration> extends ComponentHandle implements InvokerFactory {
+public non-sealed class OperationHandle<C extends OperationConfiguration> extends ComponentHandle {
 
     /** The lazy generated operation configuration. */
     private C configuration;
 
     /** The generated method handle. */
     @Nullable
-    private MethodHandle generatedMethodHandle;
+    MethodHandle generatedMethodHandle;
 
     @Nullable
-    private LazyResolable lmh;
+    LazyResolable lmh;
 
     /** The lazy generated operation mirror. */
     private OperationMirror mirror;
@@ -128,10 +130,6 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      */
     public OperationHandle(OperationInstaller installer) {
         this.operation = ((PackedOperationInstaller) installer).toSetup();
-    }
-
-    protected MethodHandle adaptMethodHandle(MethodHandle mh) {
-        return mh;
     }
 
     /**
@@ -232,62 +230,8 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         return operation.installedByExtension.extensionType;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final <T> T invokerAs(Class<T> handleClass, Object... constructorArguments) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final MethodHandle invokerAsMethodHandle() {
-        // If we have already created the final method handle return this
-        MethodHandle result = generatedMethodHandle;
-        if (result != null) {
-            return result;
-        }
-
-        // If we already created a lazy method handle return this
-        LazyResolable l = lmh;
-        if (l != null) {
-            return l.handle();
-        }
-
-        // Check that we are still configurable
-        checkIsOpen();
-
-        if (operation.bean.container.application.isAssembling()) {
-            // Still assembling, we need to create a lazy method handle
-            l = lmh = MethodHandleUtil.lazyF(operation.template.methodType, () -> generatedMethodHandle = newMethodHandle());
-
-            // If eager codegen .addToSomeQueue, in case we are static java£
-            result = l.handle();
-        } else {
-            // No longer assembling, lets create the method handle directly
-            result = newMethodHandle();
-            assert (result.type() == operation.template.methodType);
-        }
-        return result;
-    }
-
-    // Must be a SAM type
-
-    @Override
-    public final VarHandle invokerAsVarHandle() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@return the invocation type of this operation.}
-     * <p>
-     * Method handles generated via {@link #generateMethodHandle()} will always have the returned value as their
-     * {@link MethodHandle#type() method handle type}.
-     *
-     * @see OperationTemplate.Descriptor#invocationType()
-     */
-    @Override
-    public final MethodType invokerType() {
-        return operation.template.invocationType();
+    public final InvokerFactory invoker() {
+        return new PackedOperationInvocationFactory(this);
     }
 
     /** {@inheritDoc} */
@@ -416,6 +360,96 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** {@return the type of this operation} */
     public final OperationType type() {
         return operation.type;
+    }
+
+    static {
+        AccessHelper.initHandler(OperationAccessHandler.class, new OperationAccessHandler() {
+
+            @Override
+            public MethodHandle invokeOperationHandleNewMethodHandle(OperationHandle<?> handle) {
+                return handle.newMethodHandle();
+            }
+
+            @Override
+            public void invokeOperationHandleDoClose(OperationHandle<?> handle, boolean isClose) {
+                handle.onStateChange(isClose);
+            }
+
+            @Override
+            public OperationSetup getOperationHandleOperation(OperationHandle<?> handle) {
+                return handle.operation;
+            }
+        });
+    }
+
+    /**
+     * Implementation of InvokerFactory that delegates to an OperationHandle. This class separates the invocation factory
+     * concerns from OperationHandle.
+     */
+    private static final class PackedOperationInvocationFactory implements InvokerFactory {
+
+        /** The operation handle that this factory wraps. */
+        private final OperationHandle<?> handle;
+
+        /**
+         * Creates a new invocation factory for the specified operation handle.
+         *
+         * @param handle
+         *            the operation handle to wrap
+         */
+        PackedOperationInvocationFactory(OperationHandle<?> handle) {
+            this.handle = handle;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T> T as(Class<T> handleClass, Object... constructorArguments) {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle asMethodHandle() {
+            // If we have already created the final method handle return this
+            MethodHandle result = handle.generatedMethodHandle;
+            if (result != null) {
+                return result;
+            }
+
+            // If we already created a lazy method handle return this
+            LazyResolable l = handle.lmh;
+            if (l != null) {
+                return l.handle();
+            }
+
+            // Check that we are still configurable
+            handle.checkIsOpen();
+
+            if (handle.operation.bean.container.application.isAssembling()) {
+                // Still assembling, we need to create a lazy method handle
+                l = handle.lmh = MethodHandleUtil.lazyF(handle.operation.template.methodType, () -> handle.generatedMethodHandle = handle.newMethodHandle());
+
+                // If eager codegen .addToSomeQueue, in case we are static java£
+                result = l.handle();
+            } else {
+                // No longer assembling, lets create the method handle directly
+                result = handle.newMethodHandle();
+                assert (result.type() == handle.operation.template.methodType);
+            }
+            return result;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public VarHandle asVarHandle() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodType type() {
+            return handle.operation.template.invocationType();
+        }
     }
 }
 

@@ -33,6 +33,12 @@ import internal.app.packed.util.PackedTreeView;
  */
 public final class AssemblyConfiguration {
 
+    /**
+     * A marker configuration object indicating that an assembly (or composer) has already been used in a build process.
+     * Should never be exposed to end-users.
+     */
+    static final AssemblyConfiguration USED = new AssemblyConfiguration(null);
+
     /** The internal configuration of the assembly. */
     final AssemblySetup assembly;
 

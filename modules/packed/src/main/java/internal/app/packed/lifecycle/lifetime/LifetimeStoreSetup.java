@@ -17,7 +17,7 @@ package internal.app.packed.lifecycle.lifetime;
 
 import java.util.ArrayList;
 
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanSourceKind;
 import app.packed.extension.ExtensionContext;
 import internal.app.packed.bean.BeanSetup;
@@ -36,7 +36,7 @@ final class LifetimeStoreSetup {
     }
 
     public int addBean(BeanSetup bean) {
-        if (bean.beanKind == BeanKind.CONTAINER && bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+        if (bean.beanKind == BeanLifetime.SINGLETON && bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             entries.add(bean);
             return entries.size() - 1;
         }

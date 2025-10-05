@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.DependantOrder;
+import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.OnStart;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.operation.OperationConfiguration;
@@ -35,7 +35,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnMethod;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.util.handlers.BeanLifecycleHandlers;
+import internal.app.packed.util.accesshelper.BeanLifecycleAccessHandler;
 
 /** A handle for the a lifecycle operation on bean. */
 public abstract sealed class BeanLifecycleOperationHandle extends OperationHandle<OperationConfiguration> implements Comparable<BeanLifecycleOperationHandle> {
@@ -98,12 +98,12 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
 
         @Override
         protected OperationConfiguration newOperationConfiguration() {
-            return BeanLifecycleHandlers.newInitializeOperationConfiguration(this);
+            return BeanLifecycleAccessHandler.instance().newInitializeOperationConfiguration(this);
         }
 
         @Override
         protected OperationMirror newOperationMirror() {
-            return BeanLifecycleHandlers.newInitializeOperationMirror(this);
+            return BeanLifecycleAccessHandler.instance().newInitializeOperationMirror(this);
         }
 
         @Override
@@ -111,7 +111,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
             if (lifecycleKind == InternalBeanLifecycleKind.FACTORY) {
                 OperationSetup os = OperationSetup.crack(this);
                 BeanSetup bean = os.bean;
-                if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
+                if (bean.beanKind == BeanLifetime.SINGLETON/* || bean.beanKind == BeanLifetime.LAZY */) {
                     assert (bean.bean.beanSourceKind != BeanSourceKind.INSTANCE);
                     MethodHandle mha = super.newMethodHandle();
 
@@ -149,12 +149,12 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
 
         @Override
         protected OperationConfiguration newOperationConfiguration() {
-            return BeanLifecycleHandlers.newStartOperationConfiguration(this);
+            return BeanLifecycleAccessHandler.instance().newStartOperationConfiguration(this);
         }
 
         @Override
         protected OperationMirror newOperationMirror() {
-            return BeanLifecycleHandlers.newStartOperationMirror(this);
+            return BeanLifecycleAccessHandler.instance().newStartOperationMirror(this);
         }
     }
 
@@ -173,12 +173,12 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
 
         @Override
         protected OperationConfiguration newOperationConfiguration() {
-            return BeanLifecycleHandlers.newStopOperationConfiguration(this);
+            return BeanLifecycleAccessHandler.instance().newStopOperationConfiguration(this);
         }
 
         @Override
         protected OperationMirror newOperationMirror() {
-            return BeanLifecycleHandlers.newStopOperationMirror(this);
+            return BeanLifecycleAccessHandler.instance().newStopOperationMirror(this);
         }
     }
 }

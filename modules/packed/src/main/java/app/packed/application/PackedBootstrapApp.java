@@ -39,7 +39,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     /** An application template that is used for the bootstrap app. */
     // TODO we need to restrict the extensions that can be used to BaseExtension
     // If the guest been uses hooks from various extensions
-    private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE2 = (PackedApplicationTemplate<?>) ApplicationTemplate
+    private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE = (PackedApplicationTemplate<?>) ApplicationTemplate
             .ofManaged(PackedBootstrapApp.class).withComponentTags("bootstrap");
 
     /** The application launcher. */
@@ -126,7 +126,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         BootstrapAppAssembly assembly = new BootstrapAppAssembly(template);
 
         // Creates a new application installer and installs the specified assembly and build the final bootstrap application
-        BOOTSTRAP_APP_TEMPLATE2.newInstaller(null, BuildGoal.LAUNCH, null).install(assembly);
+        BOOTSTRAP_APP_TEMPLATE.newInstaller(null, BuildGoal.LAUNCH, null).install(assembly);
 
         // Returned the bootstrap implementation (represented by a construcing method handle) wrapped in this class.
         return new PackedBootstrapApp<A, H>(template, assembly.mh);

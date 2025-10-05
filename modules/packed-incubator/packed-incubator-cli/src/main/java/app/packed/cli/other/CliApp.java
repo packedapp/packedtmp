@@ -43,6 +43,7 @@ public interface CliApp extends ApplicationInterface {
 
     static void run(Assembly assembly, String[] args, Wirelet... wirelets) {
         // Maybe checked run...
+       // App.launcherOf(assembly, wirelets).args(args).
         App.run(assembly, Wirelets.argList(args).andThen(wirelets));
     }
 }

@@ -15,7 +15,7 @@ import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
-import internal.app.packed.util.handlers.ExtensionHandlers;
+import internal.app.packed.util.accesshelper.ExtensionAccessHandler;
 
 /**
  * Internal configuration of an extension.
@@ -75,7 +75,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     }
 
     public void closeApplication() {
-        ExtensionHandlers.invokeExtensionOnAssemblyClose(instance);
+        ExtensionAccessHandler.instance().invokeExtensionOnAssemblyClose(instance);
         tree.isConfigurable = false;
         closeApplication0();
     }
@@ -138,7 +138,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     /** Call {@link Extension#onAssemblyClose()}. */
     public void invokeExtensionOnAssemblyClose() {
         container.onAssemblyClose(this);
-        ExtensionHandlers.invokeExtensionOnAssemblyClose(instance);
+        ExtensionAccessHandler.instance().invokeExtensionOnAssemblyClose(instance);
     }
 
     /** {@inheritDoc} */
@@ -154,7 +154,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     }
 
     public ExtensionMirror<?> newExtensionMirror(Class<? extends ExtensionMirror<?>> mirrorClass) {
-        ExtensionMirror<?> mirror = ExtensionHandlers.invokeExtensionNewExtensionMirror(instance());
+        ExtensionMirror<?> mirror = ExtensionAccessHandler.instance().invokeExtensionNewExtensionMirror(instance());
         if (mirror == null) {
             throw new InternalExtensionException("Extension " + model.fullName() + " returned null from " + model.name() + ".newExtensionMirror()");
         }
@@ -187,12 +187,12 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
 
     public static ExtensionSetup crack(Extension<?> extension) {
         requireNonNull(extension, "extension is null");
-        return ExtensionHandlers.getExtensionHandle(extension);
+        return ExtensionAccessHandler.instance().getExtensionHandle(extension);
     }
 
     public static PackedExtensionPointHandle crack(ExtensionPoint<?> extensionPoint) {
         requireNonNull(extensionPoint, "extensionPoint is null");
-        return ExtensionHandlers.getExtensionPointPackedExtensionUseSite(extensionPoint);
+        return ExtensionAccessHandler.instance().getExtensionPointPackedExtensionUseSite(extensionPoint);
     }
 
     /**
@@ -226,7 +226,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         }
 
         // Invoke Extension#onNew() before returning the extension
-        ExtensionHandlers.invokeExtensionOnNew(instance);
+        ExtensionAccessHandler.instance().invokeExtensionOnNew(instance);
         return extension;
     }
 }

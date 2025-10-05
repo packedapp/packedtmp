@@ -19,7 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.build.BuildException;
@@ -51,7 +51,7 @@ public final class ServiceBeanIntrospector extends InternalBeanIntrospector<Base
         }
 
         if (!Modifier.isStatic(onField.modifiers())) {
-            if (beanKind() != BeanKind.CONTAINER) {
+            if (beanKind() != BeanLifetime.SINGLETON) {
                 throw new BuildException("Not okay)");
             }
         }
@@ -73,7 +73,7 @@ public final class ServiceBeanIntrospector extends InternalBeanIntrospector<Base
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
         if (annotation instanceof Provide) {
             if (!Modifier.isStatic(method.modifiers())) {
-                if (beanKind() != BeanKind.CONTAINER) {
+                if (beanKind() != BeanLifetime.SINGLETON) {
                     throw new BeanInstallationException("Not okay)");
                 }
             }
@@ -85,7 +85,7 @@ public final class ServiceBeanIntrospector extends InternalBeanIntrospector<Base
             bean().serviceNamespace().provideService(key, operation, new FromOperationResult(operation));
         } else if (annotation instanceof Export) {
             if (!Modifier.isStatic(method.modifiers())) {
-                if (beanKind() != BeanKind.CONTAINER) {
+                if (beanKind() != BeanLifetime.SINGLETON) {
                     throw new BeanInstallationException("Not okay)");
                 }
             }

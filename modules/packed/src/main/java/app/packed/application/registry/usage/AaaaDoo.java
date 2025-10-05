@@ -35,6 +35,7 @@ public class AaaaDoo extends BaseAssembly {
     protected void build() {
         ApplicationRegistryConfiguration<SimpleManagedApplication, GuestApplicationHandle> repo = use(ApplicationRegistryExtension.class)
                 .provideRegistry(SimpleManagedApplication.MANAGED_SUB_APPLICATION);
+
         repo.installApplication(i -> i.named("foo").install(new SubApplication()));
         install(MyBean.class);
     }

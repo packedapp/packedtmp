@@ -17,6 +17,7 @@ package app.packed.application.registry.v2;
 
 import app.packed.application.ApplicationImage;
 import app.packed.assembly.BaseAssembly;
+import app.packed.container.Wirelet;
 import app.packed.service.ServiceLocator;
 
 /**
@@ -24,12 +25,17 @@ import app.packed.service.ServiceLocator;
  */
 public class USage extends BaseAssembly {
 
+    // Hvordan fortaeller vi den hvordan den skal lave et image
+    // Baade template og Image????
+    // Reeelt set skal vi jo ikke se Handle
     void foo(ApplicationRepository<Image, ?> repo) {
         repo.image("df").initialize();
 
         repo.image("df").named("haha").initialize();
 
+        repo.install(i -> i.install(new USage()));
         repo.install(i -> i.named("blabla").install(new USage()));
+        repo.install(i -> i.install(new USage(), Wirelet.named("blabla")));
     }
 
     /** {@inheritDoc} */

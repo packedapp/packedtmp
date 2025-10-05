@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
@@ -35,7 +35,7 @@ import internal.app.packed.application.PackedApplicationTemplate.ApplicationInst
  */
 public final class BuildApplicationRepository implements ApplicationInstallingSource {
 
-    private final ArrayList<Consumer<? super ApplicationInstaller<?>>> children = new ArrayList<>();
+    private final ArrayList<Function<? super ApplicationInstaller<?>, ApplicationHandle<?, ?>>> children = new ArrayList<>();
 
     final Map<String, ApplicationHandle<?, ?>> handles = new HashMap<>();
 
@@ -51,14 +51,14 @@ public final class BuildApplicationRepository implements ApplicationInstallingSo
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <H extends ApplicationHandle<?, ?>> void add(Consumer<? super ApplicationInstaller<H>> installer) {
-        children.add((Consumer) installer);
+    public <H extends ApplicationHandle<?, ?>> void add(Function<? super ApplicationInstaller<H>, H> installer) {
+        children.add((Function) installer);
     }
 
     public void build() {
-        for (Consumer<? super ApplicationInstaller<?>> con : children) {
+        for (Function<? super ApplicationInstaller<?>, ?> con : children) {
             PackedApplicationInstaller<?> installer = template.newInstaller(this, BuildGoal.IMAGE, mh);
-            con.accept(installer);
+            con.apply(installer);
             // TODO check that install has been invoked
             handles.put(installer.name, installer.toSetup().handle());
         }

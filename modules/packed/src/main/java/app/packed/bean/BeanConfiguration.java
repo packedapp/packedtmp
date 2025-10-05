@@ -64,9 +64,14 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         throw new UnsupportedOperationException();
     }
 
-    /** {@return the bean class.} */
+    /** {@return the bean class} */
     public final Class<?> beanClass() {
         return handle.beanClass();
+    }
+
+    /** {@return the lifetime of the bean} */
+    public final BeanLifetime beanLifetime() {
+        return handle.beanKind();
     }
 
     /**
@@ -97,10 +102,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      * @see CodeGenerated
      * @see BindableVariable#bindGeneratedConstant(Supplier)
      */
-    /** {@return the kind of bean that is being configured.} */
-    public final BeanKind beanKind() {
-        return handle.beanKind();
-    }
 
     @BuildActionable("bean.addCodeGenerator")
     public <K> void bindCodeGenerator(Class<K> key, Supplier<? extends K> supplier) {
@@ -186,21 +187,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    @BuildActionable("component.addTags") // Hmm or bean.addTags
-    public BeanConfiguration tag(String... tags) {
-        checkIsConfigurable();
-        handle.componentTag(tags);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Set<String> tags() {
-        return handle.componentTags();
-    }
-
     /**
      * {@return set of contexts this bean operates within.}
      * <p>
@@ -257,8 +243,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return this;
     }
 
-    // Called if bean is renamed
-    // Returning String is currentName
     String onBeanRename(BiConsumer<String, String> oldNewName) {
         throw new UnsupportedOperationException();
     }
@@ -282,29 +266,37 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return list.get(0);
     }
 
+    // Called if bean is renamed
+    // Returning String is currentName
+    // I think call backs should be on Handle.
+    // With that being said, an extension could create a top level bean configuration
+    // With a overriable method. Would never share the handle.
+    // But the
+
+
     // Named instead //operation(ScheduledOperationConfiguration, "foo");
     final <T extends OperationConfiguration> T operation(Class<T> operationType, String operationName) {
         return operation(operationType);
     }
 
-
-    /** {@return a stream of operation configurations for all the operations that currently defined on this bean} */
+    /** {@return a stream of operation configurations for operations that are currently defined on this bean} */
     public final Stream<? extends OperationConfiguration> operations() {
         return handle.bean.operations.stream().map(m -> m.handle().configuration()).filter(e -> e != null);
     }
 
     /**
-     * {@return a stream of operation configurations for all the operations that currently defined on this bean}
+     * {@return a stream of operation configurations for operations that are currently defined on this bean}
      *
      * @param <T>
      *            the type of operation configuration
      * @param operationType
-     *            the of operations configurations the stream should include
+     *            the type of operations configurations the stream should include
      */
     @SuppressWarnings("unchecked")
     public final <T extends OperationConfiguration> Stream<T> operations(Class<T> operationType) {
         return (Stream<T>) operations().filter(e -> operationType.isInstance(e));
     }
+
 
     /** {@return the owner of the bean.} */
     // Declared by???
@@ -315,6 +307,21 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     // Ideen er at have alle de keys that are resolved as services
     protected Set<Key<?>> requestedServiceKeys() {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @BuildActionable("component.addTags") // Hmm or bean.addTags
+    public BeanConfiguration tag(String... tags) {
+        checkIsConfigurable();
+        handle.componentTag(tags);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Set<String> tags() {
+        return handle.componentTags();
     }
 
     /** {@inheritDoc} */

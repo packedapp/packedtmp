@@ -81,7 +81,7 @@ import internal.app.packed.component.PackedComponentPath;
 // Was ResourcePath
 // ComponentMirro = { ComponentPath path(); }
 /**
- * The path of a component.
+ * The path of a component within an application.
  * <p>
  * All components within a single application has a unique path.
  */

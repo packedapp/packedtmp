@@ -22,13 +22,12 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionHandle;
-import app.packed.operation.InvokerFactory;
 
 /**
  *
@@ -81,15 +80,14 @@ public class MhExt extends BaseAssembly {
         BeanHandle<?> h;
 
         public void ownL(Class<?> cl) {
-            BeanInstaller builder = base().newBean(BeanKind.UNMANAGED.template());
+            BeanInstaller builder = base().newBean(BeanLifetime.UNMANAGED.template());
             h = builder.install(Bean.of(cl), BeanHandle::new);
         }
 
         @Override
         public void onConfigured() {
             InstanceBeanConfiguration<EBean> b = base().install(EBean.class);
-            InvokerFactory oh = h.lifecycleInvokers().get(0);
-            b.bindServiceInstance(MethodHandle.class, oh.invokerAsMethodHandle());
+            b.bindServiceInstance(MethodHandle.class, h.lifecycleInvokers().get(0).invoker().asMethodHandle());
         }
     }
 }

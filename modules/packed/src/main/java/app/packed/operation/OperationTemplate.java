@@ -20,7 +20,6 @@ import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.bean.BeanKind;
 import app.packed.context.ContextTemplate;
 import internal.app.packed.operation.PackedOperationTemplate;
 
@@ -82,7 +81,6 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     }
 
     static OperationTemplate ofFunction(MethodHandles.Lookup caller, Class<?> functionalInterface, OperationType operationType) {
-        BeanKind.STATIC.template();
         throw new UnsupportedOperationException();
     }
 

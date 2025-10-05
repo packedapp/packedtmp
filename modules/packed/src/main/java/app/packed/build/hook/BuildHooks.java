@@ -13,8 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package app.packed.build.hook;
 
 /**
- * Provides utility classes that can invoke non-public methods and read/write non-public fields in the app.packed packages.
+ *
  */
-package internal.app.packed.util.handlers;
+public interface BuildHooks {
+
+
+    // Mark all beans that can be lazy, lazy.
+    // Then have -> beanInfo.unlessTaggedWith("NotLazy")
+    // Maybe it is simply an applicationConfiguration.useLazy(Predicate<BeanInfo>.
+    public @interface LazyBeans {
+
+    }
+}

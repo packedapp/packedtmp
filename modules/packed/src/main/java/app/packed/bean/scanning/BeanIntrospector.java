@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.sandbox.AttachmentConfiguration;
@@ -61,6 +61,8 @@ import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariableUnwrapped;
 import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.BeanScanningAccessHandler;
 
 /**
  * A bean introspector is the primary way for extensions are the primary way for extensions to interacts the
@@ -134,7 +136,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
     }
 
     /** {@return an annotation reader for the bean class.} */
-    public final BeanKind beanKind() {
+    public final BeanLifetime beanKind() {
         return bean().beanKind;
     }
 
@@ -1124,5 +1126,19 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
             return false;
         }
 
+    }
+
+    static {
+        AccessHelper.initHandler(BeanScanningAccessHandler.class, new BeanScanningAccessHandler() {
+            @Override
+            public BeanSetup invokeBeanIntrospectorBean(BeanIntrospector<?> introspector) {
+                return introspector.bean();
+            }
+
+            @Override
+            public void invokeBeanIntrospectorInitialize(BeanIntrospector<?> introspector, BeanIntrospectorSetup ref) {
+                introspector.initialize(ref);
+            }
+        });
     }
 }

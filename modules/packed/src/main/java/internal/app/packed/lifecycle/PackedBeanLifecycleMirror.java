@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.BeanLifecycleMirror;
 import app.packed.bean.lifecycle.BeanLifecycleModel;
@@ -49,7 +49,7 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements BeanLifecycle
     // However custom bean templates may support it
     @Override
     public Optional<InitializeOperationMirror> factory() {
-        if (bean.beanKind != BeanKind.STATIC && bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+        if (bean.beanKind != BeanLifetime.STATIC && bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             return Optional.of((InitializeOperationMirror) bean.operations.first().mirror());
         }
         return Optional.empty();

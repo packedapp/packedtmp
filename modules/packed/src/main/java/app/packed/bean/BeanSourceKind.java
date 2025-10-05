@@ -18,13 +18,12 @@ package app.packed.bean;
 /** This enum represents the various type of bean sources that can be used when installing a bean. */
 public enum BeanSourceKind {
 
-    // If we have mutator we need SYNTHETIC
+    // If we mutate we need SYNTHETIC
 
     /**
      * A {@link Class} was specified when installing the bean.
      *
      * @see BaseExtension#install(Class)
-     * @see BaseExtension#installLazy(Class)
      * @see BaseExtension#installStatic(Class)
      */
     CLASS,
@@ -40,7 +39,6 @@ public enum BeanSourceKind {
      * An {@link Op} was specified when installing the bean.
      *
      * @see BaseExtension#install(Op)
-     * @see BaseExtension#installLazy(Op)
      */
     OP,
 

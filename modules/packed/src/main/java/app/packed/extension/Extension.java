@@ -40,6 +40,9 @@ import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
+import internal.app.packed.extension.PackedExtensionPointHandle;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.ExtensionAccessHandler;
 
 /**
  * Extensions are main mechanism by which the framework can be extended with new features.
@@ -507,6 +510,46 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
             /** An array of property declarations. */
             ExtensionProperty[] value();
         }
+    }
+
+    static {
+        AccessHelper.initHandler(ExtensionAccessHandler.class, new ExtensionAccessHandler() {
+
+            @Override
+            public ExtensionSetup getExtensionHandle(Extension<?> extension) {
+                return extension.extension;
+            }
+
+            @Override
+            public PackedExtensionPointHandle getExtensionPointPackedExtensionUseSite(ExtensionPoint<?> extensionPoint) {
+                return extensionPoint.handle;
+            }
+
+            @Override
+            public ExtensionMirror<?> invokeExtensionNewExtensionMirror(Extension<?> extension) {
+                return extension.newExtensionMirror();
+            }
+
+            @Override
+            public void invokeExtensionOnApplicationClose(Extension<?> extension) {
+                extension.onClose();
+            }
+
+            @Override
+            public void invokeExtensionOnAssemblyClose(Extension<?> extension) {
+                extension.onConfigured();
+            }
+
+            @Override
+            public void invokeExtensionOnNew(Extension<?> extension) {
+                extension.onNew();
+            }
+
+            @Override
+            public ExtensionPoint<?> newExtensionPoint(Extension<?> extension, ExtensionPointHandle usesite) {
+                return extension.newExtensionPoint(usesite);
+            }
+        });
     }
 }
 

@@ -32,6 +32,11 @@ import internal.app.packed.application.deployment.FutureApplicationSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /** Various implementations of {@link BaseImage} */
+
+// Versions
+//// Mapped
+//// Lazy   (Maybe take a Lazy constant)
+//// Handle (Eager)
 public sealed interface PackedBootstrapImage<A> extends BootstrapApp.Image<A> {
 
     @Override
@@ -118,6 +123,18 @@ public sealed interface PackedBootstrapImage<A> extends BootstrapApp.Image<A> {
      */
     @ValueBased
     public record ImageEager<A>(ApplicationHandle<A, ?> handle) implements PackedBootstrapImage<A> {
+
+        /** {@inheritDoc} */
+        @Override
+        public ApplicationMirror mirror() {
+            return handle.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return handle.name();
+        }
 
         /** {@inheritDoc} */
         @Override

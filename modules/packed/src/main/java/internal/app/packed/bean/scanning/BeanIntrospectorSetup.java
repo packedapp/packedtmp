@@ -18,7 +18,7 @@ package internal.app.packed.bean.scanning;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.extension.Extension;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.util.handlers.BeanHandlers;
+import internal.app.packed.util.accesshelper.BeanScanningAccessHandler;
 
 /**
  * An instance of this class is created for each extension that participates in the introspection of a single bean.
@@ -73,7 +73,7 @@ public final class BeanIntrospectorSetup implements Comparable<BeanIntrospectorS
         BeanIntrospectorSetup setup = new BeanIntrospectorSetup(bim.extensionClass, scanner, introspector);
 
         // Call BeanIntrospector#initialize(BeanIntrospectorSetup)
-        BeanHandlers.invokeBeanIntrospectorInitialize(introspector, setup);
+        BeanScanningAccessHandler.instance().invokeBeanIntrospectorInitialize(introspector, setup);
 
         // Notify the bean introspector that it is being used
         introspector.onStart();

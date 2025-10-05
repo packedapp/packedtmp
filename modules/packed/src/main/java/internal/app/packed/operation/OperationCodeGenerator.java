@@ -32,7 +32,7 @@ import internal.app.packed.binding.BindingAccessor.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
-import internal.app.packed.util.handlers.OperationHandlers;
+import internal.app.packed.util.accesshelper.OperationAccessHandler;
 import internal.app.packed.util.types.ClassUtil;
 
 /**
@@ -111,7 +111,7 @@ public final class OperationCodeGenerator {
             permuters.add(c.argumentIndex());
             return mh;
         } else if (p instanceof FromOperationResult fo) {
-            MethodHandle methodHandle = OperationHandlers.invokeOperationHandleNewMethodHandle(fo.operation().handle());
+            MethodHandle methodHandle = OperationAccessHandler.instance().invokeOperationHandleNewMethodHandle(fo.operation().handle());
 
             mh = MethodHandles.collectArguments(mh, permuters.size(), methodHandle);
             for (int j = 0; j < methodHandle.type().parameterCount(); j++) {

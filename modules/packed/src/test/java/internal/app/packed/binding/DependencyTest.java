@@ -43,16 +43,16 @@ public class DependencyTest {
 
     @Test
     public void ofClass() {
-        assertThatNullPointerException().isThrownBy(() -> InternalDependency.of((Class<?>) null));
+        assertThatNullPointerException().isThrownBy(() -> PackedDependency.of((Class<?>) null));
 
-        assertThatIllegalArgumentException().isThrownBy(() -> InternalDependency.of(Optional.class))
+        assertThatIllegalArgumentException().isThrownBy(() -> PackedDependency.of(Optional.class))
                 .withMessage("Cannot determine type variable <T> for type Optional<T>");
 
-        InternalDependency opLong = InternalDependency.of(OptionalLong.class);
+        PackedDependency opLong = PackedDependency.of(OptionalLong.class);
         assertThat(opLong).isOptional(OptionalLong.class);
         assertThat(opLong).keyIs(Long.class);
 
-        InternalDependency opDouble = InternalDependency.of(OptionalDouble.class);
+        PackedDependency opDouble = PackedDependency.of(OptionalDouble.class);
         assertThat(opDouble).isOptional(OptionalDouble.class);
         assertThat(opDouble).keyIs(Double.class);
     }

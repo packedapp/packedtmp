@@ -22,6 +22,8 @@ import app.packed.util.Nullable;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.AssemblyAccessHandler;
 
 /**
  * Assemblies are the basic building block for defining applications in Packed.
@@ -59,12 +61,6 @@ public sealed abstract class Assembly implements BuildCodeSource, ApplicationBui
         permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
-     * A marker configuration object indicating that an assembly (or composer) has already been used in a build process.
-     * Should never be exposed to end-users.
-     */
-    static final AssemblyConfiguration USED = new AssemblyConfiguration(null);
-
-    /**
      * Invoked by the runtime (via a MethodHandle) in order to execute the build instructions of the assembly.
      *
      * @param builder
@@ -90,5 +86,21 @@ public sealed abstract class Assembly implements BuildCodeSource, ApplicationBui
         public static State of(Assembly assembly) {
             throw new UnsupportedOperationException();
         }
+    }
+
+    static {
+        AccessHelper.initHandler(AssemblyAccessHandler.class, new AssemblyAccessHandler() {
+
+            @Override
+            public AssemblyMirror newAssemblyMirror(AssemblySetup assembly) {
+                return new AssemblyMirror(assembly);
+            }
+
+            @Override
+            public AssemblySetup invokeAssemblyBuild(Assembly assembly, @Nullable PackedApplicationInstaller<?> applicationInstaller,
+                    PackedContainerInstaller<?> installer) {
+                return assembly.build(applicationInstaller, installer);
+            }
+        });
     }
 }

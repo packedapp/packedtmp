@@ -16,10 +16,12 @@
 package app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Executable;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import app.packed.util.Nullable;
 import internal.app.packed.operation.PackedOp;
@@ -103,9 +105,16 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
 
     /** {@return the type of this operation.} */
     OperationType type();
+
 }
 
 interface ZandboxOp<R> {
+
+    // Annotated with Inject????
+    static Stream<Op<?>> findStaticOps(Class<?> clazz) {
+        throw new UnsupportedOperationException();
+    }
+
 
     /**
      *
@@ -220,6 +229,7 @@ interface ZandboxOp<R> {
 //  /** {@return The number of variables this factory takes.} */
 //  public abstract int variableCount();
 
+
     default Op<R> useExactType(Class<? extends R> type) {
         // TypeHint.. withExactType
 
@@ -261,6 +271,7 @@ interface ZandboxOp<R> {
         throw new UnsupportedOperationException();
     }
 
+    // ofConstant
     static <T> Op<T> ofInstance(T instance) {
         throw new UnsupportedOperationException();
     }
@@ -268,6 +279,12 @@ interface ZandboxOp<R> {
     static Op<?> ofMethodHandle(MethodHandle methodHandle) {
         throw new UnsupportedOperationException();
     }
+
+    // Must be static
+    static Op<?> ofExecutable(Executable executable) {
+        throw new UnsupportedOperationException();
+    }
+
 
     static Op<Void> ofRunnable(Runnable runnable) {
         throw new UnsupportedOperationException();

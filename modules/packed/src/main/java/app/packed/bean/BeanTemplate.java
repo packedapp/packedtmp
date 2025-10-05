@@ -25,7 +25,7 @@ import internal.app.packed.bean.PackedBeanTemplate;
 import sandbox.application.LifetimeTemplate;
 
 /**
- * A bean template is an immutable, reusable configuration object that defines the behavior of a bean. A template is
+ * A bean template is an immutable, reusable configuration object that defines the behaviour of a bean. A template is
  * always specified when an extension installs a bean (on behalf of the user or another extension).
  * <p>
  * To install a new bean using a template, an extension can use either
@@ -60,7 +60,7 @@ import sandbox.application.LifetimeTemplate;
 // It al goes well until you get to BeanInstaller. Where we need the <T> of the BeanHandle
 public sealed interface BeanTemplate permits PackedBeanTemplate {
 
-    BeanTemplate FUNCTIONAL = BeanKind.STATIC.template();
+    BeanTemplate FUNCTIONAL = BeanLifetime.STATIC.template();
 
     // The bean is created by an operation
     // There are no lifetime operations on the bean
@@ -68,10 +68,10 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // Has a single operation that will create the bean.
     // TODO skal vi baade have managed og unmanged operationer???
     // Fx @Provide paa en prototypeBean (giver vel ikke mening)
-    BeanTemplate GATEWAY = new PackedBeanTemplate(BeanKind.UNMANAGED);
+    BeanTemplate GATEWAY = BeanTemplate.builder(BeanLifetime.UNMANAGED).build();
 
     /** {@return the kind of bean the descriptor's template creates} */
-    BeanKind beanKind();
+    BeanLifetime beanKind();
 
 //    /** {@return a list of the various lifetime operations for the descriptor's template.} */
 //    List<OperationTemplate> lifecycleOperations();
@@ -80,6 +80,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     Map<Class<?>, ContextTemplate> contexts();
 
     /**
+     * Normally a bean is constructed as the ben
      * <p>
      * Empty means create as bean class
      *
@@ -88,38 +89,44 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      * @see BeanTemplate#createAs(Class)
      * @see BeanTemplate#createAsBeanClass()
      */
-    Optional<Class<?>> createAsX();
+    Optional<Class<?>> createAsSpecificClass();
 
     Optional<OperationTemplate> initializationX();
 
-    BeanTemplate withInitialization(OperationTemplate initialization);
-
-    // Vi beholder den lidt endnu. Fordi vi maaske bliver noedt til at goere noget
-    // Hvis vi vil have foreign objecter osv
-    @SuppressWarnings("exports")
-    default BeanTemplate withLifetime(LifetimeTemplate lifetime) {
-        throw new UnsupportedOperationException();
+    static BeanTemplate.Builder builder(BeanLifetime kind) {
+        return PackedBeanTemplate.builder(kind);
     }
 
-    /**
-     * Sets the default value of the specified bean local. This value will be applied every time the template is used to
-     * install a bean.
-     *
-     * The value set by this method can be overridden when installing a specific bean by using
-     * {@link Installer#setLocal(BeanLocal, Object)}.
-     *
-     * @param <T>
-     *            the type of value
-     * @param local
-     *            the bean local to set
-     * @param value
-     *            the value to set
-     * @return this configurator
-     */
-    <T> BeanTemplate withLocal(BeanLocal<T> local, T value);
+    static BeanTemplate of(BeanLifetime kind) {
+        return PackedBeanTemplate.builder(kind).build();
+    }
 
-    static BeanTemplate of(BeanKind kind) {
-        return new PackedBeanTemplate(kind);
+    /** A builder for {@link BeanTemplate}. */
+    // Add component tags
+    sealed interface Builder permits PackedBeanTemplate.PackedBuilder {
+
+        default Builder requiredManagedContainer() {
+            // If attempting to install into an unmanaged container
+            // it will fail
+            // IDK about this. Should fail no matter anyway if we use @OnStop
+            throw new UnsupportedOperationException();
+        }
+        // requireManaged() <-- attempting to install
+
+        // Specific class right???
+        Builder beanClass(Class<?> beanClass);
+
+        /** {@return a new bean template} */
+        BeanTemplate build();
+
+        Builder initialization(java.util.function.Function<OperationTemplate, OperationTemplate> configure);
+
+        Builder initialization(OperationTemplate initialization);
+
+        @SuppressWarnings("exports")
+        Builder lifetime(LifetimeTemplate lifetime);
+
+        <T> Builder setLocal(BeanLocal<T> local, T value);
     }
 }
 
@@ -149,6 +156,31 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
 //Configurator inContextForLifetimeOperation(int index, ContextTemplate template);
 
 interface Sandbox {
+    void ignoreAnnotations(Class<?> annot);
+
+    void noScan();
+
+    // The bean can never
+    void proxyForbidden();
+
+    // Ahh alt er raw
+    default BeanTemplate raw() {
+        return null;
+    }
+
+    /** {@return the allowed bean source kinds for.} */
+    // Allowed source kinds
+    default EnumSet<BeanSourceKind> sourceKinds() {
+        return EnumSet.allOf(BeanSourceKind.class);
+    }
+
+    /**
+     * Marks the bean as synthetic.
+     *
+     * @return this installer
+     */
+    BeanInstaller synthetic(); // Maybe on template?
+
     /**
      * Specifies the return type signature of the factory operation(s) that create the bean.
      * <p>
@@ -195,30 +227,6 @@ interface Sandbox {
         // return withInitialization(OperationTemplate.defaults().withReturnTypeDynamic());
         throw new UnsupportedOperationException();
     }
-
-    void ignoreAnnotations(Class<?> annot);
-
-    void noScan();
-
-    // The bean can never
-    void proxyForbidden();
-
-    // Ahh alt er raw
-    default BeanTemplate raw() {
-        return null;
-    }
-
-    /** {@return the allowed bean source kinds for.} */
-    default EnumSet<BeanSourceKind> sourceKinds() {
-        return EnumSet.allOf(BeanSourceKind.class);
-    }
-
-    /**
-     * Marks the bean as synthetic.
-     *
-     * @return this installer
-     */
-    BeanInstaller synthetic(); // Maybe on template?
 
 //    // No seperet MH for starting, part of init
 //    // Tror maaske det her er en seperat template

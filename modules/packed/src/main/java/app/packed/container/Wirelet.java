@@ -53,9 +53,6 @@ import internal.app.packed.container.wirelets.WrappingWirelet;
  * As a general rule, wirelet implementations must be immutable and safe to access by multiple concurrent threads.
  * Unless otherwise specified wirelets are reusable.
  * <p>
- * Wirelets are divided into 3 main types: (Naaah think we ditch it)
- *
- * User Wirelet: These wirelets are defined by users of the framework.
  *
  * Extension Wirelets: These wirelets are defined by extensions. These are typically available via public static methods
  * in a XWirelet class.
@@ -90,8 +87,6 @@ import internal.app.packed.container.wirelets.WrappingWirelet;
 // Build : protected List<Wirelet> Assembly.wirelets();  // Istedet for at wrappe den, eller begge dele? Nahh
 
 // TrustedWirelet -> A wirelet that is defined within an assembly
-
-// Runtime : Launch
 
 public sealed abstract class Wirelet permits ExtensionWirelet, FrameworkWirelet {
 

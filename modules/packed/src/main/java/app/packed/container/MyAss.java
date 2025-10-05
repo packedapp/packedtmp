@@ -21,8 +21,9 @@ import app.packed.bean.Bean;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanTemplate;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 
@@ -76,6 +77,8 @@ public class MyAss extends BaseAssembly {
 
     static class MyExt extends Extension<MyExt> {
 
+        static final BeanTemplate T = BeanLifetime.SINGLETON.template();
+
         /**
          * @param handle
          */
@@ -84,7 +87,7 @@ public class MyAss extends BaseAssembly {
         }
 
         void install() {
-            base().newBean(BeanKind.CONTAINER.template()).install(Bean.of(FFF.class), MyBeanHandle::new);
+            base().newBean(T).install(Bean.of(FFF.class), MyBeanHandle::new);
         }
     }
 }

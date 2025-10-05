@@ -34,7 +34,7 @@ import internal.app.packed.namespace.PackedNamespaceInstaller;
 import internal.app.packed.namespace.PackedNamespaceTemplate;
 import internal.app.packed.util.PackedTreeView;
 import internal.app.packed.util.StringFormatter;
-import internal.app.packed.util.handlers.ExtensionHandlers;
+import internal.app.packed.util.accesshelper.ExtensionAccessHandler;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
 /** Implementation of {@link ExtensionHandle} */
@@ -95,7 +95,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
 
         PackedExtensionPointHandle c = new PackedExtensionPointHandle(otherExtension, extension);
         // Create a new extension point
-        ExtensionPoint<?> newExtensionPoint = ExtensionHandlers.newExtensionPoint(otherExtension.instance(), c);
+        ExtensionPoint<?> newExtensionPoint = ExtensionAccessHandler.instance().newExtensionPoint(otherExtension.instance(), c);
 
         if (newExtensionPoint == null) {
             throw new NullPointerException(

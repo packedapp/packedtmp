@@ -80,7 +80,7 @@ public sealed interface Bean<T> permits PackedBean {
     /**
      * Creates a new sourceless bean.
      *
-     * @return
+     * @return the new bean
      */
     static Bean<?> of() {
         return PackedBean.of();
@@ -111,7 +111,17 @@ public sealed interface Bean<T> permits PackedBean {
     static <T> Bean<T> ofInstance(T instance) {
         return PackedBean.ofInstance(instance);
     }
+
+    static <T> Builder<T> builderOfInstance(T instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    interface Builder<T> {
+        Bean<T> build();
+    }
 }
+
+// Or simply Builder....
 
 //Alternativ hedder den noget andet ala BeanFactory (or just Bean).. Og vi laver den fra alle metoder install(Class)->BeanFactory.of(Class)->install(BeanFactory)
 

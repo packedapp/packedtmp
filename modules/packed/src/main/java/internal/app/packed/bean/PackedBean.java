@@ -42,10 +42,6 @@ import internal.app.packed.util.PackedAnnotationList;
 // Der er nogle maader man kan implementere denne paa.
 // Enten har vi altid det rigtige.
 // Eller ogsaa har vi versioner
-
-
-
-
 public final class PackedBean<T> implements Bean<T> {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */

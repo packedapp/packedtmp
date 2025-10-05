@@ -68,6 +68,23 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
      */
     ApplicationTemplate<H> withRootContainer(ContainerTemplate<?> template);
 
+    static <I> Builder<I> builder(Class<I> hostClass) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <I> Builder<I> builder(Op<I> hostOp) {
+        throw new UnsupportedOperationException();
+    }
+
+    interface Builder<I> {
+
+       Builder<I> unmanaged();
+
+       ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build();
+
+       <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
+               Function<? super ApplicationInstaller<H>, ? extends H> handleFactory);
+    }
 //    /**
 //     * Create a new application template, that will use
 //     *

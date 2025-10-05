@@ -67,24 +67,24 @@ import internal.app.packed.util.types.Types;
 //Dependency er flyttet til en intern klasse. Fordi den er begyndt at blive lidt for kompleks.
 // Naar vi tilfoere composites. Hvor der ikke rigtig laengere er en parameter til en service mapning.
 
-public final class InternalDependency {
+public final class PackedDependency {
 
     /** A cache of service dependencies. */
-    private static final ClassValue<InternalDependency> CLASS_CACHE = new ClassValue<>() {
+    private static final ClassValue<PackedDependency> CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected InternalDependency computeValue(Class<?> type) {
+        protected PackedDependency computeValue(Class<?> type) {
             if (type == Optional.class) {
                 throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
             } else if (type == OptionalInt.class) {
-                return new InternalDependency(int.class, Key.of(Integer.class), Optionality.OPTIONAL_INT);
+                return new PackedDependency(int.class, Key.of(Integer.class), Optionality.OPTIONAL_INT);
             } else if (type == OptionalLong.class) {
-                return new InternalDependency(long.class, Key.of(Long.class), Optionality.OPTIONAL_LONG);
+                return new PackedDependency(long.class, Key.of(Long.class), Optionality.OPTIONAL_LONG);
             } else if (type == OptionalDouble.class) {
-                return new InternalDependency(double.class, Key.of(Double.class), Optionality.OPTIONAL_DOUBLE);
+                return new PackedDependency(double.class, Key.of(Double.class), Optionality.OPTIONAL_DOUBLE);
             }
-            return new InternalDependency(type, Key.of(type), Optionality.REQUIRED);
+            return new PackedDependency(type, Key.of(type), Optionality.REQUIRED);
         }
     };
 
@@ -110,7 +110,7 @@ public final class InternalDependency {
      * @param variable
      *            an optional field or parameter
      */
-    private InternalDependency(Type type, Key<?> key, Optionality optionality) {
+    private PackedDependency(Type type, Key<?> key, Optionality optionality) {
         this.type = requireNonNull(type);
         this.key = requireNonNull(key, "key is null");
         this.optionality = requireNonNull(optionality);
@@ -143,10 +143,10 @@ public final class InternalDependency {
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        } else if (obj.getClass() != InternalDependency.class) {
+        } else if (obj.getClass() != PackedDependency.class) {
             return false;
         }
-        InternalDependency other = (InternalDependency) obj;
+        PackedDependency other = (PackedDependency) obj;
         // Hmm hashcode and equals for optional????
         return Objects.equals(key, other.key) && optionality == other.optionality && Objects.equals(variable, other.variable);
     }
@@ -212,14 +212,14 @@ public final class InternalDependency {
         return optionality.wrapIfOptional(requireNonNull(object, "object is null"));
     }
 
-    public static List<InternalDependency> fromOperationType(OperationType t) {
+    public static List<PackedDependency> fromOperationType(OperationType t) {
         Variable[] parameters = t.parameterArray();
         return switch (parameters.length) {
         case 0 -> List.of();
         case 1 -> List.of(fromVariable(parameters[0]));
         case 2 -> List.of(fromVariable(parameters[0]), fromVariable(parameters[1]));
         default -> {
-            InternalDependency[] sd = new InternalDependency[parameters.length];
+            PackedDependency[] sd = new PackedDependency[parameters.length];
             for (int i = 0; i < sd.length; i++) {
                 sd[i] = fromVariable(parameters[i]);
             }
@@ -228,7 +228,7 @@ public final class InternalDependency {
         };
     }
 
-    public static <T> InternalDependency fromVariable(Variable v) {
+    public static <T> PackedDependency fromVariable(Variable v) {
         requireNonNull(v, "variable is null");
 
         Type t = v.type();
@@ -273,7 +273,7 @@ public final class InternalDependency {
         Variable newV = Variable.of(t, v.annotations().toArray());
         Key<?> key = Key.fromVariable(newV);
 //        Key<?> key = Key.convert(t, v.annotations().toArray(), 123, rawType);
-        return new InternalDependency(v.rawType(), key, optionallaity);
+        return new PackedDependency(v.rawType(), key, optionallaity);
     }
 
     /**
@@ -283,7 +283,7 @@ public final class InternalDependency {
      *            the class to return a dependency for
      * @return a service dependency for the specified class
      */
-    public static InternalDependency of(Class<?> key) {
+    public static PackedDependency of(Class<?> key) {
         requireNonNull(key, "key is null");
         return CLASS_CACHE.get(key);
     }
@@ -291,13 +291,13 @@ public final class InternalDependency {
     private enum Optionality {
         REQUIRED {
             @Override
-            public Object empty(InternalDependency dependency) {
+            public Object empty(PackedDependency dependency) {
                 throw new UnsupportedOperationException("This dependency is not optional, dependency = " + dependency);
             }
         },
         OPTIONAL {
             @Override
-            public Object empty(InternalDependency dependency) {
+            public Object empty(PackedDependency dependency) {
                 return Optional.empty();
             }
 
@@ -308,7 +308,7 @@ public final class InternalDependency {
         },
         OPTIONAL_INT {
             @Override
-            public Object empty(InternalDependency dependency) {
+            public Object empty(PackedDependency dependency) {
                 return OptionalInt.empty();
             }
 
@@ -319,7 +319,7 @@ public final class InternalDependency {
         },
         OPTIONAL_LONG {
             @Override
-            public Object empty(InternalDependency dependency) {
+            public Object empty(PackedDependency dependency) {
                 return OptionalLong.empty();
             }
 
@@ -330,7 +330,7 @@ public final class InternalDependency {
         },
         OPTIONAL_DOUBLE {
             @Override
-            public Object empty(InternalDependency dependency) {
+            public Object empty(PackedDependency dependency) {
                 return OptionalDouble.empty();
             }
 
@@ -341,12 +341,12 @@ public final class InternalDependency {
         },
         OPTIONAL_NULLABLE {
             @Override
-            public Object empty(InternalDependency dependency) {
+            public Object empty(PackedDependency dependency) {
                 return null;
             }
         };
 
-        public abstract Object empty(InternalDependency dependency);
+        public abstract Object empty(PackedDependency dependency);
 
         public Object wrapIfOptional(Object object) {
             return null;

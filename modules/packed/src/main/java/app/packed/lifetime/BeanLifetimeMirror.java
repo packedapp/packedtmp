@@ -22,7 +22,10 @@ import java.util.Optional;
 import app.packed.bean.BeanMirror;
 import internal.app.packed.ValueBased;
 import internal.app.packed.lifecycle.lifetime.BeanLifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeSetup;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.BeanLifetimeAccessHandler;
 
 /**
  * Represents a bean whose lifetime is independent of its container's lifetime.
@@ -62,5 +65,20 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
     @Override
     public Optional<CompositeLifetimeMirror> parent() {
         return Optional.of(lifetime.parent().mirror());
+    }
+
+    static {
+        AccessHelper.initHandler(BeanLifetimeAccessHandler.class, new BeanLifetimeAccessHandler() {
+
+            @Override
+            public BeanLifetimeMirror newBeanLifetimeMirror(BeanLifetimeSetup setup) {
+                return new BeanLifetimeMirror(setup);
+            }
+
+            @Override
+            public CompositeLifetimeMirror newRegionalLifetimeMirror(ContainerLifetimeSetup setup) {
+                return new CompositeLifetimeMirror(setup);
+            }
+        });
     }
 }

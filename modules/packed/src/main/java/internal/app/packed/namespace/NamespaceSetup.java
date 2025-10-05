@@ -29,7 +29,7 @@ import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.util.handlers.NamespaceHandlers;
+import internal.app.packed.util.accesshelper.NamespaceAccessHandler;
 
 /**
  *
@@ -93,7 +93,7 @@ public final class NamespaceSetup implements ComponentSetup {
     }
 
     public static NamespaceSetup crack(NamespaceHandle<?, ?> handle) {
-        return NamespaceHandlers.getNamespaceHandleNamespace(handle);
+        return NamespaceAccessHandler.instance().getNamespaceHandleNamespace(handle);
     }
 
     /** {@inheritDoc} */

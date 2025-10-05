@@ -29,6 +29,8 @@ import app.packed.operation.OperationHandle;
 import app.packed.util.TreeView;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.namespace.PackedNamespaceInstaller;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.NamespaceAccessHandler;
 
 /**
  *
@@ -167,5 +169,20 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     @SuppressWarnings("unchecked")
     public final E rootExtension() {
         return (E) namespace.root.instance();
+    }
+
+    static {
+        AccessHelper.initHandler(NamespaceAccessHandler.class, new NamespaceAccessHandler() {
+
+            @Override
+            public void invokeNamespaceOnNamespaceClose(NamespaceHandle<?, ?> handle) {
+                handle.onClose();
+            }
+
+            @Override
+            public NamespaceSetup getNamespaceHandleNamespace(NamespaceHandle<?, ?> handle) {
+                return handle.namespace;
+            }
+        });
     }
 }

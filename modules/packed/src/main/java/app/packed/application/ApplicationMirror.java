@@ -46,7 +46,7 @@ import internal.app.packed.util.PackedTreeView;
 public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationBuildLocal.Accessor {
 
     /** The application's handle. */
-    private final ApplicationHandle<?, ?> handle;
+    final ApplicationHandle<?, ?> handle;
 
     /**
      * Create a new application mirror.

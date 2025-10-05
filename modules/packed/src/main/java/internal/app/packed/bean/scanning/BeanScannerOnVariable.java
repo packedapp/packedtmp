@@ -24,7 +24,7 @@ import app.packed.context.Context;
 import app.packed.service.sandbox.ServiceResolver;
 import internal.app.packed.bean.scanning.BeanTriggerModel.ParameterAnnotatedCache;
 import internal.app.packed.bean.scanning.BeanTriggerModel.ParameterTypeCache;
-import internal.app.packed.binding.InternalDependency;
+import internal.app.packed.binding.PackedDependency;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 
@@ -76,7 +76,7 @@ final class BeanScannerOnVariable {
         // Okay guys we have a service
 
         // Extract needed information
-        InternalDependency ia = InternalDependency.fromVariable(v);
+        PackedDependency ia = PackedDependency.fromVariable(v);
 
         // Let's see if we have specified a special service resolver on the binding
         ServiceResolver sr = v.annotations().read(ServiceResolver.class).orElse(ServiceResolver.DEFAULT);

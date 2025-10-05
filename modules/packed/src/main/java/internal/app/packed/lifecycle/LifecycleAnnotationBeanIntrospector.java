@@ -17,7 +17,7 @@ package internal.app.packed.lifecycle;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.Inject;
@@ -132,7 +132,7 @@ public final class LifecycleAnnotationBeanIntrospector extends InternalBeanIntro
 
     // Maybe we automatically fail on bean triggers on instance members.
     private static <H extends OperationHandle<?>> void checkNotStaticBean(BeanSetup bean, Class<? extends Annotation> annotationType) {
-        if (bean.beanKind == BeanKind.STATIC) {
+        if (bean.beanKind == BeanLifetime.STATIC) {
             throw new UnsupportedLifecycleException(annotationType + " is not supported for static beans");
         }
     }

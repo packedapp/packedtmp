@@ -31,7 +31,6 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.operation.InvokerFactory;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
@@ -48,7 +47,9 @@ import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTa
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
 import internal.app.packed.service.util.InternalServiceUtil;
-import internal.app.packed.util.handlers.OperationHandlers;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.BeanAccessHandler;
+import internal.app.packed.util.accesshelper.OperationAccessHandler;
 
 /**
  * A bean handle is a build-time reference to an installed bean. They are created by the framework when an extension
@@ -103,7 +104,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     }
 
     /** {@return the bean kind.} */
-    public final BeanKind beanKind() {
+    public final BeanLifetime beanKind() {
         return bean.beanKind;
     }
 
@@ -241,8 +242,8 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     // init-> BeanCreate ()
     // start-> void ()
     // stop -> voidd
-    public final List<InvokerFactory> lifecycleInvokers() {
-        if (beanKind() != BeanKind.STATIC && beanSourceKind() != BeanSourceKind.SOURCELESS) {
+    public final List<OperationHandle<?>> lifecycleInvokers() {
+        if (beanKind() != BeanLifetime.STATIC && beanSourceKind() != BeanSourceKind.SOURCELESS) {
 //            debug();
 //            IO.println(bean.operations.first().template.methodType);
             return List.of(bean.operations.first().handle());
@@ -375,7 +376,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
         int i = listIndex;
         for (; i < bean.operations.all.size(); i++) {
             OperationSetup op = bean.operations.all.get(i);
-            OperationHandlers.invokeOperationHandleDoClose(op.handle(), isClose);
+            OperationAccessHandler.instance().invokeOperationHandleDoClose(op.handle(), isClose);
         }
         return i;
     }
@@ -407,10 +408,10 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     public final void provideAs(Key<?> key) {
         Key<?> k = InternalServiceUtil.checkKey(bean.bean.beanClass, key);
         checkIsOpen();
-        if (beanKind() != BeanKind.CONTAINER || beanKind() != BeanKind.LAZY) {
-            // throw new UnsupportedOperationException("This method can only be called on beans of kind " + BeanKind.CONTAINER + "
-            // or " + BeanKind.LAZY);
-        }
+//        if (beanKind() != BeanKind.CONTAINER || beanKind() != BeanKind.LAZY) {
+//            // throw new UnsupportedOperationException("This method can only be called on beans of kind " + BeanKind.CONTAINER + "
+//            // or " + BeanKind.LAZY);
+//        }
 
         bean.serviceNamespace().provideService(k, instanceProvideOperation(), bean.beanInstanceBindingProvider());
     }
@@ -419,6 +420,31 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     @Override
     public String toString() {
         return bean.toString();
+    }
+
+    static {
+        AccessHelper.initHandler(BeanAccessHandler.class, new BeanAccessHandler() {
+
+            @Override
+            public BeanHandle<?> getBeanConfigurationHandle(BeanConfiguration configuration) {
+                return configuration.handle();
+            }
+
+            @Override
+            public BeanSetup getBeanHandleBean(BeanHandle<?> handle) {
+                return handle.bean;
+            }
+
+            @Override
+            public BeanHandle<?> getBeanMirrorHandle(BeanMirror mirror) {
+                return mirror.handle;
+            }
+
+            @Override
+            public void invokeBeanHandleDoClose(BeanHandle<?> handle, boolean isClose) {
+                handle.onStateChange(isClose);
+            }
+        });
     }
 }
 

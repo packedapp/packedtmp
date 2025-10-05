@@ -19,7 +19,6 @@ import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /** Internal wirelets have their logic directly embedded into the wirelet. */
 
@@ -50,10 +49,10 @@ public abstract non-sealed class InternalBaseWirelet extends FrameworkWirelet {
         }
     }
 
-    public void onImageLaunch(ContainerSetup component, ApplicationLaunchContext context) {
-        throw new IllegalArgumentException(
-                "The wirelet {" + getClass().getSimpleName() + "} must be specified at build-time. It cannot be specified when launching an image");
-    }
+//    public void onImageLaunch(ContainerSetup component, ApplicationLaunchContext context) {
+//        throw new IllegalArgumentException(
+//                "The wirelet {" + getClass().getSimpleName() + "} must be specified at build-time. It cannot be specified when launching an image");
+//    }
 
     /**
      * Invoked by the runtime when the component is initially wired at build-time.

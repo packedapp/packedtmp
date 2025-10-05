@@ -128,35 +128,4 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         }
         return (A) result;
     }
-//
-//    /**
-//     * Launches the application. Either directly or from an image
-//     *
-//     * @param <A>
-//     *            the type of application shell
-//     * @param driver
-//     *            the driver of the application.
-//     * @param application
-//     *            the application we are launching
-//     * @param wirelets
-//     *            optional wirelets is always null if not launched from an image
-//     * @return the application instance
-//     */
-//    public static ApplicationLaunchContext newLaunchContext(RunState state, ApplicationSetup application, @Nullable WireletSelectionArray<?> wirelets) {
-//        // Create a launch context
-//        ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
-//
-//        // Apply all internal wirelets
-//        if (wirelets != null) {
-//            for (Wirelet w : wirelets) {
-//                if (w instanceof InternalBuildWirelet iw) {
-//                    iw.onImageLaunch(application.container(), context);
-//                }
-//            }
-//        }
-//
-//        context.runner.run(state);
-//
-//        return context;
-//    }
 }

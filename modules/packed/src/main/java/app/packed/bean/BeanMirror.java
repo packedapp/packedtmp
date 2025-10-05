@@ -46,7 +46,7 @@ import sandbox.operation.mirror.DependenciesMirror;
 public non-sealed class BeanMirror implements Accessor, ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror {
 
     /** The handle of the bean we are mirroring. */
-    private final BeanHandle<?> handle;
+    final BeanHandle<?> handle;
 
     /**
      * Create a new bean mirror.
@@ -86,7 +86,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     }
 
     /** {@return the bean kind} */
-    public final BeanKind beanKind() {
+    public final BeanLifetime beanKind() {
         return handle.bean.beanKind;
     }
 

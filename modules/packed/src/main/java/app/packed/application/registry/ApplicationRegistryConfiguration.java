@@ -15,7 +15,7 @@
  */
 package app.packed.application.registry;
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
@@ -61,7 +61,7 @@ public final class ApplicationRegistryConfiguration<I, H extends ApplicationHand
      * @param installer
      *            a consumer that performs the actual installation of the application
      */
-    public void installApplication(Consumer<? super ApplicationInstaller<H>> installer) {
+    public void installApplication(Function<? super ApplicationInstaller<H>, H> installer) {
         handle.repository.add(installer);
     }
 

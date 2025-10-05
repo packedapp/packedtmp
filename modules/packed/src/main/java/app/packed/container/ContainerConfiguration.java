@@ -22,7 +22,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
 
     /** The container we are configuring. */
     @Nullable
-    private final ContainerHandle<?> handle;
+    final ContainerHandle<?> handle;
 
     public ContainerConfiguration(ContainerHandle<?> handle) {
         this.handle = requireNonNull(handle);

@@ -18,7 +18,6 @@ package internal.app.packed.application;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
@@ -26,7 +25,6 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.OnStart;
 import app.packed.bean.lifecycle.Stop;
-import app.packed.binding.Key;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromGuest;
 import app.packed.runtime.ManagedLifecycle;
@@ -140,11 +138,6 @@ public class AaaTest extends BaseAssembly {
                 return image.name();
             }
 
-            /** {@inheritDoc} */
-            @Override
-            public <T> ApplicationLauncher provide(Key<? super T> key, T value) {
-                return image;
-            }
         }
     }
 }

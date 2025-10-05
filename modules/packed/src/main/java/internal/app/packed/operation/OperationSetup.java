@@ -49,7 +49,7 @@ import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.ServiceProviderSetup.OperationServiceProviderSetup;
 import internal.app.packed.service.util.ServiceMap;
-import internal.app.packed.util.handlers.OperationHandlers;
+import internal.app.packed.util.accesshelper.OperationAccessHandler;
 
 /** The internal configuration of (bean) operation. */
 public final class OperationSetup implements ContextualizedComponentSetup, ComponentSetup {
@@ -219,7 +219,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
      * @return the operation setup
      */
     public static OperationSetup crack(OperationHandle<?> handle) {
-        return OperationHandlers.getOperationHandleOperation(handle);
+        return OperationAccessHandler.instance().getOperationHandleOperation(handle);
     }
 
     /**

@@ -51,8 +51,8 @@ import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
-import internal.app.packed.util.handlers.BeanHandlers;
-import internal.app.packed.util.handlers.ContainerHandlers;
+import internal.app.packed.util.accesshelper.BeanAccessHandler;
+import internal.app.packed.util.accesshelper.ContainerAccessHandler;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> implements ComponentSetup, BuildLocalSource {
@@ -302,13 +302,13 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     public void onAssemblyClose(AuthoritySetup<?> as) {
         for (BeanSetup b : beans) {
             if (b.owner == as) {
-                BeanHandlers.invokeBeanHandleDoClose(b.handle(), true);
+                BeanAccessHandler.instance().invokeBeanHandleDoClose(b.handle(), true);
             }
         }
 
         for (ContainerSetup c : treeChildren.values()) {
             if (assembly == c.assembly) {
-                ContainerHandlers.invokeContainerHandleDoClose(c.handle());
+                ContainerAccessHandler.instance().invokeContainerHandleDoClose(c.handle());
                 c.onAssemblyClose(as);
             }
         }
@@ -405,15 +405,15 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
      * @return the bean setup
      */
     public static ContainerSetup crack(ContainerConfiguration configuration) {
-        return crack(ContainerHandlers.getContainerConfigurationHandle(configuration));
+        return crack(ContainerAccessHandler.instance().getContainerConfigurationHandle(configuration));
     }
 
     public static ContainerSetup crack(ContainerHandle<?> handle) {
-        return ContainerHandlers.getContainerHandleContainer(handle);
+        return ContainerAccessHandler.instance().getContainerHandleContainer(handle);
     }
 
     public static ContainerSetup crack(ContainerMirror mirror) {
-        return crack(ContainerHandlers.getContainerMirrorHandle(mirror));
+        return crack(ContainerAccessHandler.instance().getContainerMirrorHandle(mirror));
     }
 
     /**

@@ -19,7 +19,7 @@ import app.packed.bean.Bean;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTemplate;
 import app.packed.component.ComponentRealm;
 import app.packed.concurrent.ThreadNamespaceConfiguration;
@@ -85,7 +85,7 @@ public final class JobNamespaceHandle extends NamespaceHandle<BaseExtension, Thr
 
         // Install deamon manager if we have any operations.
         if (daemons.length > 0) {
-            BeanConfiguration b = new ProvidableBeanConfiguration<>(newBeanBuilderSelf(BeanKind.CONTAINER.template()).install(Bean.of(DaemonRuntimeManager.class), BeanHandle::new));
+            BeanConfiguration b = new ProvidableBeanConfiguration<>(newBeanBuilderSelf(BeanLifetime.SINGLETON.template()).install(Bean.of(DaemonRuntimeManager.class), BeanHandle::new));
             b.bindServiceInstance(DaemonRuntimeOperationConfiguration[].class, daemons);
         }
     }

@@ -1,7 +1,5 @@
 package app.packed.bean;
 
-import internal.app.packed.bean.PackedBeanTemplate;
-
 /**
  * This enum details the various kinds of beans that are supported in Packed.
  */
@@ -11,12 +9,17 @@ import internal.app.packed.bean.PackedBeanTemplate;
 // https://marcelkliemannel.com/articles/2021/overview-of-bean-scopes-in-quarkus/
 
 //Maybe we mixing different things... A bean can be container managed or container-unmanaged
-public enum BeanKind {
+
+
+// I don't know where to cut it. FOREIGN and FUNCTION are both something you cannot interacts with
+
+
+public enum BeanLifetime {
 
     /**
-     * A container bean is a stateful bean with a single instance in the container in which it is registered
+     * A singleton is a stateful bean with a single instance in the container in which it is registered.
      * <p>
-     * Lives and dies with the container it is installed into. Is eagerly created. Only a single bean of the specified type
+     * Lives and dies with the container it is installed into. Is eagerly created. By default, only a single bean of the specified type
      * may exists in the container. Think we need to check other bean types as well.
      * <p>
      * Represents a bean whose lifetime is that of its container. This means it will always be created and destroyed
@@ -28,7 +31,7 @@ public enum BeanKind {
      * non-void
      *
      */
-    CONTAINER,
+    SINGLETON,
 
     /**
      * A foreign bean is a bean whose lifecycle is managed outside of the container in which it is registered And where the
@@ -55,19 +58,6 @@ public enum BeanKind {
     // Can we have more than 1?
     // Can they be removed? Obviously if we have more than one
     FOREIGN,
-
-    /**
-     * A lazy bean is a bean that is lazily created when first needed.
-     * <p>
-     * While it may seem like. Lazy beans come with some overhead both memory and performance as there is some machinery
-     * that needs to be stet and checks that needs to be performed every time it is accessed.
-     * <p>
-     *
-     * @see BeanInstaller#install(Class)
-     * @see BeanInstaller#installIfAbsent(Class, Consumer)
-     * @see BeanInstaller#install(Op)
-     */
-    LAZY,
 
     MANANGED,
 
@@ -110,7 +100,7 @@ public enum BeanKind {
     }
 
     public boolean hasContainerLifetime() {
-        return this == STATIC || this == CONTAINER;
+        return this == STATIC || this == SINGLETON;
     }
 
     /** @return whether or not the bean can have more than 1 instance. */
@@ -126,7 +116,7 @@ public enum BeanKind {
      * @return
      */
     public BeanTemplate template() {
-        return new PackedBeanTemplate(this);
+        return BeanTemplate.builder(this).build();
     }
 }
 //

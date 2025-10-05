@@ -37,7 +37,7 @@ import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
-import internal.app.packed.util.handlers.BeanLifetimeHandlers;
+import internal.app.packed.util.accesshelper.BeanLifetimeAccessHandler;
 import sandbox.lifetime.ManagedLifetime;
 
 /**
@@ -119,7 +119,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     /** {@return a mirror that can be exposed to end-users.} */
     @Override
     public CompositeLifetimeMirror mirror() {
-        return BeanLifetimeHandlers.newRegionalLifetimeMirror(this);
+        return BeanLifetimeAccessHandler.instance().newRegionalLifetimeMirror(this);
     }
 
     public ExtensionContext newRuntimePool() {

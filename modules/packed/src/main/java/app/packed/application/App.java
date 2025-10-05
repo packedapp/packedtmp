@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App.Launcher;
 import app.packed.assembly.Assembly;
+import app.packed.binding.Key;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -105,14 +106,12 @@ public interface App extends AutoCloseable, ApplicationInterface {
      *            optional wirelets for configuration
      * @return an image that can be used to launch the application
      */
-    // By default I think it is single launchable...
-    // Mayb
     static Image imageOf(Assembly assembly, Wirelet... wirelets) {
         return new PackedApp.AppImage(PackedApp.BOOTSTRAP_APP.imageOf(assembly, wirelets));
     }
 
     static Launcher launcherOf(Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        return new PackedApp.AppLauncher(PackedApp.BOOTSTRAP_APP.launcher(assembly, wirelets));
     }
 
     static void main(String[] args) {
@@ -228,6 +227,12 @@ public interface App extends AutoCloseable, ApplicationInterface {
     interface Launcher extends ApplicationLauncher {
 
         // Config also
+
+
+        @Override
+        default <T> Launcher provide(Key<? super T> key, T value) {
+            return null;
+        }
 
         default Launcher alwaysRestart() {
             return this;

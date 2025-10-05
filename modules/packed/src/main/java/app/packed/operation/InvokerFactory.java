@@ -73,17 +73,16 @@ public interface InvokerFactory {
      *             if the abstract method's signature is incompatible with the signature required by the underlying
      *             operation
      */
-    <T> T invokerAs(Class<T> handleClass, Object... abstractClassConstructorArguments);
+    <T> T as(Class<T> handleClass, Object... abstractClassConstructorArguments);
 
     // Det er her jeg gerne vil have Runnable
     // It would be nice to set a key
-    default <T> void invokerAs2(BeanConfiguration bc, Class<T> handleClass, Object... abstractClassConstructorArguments) {
+    default <T> void as2(BeanConfiguration bc, Class<T> handleClass, Object... abstractClassConstructorArguments) {
         throw new UnsupportedOperationException();
     }
-    default <T> InjectableToken<T> invokerAs2(Class<T> handleClass, Object... abstractClassConstructorArguments) {
+    default <T> InjectableToken<T> as2(Class<T> handleClass, Object... abstractClassConstructorArguments) {
         throw new UnsupportedOperationException();
     }
-
 
     /**
      * Creates an invoker as a method handle.
@@ -93,7 +92,7 @@ public interface InvokerFactory {
      *
      * @return a method handle for invoking the underlying operation
      */
-    MethodHandle invokerAsMethodHandle();
+    MethodHandle asMethodHandle();
 
     /**
      * Creates an invoker as a var handle.
@@ -106,12 +105,12 @@ public interface InvokerFactory {
      *             if the underlying operation cannot be represented as a var handle, for example, if it does not represent
      *             a field or variable access
      */
-    VarHandle invokerAsVarHandle();
+    VarHandle asVarHandle();
 
     /**
      * Returns the signature of the underlying operation that the invoker must match.
      * <p>
-     * This method returns the type signature of the underlying operation that the invoker can execute, which describes the
+     * This method returns the signature of the underlying operation that the invoker can execute, which describes the
      * parameter types and return type required for invocation. This information can be used to determine if the operation
      * is compatible with a given functional interface or to create compatible method handles.
      * <p>
@@ -120,5 +119,5 @@ public interface InvokerFactory {
      *
      * @return the method type signature of the underlying operation
      */
-    MethodType invokerType();
+    MethodType type();
 }

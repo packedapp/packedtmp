@@ -81,7 +81,7 @@ public class EntryPointManager {
 
             MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
 
-            mc.generatedMethodHandle = os.invokerAsMethodHandle();
+            mc.generatedMethodHandle = os.invoker().asMethodHandle();
             return true;
         }
 

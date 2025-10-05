@@ -15,7 +15,6 @@
  */
 package app.packed.application.registry.v2;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -37,7 +36,7 @@ import app.packed.application.ApplicationTemplate;
 // image(sf).
 
 // Så er basically bare en Collection
-public interface ApplicationRepository<I extends ApplicationImage, H extends ApplicationHandle<I, ?>> extends Iterable<I> {
+public interface ApplicationRepository<I extends ApplicationImage, H extends ApplicationHandle<?, ?>> extends Iterable<I> {
 
     // I::instances()
     <R> Stream<R> flatMap(Function<? super I, ? extends Stream<? extends R>> mapper);
@@ -62,7 +61,7 @@ public interface ApplicationRepository<I extends ApplicationImage, H extends App
      * @throws RuntimeException
      *             if the application failed to build, or could not be installed
      */
-    I install(Consumer<? super ApplicationInstaller<H>> installer);
+    I install(Function<? super ApplicationInstaller<H>, H> installer);
 
     /** {@return a stream of all installed applications in this repository} */
     Stream<I> stream();

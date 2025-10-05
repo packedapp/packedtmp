@@ -22,7 +22,7 @@ import app.packed.binding.Key;
 /**
  *
  */
-class DependencyAssert extends AbstractAssert<DependencyAssert, InternalDependency> {
+class DependencyAssert extends AbstractAssert<DependencyAssert, PackedDependency> {
 
     public DependencyAssert keyIs(Class<?> type) {
         return keyIs(Key.of(type));
@@ -71,11 +71,11 @@ class DependencyAssert extends AbstractAssert<DependencyAssert, InternalDependen
         return this;
     }
 
-    public DependencyAssert(InternalDependency actual) {
+    public DependencyAssert(PackedDependency actual) {
         super(actual, DependencyAssert.class);
     }
 
-    public static DependencyAssert assertThat(InternalDependency actual) {
+    public static DependencyAssert assertThat(PackedDependency actual) {
         return new DependencyAssert(actual);
     }
 }

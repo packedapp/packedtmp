@@ -50,7 +50,7 @@ public final class DaemonOperationHandle extends ThreadedOperationHandle<DaemonJ
     }
 
     public DaemonRuntimeOperationConfiguration runtimeConfiguration() {
-        return new DaemonRuntimeOperationConfiguration(runtimeThreadFactory(), invokerAsMethodHandle());
+        return new DaemonRuntimeOperationConfiguration(runtimeThreadFactory(), invoker().asMethodHandle());
     }
 
     /** {@inheritDoc} */

@@ -35,6 +35,8 @@ import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.service.util.PackedServiceLocator;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.MethodHandleUtil;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.ServiceAccessHandler;
 
 /**
  * A service namespace represents a namespace where every provided service in the service has a unique {@link Key key}.
@@ -165,6 +167,21 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
         requireNonNull(keys, "keys is null");
         checkIsConfigurable();
         throw new UnsupportedOperationException();
+    }
+
+    static {
+        AccessHelper.initHandler(ServiceAccessHandler.class, new ServiceAccessHandler() {
+
+            @Override
+            public ServiceNamespaceConfiguration newServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension) {
+                return new ServiceNamespaceConfiguration(handle, extension, ComponentRealm.application());
+            }
+
+            @Override
+            public ServiceNamespaceMirror newServiceNamespaceMirror(ServiceNamespaceHandle handle) {
+                return new ServiceNamespaceMirror(handle);
+            }
+        });
     }
 }
 

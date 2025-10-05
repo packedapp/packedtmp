@@ -24,10 +24,11 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedBootstrapImage.ImageEager;
 import internal.app.packed.application.PackedBootstrapImage.ImageNonReusable;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
 
 /**
- * An application handle represents an installed application towards the person
- * An extendable handle for an application.
+ * An application handle represents a fully built application.
  */
 public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration> extends ComponentHandle implements ApplicationBuildLocal.Accessor {
 
@@ -65,8 +66,26 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
             }
         }
         this.image = img;
-
     }
+
+//    /**
+//     * The image
+//     *
+//     * @return the base image for the application
+//     * @throws IllegalStateException
+//     *             if the application was build with {@link BuildGoal#IMAGE}.
+//     */
+//    // Tror jeg fjerner den her... BaseImage er kun noget man bruger ved rødder tænker jeg???
+//    public final BootstrapApp.Image<A> newImage() {
+//        if (buildGoal() != BuildGoal.IMAGE) {
+//            throw new IllegalStateException("The application must be installed with BuildImage, was " + application.goal);
+//        }
+//        BootstrapApp.Image<A> img = null;
+//        img = new ImageEager<>(this);
+//        if (!inst.optionBuildReusableImage) {
+//            img = new ImageNonReusable<>(img);
+//        }
+//    }
 
     /** {@return the build goal that was used to build the application} */
     public final BuildGoal buildGoal() {
@@ -110,7 +129,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
      *             if the application was build with {@link BuildGoal#IMAGE}.
      */
     // Tror jeg fjerner den her... BaseImage er kun noget man bruger ved rødder tænker jeg???
-    public final BootstrapApp.Image<A> image() {
+    final BootstrapApp.Image<A> image() {
         BootstrapApp.Image<A> i = image;
         if (i == null) {
             throw new IllegalStateException("The application must be installed with BuildImage, was " + application.goal);
@@ -173,4 +192,24 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
 //        // We can have removeFromRepository();
 //        return Optional.empty();
 //    }
+
+    static {
+        AccessHelper.initHandler(ApplicationAccessHandler.class, new ApplicationAccessHandler() {
+
+            @Override
+            public ApplicationHandle<?, ?> getApplicationConfigurationHandle(ApplicationConfiguration configuration) {
+                return configuration.handle();
+            }
+
+            @Override
+            public ApplicationSetup getApplicationHandleApplication(ApplicationHandle<?, ?> handle) {
+                return handle.application;
+            }
+
+            @Override
+            public ApplicationHandle<?, ?> getApplicationMirrorHandle(ApplicationMirror mirror) {
+                return mirror.handle;
+            }
+        });
+    }
 }

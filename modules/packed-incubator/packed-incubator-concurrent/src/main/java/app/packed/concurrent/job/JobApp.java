@@ -72,7 +72,7 @@ public interface JobApp<T> extends App {
 
     // Kunne vi supportere en Callable????
     // Saa kan folk submitte den til en executor...
-    interface Image<T> {
+    interface Image<T> extends Launcher<T> {
 
         // Mindfuck
         // Do we unwrap UnhandledApplicationExtension? Hmm
@@ -95,6 +95,10 @@ public interface JobApp<T> extends App {
         T run();
 
         JobApp<T> start();
+    }
+
+    interface Launcher<T> {
+
     }
 }
 

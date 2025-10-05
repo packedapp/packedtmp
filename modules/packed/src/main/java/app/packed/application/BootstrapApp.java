@@ -250,6 +250,14 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
     interface Launcher<A> extends ApplicationLauncher {
 
         /**
+         * Create a new instance of the application in the initialized state.
+         * @return
+         */
+        default A initialize() {
+            return launch(RunState.INITIALIZED);
+        }
+
+        /**
          * Launches an instance of the application that this image represents in the specified state.
          * <p>
          * What happens here is dependent on the underlying application template. The behaviour of this method is identical to
@@ -257,8 +265,6 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
          *
          * @param state
          *            the state the application should launch into
-         * @param wirelets
-         *            optional wirelets
          * @return an application instance
          *
          * @see BootstrapApp#launch(Assembly, Wirelet...)
@@ -266,6 +272,11 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
         A launch(RunState state);
     }
 
+    // Valid runstates, could also be methods...
+    // Taenker den boer kunne genbruges i ApplicationRepository
+    enum LaunchState {
+        INITIALIZED,
+    }
 }
 
 // I don't if we have any usecases Maybe just skip it
@@ -322,6 +333,6 @@ record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? exten
     /** {@inheritDoc} */
     @Override
     public Launcher<E> launcher(Assembly assembly, Wirelet... wirelets) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

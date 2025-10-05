@@ -384,7 +384,7 @@ public interface ServiceLocator extends ApplicationInterface {
 
         /** Creates a new service locator application from this image. */
         public ServiceLocator initialize() {
-            return image.launch(RunState.INITIALIZED);
+            return image.initialize();
         }
     }
 }

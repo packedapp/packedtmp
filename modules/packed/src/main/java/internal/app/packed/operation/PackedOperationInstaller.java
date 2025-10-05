@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.scanning.InstanceMembersDisallowedException;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.namespace.NamespaceHandle;
@@ -100,7 +100,7 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <H extends OperationHandle<?>> OperationSetup newOperationFromMember(OperationMemberTarget<?> member, MethodHandle methodHandle,
             Function<? super OperationInstaller, H> configurationCreator) {
-        if (bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
+        if (bean.beanKind == BeanLifetime.STATIC && !Modifier.isStatic(member.modifiers())) {
             throw new InstanceMembersDisallowedException("Cannot create operation for non-static member " + member);
         }
         namePrefix = member.name();
