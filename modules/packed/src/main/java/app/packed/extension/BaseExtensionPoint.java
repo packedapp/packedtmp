@@ -7,10 +7,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.bean.Bean;
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTemplate;
 import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.component.guest.OldContainerTemplateLink;
@@ -34,7 +32,7 @@ import internal.app.packed.extension.PackedExtensionPointHandle;
 public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     /** Application scoped extension beans can have ExtensionContext injected. */
-    private final static BeanTemplate CONTAINER = BaseExtension.TEMPLATE;
+    private final static BeanTemplate CONTAINER = BaseExtension.DEFAULT_BEAN;
 //    .withInitialization(null)
 //
 //            .configure(c -> c.initialization(o -> {}  /*o.inContext(PackedExtensionContext.CONTEXT_TEMPLATE)*/));
@@ -113,17 +111,6 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public <T> ProvidableBeanConfiguration<T> installInstance(T instance) {
         return install(Bean.ofInstance(instance));
-    }
-
-    /**
-     * Installs a {@link BeanKind#STATIC static} bean.
-     *
-     * @param beanClass
-     *            the type of static bean to install
-     * @return a configuration object representing the installed bean
-     */
-    public BeanConfiguration installStatic(Class<?> beanClass) {
-        return newBean(BeanLifetime.STATIC.template(), handle()).install(Bean.of(beanClass), BeanHandle::new).configuration();
     }
 
     /**

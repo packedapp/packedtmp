@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceInheritableVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
@@ -40,7 +40,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected
  */
-@OnContextServiceInheritableVariable(introspector = MirrorImplementationBeanIntrospector.class)
+@AutoInjectInheritable(introspector = MirrorImplementationBeanIntrospector.class)
 public non-sealed class ContainerMirror implements ComponentMirror, ContainerBuildLocal.Accessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */

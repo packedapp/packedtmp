@@ -15,7 +15,7 @@
  */
 package app.packed.bean.lifecycle;
 
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
+import app.packed.operation.OperationHandle;
 
 /**
  * Represents a starting operation.
@@ -26,7 +26,7 @@ public final class StartOperationMirror extends BeanLifecycleOperationMirror {
     /**
      * @param handle
      */
-    StartOperationMirror(LifecycleOnStartHandle handle) {
+   public StartOperationMirror(OperationHandle<?> handle) {
         super(handle);
     }
 }

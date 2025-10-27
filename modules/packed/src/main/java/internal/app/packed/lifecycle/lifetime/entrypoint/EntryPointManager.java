@@ -15,13 +15,12 @@
  */
 package internal.app.packed.lifecycle.lifetime.entrypoint;
 
-import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.Main;
@@ -30,6 +29,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnMethod;
 import internal.app.packed.lifecycle.lifetime.entrypoint.OldEntryPointSetup.MainThreadOfControl;
+import internal.app.packed.operation.OperationSetup;
 
 /** An instance of this class is shared between all entry point extensions for a single application. */
 public class EntryPointManager {
@@ -48,8 +48,6 @@ public class EntryPointManager {
     /** All entry points. */
     public final List<EntryPointConf> entrypoints = new ArrayList<>();
 
-    MethodHandle[] entryPoints;
-
     Class<?> resultType;
 
     public int takeOver(Extension<?> epe, Class<? extends Extension<?>> takeOver) {
@@ -64,28 +62,23 @@ public class EntryPointManager {
         return 0;
     }
 
-    public static boolean testMethodAnnotation(BaseExtension extension, boolean isInApplicationLifetime, IntrospectorOnMethod method, Annotation annotation) {
-        BeanSetup bean = method.bean();
+    public static void testMethodAnnotation(BaseExtension extension, boolean isInApplicationLifetime, BeanIntrospector.OnMethod method, Main annotation) {
+        BeanSetup bean = ((IntrospectorOnMethod) method).bean();
 
-        if (annotation instanceof Main) {
-            if (!isInApplicationLifetime) {
-                throw new BeanInstallationException("Must be in the application lifetime to use @" + Main.class.getSimpleName());
-            }
-
-            bean.container.lifetime.entryPoints.takeOver(extension, BaseExtension.class);
-
-            bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
-
-            OperationTemplate temp = OperationTemplate.defaults().withReturnTypeDynamic();
-            MainOperationHandle os = method.newOperation(temp).install(MainOperationHandle::new);
-
-            MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
-
-            mc.generatedMethodHandle = os.invoker().asMethodHandle();
-            return true;
+        if (!isInApplicationLifetime) {
+            throw new BeanInstallationException("Must be in the application lifetime to use @" + Main.class.getSimpleName());
         }
 
-        return false;
+        bean.container.lifetime.entryPoints.takeOver(extension, BaseExtension.class);
+
+        bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
+
+        OperationTemplate temp = OperationTemplate.defaults().withReturnTypeDynamic();
+        MainOperationHandle os = method.newOperation(temp).install(MainOperationHandle::new);
+
+        MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
+
+        mc.generatedMethodHandle = OperationSetup.crack(os).codeHolder.asMethodHandle();
     }
 
     public static class EntryPointConf {

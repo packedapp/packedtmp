@@ -16,14 +16,18 @@
  */
 package app.packed.bean.lifecycle;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger;
-import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
+import app.packed.extension.BaseExtension;
+import internal.app.packed.extension.InternalBeanIntrospector;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -44,7 +48,7 @@ import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
 // Channels -> Notification: Notifiers friends and families about the pending shutdown
 // Do the actual shutdown
 // Notifaction again: Shit has been shutdown
-@BeanTrigger.OnAnnotatedMethod(introspector = LifecycleAnnotationBeanIntrospector.class, requiresContext = StopContext.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedMethod(introspector = Stop.Introspector.class, requiresContext = StopContext.class, allowInvoke = true)
 public @interface Stop {
 
 //    // What is the usecase?
@@ -66,4 +70,10 @@ public @interface Stop {
         FORK, FORK_AWAIT_AFTER_DEPENDENCIES, NO_FORK;
     }
 
+    final class Introspector extends InternalBeanIntrospector<BaseExtension> {
+        @Override
+        public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+            LifecycleOperationStopHandle.install((Stop) annotation, method);
+        }
+    }
 }

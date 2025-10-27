@@ -105,12 +105,12 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
         return newOperation(t, directMH, accessMode);
     }
 
-    private OperationInstaller newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
+    private OperationInstaller newOperation(OperationTemplate template, MethodHandle directMH, AccessMode accessMode) {
         PackedOperationTemplate t = (PackedOperationTemplate) template;
         OperationType ft = OperationType.fromField(member, accessMode);
 
         // We should be able to create the method handle lazily
-        return t.newInstaller(introspector, mh, new OperationFieldTarget(member, accessMode), ft);
+        return t.newInstaller(introspector, directMH, new OperationFieldTarget(member, accessMode), ft);
     }
 
     /** {@inheritDoc} */

@@ -29,7 +29,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInject;
 import app.packed.binding.BindingKind;
 import app.packed.binding.BindingMirror;
 import app.packed.component.ComponentRealm;
@@ -81,7 +81,7 @@ public class RuntimeMirrorInjectionTest extends ServiceLocatorAppTest {
 
     @Test
     public void unknownMirror() {
-        @OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
+        @AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
         record MirrorAlien() {}
 
         hooks().onAnnotatedField((_, b) -> b.newGetOperation(OperationTemplate.defaults()));

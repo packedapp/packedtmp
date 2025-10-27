@@ -55,6 +55,7 @@ public sealed abstract class ComponentHandle permits ApplicationHandle, Containe
      */
     public abstract void componentTag(String... tags);
 
+    // alternatively tags().add(BaseTags.HIDDEN)
     public Set<String> componentTags() {
         throw new UnsupportedOperationException();
     }

@@ -57,10 +57,10 @@ public final class IntrospectorOnMethod extends IntrospectorOnExecutable<Method>
         }
 
         // Attempt to unreflect the method (Create a direct method handle for it)
-        MethodHandle methodHandle = introspector.scanner.unreflectMethod(member);
+        MethodHandle directMH = introspector.scanner.unreflectMethod(member);
 
         // We should be able to create this lazily
-        return t.newInstaller(introspector, methodHandle, new OperationMethodTarget(member), type);
+        return t.newInstaller(introspector, directMH, new OperationMethodTarget(member), type);
     }
 
     /** {@inheritDoc} */

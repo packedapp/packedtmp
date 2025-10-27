@@ -110,14 +110,14 @@ public final class PackedOperationTemplate implements OperationTemplate {
         return methodType;
     }
 
-    public PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle methodHandle, OperationMemberTarget<?> target,
+    public PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle directMH, OperationMemberTarget<?> target,
             OperationType operationType) {
         return new PackedOperationInstaller(this, operationType, extension.scanner.bean, extension.extension()) {
 
             @SuppressWarnings("unchecked")
             @Override
             public final <H extends OperationHandle<?>> H install(Function<? super OperationInstaller, H> handleFactory) {
-                OperationSetup operation = newOperationFromMember(target, methodHandle, handleFactory);
+                OperationSetup operation = newOperationFromMember(target, directMH, handleFactory);
                 extension.scanner.unBoundOperations.add(operation);
                 return (H) operation.handle();
             }
@@ -131,7 +131,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     /** {@inheritDoc} */
     @Override
     public OperationTemplate withAppendBeanInstance(Class<?> beanClass) {
-        return null;
+        return new PackedBuilder(this).appendBeanInstance(beanClass).build();
     }
 
     public PackedOperationTemplate withArg(Class<?> type) {
@@ -142,15 +142,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     /** {@inheritDoc} */
     @Override
     public PackedOperationTemplate withContext(ContextTemplate context) {
-        PackedContextTemplate c = (PackedContextTemplate) context;
-        ArrayList<PackedContextTemplate> m = new ArrayList<>(contexts);
-        for (PackedContextTemplate pct : m) {
-            if (pct.contextClass() == c.contextClass()) {
-                throw new IllegalArgumentException("This template already contains the context " + context.contextClass());
-            }
-        }
-        m.add(c);
-        return new PackedOperationTemplate(returnKind, returnClass, extensionContextFlag, beanClass, List.copyOf(m), args);
+        return new PackedBuilder(this).context(context).build();
     }
 
     /**
@@ -158,19 +150,18 @@ public final class PackedOperationTemplate implements OperationTemplate {
      */
     @Override
     public PackedOperationTemplate withRaw() {
-        return new PackedOperationTemplate(ReturnKind.IGNORE, returnClass, false, beanClass, contexts, args);
+        return new PackedBuilder(this).raw().build();
     }
 
     @Override
     public PackedOperationTemplate withReturnIgnore() {
-        return new PackedOperationTemplate(ReturnKind.IGNORE, void.class, extensionContextFlag, beanClass, contexts, args);
+        return new PackedBuilder(this).returnIgnore().build();
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedOperationTemplate withReturnType(Class<?> returnType) {
-        requireNonNull(returnType, "returnType is null");
-        return new PackedOperationTemplate(ReturnKind.CLASS, returnType, extensionContextFlag, beanClass, contexts, args);
+        return new PackedBuilder(this).returnType(returnType).build();
     }
 
     /**
@@ -178,7 +169,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
      */
     @Override
     public PackedOperationTemplate withReturnTypeDynamic() {
-        return new PackedOperationTemplate(ReturnKind.DYNAMIC, Object.class, extensionContextFlag, beanClass, contexts, args);
+        return new PackedBuilder(this).returnTypeDynamic().build();
     }
 
     public enum ReturnKind {
@@ -188,6 +179,98 @@ public final class PackedOperationTemplate implements OperationTemplate {
     /** {@inheritDoc} */
     @Override
     public OperationTemplate withAllowedThrowables(Class<? extends Throwable> allowed) {
-        return null;
+        return new PackedBuilder(this).allowedThrowables(allowed).build();
+    }
+
+    public static PackedBuilder builder() {
+        return new PackedBuilder();
+    }
+
+    /** Implementation of {@link OperationTemplate.Builder}. */
+    public static final class PackedBuilder implements OperationTemplate.Builder {
+        private ReturnKind returnKind = ReturnKind.CLASS;
+        private Class<?> returnClass = Object.class;
+        private boolean extensionContextFlag = true;
+        private Class<?> beanClass = null;
+        private List<PackedContextTemplate> contexts = List.of();
+        private List<Class<?>> args = List.of();
+        private List<Class<? extends Throwable>> allowedThrowables = List.of(Throwable.class);
+
+        PackedBuilder() {
+        }
+
+        /** Copy constructor for creating a builder from an existing template. */
+        PackedBuilder(PackedOperationTemplate template) {
+            this.returnKind = template.returnKind;
+            this.returnClass = template.returnClass;
+            this.extensionContextFlag = template.extensionContextFlag;
+            this.beanClass = template.beanClass;
+            this.contexts = template.contexts;
+            this.args = template.args;
+            this.allowedThrowables = template.allowedThrowables;
+        }
+
+        @Override
+        public PackedBuilder context(ContextTemplate context) {
+            PackedContextTemplate c = (PackedContextTemplate) context;
+            ArrayList<PackedContextTemplate> m = new ArrayList<>(contexts);
+            for (PackedContextTemplate pct : m) {
+                if (pct.contextClass() == c.contextClass()) {
+                    throw new IllegalArgumentException("This template already contains the context " + context.contextClass());
+                }
+            }
+            m.add(c);
+            this.contexts = List.copyOf(m);
+            return this;
+        }
+
+        @Override
+        public PackedBuilder returnType(Class<?> type) {
+            requireNonNull(type, "type is null");
+            this.returnKind = ReturnKind.CLASS;
+            this.returnClass = type;
+            return this;
+        }
+
+        @Override
+        public PackedBuilder returnIgnore() {
+            this.returnKind = ReturnKind.IGNORE;
+            this.returnClass = void.class;
+            return this;
+        }
+
+        @Override
+        public PackedBuilder returnTypeDynamic() {
+            this.returnKind = ReturnKind.DYNAMIC;
+            this.returnClass = Object.class;
+            return this;
+        }
+
+        @Override
+        public PackedBuilder raw() {
+            this.returnKind = ReturnKind.IGNORE;
+            this.extensionContextFlag = false;
+            return this;
+        }
+
+        @Override
+        public PackedBuilder appendBeanInstance(Class<?> beanClass) {
+            this.beanClass = beanClass;
+            return this;
+        }
+
+        @Override
+        public PackedBuilder allowedThrowables(Class<? extends Throwable> allowed) {
+            requireNonNull(allowed, "allowed is null");
+            ArrayList<Class<? extends Throwable>> list = new ArrayList<>(allowedThrowables);
+            list.add(allowed);
+            this.allowedThrowables = List.copyOf(list);
+            return this;
+        }
+
+        @Override
+        public PackedOperationTemplate build() {
+            return new PackedOperationTemplate(returnKind, returnClass, extensionContextFlag, beanClass, contexts, args);
+        }
     }
 }

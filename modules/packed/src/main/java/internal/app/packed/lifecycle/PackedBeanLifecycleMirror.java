@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.BeanLifecycleMirror;
 import app.packed.bean.lifecycle.BeanLifecycleModel;
@@ -28,8 +27,8 @@ import app.packed.bean.lifecycle.StartOperationMirror;
 import app.packed.bean.lifecycle.StopOperationMirror;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 
 /** Implementation of {@link BeanLifecycleMirror}. */
@@ -49,7 +48,7 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements BeanLifecycle
     // However custom bean templates may support it
     @Override
     public Optional<InitializeOperationMirror> factory() {
-        if (bean.beanKind != BeanLifetime.STATIC && bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+        if (bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             return Optional.of((InitializeOperationMirror) bean.operations.first().mirror());
         }
         return Optional.empty();
@@ -63,7 +62,7 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements BeanLifecycle
     /** {@inheritDoc} */
     @Override
     public Stream<InitializeOperationMirror> initializers() {
-        return stream(ForInitialize.class);
+        return stream(BeanInitializeOperationHandle.class);
     }
 
     /** {@inheritDoc} */

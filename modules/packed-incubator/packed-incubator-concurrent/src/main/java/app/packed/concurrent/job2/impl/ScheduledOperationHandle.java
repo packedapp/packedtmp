@@ -15,6 +15,7 @@
  */
 package app.packed.concurrent.job2.impl;
 
+import app.packed.bean.lifecycle.Initialize;
 import app.packed.concurrent.ScheduledOperationConfiguration;
 import app.packed.concurrent.ScheduledOperationMirror;
 import app.packed.concurrent.SchedulingContext;
@@ -38,7 +39,7 @@ public final class ScheduledOperationHandle extends ThreadedOperationHandle<Sche
             .withReturnIgnore();
 
     @Nullable
-   public  ScheduleImpl s;
+    public ScheduleImpl s;
 
     /**
      * @param installer
@@ -63,5 +64,12 @@ public final class ScheduledOperationHandle extends ThreadedOperationHandle<Sche
         if (s == null) {
             throw new IllegalStateException("Operation " + this + " was never scheduled");
         }
+    }
+
+    static class ScheduledOperationSideBean {
+
+        @Initialize
+        public void init() {}
+
     }
 }

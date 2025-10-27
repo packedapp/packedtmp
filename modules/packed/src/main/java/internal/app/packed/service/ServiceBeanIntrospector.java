@@ -28,6 +28,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.service.Export;
 import app.packed.service.Provide;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingAccessor.FromOperationResult;
 import internal.app.packed.extension.InternalBeanIntrospector;
 import internal.app.packed.operation.OperationSetup;
@@ -40,7 +41,7 @@ public final class ServiceBeanIntrospector extends InternalBeanIntrospector<Base
     static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withReturnTypeDynamic();
 
     /**
-     * Handles {@link Inject}.
+     * Handles {@link Provide}.
      *
      * {@inheritDoc}
      */
@@ -60,9 +61,8 @@ public final class ServiceBeanIntrospector extends InternalBeanIntrospector<Base
         Key<?> key = onField.toKey();
 
         OperationSetup operation = OperationSetup.crack(onField.newGetOperation(OPERATION_TEMPLATE).install(OperationHandle::new));
-        bean().serviceNamespace().provideService(key, operation, new FromOperationResult(operation));
+        BeanSetup.crack(this).serviceNamespace().provideService(key, operation, new FromOperationResult(operation));
     }
-
 
     /**
      * Handles {@link Provide} and {@link Export}.
@@ -82,7 +82,7 @@ public final class ServiceBeanIntrospector extends InternalBeanIntrospector<Base
             Key<?> key = method.toKey();
 
             OperationSetup operation = OperationSetup.crack(method.newOperation(OPERATION_TEMPLATE).install(OperationHandle::new));
-            bean().serviceNamespace().provideService(key, operation, new FromOperationResult(operation));
+            BeanSetup.crack(this).serviceNamespace().provideService(key, operation, new FromOperationResult(operation));
         } else if (annotation instanceof Export) {
             if (!Modifier.isStatic(method.modifiers())) {
                 if (beanKind() != BeanLifetime.SINGLETON) {
@@ -93,7 +93,7 @@ public final class ServiceBeanIntrospector extends InternalBeanIntrospector<Base
             Key<?> key = method.toKey();
 
             OperationSetup operation = OperationSetup.crack(method.newOperation(OPERATION_TEMPLATE).install(OperationHandle::new));
-            bean().serviceNamespace().export(key, operation);
+            BeanSetup.crack(this).serviceNamespace().export(key, operation);
         }
     }
 }

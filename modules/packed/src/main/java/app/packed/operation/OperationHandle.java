@@ -18,12 +18,13 @@ package app.packed.operation;
 import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.util.function.Function;
 
-import app.packed.bean.scanning.BeanIntrospector.OnVariable;
+import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.sidebean.SideBeanConfiguration;
+import app.packed.bean.sidebean.SideBeanUseSite;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
@@ -31,11 +32,8 @@ import app.packed.extension.ExtensionContext;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.component.ComponentBuildState;
-import internal.app.packed.operation.OperationCodeGenerator;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
-import internal.app.packed.util.MethodHandleUtil;
-import internal.app.packed.util.MethodHandleUtil.LazyResolable;
 import internal.app.packed.util.accesshelper.AccessHelper;
 import internal.app.packed.util.accesshelper.OperationAccessHandler;
 
@@ -97,29 +95,40 @@ import internal.app.packed.util.accesshelper.OperationAccessHandler;
 //Top does not have a parent
 //Top Yes and
 
-//Top
+//TopO
 //Non-Top
 //Embedded
 // interceptor().add(...);
 // interceptor().peek(e->IO.println(e));
 public non-sealed class OperationHandle<C extends OperationConfiguration> extends ComponentHandle {
 
+    static {
+        AccessHelper.initHandler(OperationAccessHandler.class, new OperationAccessHandler() {
+
+            @Override
+            public OperationSetup getOperationHandleOperation(OperationHandle<?> handle) {
+                return handle.operation;
+            }
+
+            @Override
+            public void invokeOperationHandleDoClose(OperationHandle<?> handle, boolean isClose) {
+                handle.onStateChange(isClose);
+            }
+        });
+    }
+
     /** The lazy generated operation configuration. */
+    @Nullable
     private C configuration;
 
-    /** The generated method handle. */
-    @Nullable
-    MethodHandle generatedMethodHandle;
-
-    @Nullable
-    LazyResolable lmh;
-
     /** The lazy generated operation mirror. */
+    @Nullable
     private OperationMirror mirror;
 
     /** The internal operation configuration. */
     final OperationSetup operation;
 
+    /** The state of this handle. */
     private ComponentBuildState state = ComponentBuildState.CONFIGURABLE_AND_OPEN;
 
     /**
@@ -133,7 +142,8 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     }
 
     /**
-     * This will create a {@link BindingKind#MANUAL manual} binding for the parameter with the specified index.
+     * Calling this method will create a {@link BindingKind#MANUAL manual} binding for the parameter with the specified
+     * index.
      * <p>
      * The {@link BindableVariable} must be bound at some point before the assembly closes. Otherwise a BuildException is
      * thrown.
@@ -172,14 +182,16 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     // bindManually
     // bind(index).toConstant("Foo");
     // Maybe take an consumer to make sure it is "executed"
-    public final OnVariable bindManually(int index) {
-
-        // This method does not throw IllegalStateExtension, but OnBinding may.
-        // custom invocationContext must have been set before calling this method
+    public final BeanIntrospector.OnVariable bindable(int index) {
         checkIndex(index, operation.type.parameterCount());
+
         if (operation.bean.scanner == null) {
             throw new UnsupportedOperationException();
         }
+
+        // This method does not throw IllegalStateExtension, but OnBinding may.
+        // custom invocationContext must have been set before calling this method
+
         // TODO we need to check that s is still active
         return new IntrospectorOnVariable(operation.bean.scanner, operation, index, operation.installedByExtension, operation.type.parameter(index));
     }
@@ -206,32 +218,25 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         return c;
     }
 
-    /**
-     * Called by the framework to mark that the bean is no longer configurable.
-     *
-     * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle)
-     */
-    /* package private */ final void onStateChange(boolean isClose) {
-        // Logic in BeanHandle, only calls this method once (with isClose=true)
-        // sometimes we run both onConfigured() and onClose();
-        if (state == ComponentBuildState.CONFIGURABLE_AND_OPEN) {
-            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
-            onConfigured();
-        }
-
-        if (isClose) {
-            onClose();
-            state = ComponentBuildState.CLOSED;
-        }
-    }
-
     /** {@return the operator of the operation.} */
     public final Class<? extends Extension<?>> installedByExtension() {
         return operation.installedByExtension.extensionType;
     }
 
-    public final InvokerFactory invoker() {
-        return new PackedOperationInvocationFactory(this);
+    /**
+     * Returns the signature of the underlying operation that the invoker must match.
+     * <p>
+     * This method returns the signature of the underlying operation that the invoker can execute, which describes the
+     * parameter types and return type required for invocation. This information can be used to determine if the operation
+     * is compatible with a given functional interface or to create compatible method handles.
+     * <p>
+     * The method handle returned by {@link #invokerAsMethodHandle()} will have this type as its {@link MethodHandle#type()
+     * method handle type}.
+     *
+     * @return the method type signature of the underlying operation
+     */
+    public final MethodType invokerType() {
+        return operation.template.invocationType();
     }
 
     /** {@inheritDoc} */
@@ -258,44 +263,10 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
     // Ogsaa en template ting taenker jeg? IDK
     /** {@inheritDoc} */
-
     public final void named(String name) {
         requireNonNull(name, "name is null");
         checkIsOpen();
         operation.namePrefix = name;
-    }
-
-    /**
-     * Generates a method handle that can be used to invoke the underlying operation. *
-     * <p>
-     * This method should never be called directly, only through {@link #configuration}
-     * <p>
-     * This method will be never called more than once for a single operation.
-     *
-     * <p>
-     * This method cannot be called earlier than the code generating phase of the application.
-     * <p>
-     * The {@link MethodType method type} of the returned method handle must be {@code invocationType()}.
-     *
-     * @return the generated method handle
-     *
-     * @throws IllegalStateException
-     *             if called before the code generating phase of the application.
-     */
-    protected MethodHandle newMethodHandle() {
-        // Maybe have a check here instead, and specifically mention generateMethodHandle when calling
-        // Check only called once
-        MethodHandle mh = generatedMethodHandle;
-        if (mh == null) {
-            mh = generatedMethodHandle = OperationCodeGenerator.newMethodHandle(operation);
-        }
-        // What if we subclassing fucks it op?
-        // It will fuck up the lazy generation
-
-        // I think we maybe have this protected.
-        // And methodHandle() will just create a lazy method handle if we assembling.
-        assert (mh.type() == operation.template.methodType);
-        return mh;
     }
 
     /**
@@ -321,10 +292,9 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         return new OperationMirror(this);
     }
 
-    /**
-     * The owner on the bean on which the operation is located can no longer configure it.
-     */
-    protected void onConfigured() {}
+    public SideBeanUseSite newSidebeanInstance(SideBeanConfiguration<?> configuration) {
+        return configuration.addToOperation(this);
+    }
 
     /**
      * Called by the framework when the operation is marked as no longer configurable.
@@ -346,6 +316,30 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     // As a okay you cannot do anything else
     protected void onClose() {}
 
+    /**
+     * The owner on the bean on which the operation is located can no longer configure it.
+     */
+    protected void onConfigured() {}
+
+    /**
+     * Called by the framework to mark that the bean is no longer configurable.
+     *
+     * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle)
+     */
+    /* package private */ final void onStateChange(boolean isClose) {
+        // Logic in BeanHandle, only calls this method once (with isClose=true)
+        // sometimes we run both onConfigured() and onClose();
+        if (state == ComponentBuildState.CONFIGURABLE_AND_OPEN) {
+            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
+            onConfigured();
+        }
+
+        if (isClose) {
+            onClose();
+            state = ComponentBuildState.CLOSED;
+        }
+    }
+
     /** {@return the target of this operation} */
     public final OperationTarget target() {
         return operation.target.target();
@@ -361,96 +355,6 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     public final OperationType type() {
         return operation.type;
     }
-
-    static {
-        AccessHelper.initHandler(OperationAccessHandler.class, new OperationAccessHandler() {
-
-            @Override
-            public MethodHandle invokeOperationHandleNewMethodHandle(OperationHandle<?> handle) {
-                return handle.newMethodHandle();
-            }
-
-            @Override
-            public void invokeOperationHandleDoClose(OperationHandle<?> handle, boolean isClose) {
-                handle.onStateChange(isClose);
-            }
-
-            @Override
-            public OperationSetup getOperationHandleOperation(OperationHandle<?> handle) {
-                return handle.operation;
-            }
-        });
-    }
-
-    /**
-     * Implementation of InvokerFactory that delegates to an OperationHandle. This class separates the invocation factory
-     * concerns from OperationHandle.
-     */
-    private static final class PackedOperationInvocationFactory implements InvokerFactory {
-
-        /** The operation handle that this factory wraps. */
-        private final OperationHandle<?> handle;
-
-        /**
-         * Creates a new invocation factory for the specified operation handle.
-         *
-         * @param handle
-         *            the operation handle to wrap
-         */
-        PackedOperationInvocationFactory(OperationHandle<?> handle) {
-            this.handle = handle;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <T> T as(Class<T> handleClass, Object... constructorArguments) {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle asMethodHandle() {
-            // If we have already created the final method handle return this
-            MethodHandle result = handle.generatedMethodHandle;
-            if (result != null) {
-                return result;
-            }
-
-            // If we already created a lazy method handle return this
-            LazyResolable l = handle.lmh;
-            if (l != null) {
-                return l.handle();
-            }
-
-            // Check that we are still configurable
-            handle.checkIsOpen();
-
-            if (handle.operation.bean.container.application.isAssembling()) {
-                // Still assembling, we need to create a lazy method handle
-                l = handle.lmh = MethodHandleUtil.lazyF(handle.operation.template.methodType, () -> handle.generatedMethodHandle = handle.newMethodHandle());
-
-                // If eager codegen .addToSomeQueue, in case we are static java£
-                result = l.handle();
-            } else {
-                // No longer assembling, lets create the method handle directly
-                result = handle.newMethodHandle();
-                assert (result.type() == handle.operation.template.methodType);
-            }
-            return result;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public VarHandle asVarHandle() {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodType type() {
-            return handle.operation.template.invocationType();
-        }
-    }
 }
 
 interface Zandbox {
@@ -462,11 +366,9 @@ interface Zandbox {
     default VarHandle generateVarHandle() {
         throw new UnsupportedOperationException();
     }
-}
-// Hvad goer vi med annoteringer paa Field/Update???
-// Putter paa baade Variable og ReturnType???? Det vil jeg mene
 
-interface ZandboxOH {
+ // Hvad goer vi med annoteringer paa Field/Update???
+ // Putter paa baade Variable og ReturnType???? Det vil jeg mene
 
     // Must not have a classifier
     //// Will have a MH injected at runtime...
@@ -542,10 +444,11 @@ interface ZandboxOH {
     // Hvad hvis vi vil injecte ting??? Return is always the first parameter I would think
     // Additional parameters will be like any other bindings
     // Will it create an additional operation? I would think so if it needs injection
-    default OperationHandle<?> mapReturn(MethodHandle mh) {
-        // Vi kan fx sige String -> StringReturnWrapper
-        throw new UnsupportedOperationException();
-    }
+
+//    default OperationHandle<?> mapReturn(MethodHandle mh) {
+//        // Vi kan fx sige String -> StringReturnWrapper
+//        throw new UnsupportedOperationException();
+//    }
 
     // non void return matching invocation type
     default OperationHandle<?> mapReturn(Op<?> op) {
@@ -595,7 +498,7 @@ interface ZandboxOH {
         // onMethod, onField, ect
     }
 
-    ZandboxOH resultAssignableToOrFail(Class<?> clz); // ignores any return value
+    Zandbox resultAssignableToOrFail(Class<?> clz); // ignores any return value
 
     // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
     // Eller vi bare kan genbruge BeanDependency
@@ -605,9 +508,9 @@ interface ZandboxOH {
 
     // boolean isBound(int parameterIndex)
 
-    ZandboxOH resultVoid(); // returnIgnore?
+    Zandbox resultVoid(); // returnIgnore?
 
-    ZandboxOH resultVoidOrFail(); // fails if non-void with BeanDeclarationException
+    Zandbox resultVoidOrFail(); // fails if non-void with BeanDeclarationException
 
     // spawn NewBean/NewContainer/NewApplication...
     default void spawnNewBean() {

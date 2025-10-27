@@ -25,6 +25,7 @@ import app.packed.operation.OperationMirror;
 public abstract class JobMirror extends OperationMirror {
 
     OperationHandle<?> handle;
+
     /**
      * @param handle
      */

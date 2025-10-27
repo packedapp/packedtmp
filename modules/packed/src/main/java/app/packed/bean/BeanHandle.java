@@ -17,7 +17,6 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -138,7 +137,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
         // Add a service provider for the instance
         Class<?> claz = instance == null ? Object.class : instance.getClass();
-        bean.beanServices.put(key, new BeanServiceProviderSetup(key, new FromConstant(claz, instance)));
+        bean.serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromConstant(claz, instance)));
     }
 
     /** {@inheritDoc} */
@@ -243,7 +242,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     // start-> void ()
     // stop -> voidd
     public final List<OperationHandle<?>> lifecycleInvokers() {
-        if (beanKind() != BeanLifetime.STATIC && beanSourceKind() != BeanSourceKind.SOURCELESS) {
+        if (beanSourceKind() != BeanSourceKind.SOURCELESS) {
 //            debug();
 //            IO.println(bean.operations.first().template.methodType);
             return List.of(bean.operations.first().handle());
@@ -492,7 +491,7 @@ interface Zandbox<T> {
     void peekInstance(Consumer<? super T> consumer);
 
     // (BeanClass) void
-    void peekInstance(MethodHandle methodHandle);
+  //  void peekInstance(MethodHandle methodHandle);
 
     // Altssa, er det ikke en bare en
     default void runOnInitialized(Op<?> op) {

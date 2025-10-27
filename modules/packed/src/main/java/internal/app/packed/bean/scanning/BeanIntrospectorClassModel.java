@@ -16,13 +16,7 @@
 package internal.app.packed.bean.scanning;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.extension.Extension;
@@ -30,7 +24,7 @@ import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
 import internal.app.packed.extension.ExtensionClassModel;
-import internal.app.packed.util.StringFormatter;
+import internal.app.packed.invoke.ExtensionLookupSupport;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
@@ -39,6 +33,7 @@ final class BeanIntrospectorClassModel {
 
     /** A cache of all encountered extension models. */
     private static final ClassValue<BeanIntrospectorClassModel> MODELS = new ClassValue<>() {
+
         /** A type variable extractor. */
         private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(BeanIntrospector.class);
 
@@ -58,7 +53,7 @@ final class BeanIntrospectorClassModel {
 //            }
 
             Class<? extends Extension<?>> e = ExtensionClassModel.extractE(EXTRACTOR, beanInspectorClass);
-            MethodHandle mh = getConstructor((Class<? extends BeanIntrospector<?>>) beanInspectorClass);
+            MethodHandle mh = ExtensionLookupSupport.findBeanIntrospector((Class<? extends BeanIntrospector<?>>) beanInspectorClass);
             return new BeanIntrospectorClassModel(e, mh);
         }
     };
@@ -79,10 +74,10 @@ final class BeanIntrospectorClassModel {
         this.extensionClass = extensionClass;
     }
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends BeanIntrospector<?>> beanIntrospectorClass() {
-        return (Class<? extends BeanIntrospector<?>>) mhConstructor.type().returnType();
-    }
+//    @SuppressWarnings("unchecked")
+//    public Class<? extends BeanIntrospector<?>> beanIntrospectorClass() {
+//        return (Class<? extends BeanIntrospector<?>>) mhConstructor.type().returnType();
+//    }
 
     /**
      * Returns any value of nest annotation.
@@ -149,35 +144,5 @@ final class BeanIntrospectorClassModel {
      */
     public static BeanIntrospectorClassModel of(Class<? extends BeanIntrospector<?>> beanIntrospectorType) {
         return MODELS.get(beanIntrospectorType);
-    }
-
-    static MethodHandle getConstructor(Class<? extends BeanIntrospector<?>> extensionClass) {
-        if (Modifier.isAbstract(extensionClass.getModifiers())) {
-            throw new InternalExtensionException("Extension " + StringFormatter.format(extensionClass) + " cannot be an abstract class");
-        } else if (ClassUtil.isInnerOrLocal(extensionClass)) {
-            throw new InternalExtensionException("Extension " + StringFormatter.format(extensionClass) + " cannot be an an inner or local class");
-        }
-
-        // An extension must provide an empty constructor
-        Constructor<?>[] constructors = extensionClass.getDeclaredConstructors();
-        if (constructors.length != 1) {
-            throw new InternalExtensionException(StringFormatter.format(extensionClass) + " must declare a single constructor taking no arguments");
-        }
-
-        Constructor<?> constructor = constructors[0];
-        if (constructor.getParameterCount() != 0) {
-            throw new InternalExtensionException(extensionClass + " must declare a single a constructor taking ExtensionHandle, but constructor required "
-                    + Arrays.toString(constructor.getParameters()));
-        }
-
-        // Create a MethodHandle for the constructor
-        try {
-            Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
-            MethodHandle mh = l.unreflectConstructor(constructor);
-            // cast from (Concrete BeanIntrospector class) -> (BeanIntrospector)
-            return MethodHandles.explicitCastArguments(mh, MethodType.methodType(BeanIntrospector.class));
-        } catch (IllegalAccessException e) {
-            throw new InternalExtensionException(extensionClass + " must be open to '" + BeanIntrospector.class.getModule().getName() + "'", e);
-        }
     }
 }

@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import app.packed.binding.Key;
-import app.packed.binding.KeyAlreadyProvidedException;
+import app.packed.binding.DublicateKeyProvisionException;
 import app.packed.service.Provide;
 import tck.AppAppTest;
 import testutil.stubs.Qualifiers.IntQualifier;
@@ -36,30 +36,30 @@ public class DublicateServiceProvisionTest extends AppAppTest {
     @Test
     public void dublicateKeyDifferentBeans() {
         installInstance(1L).provideAs(Number.class);
-        Assertions.assertThrows(KeyAlreadyProvidedException.class, () -> installInstance(1).provideAs(Number.class));
+        Assertions.assertThrows(DublicateKeyProvisionException.class, () -> installInstance(1).provideAs(Number.class));
         // TODO check message
 
         reset();
         installInstance(1L).provideAs(new Key<Number>() {});
-        Assertions.assertThrows(KeyAlreadyProvidedException.class, () -> installInstance(1).provideAs(Number.class));
+        Assertions.assertThrows(DublicateKeyProvisionException.class, () -> installInstance(1).provideAs(Number.class));
 
         reset();
         installInstance(1L).provideAs(new Key<@IntQualifier Number>() {});
-        Assertions.assertThrows(KeyAlreadyProvidedException.class, () -> installInstance(1).provideAs(new Key<@IntQualifier Number>() {}));
+        Assertions.assertThrows(DublicateKeyProvisionException.class, () -> installInstance(1).provideAs(new Key<@IntQualifier Number>() {}));
 
     }
 
     @Test
     public void cannotDefineSameProvidedKeys() {
-        KeyAlreadyProvidedException e = assertThrows(KeyAlreadyProvidedException.class, () -> install(MultipleIdenticalQualifiedFieldKeys.class));
+        DublicateKeyProvisionException e = assertThrows(DublicateKeyProvisionException.class, () -> install(MultipleIdenticalQualifiedFieldKeys.class));
         assertThat(e).hasNoCause();
         reset();
 
-        e = assertThrows(KeyAlreadyProvidedException.class, () -> install(MultipleIdenticalQualifiedMethodKeys.class));
+        e = assertThrows(DublicateKeyProvisionException.class, () -> install(MultipleIdenticalQualifiedMethodKeys.class));
         assertThat(e).hasNoCause();
         reset();
 
-        e = assertThrows(KeyAlreadyProvidedException.class, () -> install(MultipleIdenticalQualifiedMemberKeys.class));
+        e = assertThrows(DublicateKeyProvisionException.class, () -> install(MultipleIdenticalQualifiedMemberKeys.class));
         assertThat(e).hasNoCause();
         reset();
     }

@@ -23,6 +23,7 @@ import app.packed.component.guest.FromGuest;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionContext;
 import internal.app.packed.application.GuestBeanHandle;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /**
@@ -34,7 +35,7 @@ public final class BaseExtensionHostGuestBeanintrospector extends InternalBeanIn
     @Override
     public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
         if (annotation instanceof FromGuest) {
-            GuestBeanHandle gbh = (GuestBeanHandle) bean().handle();
+            GuestBeanHandle gbh = (GuestBeanHandle) BeanSetup.crack(this).handle();
             gbh.resolve(this, v);
         } else {
             super.onAnnotatedVariable(annotation, v);

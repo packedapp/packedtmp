@@ -32,6 +32,8 @@ import internal.app.packed.util.ThrowableUtil;
 /** Default implementation of ServiceLocator. */
 public record PackedServiceLocator(ExtensionContext context, Map<Key<?>, MethodHandle> entries) implements ServiceLocator {
 
+    public static final Key<Map<Key<?>, MethodHandle>> KEY = new Key<>() {};
+
     /** {@inheritDoc} */
     @Override
     public <T> T use(Key<T> key) {

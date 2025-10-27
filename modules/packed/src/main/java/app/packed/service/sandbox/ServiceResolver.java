@@ -68,7 +68,7 @@ public @interface ServiceResolver {
      * @see ServiceProviderKind#CONTEXT
      * @see ServiceProviderKind#NAMESPACE
      */
-    ServiceProviderKind[] order() default { ServiceProviderKind.OPERATION_SERVICE, ServiceProviderKind.BEAN_SERVICE, ServiceProviderKind.EXTENSION_SERVICE, ServiceProviderKind.NAMESPACE_SERVICE };
+    ServiceProviderKind[] order() default { ServiceProviderKind.OPERATION_SERVICE, ServiceProviderKind.BEAN_SERVICE, ServiceProviderKind.CONTEXT_SERVICE, ServiceProviderKind.NAMESPACE_SERVICE };
 
     /**
     *

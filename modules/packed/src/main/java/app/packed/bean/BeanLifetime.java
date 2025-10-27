@@ -78,7 +78,9 @@ public enum BeanLifetime {
      **/
     // I think we should add a Functional Bean
     // A static bean always has its containers lifetime as its lifetime
-    STATIC,
+    // Or maybe it is statis
+    // Used to throw InstanceMembersForbiddenException
+    FUNCTIONEL,
 
     /**
      * A unmanaged bean is a bean that is create within the context of a container. But once created the container no longer
@@ -100,7 +102,7 @@ public enum BeanLifetime {
     }
 
     public boolean hasContainerLifetime() {
-        return this == STATIC || this == SINGLETON;
+        return this == FUNCTIONEL || this == SINGLETON;
     }
 
     /** @return whether or not the bean can have more than 1 instance. */

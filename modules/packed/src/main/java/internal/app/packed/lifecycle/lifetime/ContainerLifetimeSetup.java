@@ -15,13 +15,13 @@
  */
 package internal.app.packed.lifecycle.lifetime;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanSourceKind;
 import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.CompositeLifetimeMirror;
 import app.packed.util.Nullable;
@@ -29,13 +29,12 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
-import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
-import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.accesshelper.BeanLifetimeAccessHandler;
 import sandbox.lifetime.ManagedLifetime;
@@ -45,10 +44,6 @@ import sandbox.lifetime.ManagedLifetime;
  * container.
  */
 public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLifetimeSetup> implements LifetimeSetup {
-
-    /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
-    public static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticOwn(MethodHandles.lookup(), "invokeInitializer", void.class, BeanSetup.class,
-            MethodHandle.class, ExtensionContext.class);
 
     /** All beans in this container lifetime, in the order they where installed. */
     public final ArrayList<BeanSetup> beans = new ArrayList<>();
@@ -61,9 +56,9 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     /** An object that is shared between all entry point extensions in the same application. */
     public final EntryPointManager entryPoints = new EntryPointManager();
 
-    public final List<ForInitialize> initializationPost = new ArrayList<>();
+    public final List<BeanInitializeOperationHandle> initializationPost = new ArrayList<>();
 
-    public final List<ForInitialize> initializationPre = new ArrayList<>();
+    public final List<IndexedOperationHandle<BeanInitializeOperationHandle>> initializationPre = new ArrayList<>();
 
     // Er ikke noedvendigvis fra et entrypoint, kan ogsaa vaere en completer
     public final Class<?> resultType;
@@ -76,7 +71,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     public final List<LifecycleOperationStopHandle> stoppersPre = new ArrayList<>();
 
-    private final LifetimeStoreSetup store = new LifetimeStoreSetup();
+    public final LifetimeStore store = new LifetimeStore();
 
     /**
      * @param origin
@@ -89,27 +84,32 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         this.resultType = installer.template.resultType();
 
         if (newContainer.isApplicationRoot()) {
-            store.addInternal(ManagedLifetime.class);
+            store.add(new LifetimeStoreEntry.InternalStoreEntry(ManagedLifetime.class));
         }
     }
 
-    public int addBean(BeanSetup bean) {
+    public LifetimeStoreIndex addBean(BeanSetup bean) {
         beans.add(bean);
-        return store.addBean(bean);
+        if (bean.beanKind == BeanLifetime.SINGLETON && bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+            return store.add(bean);
+        }
+        return null;
     }
 
     public void initialize(ExtensionContext pool) {
-        for (ForInitialize mh : initializationPre) {
+        for (IndexedOperationHandle<BeanInitializeOperationHandle> mh : initializationPre) {
             try {
-                mh.methodHandle.invokeExact(pool);
+                OperationSetup os = OperationSetup.crack(mh.operationHandle());
+                os.codeHolder.methodHandle.invokeExact(pool);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
         }
 
-        for (ForInitialize mh : initializationPost) {
+        for (BeanInitializeOperationHandle mh : initializationPost) {
             try {
-                mh.methodHandle.invokeExact(pool);
+                OperationSetup os = OperationSetup.crack(mh);
+                os.codeHolder.methodHandle.invokeExact(pool);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
@@ -152,7 +152,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         for (List<BeanLifecycleOperationHandle> lop : bean.operations.lifecycleHandles.values()) {
             for (BeanLifecycleOperationHandle h : lop) {
                 switch (h.lifecycleKind) {
-                case FACTORY, INJECT, INITIALIZE_PRE_ORDER -> initializationPre.add((ForInitialize) h);
+                case FACTORY, INJECT, INITIALIZE_PRE_ORDER -> initializationPre.add(new IndexedOperationHandle<>((BeanInitializeOperationHandle) h, bean.lifetimeStoreIndex));
                 case INITIALIZE_POST_ORDER -> startersPost.addFirst((LifecycleOnStartHandle) h);
                 case START_PRE_ORDER -> startersPre.add((LifecycleOnStartHandle) h);
                 case START_POST_ORDER -> startersPost.addFirst((LifecycleOnStartHandle) h);
@@ -176,24 +176,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     }
 
     // Bliver kaldt fra method handles
-    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ExtensionContext ec) {
-        Object instance;
-        try {
-            instance = mh.invokeExact(ec);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        if (instance == null) {
-            throw new NullPointerException(" returned null");
-        }
-        if (!bean.bean.beanClass.isInstance(instance)) {
-            throw new Error("Expected " + bean.bean.beanClass + ", was " + instance.getClass());
-        }
 
-        // Store the new bean in the context
-        PackedExtensionContext pec = (PackedExtensionContext) ec;
-        pec.storeObject(bean.lifetimeStoreIndex, instance);
-    }
 }
 
 ///** Beans that have independent lifetime of all the container's in this lifetime. */

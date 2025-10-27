@@ -29,7 +29,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.component.guest.FromGuest;
@@ -107,7 +107,7 @@ import internal.app.packed.service.util.PackedServiceLocator;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is unchangeable.
  */
-@OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
 // I don't think this should have a service provider
 public interface ServiceLocator extends ApplicationInterface {
 

@@ -15,14 +15,20 @@
  */
 package app.packed.concurrent.job;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.concurrent.TimeUnit;
 
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
+import app.packed.binding.Key;
 import app.packed.concurrent.ThreadKind;
-import internal.app.packed.concurrent.daemon.JobBeanintrospector;
+import app.packed.concurrent.job.DaemonJob.Daemonintrospector;
+import app.packed.extension.BaseExtension;
+import internal.app.packed.concurrent.daemon.DaemonOperationHandle;
 
 /**
  * Will have a dedicated thread.
@@ -46,7 +52,7 @@ import internal.app.packed.concurrent.daemon.JobBeanintrospector;
 // SupportJob
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@OnAnnotatedMethod(allowInvoke = true, introspector = JobBeanintrospector.class)
+@OnAnnotatedMethod(allowInvoke = true, introspector = Daemonintrospector.class)
 public @interface DaemonJob {
 
     String startup() default "When-exactly-are we starting";
@@ -71,4 +77,39 @@ public @interface DaemonJob {
      * @see DaemonMirror#threadKind()
      */
     ThreadKind threadKind() default ThreadKind.DAEMON_THREAD;
+
+    final class Daemonintrospector extends BeanIntrospector<BaseExtension> {
+
+        /** {@inheritDoc} */
+        @Override
+        public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+            if (annotation instanceof DaemonJob daemon) {
+                DaemonOperationHandle.installFromAnnotation(this, method, daemon);
+            } else {
+                super.onAnnotatedMethod(annotation, method);
+            }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void onExtensionService(Key<?> key, OnContextService service) {
+            if (service.matchNoQualifiers(DaemonJobContext.class)) {
+                service.binder().bindInvocationArgument(1);
+            } else {
+                super.onExtensionService(key, service);
+            }
+        }
+    }
+}
+//Could return, RESTART, EXIT, SLEEP, CONTINUE
+
+//Tror det er noget den annoterede metode kan returnere
+
+interface DaemonJobAction {
+
+ // The one problem here is cleanup...
+ // Do we want a stop method? Probably not
+ static DaemonJobAction sleep(long duration, TimeUnit timeUnit) {
+     throw new UnsupportedOperationException();
+ }
 }

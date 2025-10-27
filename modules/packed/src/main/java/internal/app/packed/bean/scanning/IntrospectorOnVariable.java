@@ -116,9 +116,9 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
         return scanner.bean;
     }
 
-    private void bind(BindingAccessor provider) {
+    private void bind(BindingAccessor accessor) {
         assert (operation.bindings[index] == null);
-        operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.authority(), provider);
+        operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.authority(), accessor);
     }
 
     /** {@inheritDoc} */

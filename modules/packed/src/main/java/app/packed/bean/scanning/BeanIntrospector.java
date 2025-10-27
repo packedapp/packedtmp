@@ -124,7 +124,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      *             if the bean handle is of another type then the specified
      */
     public final <H extends BeanHandle<?>> Optional<H> beanHandle(Class<H> beanHandleType) {
-        if (isBeanInstallingExtension()) {
+        if (isInstallingExtension()) {
             return Optional.of(beanHandleType.cast(bean().handle()));
         }
         return Optional.empty();
@@ -202,7 +202,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      * {@return whether or not the extension that implements this introspector is also the extension that is installing the
      * bean.}
      */
-    public final boolean isBeanInstallingExtension() {
+    public final boolean isInstallingExtension() {
         return introspector().extensionClass == bean().installedBy.extensionType;
     }
 
@@ -244,6 +244,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      *            the triggering annotation
      * @param field
      *            an operational field
+     * @see BeanTrigger.OnAnnotatedField
      */
     public void onAnnotatedField(Annotation triggeringAnnotation, OnField onField) {
         throw new InternalExtensionException(
@@ -272,7 +273,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      *            a non-empty list of field triggering annotations
      * @param field
      *            the field that was triggered
-     * @see app.packed.extension.ExtensionMetaHook.AnnotatedBeanFieldHook
+     * @see BeanTrigger.OnAnnotatedField
      */
     // Combinations of Field Annotations, Variable Annotations & VariableType
     // Failures? or order of importancez
@@ -329,6 +330,8 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      *
      * @see app.packed.context.ContextualServiceProvider
      * @see app.packed.context.InheritableContextualServiceProvider
+     * @see BeanTrigger.AutoInject
+     * @see BeanTrigger.AutoInjectInheritable
      */
     public void onExtensionService(Key<?> key, OnContextService service) {
         throw new BeanInstallationException(extensionDescriptor().fullName() + " cannot handle type hook " + key);
@@ -363,10 +366,10 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      * @param action
      *            the action to run
      * @throws IllegalStateException
-     *             if the extension is no longer configurable
+     *             if the underlying bean is no longer configurable
      * @see BuildGoal#isCodeGenerating()
      */
-    // juse use extensionHandle??
+    // juse use extensionHandle?? Dont know usecases, for now we just use for debugging
     public final void runOnCodegen(Runnable action) {
         extensionHandle().runOnCodegen(action);
     }

@@ -18,41 +18,18 @@ package internal.app.packed.concurrent.daemon;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.bean.lifecycle.OnStart;
-import app.packed.extension.ExtensionContext;
 
-// Runtime
-// Hmm managing, daemons in multiple lifetimes????
-// Actually I think we need to install it in the managed lifetime
+// Vi har jo strengt taget ikke brug for denne laengere
+// Med mindre vi vil se en liste af alle daemons
+// Taenker vi maaske ogsaa kan dele en ConcurrentFaetter klasse nu..
 public final class DaemonRuntimeManager {
 
-    final DaemonRuntimeOperationConfiguration[] daemons;
+    // ConcurrentSet
+    final ConcurrentHashMap<Thread, DaemonSideBean> deamons = new ConcurrentHashMap<>();
 
-    final ExtensionContext extensionContext;
-
-    final ConcurrentHashMap<Thread, DaemonRuntimeOperationRunner> deamons = new ConcurrentHashMap<>();
-
-    public DaemonRuntimeManager(ExtensionContext extensionContext, DaemonRuntimeOperationConfiguration[] daemons) {
-        this.extensionContext = extensionContext;
-        this.daemons = daemons;
-    }
-
-    // Okay, we need to schedule this with callbacks actually
-    // OperationHandle.onInitialize(DaemonManager.init(index));
-    // OperationHandle.onStart(DaemonManager dm -> dm.daemons.add(Op));
-
-    // Maaske har vi ikke en gang en bean????
-    // Men et mixin/sidecar????
-
-    // No choice we need to obey dependency order...
-    // The actually bean must be started before we can start scheduling
     @OnStart
     public void onStart() {
         IO.println("On Start");
-
-        for (DaemonRuntimeOperationConfiguration d : daemons) {
-            // Okay need to keep track of these
-            d.threadFactory().newThread(new DaemonRuntimeOperationRunner(this, d.callMe())).start();
-        }
     }
 
     @OnStart

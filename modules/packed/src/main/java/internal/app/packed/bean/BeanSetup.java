@@ -2,6 +2,7 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,12 +47,18 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
+import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
 import internal.app.packed.lifecycle.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.LifetimeStoreEntry;
+import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 import internal.app.packed.operation.BeanOperationStore;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.PackedOp;
+import internal.app.packed.operation.PackedOp.NewOperation;
+import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
 import internal.app.packed.service.util.ServiceMap;
@@ -59,7 +66,7 @@ import internal.app.packed.util.accesshelper.BeanAccessHandler;
 import internal.app.packed.util.accesshelper.BeanScanningAccessHandler;
 
 /** The internal configuration of a bean. */
-public final class BeanSetup implements ContextualizedComponentSetup, BuildLocalSource, ComponentSetup {
+public final class BeanSetup implements ContextualizedComponentSetup, BuildLocalSource, ComponentSetup, LifetimeStoreEntry {
 
     public final HashMap<PackedBeanAttachmentKey, PackedAttachmentOperationHandle> attachments = new HashMap<>();
 
@@ -70,7 +77,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     public final BeanLifecycleModel beanLifecycleKind = BeanLifecycleModel.UNMANAGED_LIFECYCLE;
 
     /** Services that have been bound specifically for this bean. */
-    public final ServiceMap<BeanServiceProviderSetup> beanServices = new ServiceMap<>();
+    public final ServiceMap<BeanServiceProviderSetup> serviceProviders = new ServiceMap<>();
 
     /** The container this bean is installed in. */
     public final ContainerSetup container;
@@ -88,8 +95,9 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
 
-    /** An index into a container lifetime store, or -1. */
-    public final int lifetimeStoreIndex;
+    /** An index into a lifetime store, or null if transient. */
+    @Nullable
+    public final LifetimeStoreIndex lifetimeStoreIndex;
 
     public int multiInstall;
 
@@ -111,6 +119,8 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     /** The bean's template. */
     public final PackedBeanTemplate template;
 
+    public final ArrayList<PackedSideBeanUsage> sideBeans = new ArrayList<>();
+
     /** Create a new bean. */
     private BeanSetup(PackedBeanInstaller installer, PackedBean<?> bean) {
         this.beanKind = requireNonNull(installer.template.beanKind());
@@ -128,7 +138,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         } else {
             BeanLifetimeSetup bls = new BeanLifetimeSetup(this);
             this.lifetime = bls;
-            this.lifetimeStoreIndex = -1;
+            this.lifetimeStoreIndex = null;
             // containerLifetime.addDetachedChildBean(bls);
         }
 
@@ -166,7 +176,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 
     public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
         requireNonNull(supplier, "supplier is null");
-        beanServices.put(key, new BeanServiceProviderSetup(key, new FromCodeGenerated(supplier, SuppliedBindingKind.CODEGEN)));
+        serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromCodeGenerated(supplier, SuppliedBindingKind.CODEGEN)));
     }
 
     /** {@inheritDoc} */
@@ -322,7 +332,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         BeanHandle<?> handle = newBean.handle = handleFactory.apply(installer);
 
         // We need to install a factory operation, if an Op was specified when creating the bean.
-        LifecycleAnnotationBeanIntrospector.checkForFactoryOp(newBean);
+        checkForFactoryOp(newBean);
 
         // Scan the bean if needed
         BeanScanner scanner = newBean.scanner;
@@ -339,5 +349,23 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 
         // Return the handle of the new bean
         return (H) handle;
+    }
+
+    static void checkForFactoryOp(BeanSetup bean) {
+        // Creating an bean factory operation representing the Op if an Op was specified when creating the bean.
+        if (bean.bean.beanSourceKind == BeanSourceKind.OP) {
+            PackedOp<?> op = (PackedOp<?>) bean.bean.beanSource;
+
+            PackedOperationTemplate ot = bean.template.initializationTemplate();
+            // if (ot.returnKind == ReturnKind.DYNAMIC) {
+            // ot = ot.configure(c -> c.returnType(beanClass));
+            // }
+
+//            ot = bean.template.initializationTemplate()
+
+            // What if no scanning and OP?????
+            op.newOperationSetup(new NewOperation(bean, bean.installedBy, ot, i -> new BeanInitializeOperationHandle(i, InternalBeanLifecycleKind.FACTORY), null));
+        }
+
     }
 }

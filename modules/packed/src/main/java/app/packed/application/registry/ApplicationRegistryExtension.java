@@ -73,7 +73,6 @@ public final class ApplicationRegistryExtension extends FrameworkExtension<Appli
         return h.configuration();
     }
 
-
     public <I, H extends ApplicationHandle<I, ?>> ProvidableBeanConfiguration<LaunchableApplication<I>> provideApplication(ApplicationTemplate<H> template,
             Consumer<? super ApplicationInstaller<H>> installer) {
         throw new UnsupportedOperationException();

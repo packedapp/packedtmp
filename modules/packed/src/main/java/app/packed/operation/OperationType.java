@@ -39,7 +39,6 @@ import internal.app.packed.util.PackedAnnotationList;
  * @apiNote This class is modelled after {@link MethodType}. But uses {@link Variable} instead of {@link Class} as the
  *          element type. This means that both detailed {@link Type} information and annotations are available.
  */
-// Maybe it is InvocationType anyway.
 @ValueBased
 public final class OperationType {
 

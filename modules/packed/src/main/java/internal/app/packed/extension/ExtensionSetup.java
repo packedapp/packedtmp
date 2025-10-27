@@ -215,7 +215,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
 
         // Create the new extension instance, using a MethodHandle
-        Extension<?> instance = extension.instance = extension.model.newInstance(extension);
+        Extension<?> instance = extension.instance = extension.model.factory.create(extension);
 
         // Add the extension to the container's map of extensions
         container.extensions.put(extensionType, extension);

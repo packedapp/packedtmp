@@ -59,7 +59,8 @@ public enum ServiceProviderKind {
      * @see app.packed.context.ContextualServiceProvider
      * @see app.packed.context.InheritableContextualServiceProvider
      **/
-    EXTENSION_SERVICE,
+    // For example, HttpRequest would be such a one
+    CONTEXT_SERVICE,
 
     /**
      * A service that is provided through a (service) namespace.

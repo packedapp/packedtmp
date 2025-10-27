@@ -60,7 +60,7 @@ public interface OperationInfo {
     Set<Class<? extends Context<?>>> contexts();
 
     // I assume since we use MHs that this does not pull in anything we don't use
-    MethodType methodType();
+    MethodType methodType(); // Why not operation type???
 
     /** {@return the name of the operation} */
     String name();

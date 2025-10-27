@@ -35,7 +35,7 @@ import internal.app.packed.operation.PackedOperationTemplate;
 
 // Return types
 /// Checks
-/// Mappers (fx sealed record faetter)
+/// Mappers (fx sealed record faetter)... Du kan returner Foo, Void, Eller bla
 /// Sidecar extractor
 
 public sealed interface OperationTemplate permits PackedOperationTemplate {
@@ -52,14 +52,6 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     List<Class<? extends Throwable>> allowedThrowables();
 
-    // Problemet er dynamic types. Hvor vi er interesset i at embedded den
-    default List<Class<?>> returnTypes() {
-        throw new UnsupportedOperationException();
-    }
-
-    default List<Class<?>> parameterTypes() {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * @return the method type representing the invocation
@@ -73,6 +65,10 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     // Tror ikke laengere man kan lave dem direkte paa den her maade...
     static OperationTemplate defaults() {
+        return PackedOperationTemplate.DEFAULTS;
+    }
+
+    static OperationTemplate of(Class<?> invokerInterface) {
         return PackedOperationTemplate.DEFAULTS;
     }
 
@@ -107,9 +103,49 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     // Field type, Method return Type
     // The operation template will be re-adjusted before being used
+
     OperationTemplate withReturnTypeDynamic();
 
     OperationTemplate withAllowedThrowables(Class<? extends Throwable> allowed);
+
+    static Builder builder() {
+        return PackedOperationTemplate.builder();
+    }
+
+    /** A builder for {@link OperationTemplate}. */
+    sealed interface Builder permits PackedOperationTemplate.PackedBuilder {
+
+        /** {@return a new operation template} */
+        OperationTemplate build();
+
+        /** Adds a context to the operation template. */
+        Builder context(ContextTemplate context);
+
+        /** Sets the return type of the operation. */
+        Builder returnType(Class<?> type);
+
+        /** Configures the operation to ignore any return value. */
+        Builder returnIgnore();
+
+        /** Configures the operation with a dynamic return type. */
+        Builder returnTypeDynamic();
+
+        //Builder returnAlternatives(Class<?> sealedClassWithAlternatives);
+
+        /** Configures the operation as raw. */
+        Builder raw();
+
+        /** Appends a bean instance parameter with the default Object class. */
+        default Builder appendBeanInstance() {
+            return appendBeanInstance(Object.class);
+        }
+
+        /** Appends a bean instance parameter with the specified class. */
+        Builder appendBeanInstance(Class<?> beanClass);
+
+        /** Adds allowed throwables to the operation. */
+        Builder allowedThrowables(Class<? extends Throwable> allowed);
+    }
 
     /**
     *
@@ -129,24 +165,6 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
 }
 
-interface sandBox {
-
-    // Was argument type.
-    enum BeanInstanceHowToGet {
-
-        /** The invocation argument is a bean instance. */
-        EXPLITCIT_BEAN_INSTANCE,
-
-        /** The invocation argument is an extension bean context. */
-        // Maaske noget andet end context, given dens mening
-        FROM_EXTENSION_CONTEXT; // InvocationContext
-    }
-
-    enum BeanInstanceHowToGet2 {
-        // Operation never takes a bean
-        STATIC
-    }
-}
 //Reserved arguments: ExtensionContext | Wirelet[] | BeanInstance
 //Free arguments available for hooks with the same extension type
 //Context

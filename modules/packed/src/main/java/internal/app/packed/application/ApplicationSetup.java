@@ -17,7 +17,6 @@ package internal.app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +40,7 @@ import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
 
@@ -91,7 +91,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     /** All hooks applied on the application. */
     public final ArrayList<ApplicationBuildHook> hooks = new ArrayList<>();
 
-    public final MethodHandle launcher;
+    public final ApplicationBaseLauncher launcher;
 
     /** This map maintains all locals for the entire application. */
     private final BuildLocalMap locals = new BuildLocalMap();

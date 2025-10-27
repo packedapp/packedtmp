@@ -17,7 +17,7 @@ package app.packed.lifetime;
 
 import java.util.List;
 
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInject;
 import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 
 /**
@@ -40,7 +40,7 @@ import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 // Hvad goere vi med child lifetimes? Maaske er den kun til gaeneglig i app lifetimen...
 // Det tror jeg faktisk
 
-@OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
 public /* primitive */ class ArgList {
     private final String[] args;
 

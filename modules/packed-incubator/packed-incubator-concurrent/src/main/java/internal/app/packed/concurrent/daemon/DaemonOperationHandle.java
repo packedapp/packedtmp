@@ -17,12 +17,17 @@ package internal.app.packed.concurrent.daemon;
 
 import java.util.concurrent.ThreadFactory;
 
+import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.sidebean.SideBeanConfiguration;
+import app.packed.bean.sidebean.SideBeanUseSite;
 import app.packed.concurrent.ThreadKind;
 import app.packed.concurrent.job.DaemonJob;
 import app.packed.concurrent.job.DaemonJobConfiguration;
 import app.packed.concurrent.job.DaemonJobContext;
 import app.packed.concurrent.job.DaemonJobMirror;
 import app.packed.context.ContextTemplate;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.concurrent.ThreadNamespaceHandle;
@@ -31,9 +36,11 @@ import internal.app.packed.concurrent.ThreadedOperationHandle;
 /** An operation handle for a daemon operation. */
 public final class DaemonOperationHandle extends ThreadedOperationHandle<DaemonJobConfiguration> {
 
-    public static final ContextTemplate DAEMON_CONTEXT_TEMPLATE = ContextTemplate.of(DaemonJobContext.class);
+    /** A context template for a daemon job. */
+    private static final ContextTemplate CONTEXT_TEMPLATE = ContextTemplate.of(DaemonJobContext.class);
 
-    public static final OperationTemplate DAEMON_OPERATION_TEMPLATE = OperationTemplate.defaults().withContext(DAEMON_CONTEXT_TEMPLATE).withReturnIgnore();
+    /** An operation template for a daemon job. */
+    private static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withContext(CONTEXT_TEMPLATE).withReturnIgnore();
 
     public boolean interruptOnStop;
 
@@ -47,10 +54,6 @@ public final class DaemonOperationHandle extends ThreadedOperationHandle<DaemonJ
         super(installer, namespace);
         this.threadKind = annotation.threadKind();
         this.interruptOnStop = annotation.interruptOnStop();
-    }
-
-    public DaemonRuntimeOperationConfiguration runtimeConfiguration() {
-        return new DaemonRuntimeOperationConfiguration(runtimeThreadFactory(), invoker().asMethodHandle());
     }
 
     /** {@inheritDoc} */
@@ -75,5 +78,23 @@ public final class DaemonOperationHandle extends ThreadedOperationHandle<DaemonJ
             };
         }
         return tf;
+    }
+
+    public static void installFromAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, DaemonJob annotation) {
+        ExtensionHandle<BaseExtension> extension = introspector.extensionHandle();
+        ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(extension);
+
+        // Create a new operation
+        OperationInstaller installer = method.newOperation(OPERATION_TEMPLATE);
+        DaemonOperationHandle handle = installer.install(namespace, (i, n) -> new DaemonOperationHandle(i, n, annotation));
+
+        //handle.lazySidebean(DaemonSideBean.class).addToOperation(handle)
+
+        // Ahh vi kan jo ikke installere direkte til os selv fordi vi er BaseExtension
+        SideBeanConfiguration<DaemonSideBean> sideBean = extension.applicationRoot().installSidebeanIfAbsent(DaemonSideBean.class,
+                c -> c.operationInvoker(DaemonSideBean.DaemonOperationInvoker.class));
+        SideBeanUseSite useSite = sideBean.addToOperation(handle);
+
+        System.out.println(useSite.toString());
     }
 }

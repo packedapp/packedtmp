@@ -19,18 +19,19 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInject;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.ValueBased;
 import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
-import internal.app.packed.util.LookupUtil;
+import internal.app.packed.invoke.LookupUtil;
+import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 
 /**
  * All strongly connected components relate to the same pod.
  */
-@OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
 @ValueBased
 public final class PackedExtensionContext implements ExtensionContext {
 
@@ -81,11 +82,12 @@ public final class PackedExtensionContext implements ExtensionContext {
         // new Exception().printStackTrace();
     }
 
-    public void storeObject(int index, Object instance) {
-        if (objects[index] != null) {
+    public void storeObject(LifetimeStoreIndex index, Object instance) {
+        int ind = index.index;
+        if (objects[ind] != null) {
             throw new IllegalStateException();
         }
-        objects[index] = instance;
+        objects[ind] = instance;
     }
 
     /** {@inheritDoc} */

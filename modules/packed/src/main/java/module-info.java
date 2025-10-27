@@ -23,6 +23,7 @@ module app.packed {
     exports app.packed.util;
 
     // temporary sandbox thingies
+    exports app.packed.bean.sidebean;
     exports app.packed.build.hook;
     exports app.packed.component.guest;
     exports sandbox.extension.container;

@@ -30,7 +30,6 @@ import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.LazyNamer;
-import internal.app.packed.util.accesshelper.OperationAccessHandler;
 
 /** This class manages all operations declared by a bean. */
 public final class BeanOperationStore implements Iterable<OperationSetup> {
@@ -67,7 +66,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
         all.add(os);
     }
 
-    public <T extends BeanLifecycleOperationHandle> T addLifecycleHandle(T handle) {
+    public <T extends BeanLifecycleOperationHandle> void addLifecycleHandle(T handle) {
         lifecycleHandles.compute(handle.lifecycleKind, (_, v) -> {
             if (v == null) {
                 return List.of(handle);
@@ -75,24 +74,21 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
                 return CollectionUtil.copyAndAdd(v, handle);
             }
         });
-
+        OperationSetup os = OperationSetup.crack(handle);
         if (handle.lifecycleKind == InternalBeanLifecycleKind.FACTORY) {
-            OperationSetup os = OperationSetup.crack(handle);
-            BeanSetup bean = os.bean;
-            if (bean.beanKind == BeanLifetime.SINGLETON /*|| bean.beanKind == BeanLifetime.LAZY*/) {
+            BeanSetup bean = OperationSetup.crack(handle).bean;
+            if (bean.beanKind == BeanLifetime.SINGLETON) {
                 assert (bean.bean.beanSourceKind != BeanSourceKind.INSTANCE);
-//                handle.setMethodHandle(handle.methodHandle());
-
-                // Problemet er hvor vi laver vi bedst adaption af method Handle???
 
                 bean.container.application.addCodegenAction(() -> {
-                    handle.setMethodHandle(OperationAccessHandler.instance().invokeOperationHandleNewMethodHandle(handle));
+                    os.codeHolder.setMethodHandle(os.codeHolder.newMethodHandle());
                 });
             }
         } else {
-            handle.setMethodHandle(handle.invoker().asMethodHandle());
+
+            os.codeHolder.setMethodHandle(os.codeHolder.asMethodHandle());
         }
-        return handle;
+       // return handle;
     }
 
     public OperationSetup first() {

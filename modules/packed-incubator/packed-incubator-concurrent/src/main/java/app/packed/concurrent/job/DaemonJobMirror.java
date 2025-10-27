@@ -26,7 +26,7 @@ import internal.app.packed.concurrent.daemon.DaemonOperationHandle;
  */
 public final class DaemonJobMirror extends JobMirror {
 
-    final DaemonOperationHandle handle;
+    private final DaemonOperationHandle handle;
 
     /**
      * @param handle

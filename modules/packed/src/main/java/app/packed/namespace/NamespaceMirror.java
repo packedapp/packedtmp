@@ -21,9 +21,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.component.ComponentRealm;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;

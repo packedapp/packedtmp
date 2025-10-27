@@ -17,7 +17,6 @@ package internal.app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -31,11 +30,11 @@ import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
 
 /** Implementation of {@link ApplicationTemplate}. */
 public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
-        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory,
-        PackedContainerTemplate<?> rootContainer,
+        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerTemplate<?> rootContainer,
         Set<String> componentTags) implements ApplicationTemplate<H> {
 
     public PackedApplicationTemplate(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
@@ -46,8 +45,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
     /** {@inheritDoc} */
     @Override
     public PackedApplicationTemplate<H> withComponentTags(String... tags) {
-        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, rootContainer,
-                ComponentTagHolder.copyAndAdd(componentTags, tags));
+        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, rootContainer, ComponentTagHolder.copyAndAdd(componentTags, tags));
     }
 
     /** {@inheritDoc} */
@@ -66,7 +64,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
      *            optional wirelets
      * @return a new application installer
      */
-    public PackedApplicationInstaller<H> newInstaller(@Nullable ApplicationInstallingSource source, BuildGoal goal, MethodHandle launcher,
+    public PackedApplicationInstaller<H> newInstaller(@Nullable ApplicationInstallingSource source, BuildGoal goal, ApplicationBaseLauncher launcher,
             Wirelet... wirelets) {
         PackedApplicationInstaller<H> installer = new PackedApplicationInstaller<>(this, launcher, goal);
         installer.containerInstaller.processBuildWirelets(wirelets);

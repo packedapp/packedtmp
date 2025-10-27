@@ -20,12 +20,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
-import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.Inject;
 import app.packed.operation.OperationType;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
 import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
@@ -184,7 +182,7 @@ final record BeanScannerOnConstructors(Constructor<?> constructor, OperationType
     /** Find a constructor on the bean and create an operation for it. */
     static void findConstructor(BeanScanner scanner, Class<?> beanClass) {
         // If a we have a (instantiating) class source, we need to find a constructor we can use
-        if (scanner.bean.bean.beanSourceKind == BeanSourceKind.CLASS && scanner.bean.beanKind != BeanLifetime.STATIC) {
+        if (scanner.bean.bean.beanSourceKind == BeanSourceKind.CLASS) {
 
             BeanScannerOnConstructors constructor = BeanScannerOnConstructors.CACHE.get(beanClass);
 
@@ -195,15 +193,15 @@ final record BeanScannerOnConstructors(Constructor<?> constructor, OperationType
             MethodHandle mh = scanner.unreflectConstructor(con);
 
             PackedOperationTemplate ot = scanner.bean.template.initializationTemplate();
-            // if (ot.returnKind == ReturnKind.DYNAMIC) {
+
             ot = ot.withReturnType(beanClass);
-            // }
+
             PackedOperationInstaller installer = ot.newInstaller(constructor.operationType(), scanner.bean, scanner.bean.installedBy);
 
             OperationSetup os = installer.newOperationFromMember(new OperationConstructorTarget(constructor.constructor()), mh,
-                    i -> new ForInitialize(i, InternalBeanLifecycleKind.FACTORY));
+                    i -> new BeanInitializeOperationHandle(i, InternalBeanLifecycleKind.FACTORY));
 
-            scanner.bean.operations.addLifecycleHandle((BeanLifecycleOperationHandle) os.handle());
+            //scanner.bean.operations.addLifecycleHandle((BeanLifecycleOperationHandle) os.handle());
             scanner.resolveBindings(os);
         }
 

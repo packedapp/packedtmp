@@ -25,7 +25,9 @@ import java.util.concurrent.StructuredTaskScope.Joiner;
 
 import app.packed.bean.lifecycle.OnStartContext;
 import app.packed.extension.ExtensionContext;
+import internal.app.packed.ValueBased;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -52,14 +54,14 @@ final class StartRunner {
         this.runtime = runtime;
     }
 
-    private Void run(LifecycleOnStartHandle h) {
-        MethodHandle mh = h.methodHandle;
+    private void run(LifecycleOnStartHandle h) {
+        OperationSetup os = OperationSetup.crack(h);
+        MethodHandle mh = os.codeHolder.methodHandle;
         try {
             mh.invokeExact(pool, (OnStartContext) new PackedOnStartContext(this));
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-        return null;
     }
 
     void start() {
@@ -99,6 +101,7 @@ final class StartRunner {
                 c -> c.withName("AppStart").withThreadFactory(Thread.ofVirtual().name("CoolAppStartin", 0).factory()));
     }
 
+    @ValueBased
     record PackedOnStartContext(StartRunner runner) implements OnStartContext {
 
 //        @Override

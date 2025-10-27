@@ -1,7 +1,6 @@
 package app.packed.concurrent.other;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 
 import app.packed.assembly.Assembly;
 import app.packed.bean.InstanceBeanConfiguration;
@@ -75,7 +74,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
             OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
 
             InstanceBeanConfiguration<SchedulingBean> bean = extension().lifetimeRoot().base().installIfAbsent(SchedulingBean.class, handle -> {
-                handle.bindServiceInstance(MethodHandle.class, operation.invoker().asMethodHandle());
+//                handle.bindServiceInstance(MethodHandle.class, operation.invoker().asMethodHandle());
             });
             // bean, add scheduling +
             // Manytons dur ikke direkte

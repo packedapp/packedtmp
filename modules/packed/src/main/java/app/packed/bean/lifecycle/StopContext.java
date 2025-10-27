@@ -17,18 +17,19 @@ package app.packed.bean.lifecycle;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.StopInfo;
-import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
+import internal.app.packed.extension.InternalBeanIntrospector;
 
 /**
  *
  */
 // Bliver lavet per operation
 // BeanStopContext
-@OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class, requiresContext = StopContext.class)
+@AutoInject(introspector = StopContext.Introspector.class, requiresContext = StopContext.class)
 public interface StopContext extends Context<BaseExtension> {
 
     /**
@@ -48,5 +49,15 @@ public interface StopContext extends Context<BaseExtension> {
     @FunctionalInterface
     interface AwaitingTimeoutFunction {
         boolean await(long timeout, TimeUnit unit) throws InterruptedException;
+    }
+
+    final class Introspector extends InternalBeanIntrospector<BaseExtension> {
+
+        @Override
+        public void onExtensionService(Key<?> key, OnContextService service) {
+            if (service.matchNoQualifiers(StopContext.class)) {
+                service.binder().bindContext(StopContext.class);
+            }
+        }
     }
 }

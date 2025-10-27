@@ -1,10 +1,6 @@
 package internal.app.packed.assembly;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +15,8 @@ import app.packed.build.hook.BuildHook;
 import internal.app.packed.bean.scanning.BeanTriggerModelCustom;
 import internal.app.packed.build.hook.BuildHookMap;
 import internal.app.packed.build.hook.StaticBuildHookMap;
-import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.invoke.MethodHandleWrapper.BuildHookFactory;
+import internal.app.packed.invoke.UserLookupSupport;
 
 /** A model of an {@link Assembly} class. */
 public final /* primitive */ class AssemblyClassModel {
@@ -34,38 +31,10 @@ public final /* primitive */ class AssemblyClassModel {
                 if (a instanceof ApplyBuildHook h) {
                     for (Class<? extends BuildHook> b : h.hooks()) {
                         Class<? extends BuildHook> hookType = BuildHookMap.classOf(b);
-                        MethodHandle constructor;
-
-                        if (!AssemblyClassModel.class.getModule().canRead(type.getModule())) {
-                            AssemblyClassModel.class.getModule().addReads(type.getModule());
-                        }
-
-                        Lookup privateLookup;
-                        try {
-                            privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /* lookup */);
-                        } catch (IllegalAccessException e1) {
-                            throw new RuntimeException(e1);
-                        }
-                        // TODO fix visibility
-                        // Maybe common findConstructorMethod
-                        try {
-                            constructor = privateLookup.findConstructor(b, MethodType.methodType(void.class));
-                        } catch (NoSuchMethodException e) {
-                            throw new BuildException("A container hook must provide an empty constructor, hook = " + h, e);
-                        } catch (IllegalAccessException e) {
-                            throw new BuildException("Can't see it sorry, hook = " + h, e);
-                        }
-
-                        // For consistency reasons we always tries to use invokeExact() even if not strictly needed
-                        constructor = constructor.asType(MethodType.methodType(BuildHook.class));
-
-                        BuildHook instance;
-                        try {
-                            instance = (BuildHook) constructor.invokeExact();
-                        } catch (Throwable t) {
-                            throw ThrowableUtil.orUndeclared(t);
-                        }
-
+                        BuildHookFactory factory = UserLookupSupport.newBuildHookFactory(type, h, b);
+                        // Would be great with some caching. But it is tricky, we need to take into account
+                        // if the assembly can both see the constructor of the buildhook
+                        BuildHook instance = factory.create();
                         hookMap.computeIfAbsent(hookType, _ -> new ArrayList<>()).add(instance);
                     }
                 }
@@ -73,7 +42,7 @@ public final /* primitive */ class AssemblyClassModel {
             if (!hookMap.isEmpty() && DelegatingAssembly.class.isAssignableFrom(type)) {
                 throw new BuildException("Delegating assemblies cannot use @" + ApplyBuildHook.class.getSimpleName() + " annotations, assembly type =" + type);
             }
-            return new AssemblyClassModel(type,  new StaticBuildHookMap(hookMap));
+            return new AssemblyClassModel(type, new StaticBuildHookMap(hookMap));
         }
     };
 

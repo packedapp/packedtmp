@@ -1,8 +1,8 @@
 ==== A job is typically adds a bit more overhead to the task, than simply using a ExecutorService ====
 * A job has a unique name within a namespace
 * A job can have a context injected
-* The status of a job can be tracked in JobTracker
-* A job can be tagged 
+* The status of a job can be tracked in a JobTracker
+* A job can be tagged (operations)
 
 
 

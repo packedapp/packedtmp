@@ -18,7 +18,6 @@ package internal.app.packed.application;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.ScopedValue.Carrier;
-import java.lang.invoke.MethodHandle;
 import java.util.UUID;
 
 import app.packed.application.ApplicationBuildLocal;
@@ -33,6 +32,7 @@ import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationInstaller}. */
@@ -52,7 +52,7 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
 
     // This is the guest bean that is created
     @Nullable
-    public final MethodHandle launcher;
+    public final ApplicationBaseLauncher launcher;
 
     public String name = UUID.randomUUID().toString();
 
@@ -63,7 +63,7 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
     /** The template of the application. */
     final PackedApplicationTemplate<?> template;
 
-    PackedApplicationInstaller(PackedApplicationTemplate<?> template, @Nullable MethodHandle launcher, BuildGoal goal) {
+    PackedApplicationInstaller(PackedApplicationTemplate<?> template, @Nullable ApplicationBaseLauncher launcher, BuildGoal goal) {
         this.template = template;
         this.isManaged = template.rootContainer().isManaged();
         this.containerInstaller = new PackedContainerInstaller<>(template.rootContainer(), this, null, null);

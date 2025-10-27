@@ -42,6 +42,8 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.invoke.OperationCodeHolder;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointSetup;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
@@ -60,7 +62,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
 
-    /** Declared contexts on the operation. Is HashMap now we because it uses less memory than IHM when empty. */
+    /** Declared contexts on the operation. Is HashMap because it uses less memory than IHM when empty. */
     public final HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
     /** Any operation this operation is embedded into. */
@@ -101,6 +103,8 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
 
     /** The type of this operation. */
     public final OperationType type;
+
+    public final OperationCodeHolder codeHolder = new OperationCodeHolder(this);
 
     /**
      * Create a new operation.
@@ -254,7 +258,9 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         if (handle == null) {
             throw new InternalExtensionException(installer.operator.extensionType, handleFactory + " returned null, when creating a new OperationHandle");
         }
-
+        if (handle instanceof BeanLifecycleOperationHandle oh) {
+            installer.bean.operations.addLifecycleHandle(oh);
+        }
         return operation;
     }
 

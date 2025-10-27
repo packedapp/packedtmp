@@ -19,7 +19,6 @@ import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.concurrent.ScheduledOperationMirror;
 import app.packed.concurrent.SchedulingContext;
-import app.packed.concurrent.annotations.ScheduleJob;
 import app.packed.concurrent.job.DaemonJob;
 import app.packed.concurrent.job.DaemonJobContext;
 
@@ -48,12 +47,12 @@ public class ScTest extends BaseAssembly {
             Thread.sleep(100);
         }
 
-        @ScheduleJob(withFixedDelay = 10)
+       // @ScheduleJob(withFixedDelay = 10)
         public static void schd(SchedulingContext sc, ScheduledOperationMirror op) {
             IO.println("SCHs®ED " + op.target());
         }
 
-        @ScheduleJob(withFixedDelay = 88)
+      //  @ScheduleJob(withFixedDelay = 88)
         public static void sch(SchedulingContext sc, ScheduledOperationMirror op) {
             IO.println("SCHED " + sc.invocationCount());
 //            IO.println(op.target());

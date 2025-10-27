@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
-import app.packed.component.ComponentRealm;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerPropagator;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;

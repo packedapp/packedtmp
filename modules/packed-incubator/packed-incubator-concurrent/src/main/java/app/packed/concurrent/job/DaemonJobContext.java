@@ -17,19 +17,18 @@ package app.packed.concurrent.job;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInject;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.concurrent.daemon.DaemonRuntimeOperationRunner.PackedDaemonContext;
-import internal.app.packed.concurrent.daemon.JobBeanintrospector;
+import internal.app.packed.concurrent.daemon.DaemonSideBean;
 
 /**
  * A context object that can be injected into daemon methods.
  *
  */
 // I think we need a bit understand about where we are in the shutdown process, early, vs late
-@OnContextServiceVariable(introspector = JobBeanintrospector.class, requiresContext = DaemonJobContext.class)
-public sealed interface DaemonJobContext extends Context<BaseExtension> permits PackedDaemonContext {
+@AutoInject(introspector = DaemonJob.Daemonintrospector.class, requiresContext = DaemonJobContext.class)
+public sealed interface DaemonJobContext extends Context<BaseExtension> permits DaemonSideBean {
 
     /**
      * @return

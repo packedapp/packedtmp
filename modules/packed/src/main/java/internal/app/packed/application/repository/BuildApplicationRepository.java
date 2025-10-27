@@ -17,7 +17,6 @@ package internal.app.packed.application.repository;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +28,7 @@ import app.packed.build.BuildGoal;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
+import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
 
 /**
  *
@@ -39,7 +39,7 @@ public final class BuildApplicationRepository implements ApplicationInstallingSo
 
     final Map<String, ApplicationHandle<?, ?>> handles = new HashMap<>();
 
-    public MethodHandle mh;
+    public ApplicationBaseLauncher mh;
 
     public final PackedApplicationTemplate<?> template;
 
@@ -64,8 +64,8 @@ public final class BuildApplicationRepository implements ApplicationInstallingSo
         }
     }
 
-    public void onCodeGenerated(MethodHandle mh) {
-        this.mh = requireNonNull(mh);
-    }
+//    public void onCodeGenerated(MethodHandle mh) {
+//        this.mh = new ApplicationBaseLauncher(mh);
+//    }
 
 }

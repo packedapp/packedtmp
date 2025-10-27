@@ -15,7 +15,6 @@
  */
 package internal.app.packed.application;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +38,8 @@ import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.context.PackedComponentHostContext;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
+import internal.app.packed.invoke.ServiceHelper;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /**
@@ -47,8 +48,8 @@ import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration<?>> {
 
     /** A bean template for the guest bean. */
-    public static final PackedBeanTemplate APPLICATION_GUEST_BEAN_TEMPLATE = PackedBeanTemplate.builder(BeanLifetime.UNMANAGED)
-            .initialization(c -> c.withReturnTypeDynamic().withRaw().withContext(ApplicationLaunchContext.CONTEXT_TEMPLATE).withContext(PackedComponentHostContext.TEMPLATE))
+    public static final PackedBeanTemplate APPLICATION_GUEST_BEAN_TEMPLATE = PackedBeanTemplate.builder(BeanLifetime.UNMANAGED).initialization(
+            c -> c.withReturnTypeDynamic().withRaw().withContext(ApplicationLaunchContext.CONTEXT_TEMPLATE).withContext(PackedComponentHostContext.TEMPLATE))
             .build();
 
     static final Set<Key<?>> KEYS = Set.of(Key.of(ApplicationMirror.class), Key.of(String.class), Key.of(ManagedLifecycle.class), Key.of(ServiceLocator.class));
@@ -90,23 +91,15 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         return DEFAULT;
     }
 
-    public static MethodHandle install(PackedApplicationTemplate<?> template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
+    public static ApplicationBaseLauncher install(PackedApplicationTemplate<?> template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
         // Create a new installer for the bean
         BeanInstaller installer = APPLICATION_GUEST_BEAN_TEMPLATE.newInstaller(installingExtension, owner);
 
+        // Create the bean
+        Bean<?> bean = template.op() == null ? Bean.of(template.guestClass()) : Bean.of((Op<?>) template.op());
 
-        // Install the bean and get a handle
-        GuestBeanHandle h;
-        if (template.op() == null) {
-            h = installer.install(Bean.of(template.guestClass()), GuestBeanHandle::new);
-        } else {
-            h = installer.install(Bean.of((Op<?>) template.op()), GuestBeanHandle::new);
-        }
+        GuestBeanHandle h = installer.install(bean, GuestBeanHandle::new);
 
-        // Cleanup
-        // return invokerfactory instead
-        MethodHandle m = h.lifecycleInvokers().get(0).invoker().asMethodHandle();
-        m = m.asType(m.type().changeReturnType(Object.class));
-        return m;
+        return ServiceHelper.fromGuestBeanHandle(h);
     }
 }

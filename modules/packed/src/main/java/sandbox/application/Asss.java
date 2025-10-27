@@ -69,7 +69,6 @@ public class Asss extends BaseAssembly {
         BeanTemplate a = BeanTemplate.of(BeanLifetime.SINGLETON);
         BeanTemplate.of(BeanLifetime.SINGLETON);
         // BeanTemplateWithBuilder b = BeanTemplateWithBuilder.builder().rcreateAs(String.class).build();
-        BeanTemplate t = BeanTemplate.FUNCTIONAL;
 
     }
 

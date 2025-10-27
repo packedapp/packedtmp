@@ -17,8 +17,6 @@ package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.assembly.Assembly;
 import app.packed.assembly.BuildableAssembly;
 import app.packed.build.BuildGoal;
@@ -30,6 +28,7 @@ import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link BootstrapApp}. */
@@ -43,7 +42,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
             .ofManaged(PackedBootstrapApp.class).withComponentTags("bootstrap");
 
     /** The application launcher. */
-    private final MethodHandle launcher;
+    private final ApplicationBaseLauncher launcher;
 
     /** The application template for new applications. */
     private final PackedApplicationTemplate<H> template;
@@ -54,7 +53,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
      * @param template
      *            the template for the apps that are being bootstrapped.
      */
-    private PackedBootstrapApp(PackedApplicationTemplate<H> template, MethodHandle launcher) {
+    private PackedBootstrapApp(PackedApplicationTemplate<H> template, ApplicationBaseLauncher launcher) {
         this.template = requireNonNull(template);
         this.launcher = requireNonNull(launcher);
     }
@@ -129,14 +128,14 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         BOOTSTRAP_APP_TEMPLATE.newInstaller(null, BuildGoal.LAUNCH, null).install(assembly);
 
         // Returned the bootstrap implementation (represented by a construcing method handle) wrapped in this class.
-        return new PackedBootstrapApp<A, H>(template, assembly.mh);
+        return new PackedBootstrapApp<A, H>(template, assembly.launcher);
     }
 
     /** The assembly responsible for building the bootstrap app. */
     private static class BootstrapAppAssembly extends BuildableAssembly {
 
         /** The method handle to launch the application, the empty MH is used if A is Void.class */
-        private MethodHandle mh = ApplicationLaunchContext.EMPTY_MH;
+        private ApplicationBaseLauncher launcher = ApplicationBaseLauncher.EMPTY;
 
         /** The application template for the application type we need to bootstrap. */
         private final PackedApplicationTemplate<?> template;
@@ -156,7 +155,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
             ExtensionSetup es = ExtensionSetup.crack(assembly().containerRoot().use(BaseExtension.class));
 
             // Install the guest bean (code is shared with App-On-App) in the bootstrap application
-            this.mh = GuestBeanHandle.install(template, es, es.container.assembly);
+            this.launcher = GuestBeanHandle.install(template, es, es.container.assembly);
         }
     }
 

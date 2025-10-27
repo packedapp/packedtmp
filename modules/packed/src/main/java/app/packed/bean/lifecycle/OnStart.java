@@ -15,13 +15,17 @@
  */
 package app.packed.bean.lifecycle;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger;
-import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
+import app.packed.extension.BaseExtension;
+import internal.app.packed.extension.InternalBeanIntrospector;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
 
 /**
  * An annotation used to indicate that a method should be invoked whenever the bean reaches the
@@ -80,15 +84,13 @@ import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
 // When used on a field the target type must be Lazy
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@BeanTrigger.OnAnnotatedMethod(introspector = LifecycleAnnotationBeanIntrospector.class, requiresContext = OnStartContext.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedMethod(introspector = OnStart.Introspector.class, requiresContext = OnStartContext.class, allowInvoke = true)
 
 // Hvordan sikre vi os at DB kører førend WEB
 // Hvis de ikke depender paa hinanden.
 //// Samtidig vil vi gerne maximere async tid, saa joine senest muligt
 
 // Tror phases er en daarlig ide. Fordi vi godt vil encapsulated foer og efter. Det fungere daar
-
-
 public @interface OnStart {
 
     /**
@@ -170,6 +172,12 @@ public @interface OnStart {
         JOIN_BEFORE_START,
     }
 
+    final class Introspector extends InternalBeanIntrospector<BaseExtension> {
+        @Override
+        public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+            LifecycleOnStartHandle.install((OnStart) annotation, method);
+        }
+    }
 
     // Alternativ har vi phases
 }

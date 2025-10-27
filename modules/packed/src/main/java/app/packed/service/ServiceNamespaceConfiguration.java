@@ -17,7 +17,6 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -31,10 +30,10 @@ import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
 import app.packed.service.bridge.old.ServiceOutgoingTransformer;
+import internal.app.packed.invoke.MethodHandleUtil;
 import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.service.util.PackedServiceLocator;
 import internal.app.packed.util.CollectionUtil;
-import internal.app.packed.util.MethodHandleUtil;
 import internal.app.packed.util.accesshelper.AccessHelper;
 import internal.app.packed.util.accesshelper.ServiceAccessHandler;
 
@@ -80,7 +79,7 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
     public Set<Key<?>> provideAll(ServiceLocator locator) {
         requireNonNull(locator, "locator is null");
         checkIsConfigurable();
-        Map<Key<?>, MethodHandle> result;
+        Map<Key<?>, ?> result;
         if (locator instanceof PackedServiceLocator psl) {
             result = CollectionUtil.copyOf(psl.entries(), e -> e.bindTo(psl.context()));
         } else {

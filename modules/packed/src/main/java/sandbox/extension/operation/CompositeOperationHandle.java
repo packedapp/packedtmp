@@ -15,7 +15,6 @@
  */
 package sandbox.extension.operation;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.util.function.Supplier;
 
@@ -43,7 +42,7 @@ public interface CompositeOperationHandle {
 
     void addChild(OperationHandle<?> handle);
 
-    MethodHandle generateMethodHandle();
+//    MethodHandle generateMethodHandle();
 
     /**
      * {@return the invocation type of this operation.}

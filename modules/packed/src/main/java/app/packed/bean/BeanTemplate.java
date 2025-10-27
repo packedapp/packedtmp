@@ -60,7 +60,8 @@ import sandbox.application.LifetimeTemplate;
 // It al goes well until you get to BeanInstaller. Where we need the <T> of the BeanHandle
 public sealed interface BeanTemplate permits PackedBeanTemplate {
 
-    BeanTemplate FUNCTIONAL = BeanLifetime.STATIC.template();
+    //InstanceMembersForbiddenException
+    BeanTemplate FUNCTIONAL = BeanLifetime.FUNCTIONEL.template();
 
     // The bean is created by an operation
     // There are no lifetime operations on the bean

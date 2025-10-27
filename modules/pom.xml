@@ -25,7 +25,7 @@
     
     <!-- Test Dependencies Versions -->
     <version.test.assertj>3.26.3</version.test.assertj>
-    <version.test.junit>5.11.4</version.test.junit>
+    <version.test.junit>5.13.4</version.test.junit>
     <version.test.jmh>1.37</version.test.jmh>
     
     <!-- Pluging Versions -->
@@ -49,10 +49,13 @@
       </dependency>
     
       <!-- Testing -->
+      
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter</artifactId>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
         <version>${version.test.junit}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>

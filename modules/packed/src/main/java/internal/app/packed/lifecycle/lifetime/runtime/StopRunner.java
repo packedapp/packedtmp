@@ -25,6 +25,7 @@ import app.packed.bean.lifecycle.StopContext;
 import app.packed.extension.ExtensionContext;
 import app.packed.runtime.StopInfo;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -55,7 +56,9 @@ final class StopRunner {
     }
 
     private Void run(LifecycleOperationStopHandle h) {
-        MethodHandle mh = h.methodHandle;
+        OperationSetup os = OperationSetup.crack(h);
+
+        MethodHandle mh = os.codeHolder.methodHandle;
         try {
             mh.invokeExact(pool, (StopContext) new StopContext() {
 

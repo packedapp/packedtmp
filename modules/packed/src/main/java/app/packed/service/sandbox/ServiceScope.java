@@ -20,5 +20,5 @@ package app.packed.service.sandbox;
  */
 // ServiceOrigin
 public enum ServiceScope {
-    NAMESPACE, BEAN,  OPERATION;
+    NAMESPACE, BEAN, OPERATION;
 }

@@ -18,11 +18,11 @@ package internal.app.packed.bean.scanning;
 import java.lang.annotation.Annotation;
 
 import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedField;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceInheritableVariable;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
 
@@ -99,8 +99,8 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
         @Override
         protected ParameterTypeCache computeValue(Class<?> type) {
-            OnContextServiceVariable h = type.getAnnotation(OnContextServiceVariable.class);
-            OnContextServiceInheritableVariable ih = type.getAnnotation(OnContextServiceInheritableVariable.class);
+            AutoInject h = type.getAnnotation(AutoInject.class);
+            AutoInjectInheritable ih = type.getAnnotation(AutoInjectInheritable.class);
 
             if (h == null && ih == null) {
                 return null;
@@ -108,7 +108,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
             if (h != null && ih != null) {
                 throw new InternalExtensionException(
-                        "Cannot use both " + OnContextServiceVariable.class + " and " + OnContextServiceInheritableVariable.class + " on @" + type);
+                        "Cannot use both " + AutoInject.class + " and " + AutoInjectInheritable.class + " on @" + type);
             }
 
             if (h != null) {
@@ -121,7 +121,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
                 Class<?> inherited = type;
                 while (inherited != null) {
-                    if (inherited.getDeclaredAnnotation(OnContextServiceInheritableVariable.class) != null) {
+                    if (inherited.getDeclaredAnnotation(AutoInjectInheritable.class) != null) {
                         break;
                     }
                     inherited = inherited.getSuperclass();

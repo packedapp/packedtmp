@@ -17,13 +17,9 @@ package internal.app.packed.lifecycle.lifetime.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInject;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.BaseExtension;
@@ -33,19 +29,16 @@ import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
-import internal.app.packed.util.ThrowableUtil;
 
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-@OnContextServiceVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
 // Wait a bit with transforming this class to a record.
 // We might have some mutable fields such as name
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
     public static final ContextTemplate CONTEXT_TEMPLATE = ContextTemplate.of(ApplicationLaunchContext.class);
-
-    public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
 
     /** The configuration of the application we are launching. */
     public final ApplicationSetup application;
@@ -116,16 +109,9 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         // Create a launch context
         ApplicationLaunchContext context = new ApplicationLaunchContext(runner, application);
 
-
         context.runner.run(state);
 
-        MethodHandle mh = application.launcher;
-        Object result;
-        try {
-            result = mh.invokeExact(context);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+        Object result = application.launcher.launch(context);
         return (A) result;
     }
 }

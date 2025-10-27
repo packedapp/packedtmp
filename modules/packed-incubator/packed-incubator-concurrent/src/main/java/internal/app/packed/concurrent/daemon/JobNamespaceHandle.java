@@ -15,11 +15,7 @@
  */
 package internal.app.packed.concurrent.daemon;
 
-import app.packed.bean.Bean;
-import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTemplate;
 import app.packed.component.ComponentRealm;
 import app.packed.concurrent.ThreadNamespaceConfiguration;
@@ -29,7 +25,6 @@ import app.packed.extension.ExtensionHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
-import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 
@@ -71,26 +66,27 @@ public final class JobNamespaceHandle extends NamespaceHandle<BaseExtension, Thr
     @Override
     protected void onClose() {
         // Find all daemon operations in the namespace.
-        DaemonRuntimeOperationConfiguration[] daemons = operations(DaemonOperationHandle.class).map(DaemonOperationHandle::runtimeConfiguration)
-                .toArray(DaemonRuntimeOperationConfiguration[]::new);
 
-        // Is this general Useful??
-        // Otherwise could have methods instead
-        // Are there extensions that want to do this other extensions?
-//        BuildReference<DaemonInvoker[]> daemons = operations(DaemonOperationHandle.class).map(DaemonOperationHandle::runtimeConfiguration)
-//                .toArray(DaemonInvoker[]::new);
-
-        // Would probably be DaemonInvoker
-        // b.bindPromise(DaemonInvoker[].class, daemons)
-
-        // Install deamon manager if we have any operations.
-        if (daemons.length > 0) {
-            BeanConfiguration b = new ProvidableBeanConfiguration<>(newBeanBuilderSelf(BeanLifetime.SINGLETON.template()).install(Bean.of(DaemonRuntimeManager.class), BeanHandle::new));
-            b.bindServiceInstance(DaemonRuntimeOperationConfiguration[].class, daemons);
-        }
+//        DaemonRuntimeOperationConfiguration[] daemons = operations(DaemonOperationHandle.class).map(DaemonOperationHandle::runtimeConfiguration)
+//                .toArray(DaemonRuntimeOperationConfiguration[]::new);
+//
+//        // Is this general Useful??
+//        // Otherwise could have methods instead
+//        // Are there extensions that want to do this other extensions?
+        ////        BuildReference<DaemonInvoker[]> daemons = operations(DaemonOperationHandle.class).map(DaemonOperationHandle::runtimeConfiguration)
+////                .toArray(DaemonInvoker[]::new);
+//
+//        // Would probably be DaemonInvoker
+//        // b.bindPromise(DaemonInvoker[].class, daemons)
+//
+//        // Install deamon manager if we have any operations.
+//        if (daemons.length > 0) {
+//            BeanConfiguration b = new ProvidableBeanConfiguration<>(newBeanBuilderSelf(BeanLifetime.SINGLETON.template()).install(Bean.of(DaemonRuntimeManager.class), BeanHandle::new));
+//            b.bindServiceInstance(DaemonRuntimeOperationConfiguration[].class, daemons);
+//        }
     }
 
-    private BeanInstaller newBeanBuilderSelf(BeanTemplate template) {
+    BeanInstaller newBeanBuilderSelf(BeanTemplate template) {
         ExtensionSetup es = ExtensionSetup.crack(rootExtension());
         return ((PackedBeanTemplate) template).newInstaller(es, es);
     }

@@ -1,7 +1,5 @@
 package app.packed.extension;
 
-import java.lang.invoke.MethodHandle;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
@@ -12,7 +10,7 @@ import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTemplate;
 import app.packed.bean.scanning.BeanSynthesizer;
-import app.packed.binding.Key;
+import app.packed.bean.sidebean.SideBeanConfiguration;
 import app.packed.build.action.BuildActionable;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
@@ -67,7 +65,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // But right now we only have a single field
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
 
-    static final BeanTemplate TEMPLATE = BeanTemplate.builder(BeanLifetime.SINGLETON)
+    static final BeanTemplate DEFAULT_BEAN = BeanTemplate.builder(BeanLifetime.SINGLETON)
             .initialization(OperationTemplate.defaults().withReturnTypeDynamic())
             .build();
 
@@ -124,8 +122,9 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // Ignores other exports
     // interacts with other exports in some way
 
+
     public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(TEMPLATE).install(bean, ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(DEFAULT_BEAN).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -141,6 +140,11 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     @BuildActionable("bean.install")
     public <T> ProvidableBeanConfiguration<T> install(Class<T> implementation) {
         return install(Bean.of(implementation));
+    }
+
+    @BuildActionable("bean.install")
+    public <T> SideBeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, Consumer<? super SideBeanConfiguration<T>> installationAction) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -216,17 +220,17 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         // Create a new bean that holds the ServiceLocator to export
         // will fail if installed multiple times
 
-        BeanHandle<ProvidableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(TEMPLATE).install(Bean.of(PackedServiceLocator.class),
+        BeanHandle<ProvidableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(DEFAULT_BEAN).install(Bean.of(PackedServiceLocator.class),
                 ProvidableBeanHandle::new);
         ha.configuration().exportAs(ServiceLocator.class);
 
         // PackedServiceLocator needs a Map<Key, MethodHandle> which is created in the code generation phase
-        BeanSetup.crack(ha).bindCodeGenerator(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.servicesMain().exportedServices());
+        BeanSetup.crack(ha).bindCodeGenerator(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
 
         // Alternative, If we do not use it for anything else
-        newBeanBuilderSelf(TEMPLATE).installIfAbsent(PackedServiceLocator.class, BeanConfiguration.class, BeanHandle::new, bh -> {
+        newBeanBuilderSelf(DEFAULT_BEAN).installIfAbsent(PackedServiceLocator.class, BeanConfiguration.class, BeanHandle::new, bh -> {
             bh.exportAs(ServiceLocator.class);
-            BeanSetup.crack(bh).bindCodeGenerator(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.servicesMain().exportedServices());
+            BeanSetup.crack(bh).bindCodeGenerator(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
         });
     }
 

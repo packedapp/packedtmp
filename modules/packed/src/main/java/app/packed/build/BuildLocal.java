@@ -57,6 +57,8 @@ import internal.app.packed.build.PackedBuildLocal;
 // Alternative BuildLocal.OfApplication
 public sealed interface BuildLocal<A, T> permits PackedBuildLocal, ApplicationBuildLocal, ContainerBuildLocal, BeanLocal {
 
+    // orCompute
+
     /**
      * Returns the current value of this local for the entity represented by the specified accessor.
      * <p>

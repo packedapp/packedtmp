@@ -17,15 +17,11 @@ package internal.app.packed.extension;
 
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.extension.Extension;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.util.accesshelper.BeanScanningAccessHandler;
 
 /**
  * An interna bean introspector that gives easy access to the introspected {@link BeanSetup bean};
  */
 public abstract class InternalBeanIntrospector<E extends Extension<E>> extends BeanIntrospector<E> {
 
-    protected final BeanSetup bean() {
-        return BeanScanningAccessHandler.instance().invokeBeanIntrospectorBean(this);
-    }
+
 }

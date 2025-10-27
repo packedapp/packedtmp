@@ -14,7 +14,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.lifecycle.BeanLifecycleMirror;
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceInheritableVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
 import app.packed.binding.Key;
 import app.packed.build.action.BuildActionMirror;
 import app.packed.component.ComponentMirror;
@@ -42,7 +42,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <p>
  * An instance of BeanMirror (or a subclass hereof) can be injected at runtime simply by declaring a dependency on it.
  */
-@OnContextServiceInheritableVariable(introspector = MirrorImplementationBeanIntrospector.class)
+@AutoInjectInheritable(introspector = MirrorImplementationBeanIntrospector.class)
 public non-sealed class BeanMirror implements Accessor, ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror {
 
     /** The handle of the bean we are mirroring. */

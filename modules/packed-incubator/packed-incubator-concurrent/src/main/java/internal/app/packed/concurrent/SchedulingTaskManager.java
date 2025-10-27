@@ -17,20 +17,18 @@ package internal.app.packed.concurrent;
 
 import app.packed.bean.lifecycle.OnStart;
 import app.packed.extension.ExtensionContext;
-import internal.app.packed.concurrent.daemon.DaemonRuntimeOperationConfiguration;
 
 // Runtime
 public class SchedulingTaskManager {
 
     final ExtensionContext cc;
 
-    final DaemonRuntimeOperationConfiguration[] daemons;
 
     final ScheduledOperation[] mhs;
     final boolean shutdownOnExit;
     final ScheduledTaskManager vts;
 
-    public SchedulingTaskManager(ExecutorConfiguration scheduler, ScheduledOperation[] mhs, DaemonRuntimeOperationConfiguration[] daemons,
+    public SchedulingTaskManager(ExecutorConfiguration scheduler, ScheduledOperation[] mhs,
             ExtensionContext cc) {
         if (scheduler == null) {
             this.vts = new VirtualThreadScheduledTaskManager(cc);
@@ -40,7 +38,6 @@ public class SchedulingTaskManager {
             shutdownOnExit = scheduler.shutdownOnExit();
         }
         this.cc = cc;
-        this.daemons = daemons;
         this.mhs = mhs;
     }
 

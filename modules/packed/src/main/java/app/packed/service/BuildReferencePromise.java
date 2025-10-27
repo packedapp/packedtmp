@@ -27,7 +27,6 @@ import app.packed.binding.Key;
 // Men vi extracter alt hvad vi kan fra T
 
 // Fx Invokers
-
 public interface BuildReferencePromise<T> {
     Key<?> key();
 }

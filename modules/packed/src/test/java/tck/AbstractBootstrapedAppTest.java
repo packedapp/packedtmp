@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -40,6 +39,7 @@ import app.packed.runtime.RunState;
 import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 import tck.AbstractAppTest.InternalTestState.State3Build;
 
@@ -161,22 +161,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
     }
 
     /** Used for extracting the internal configuration of BootstrapApp. */
-    record BootstrapAppInternals(PackedApplicationTemplate<?> template, MethodHandle launcher) {
-
-        /**
-         * Create a new application interface using the specified launch context.
-         *
-         * @param context
-         *            the launch context to use for creating the application instance
-         * @return the new application instance
-         */
-//        public Object newHolder(ApplicationLaunchContext context) {
-//            try {
-//                return mh.invokeExact(context);
-//            } catch (Throwable e) {
-//                throw ThrowableUtil.orUndeclared(e);
-//            }
-//        }
+    record BootstrapAppInternals(PackedApplicationTemplate<?> template, ApplicationBaseLauncher launcher) {
 
         @SuppressWarnings("unchecked")
         private static <T> T read(Object o, String fieldName) throws ReflectiveOperationException {

@@ -18,12 +18,9 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Modifier;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.bean.BeanLifetime;
-import app.packed.bean.scanning.InstanceMembersDisallowedException;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
@@ -98,14 +95,11 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <H extends OperationHandle<?>> OperationSetup newOperationFromMember(OperationMemberTarget<?> member, MethodHandle methodHandle,
+    public <H extends OperationHandle<?>> OperationSetup newOperationFromMember(OperationMemberTarget<?> member, MethodHandle directMH,
             Function<? super OperationInstaller, H> configurationCreator) {
-        if (bean.beanKind == BeanLifetime.STATIC && !Modifier.isStatic(member.modifiers())) {
-            throw new InstanceMembersDisallowedException("Cannot create operation for non-static member " + member);
-        }
         namePrefix = member.name();
 
-        operationTarget = new MemberOperationTarget(member, methodHandle);
+        operationTarget = new MemberOperationTarget(member, directMH);
 
         return newOperation((Function) configurationCreator);
     }

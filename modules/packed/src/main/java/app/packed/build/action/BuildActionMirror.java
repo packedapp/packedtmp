@@ -23,9 +23,9 @@ import java.util.Set;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.build.BuildCodeSourceMirror;
 import app.packed.build.Mirror;
-import app.packed.component.ComponentRealm;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 
 /**
  *

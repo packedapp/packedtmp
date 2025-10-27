@@ -23,9 +23,16 @@ import app.packed.runtime.RunState;
  */
 public enum InternalBeanLifecycleKind {
 
+    /** Creates a bean instance. */
     FACTORY(RunState.INITIALIZING, DependantOrder.RUN_BEFORE_DEPENDANTS),
+
+    /** Runs injection operations. */
     INJECT(RunState.INITIALIZING, DependantOrder.RUN_BEFORE_DEPENDANTS),
+
+    /** Runs initialization natural order. */
     INITIALIZE_PRE_ORDER(RunState.INITIALIZING, DependantOrder.RUN_BEFORE_DEPENDANTS),
+
+    /** Runs initialization reverse. */
     INITIALIZE_POST_ORDER(RunState.INITIALIZING, DependantOrder.RUN_AFTER_DEPENDANTS),
 
     START_PRE_ORDER(RunState.STARTING, DependantOrder.RUN_BEFORE_DEPENDANTS),

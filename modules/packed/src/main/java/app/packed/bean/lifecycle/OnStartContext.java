@@ -18,17 +18,18 @@ package app.packed.bean.lifecycle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.StructuredTaskScope;
 
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
+import internal.app.packed.extension.InternalBeanIntrospector;
 
 /** A context object that can be injected into methods annotated with {@link OnStart}. */
 
 // Okay, den eneste maade vi supportere join er via OnStart
 // De forskellige scheduling operationer kan ikke supportere det
 // Det store problemer er phases
-@OnContextServiceVariable(introspector = LifecycleAnnotationBeanIntrospector.class, requiresContext = OnStartContext.class)
+@AutoInject(requiresContext = OnStartContext.class, introspector = OnStartContext.Introspector.class)
 public interface OnStartContext extends Context<BaseExtension> {
 
     default OnStart.ForkMode forkMode() {
@@ -59,6 +60,16 @@ public interface OnStartContext extends Context<BaseExtension> {
     // Maaske supportere vi kun 1 mode. Og saa maa man bruge scheduleOnce
     enum JoinPolicy {
         BEFORE_DEPENDANTS, AFTER_DEPENDANTS, BEFORE_READY;
+    }
+
+    final class Introspector extends InternalBeanIntrospector<BaseExtension> {
+
+        @Override
+        public void onExtensionService(Key<?> key, OnContextService service) {
+            if (service.matchNoQualifiers(OnStartContext.class)) {
+                service.binder().bindContext(OnStartContext.class);
+            }
+        }
     }
 }
 

@@ -15,7 +15,7 @@
  */
 package app.packed.bean.lifecycle;
 
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
+import app.packed.operation.OperationHandle;
 
 /**
  *
@@ -25,7 +25,7 @@ public final class StartOperationConfiguration extends BeanLifecycleOperationCon
     /**
      * @param handle
      */
-    StartOperationConfiguration(LifecycleOnStartHandle handle) {
+    public StartOperationConfiguration(OperationHandle<?> handle) {
         super(handle);
     }
 

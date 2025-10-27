@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanTrigger.OnContextServiceInheritableVariable;
+import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
 import app.packed.build.BuildGoal;
 import app.packed.build.Mirror;
 import app.packed.build.MirrorPrinter;
@@ -42,7 +42,7 @@ import internal.app.packed.util.PackedTreeView;
  * Like many other mirrors classes the type of application mirror being returned can be specialized. See
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
-@OnContextServiceInheritableVariable(introspector = MirrorImplementationBeanIntrospector.class)
+@AutoInjectInheritable(introspector = MirrorImplementationBeanIntrospector.class)
 public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationBuildLocal.Accessor {
 
     /** The application's handle. */

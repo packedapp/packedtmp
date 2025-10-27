@@ -15,14 +15,6 @@
  */
 package internal.app.packed.operation;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandle;
-import java.util.ArrayDeque;
-
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
-
 /**
  * An op
  */
@@ -40,17 +32,17 @@ import app.packed.operation.OperationTemplate;
 // Jeg tror faktisk vi koere inject/initialization fra constant pool til at starte med.
 
 
-public final class CompoundOperation {
+final class CompoundOperation {
 
-    public final PackedOperationTemplate template;
-
-    public final ArrayDeque<OperationHandle<?>> operations = new ArrayDeque<>();
-
-    public final ArrayDeque<MethodHandle> methodHandles = new ArrayDeque<>();
-
-    public CompoundOperation(OperationTemplate template) {
-        this.template = (PackedOperationTemplate) requireNonNull(template);
-    }
+//    public final PackedOperationTemplate template;
+//
+//    public final ArrayDeque<OperationHandle<?>> operations = new ArrayDeque<>();
+//
+//    public final ArrayDeque<MethodHandle> methodHandles = new ArrayDeque<>();
+//
+//    public CompoundOperation(OperationTemplate template) {
+//        this.template = (PackedOperationTemplate) requireNonNull(template);
+//    }
 //
 //    public static List<CompoundOperation> of(@Nullable List<OperationTemplate> templates) {
 //        if (templates == null) {

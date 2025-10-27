@@ -37,7 +37,7 @@ public class ScTest2 extends BaseAssembly {
 //        });
 
         App.run(new ScTest2());
-        Thread.sleep(1000);
+        Thread.sleep(10000);
     }
 
     /** {@inheritDoc} */

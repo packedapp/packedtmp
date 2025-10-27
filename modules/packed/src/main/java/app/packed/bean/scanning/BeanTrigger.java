@@ -32,6 +32,76 @@ import app.packed.context.Context;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface BeanTrigger {
 
+    /**
+     *
+     * <p>
+     * If the type being provider is a generic type. It will match it independent on any actual types. There is no support
+     * for refining this. It must be handled in the extension.
+     *
+     * @see InheritableContextualServiceProvider
+     */
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @BeanTrigger
+    // OnServiceVariable
+    // OnContextServiceVariable
+    // Was OnExtensionServiceBeanTrigger
+    public @interface AutoInject {
+
+        /** The introspector responsible for this trigger. */
+        Class<? extends BeanIntrospector<?>> introspector();
+
+        /**
+         * Any context that is needed for the service to be provided. The default is
+         * {@link app.packed.service.advanced.ServiceResolver.NoContext} which indicates that the annotated class can be used
+         * anywhere.
+         * <p>
+         * If no contexts are specified, the type can be used anywhere.
+         * <p>
+         * If this binding is attempted to be used without the context being available a
+         * {@link app.packed.context.NotInContextException} will be thrown.
+         * <p>
+         *
+         * If this method returns multiple contexts they will <strong>all</strong> be required.
+         *
+         * @return required contexts
+         */
+        Class<? extends Context<?>>[] requiresContext() default {};
+    }
+
+    /**
+     * A version of the {@link ContextualServiceProvider} annotation that is {@link Inherited}. All other functionality is
+     * identical.
+     * <p>
+     * NOTE: Remember, inherited annotations are not inherited on interfaces. So you an abstract class if you need to design
+     * a inheritance hierarchy.
+     *
+     * @see ContextualServiceProvider
+     */
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @BeanTrigger
+    @Inherited
+    public @interface AutoInjectInheritable {
+
+        /** The introspector responsible for this trigger. */
+        Class<? extends BeanIntrospector<?>> introspector();
+
+        /**
+         * Contexts that are required in order to use the binding class.
+         * <p>
+         * If this binding is attempted to be used without the context being available an {@link UnavilableContextException}
+         * will be thrown.
+         * <p>
+         * If this method returns multiple contexts they will <strong>all</strong> be required.
+         *
+         * @return required contexts
+         */
+        Class<? extends Context<?>>[] requiresContext() default {};
+    }
+
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
@@ -167,75 +237,5 @@ public @interface BeanTrigger {
             //// fx vil vi altid have Peek efter decorate ved validering
             //// selvom decorate annotering er efter peek
         }
-    }
-
-    /**
-     *
-     * <p>
-     * If the type being provider is a generic type. It will match it independent on any actual types. There is no support
-     * for refining this. It must be handled in the extension.
-     *
-     * @see InheritableContextualServiceProvider
-     */
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @BeanTrigger
-    // OnServiceVariable
-    // OnContextServiceVariable
-    // Was OnExtensionServiceBeanTrigger
-    public @interface OnContextServiceVariable {
-
-        /** The introspector responsible for this trigger. */
-        Class<? extends BeanIntrospector<?>> introspector();
-
-        /**
-         * Any context that is needed for the service to be provided. The default is
-         * {@link app.packed.service.advanced.ServiceResolver.NoContext} which indicates that the annotated class can be used
-         * anywhere.
-         * <p>
-         * If no contexts are specified, the type can be used anywhere.
-         * <p>
-         * If this binding is attempted to be used without the context being available a
-         * {@link app.packed.context.NotInContextException} will be thrown.
-         * <p>
-         *
-         * If this method returns multiple contexts they will <strong>all</strong> be required.
-         *
-         * @return required contexts
-         */
-        Class<? extends Context<?>>[] requiresContext() default {};
-    }
-
-    /**
-     * A version of the {@link ContextualServiceProvider} annotation that is {@link Inherited}. All other functionality is
-     * identical.
-     * <p>
-     * NOTE: Remember, inherited annotations are not inherited on interfaces. So you an abstract class if you need to design
-     * a inheritance hierarchy.
-     *
-     * @see ContextualServiceProvider
-     */
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @BeanTrigger
-    @Inherited
-    public @interface OnContextServiceInheritableVariable {
-
-        /** The introspector responsible for this trigger. */
-        Class<? extends BeanIntrospector<?>> introspector();
-
-        /**
-         * Contexts that are required in order to use the binding class.
-         * <p>
-         * If this binding is attempted to be used without the context being available an {@link UnavilableContextException}
-         * will be thrown.
-         * <p>
-         * If this method returns multiple contexts they will <strong>all</strong> be required.
-         *
-         * @return required contexts
-         */
-        Class<? extends Context<?>>[] requiresContext() default {};
     }
 }

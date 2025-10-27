@@ -15,17 +15,14 @@
  */
 package app.packed.bean.lifecycle;
 
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
+import app.packed.operation.OperationHandle;
 
 /**
  *
  */
 public final class StopOperationConfiguration extends BeanLifecycleOperationConfiguration {
 
-    /**
-     * @param handle
-     */
-    StopOperationConfiguration(LifecycleOperationStopHandle handle) {
+    public StopOperationConfiguration(OperationHandle<?> handle) {
         super(handle);
     }
 

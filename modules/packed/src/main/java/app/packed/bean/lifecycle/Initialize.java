@@ -15,13 +15,18 @@
  */
 package app.packed.bean.lifecycle;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.lifecycle.Initialize.Introspector;
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger;
-import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
+import app.packed.extension.BaseExtension;
+import internal.app.packed.extension.InternalBeanIntrospector;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
 
 /**
  * Indicates that the annotated method must be invoked as part of the targeted bean's initialization.
@@ -68,7 +73,7 @@ import internal.app.packed.lifecycle.LifecycleAnnotationBeanIntrospector;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@BeanTrigger.OnAnnotatedMethod(introspector = LifecycleAnnotationBeanIntrospector.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedMethod(introspector = Introspector.class, allowInvoke = true)
 public @interface Initialize {
 
     /**
@@ -83,6 +88,13 @@ public @interface Initialize {
      *         initialized.
      */
     DependantOrder order() default DependantOrder.RUN_BEFORE_DEPENDANTS;
+
+    final class Introspector extends InternalBeanIntrospector<BaseExtension> {
+        @Override
+        public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+            BeanInitializeOperationHandle.fromInitializeAnnotation((Initialize) annotation, method);
+        }
+    }
 }
 
 //How do we say I want to run this after the application has finished installing

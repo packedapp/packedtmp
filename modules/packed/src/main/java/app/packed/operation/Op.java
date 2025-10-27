@@ -15,7 +15,6 @@
  */
 package app.packed.operation;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Executable;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
@@ -276,9 +275,9 @@ interface ZandboxOp<R> {
         throw new UnsupportedOperationException();
     }
 
-    static Op<?> ofMethodHandle(MethodHandle methodHandle) {
-        throw new UnsupportedOperationException();
-    }
+//    static Op<?> ofMethodHandle(MethodHandle methodHandle) {
+//        throw new UnsupportedOperationException();
+//    }
 
     // Must be static
     static Op<?> ofExecutable(Executable executable) {

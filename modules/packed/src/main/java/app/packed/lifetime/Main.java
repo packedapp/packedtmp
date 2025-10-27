@@ -15,15 +15,18 @@
  */
 package app.packed.lifetime;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import internal.app.packed.lifecycle.lifetime.entrypoint.MainAnnotationBeanintrospector;
-
+import app.packed.extension.BaseExtension;
+import internal.app.packed.extension.InternalBeanIntrospector;
+import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
 
 // Maybe move to app.packed.application?
 // I don't know if it makes sense for pods
@@ -46,8 +49,27 @@ import internal.app.packed.lifecycle.lifetime.entrypoint.MainAnnotationBeanintro
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@OnAnnotatedMethod(introspector = MainAnnotationBeanintrospector.class, allowInvoke = true)
-public @interface Main {}
+@OnAnnotatedMethod(introspector = Main.MainAnnotationBeanintrospector.class, allowInvoke = true)
+public @interface Main {
+
+    final class MainAnnotationBeanintrospector extends InternalBeanIntrospector<BaseExtension> {
+
+        /**
+         * {@inheritDoc}
+         *
+         * @see app.packed.lifetime.Main
+         */
+        @Override
+        public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+            // Handles @Main
+            if (annotation instanceof Main main) {
+                EntryPointManager.testMethodAnnotation(extension(), isInApplicationLifetime(), method, main);
+            } else {
+                super.onAnnotatedMethod(annotation, method);
+            }
+        }
+    }
+}
 
 //A single method. Will be executed.
 //and then shutdown container down again

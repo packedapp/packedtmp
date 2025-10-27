@@ -17,8 +17,8 @@ package internal.app.packed.service;
 
 import java.util.Set;
 
+import app.packed.binding.DublicateKeyProvisionException;
 import app.packed.binding.Key;
-import app.packed.binding.KeyAlreadyProvidedException;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceHandle;
@@ -91,7 +91,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
         // Check if we have an existing service provider for the specified key
         NamespaceServiceProviderHandle existing = providers.get(key);
         if (existing != null) {
-            throw new KeyAlreadyProvidedException(provideDublicateProvideErrorMsg(existing, operation));
+            throw new DublicateKeyProvisionException(provideDublicateProvideErrorMsg(existing, operation));
         }
 
         // Create a new service provider and add it to the map of service providers

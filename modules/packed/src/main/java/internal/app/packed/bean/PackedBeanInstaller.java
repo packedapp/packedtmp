@@ -24,7 +24,6 @@ import app.packed.bean.Bean;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanSourceKind;
 import app.packed.extension.InternalExtensionException;
@@ -136,7 +135,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     /** {@inheritDoc} */
     @Override
     public <H extends BeanHandle<?>> H install(Bean<?> bean, Function<? super BeanInstaller, H> factory) {
-        if (template.beanKind() != BeanLifetime.STATIC && bean.beanSourceKind() == BeanSourceKind.SOURCELESS) {
+        if (bean.beanSourceKind() == BeanSourceKind.SOURCELESS) {
             throw new InternalExtensionException("Only static beans can be source less");
         }
         return BeanSetup.newBean(this, (PackedBean<?>) bean, factory);

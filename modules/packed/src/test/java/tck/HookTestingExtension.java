@@ -43,6 +43,7 @@ import app.packed.extension.ExtensionHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.CollectionUtil;
 import tck.AbstractAppTest.TestStore;
 import testutil.MemberFinder;
@@ -75,7 +76,9 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         ink.putIfAbsent(name, oh);
 
         base().installIfAbsent(HookBean.class, b -> {
-            b.bindServiceInstance(new Key<Map<String, MethodHandle>>() {}, CollectionUtil.copyOf(ink, v -> v.invoker().asMethodHandle()));
+            b.bindServiceInstance(new Key<Map<String, MethodHandle>>() {}, CollectionUtil.copyOf(ink, v ->
+
+            OperationSetup.crack(v).codeHolder.asMethodHandle()));
         });
     }
 

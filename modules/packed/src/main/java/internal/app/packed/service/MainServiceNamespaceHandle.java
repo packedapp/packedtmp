@@ -16,14 +16,11 @@
 package internal.app.packed.service;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.Iterator;
 import java.util.Map;
 
-import app.packed.bean.BeanSourceKind;
+import app.packed.binding.DublicateKeyProvisionException;
 import app.packed.binding.Key;
-import app.packed.binding.KeyAlreadyProvidedException;
 import app.packed.extension.ExtensionContext;
 import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
@@ -32,14 +29,11 @@ import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.invoke.ServiceHelper;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
-import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.util.PackedServiceLocator;
 import internal.app.packed.service.util.ServiceMap;
-import internal.app.packed.util.accesshelper.OperationAccessHandler;
 
 /** Manages services in a single container. */
 public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
@@ -81,38 +75,13 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
         ExportedService existing = exports.putIfAbsent(es.key, es);
         if (existing != null) {
             // A service with the key has already been exported
-            throw new KeyAlreadyProvidedException("Jmm " + es.key);
+            throw new DublicateKeyProvisionException("Jmm " + es.key);
         }
         return es;
     }
 
     public Map<Key<?>, MethodHandle> exportedServices() {
-        Map<Key<?>, MethodHandle> result = exports.toUnmodifiableMap(n -> {
-            MethodHandle mh;
-            OperationSetup o = n.operation;
-
-            int accessor = -1;
-            if (o.target instanceof BeanAccessOperationTarget) {
-                accessor = o.bean.lifetimeStoreIndex;
-                // test if prototype bean
-                if (accessor == -1 && o.bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-                    o = o.bean.operations.first();
-                }
-            }
-            if (!(o.target instanceof MemberOperationTarget) && o.bean.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
-                // It is a a constant
-                mh = MethodHandles.constant(Object.class, o.bean.bean.beanSource);
-                mh = MethodHandles.dropArguments(mh, 0, ExtensionContext.class);
-            } else if (accessor >= 0) {
-                mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
-            } else {
-                mh = OperationAccessHandler.instance().invokeOperationHandleNewMethodHandle(o.handle());
-            }
-            mh = mh.asType(mh.type().changeReturnType(Object.class));
-            assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionContext.class)));
-            return mh;
-        });
-        return result;
+        return exports.toUnmodifiableMap(n -> ServiceHelper.fromOperation(n.operation));
     }
 
     public ServiceContract newContract() {

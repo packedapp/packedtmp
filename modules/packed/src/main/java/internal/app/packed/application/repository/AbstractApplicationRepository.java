@@ -17,7 +17,6 @@ package internal.app.packed.application.repository;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,6 +34,7 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
+import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
 
 /** Implementation of {@link ApplicationRepository}. */
 @ValueBased
@@ -45,7 +45,7 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
     private final ConcurrentHashMap<String, ApplicationLauncherOrFuture<I, H>> applications;
 
     /** MethodHandle to create the guest bean. */
-    private final MethodHandle methodHandle;
+    private final ApplicationBaseLauncher applicationLauncher;
 
     /** The template that is used to install new applications at runtime. */
     private final PackedApplicationTemplate<H> template;
@@ -55,7 +55,7 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
         this.applications = new ConcurrentHashMap<>();
         bar.handles.forEach((n, h) -> applications.put(n, new PackedInstalledApplication<>(this instanceof ManagedApplicationRepository, (H) h)));
         this.template = (PackedApplicationTemplate<H>) bar.template;
-        this.methodHandle = requireNonNull(bar.mh);
+        this.applicationLauncher = requireNonNull(bar.mh);
     }
 
     /** {@inheritDoc} */
@@ -84,7 +84,7 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
     @SuppressWarnings("unchecked")
     @Override
     public final LaunchableApplication<I> install(Consumer<? super ApplicationInstaller<H>> installer) {
-        PackedApplicationInstaller<H> pai = template.newInstaller(this, BuildGoal.IMAGE, methodHandle);
+        PackedApplicationInstaller<H> pai = template.newInstaller(this, BuildGoal.IMAGE, applicationLauncher);
         installer.accept(pai);
         ApplicationSetup setup = pai.toSetup();
 

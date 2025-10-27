@@ -444,8 +444,8 @@ public abstract class Key<T> {
      */
     public final Key<T> withTag(String name) {
         requireNonNull(name, "name is null");
-        record TaggedAnno(Class<? extends Annotation> annotationType, String value) implements KeyClassifier {}
-        return withQualifier(new TaggedAnno(KeyClassifier.class, name));
+        record TaggedAnno(Class<? extends Annotation> annotationType, String value) implements StringQualifier {}
+        return withQualifier(new TaggedAnno(StringQualifier.class, name));
     }
 
     /**

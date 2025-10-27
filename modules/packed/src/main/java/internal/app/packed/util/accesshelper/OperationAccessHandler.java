@@ -15,7 +15,6 @@
  */
 package internal.app.packed.util.accesshelper;
 
-import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
 import app.packed.operation.OperationHandle;
@@ -44,6 +43,4 @@ public abstract class OperationAccessHandler extends AccessHelper {
     /** Call {@link OperationHandle#onClose()}. */
     public abstract void invokeOperationHandleDoClose(OperationHandle<?> handle, boolean isClose);
 
-    /** Call {@link OperationHandle#onClose()}. */
-    public abstract MethodHandle invokeOperationHandleNewMethodHandle(OperationHandle<?> handle);
 }

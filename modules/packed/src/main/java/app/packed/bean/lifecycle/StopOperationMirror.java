@@ -15,7 +15,7 @@
  */
 package app.packed.bean.lifecycle;
 
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
+import app.packed.operation.OperationHandle;
 
 /**
  *
@@ -25,7 +25,7 @@ public final class StopOperationMirror extends BeanLifecycleOperationMirror {
     /**
      * @param handle
      */
-    StopOperationMirror(LifecycleOperationStopHandle handle) {
+    public StopOperationMirror(OperationHandle<?> handle) {
         super(handle);
     }
 }

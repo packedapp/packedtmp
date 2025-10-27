@@ -19,15 +19,14 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.ForInitialize;
-import internal.app.packed.util.accesshelper.AccessHelper;
-import internal.app.packed.util.accesshelper.BeanLifecycleAccessHandler;
+import app.packed.operation.OperationHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
 
 /** A mirror representing an {@link OnInitialize} operation. */
 public final class InitializeOperationMirror extends BeanLifecycleOperationMirror {
 
     /** A handle for the initialization operation. */
-    final ForInitialize handle;
+    final BeanInitializeOperationHandle handle;
 
     /**
      * Create a new mirror.
@@ -35,9 +34,9 @@ public final class InitializeOperationMirror extends BeanLifecycleOperationMirro
      * @param handle
      *            the operation's handle
      */
-    InitializeOperationMirror(ForInitialize handle) {
+    public InitializeOperationMirror(OperationHandle<?> handle) {
         super(handle);
-        this.handle = requireNonNull(handle);
+        this.handle = (BeanInitializeOperationHandle) requireNonNull(handle);
     }
 
     // Maybe OperationMirrorList
@@ -46,38 +45,4 @@ public final class InitializeOperationMirror extends BeanLifecycleOperationMirro
     }
     // ListWithPointer into initialization methods on the bean
 
-    static {
-        AccessHelper.initHandler(BeanLifecycleAccessHandler.class, new BeanLifecycleAccessHandler() {
-
-            @Override
-            public InitializeOperationMirror newInitializeOperationMirror(ForInitialize handle) {
-                return new InitializeOperationMirror(handle);
-            }
-
-            @Override
-            public StartOperationMirror newStartOperationMirror(internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle handle) {
-                return new StartOperationMirror(handle);
-            }
-
-            @Override
-            public StopOperationMirror newStopOperationMirror(internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle handle) {
-                return new StopOperationMirror(handle);
-            }
-
-            @Override
-            public InitializeOperationConfiguration newInitializeOperationConfiguration(ForInitialize handle) {
-                return new InitializeOperationConfiguration(handle);
-            }
-
-            @Override
-            public StartOperationConfiguration newStartOperationConfiguration(internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle handle) {
-                return new StartOperationConfiguration(handle);
-            }
-
-            @Override
-            public StopOperationConfiguration newStopOperationConfiguration(internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle handle) {
-                return new StopOperationConfiguration(handle);
-            }
-        });
-    }
 }

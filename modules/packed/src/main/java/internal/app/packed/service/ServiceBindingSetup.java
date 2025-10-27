@@ -86,12 +86,12 @@ public final class ServiceBindingSetup extends BindingSetup {
                 }
             }
             case BEAN_SERVICE -> {
-                BeanServiceProviderSetup sps = operation.bean.beanServices.get(key);
+                BeanServiceProviderSetup sps = operation.bean.serviceProviders.get(key);
                 if (sps != null) {
                     return sps;
                 }
             }
-            case EXTENSION_SERVICE -> {
+            case CONTEXT_SERVICE -> {
                 // I think two options -> If empty we must be unique
                 // If non-empty we take them 1 at a time
 

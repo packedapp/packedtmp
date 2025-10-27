@@ -25,7 +25,7 @@ import app.packed.component.ComponentRealm;
 import app.packed.operation.OperationType;
 import internal.app.packed.binding.BindingAccessor.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
-import internal.app.packed.util.LookupUtil;
+import internal.app.packed.invoke.LookupUtil;
 
 /** An intermediate (non-terminal) op. */
 abstract sealed class IntermediateOp<R> extends PackedOp<R> {
@@ -83,7 +83,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
     static final class PeekingOp<R> extends IntermediateOp<R> {
 
         /** A method handle for {@link #accept(Consumer, Object)}. */
-        static final MethodHandle ACCEPT = LookupUtil.findStaticOwn(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
+        static final MethodHandle ACCEPT = LookupUtil.findStaticSelf(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
 
         PeekingOp(PackedOp<R> delegate, MethodHandle methodHandle) {
             super(delegate, delegate.type, methodHandle);
