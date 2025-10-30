@@ -1,4 +1,4 @@
-package internal.app.packed.invoke;
+package internal.app.packed.invoke.sandbox;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.ref.WeakReference;

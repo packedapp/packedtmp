@@ -22,14 +22,13 @@ import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.StopInfo;
-import internal.app.packed.extension.InternalBeanIntrospector;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
 
 /**
- *
+ * A context that can be injected into methods annotated with {@link Stop}.
  */
-// Bliver lavet per operation
-// BeanStopContext
-@AutoInject(introspector = StopContext.Introspector.class, requiresContext = StopContext.class)
+@AutoInject(introspector = StopContextBeanIntrospector.class, requiresContext = StopContext.class)
 public interface StopContext extends Context<BaseExtension> {
 
     /**
@@ -41,23 +40,20 @@ public interface StopContext extends Context<BaseExtension> {
     StopInfo info();
     // isApplicationStopping();
 
-
-    default void await(AwaitingTimeoutFunction f) {
-
-    }
+    default void await(AwaitingTimeoutFunction f) {}
 
     @FunctionalInterface
     interface AwaitingTimeoutFunction {
         boolean await(long timeout, TimeUnit unit) throws InterruptedException;
     }
+}
 
-    final class Introspector extends InternalBeanIntrospector<BaseExtension> {
+final class StopContextBeanIntrospector extends BaseExtensionBeanIntrospector {
 
-        @Override
-        public void onExtensionService(Key<?> key, OnContextService service) {
-            if (service.matchNoQualifiers(StopContext.class)) {
-                service.binder().bindContext(StopContext.class);
-            }
+    @Override
+    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+        if (service.matchNoQualifiers(StopContext.class)) {
+            service.binder().bindContext(StopContext.class);
         }
     }
 }

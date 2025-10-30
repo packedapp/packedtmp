@@ -22,16 +22,16 @@ import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.BindingProviderKind;
 
-/** How do I access Provides values for bindings. */
-public sealed interface BindingAccessor {
+/** Describes how the value of a binding is provided. */
+public sealed interface BindingProvider {
 
     /** {@return the kind of provider.} */
     BindingProviderKind kind();
 
-    sealed interface SupplierOrInstance extends BindingAccessor {}
+    sealed interface SupplierOrInstance extends BindingProvider {}
 
-    /** This provider will create a constant at code generation time. */
-    public record FromCodeGenerated(Supplier<?> supplier, SuppliedBindingKind suppliedBindingkind) implements SupplierOrInstance {
+    /** Provides an instance from a constant that is created at code generation time. */
+    public record FromCodeGeneratedConstant(Supplier<?> supplier, SuppliedBindingKind suppliedBindingkind) implements SupplierOrInstance {
 
         /** {@inheritDoc} */
         @Override
@@ -40,7 +40,7 @@ public sealed interface BindingAccessor {
         }
     }
 
-    /** Provides values from a constant. */
+    /** Provide instance from a constant. */
     public record FromConstant(Class<?> constantType, Object constant) implements SupplierOrInstance {
 
         /** {@inheritDoc} */
@@ -50,8 +50,8 @@ public sealed interface BindingAccessor {
         }
     }
 
-    /** Provides values from an operation invocation argument. */
-    public record FromInvocationArgument(int argumentIndex) implements BindingAccessor {
+    /** Provides a instance from the invocation argument of operation. */
+    public record FromInvocationArgument(int argumentIndex) implements BindingProvider {
 
         /** {@inheritDoc} */
         @Override
@@ -60,8 +60,8 @@ public sealed interface BindingAccessor {
         }
     }
 
-    /** Provides values by accessing a lifetime arena. */
-    public record FromLifetimeArena(ContainerLifetimeSetup containerLifetime, LifetimeStoreIndex index, Class<?> type) implements BindingAccessor {
+    /** Provides an instance by accessing a lifetime arena. For example, a singleton bean. */
+    public record FromLifetimeArena(ContainerLifetimeSetup containerLifetime, LifetimeStoreIndex index, Class<?> type) implements BindingProvider {
 
         /** {@inheritDoc} */
         @Override
@@ -70,8 +70,8 @@ public sealed interface BindingAccessor {
         }
     }
 
-    /** Provides values from the result of an operation. */
-    public record FromOperationResult(OperationSetup operation) implements BindingAccessor {
+    /** Provides an instance from the result of an operation. */
+    public record FromOperationResult(OperationSetup operation) implements BindingProvider {
 
         /** {@inheritDoc} */
         @Override

@@ -38,8 +38,9 @@ import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.context.PackedComponentHostContext;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
+import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 import internal.app.packed.invoke.ServiceHelper;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /**
@@ -68,6 +69,9 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         return Map.of();
     }
 
+    public FactoryOperationHandle factory() {
+       return (FactoryOperationHandle) lifecycleInvokers().get(0);
+    }
     public void resolve(BeanIntrospector<?> i, OnVariable v) {
         Variable va = v.variable();
 
@@ -100,6 +104,6 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
 
         GuestBeanHandle h = installer.install(bean, GuestBeanHandle::new);
 
-        return ServiceHelper.fromGuestBeanHandle(h);
+        return ServiceHelper.newApplicationBaseLauncher(h);
     }
 }

@@ -23,6 +23,7 @@ import java.lang.invoke.MethodType;
 
 import app.packed.build.hook.BuildHook;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.extension.ExtensionSetup;
@@ -33,9 +34,9 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  *
  */
-public abstract class MethodHandleWrapper {
+public abstract class MethodHandleInvoker {
 
-    public static final class ApplicationBaseLauncher extends MethodHandleWrapper {
+    public static final class ApplicationBaseLauncher extends MethodHandleInvoker {
 
         public static ApplicationBaseLauncher EMPTY = new ApplicationBaseLauncher(
                 MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class)));
@@ -55,7 +56,7 @@ public abstract class MethodHandleWrapper {
         }
     }
 
-    public static final class ExtensionFactory extends MethodHandleWrapper {
+    public static final class ExtensionFactory extends MethodHandleInvoker {
         private final MethodHandle mh;
 
         public ExtensionFactory(MethodHandle mh) {
@@ -72,7 +73,7 @@ public abstract class MethodHandleWrapper {
         }
     }
 
-    public static final class BuildHookFactory extends MethodHandleWrapper {
+    public static final class BuildHookFactory extends MethodHandleInvoker {
         private final MethodHandle mh;
 
         public BuildHookFactory(MethodHandle mh) {
@@ -82,6 +83,22 @@ public abstract class MethodHandleWrapper {
         public BuildHook create() {
             try {
                 return (BuildHook) mh.invokeExact();
+            } catch (Throwable t) {
+                throw ThrowableUtil.orUndeclared(t);
+            }
+        }
+    }
+
+    public static final class ExportedServiceWrapper extends MethodHandleInvoker {
+        private final MethodHandle mh;
+
+        public ExportedServiceWrapper(MethodHandle mh) {
+            this.mh = requireNonNull(mh);
+        }
+
+        public Object create(ExtensionContext context) {
+            try {
+                return mh.invokeExact(context);
             } catch (Throwable t) {
                 throw ThrowableUtil.orUndeclared(t);
             }

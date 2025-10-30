@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
+import app.packed.binding.Key;
 import app.packed.build.BuildGoal;
 import app.packed.build.Mirror;
 import app.packed.build.MirrorPrinter;
@@ -25,8 +26,9 @@ import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.PackedTreeView;
 
@@ -42,7 +44,7 @@ import internal.app.packed.util.PackedTreeView;
  * Like many other mirrors classes the type of application mirror being returned can be specialized. See
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
-@AutoInjectInheritable(introspector = MirrorImplementationBeanIntrospector.class)
+@AutoInjectInheritable(introspector = ApplicationMirrorIntrospector.class)
 public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationBuildLocal.Accessor {
 
     /** The application's handle. */
@@ -179,15 +181,15 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return handle.application.container().name();
     }
 
-    // Alternatively all keysspaces not owned by the application must be prefixed with $
-    // $FooExtension$main I think I like this better
-    // NamespaceKey <Type, Owner?, ContainerPath, Name>
-
     // Application owned namespace...
     // Optional???
     public <N extends NamespaceMirror<?>> Optional<N> namespace(Class<N> type) {
         return namespace(type, "main");
     }
+
+    // Alternatively all keysspaces not owned by the application must be prefixed with $
+    // $FooExtension$main I think I like this better
+    // NamespaceKey <Type, Owner?, ContainerPath, Name>
 
     public <N extends NamespaceMirror<?>> Optional<N> namespace(Class<N> type, String name) {
         for (NamespaceHandle<?, ?> n : handle.application.namespaces.values()) {
@@ -274,6 +276,15 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
 
     public <E extends ExtensionMirror<?>> void useIfPresent(Class<E> type, Consumer<? super E> action) {
         throw new UnsupportedOperationException();
+    }
+
+}
+
+final class ApplicationMirrorIntrospector extends BaseExtensionBeanIntrospector {
+
+    @Override
+    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+        service.binder().bindInstance(service.bean().container.application.mirror());
     }
 }
 

@@ -17,8 +17,8 @@ package app.packed.binding;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bean.scanning.BeanTrigger;
-import internal.app.packed.service.ServiceBeanIntrospector;
+import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
 
 /**
  * A provider of instances.
@@ -27,7 +27,7 @@ import internal.app.packed.service.ServiceBeanIntrospector;
  *            the type of instances that are provided
  */
 @FunctionalInterface
-@BeanTrigger.AutoInject(introspector = ServiceBeanIntrospector.class)
+@AutoInject(introspector = ProviderBeanIntrospector.class)
 public interface Provider<T> {
 
     /**
@@ -51,6 +51,11 @@ public interface Provider<T> {
         record InstanceProvider<T>(T provide) implements Provider<T> {}
         return new InstanceProvider<>(constant);
     }
+
+}
+
+final class ProviderBeanIntrospector extends BaseExtensionBeanIntrospector {
+
 }
 ///**
 //* Returns an infinite stream of instances.

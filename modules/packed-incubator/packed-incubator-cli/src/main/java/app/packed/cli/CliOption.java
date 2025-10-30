@@ -15,6 +15,9 @@
  */
 package app.packed.cli;
 
+import java.lang.annotation.Annotation;
+
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger;
 import app.packed.namespace.sandbox.NamespaceOperation;
 
@@ -22,7 +25,14 @@ import app.packed.namespace.sandbox.NamespaceOperation;
  *
  */
 @NamespaceOperation
-@BeanTrigger.OnAnnotatedVariable(introspector = CliBeanIntrospector.class)
-public @interface CliOption {
+@BeanTrigger.OnAnnotatedVariable(introspector = CliOptionBeanIntrospector.class)
+public @interface CliOption {}
 
+final class CliOptionBeanIntrospector extends BeanIntrospector<CliExtension> {
+
+    /** {@inheritDoc} */
+    @Override
+    public void onAnnotatedVariable(Annotation annotation, OnVariable onVariable) {
+        extension().ns().process(extension(), (CliOption) annotation, onVariable);
+    }
 }

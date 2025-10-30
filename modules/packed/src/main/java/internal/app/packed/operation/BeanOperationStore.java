@@ -22,10 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import app.packed.bean.BeanLifetime;
-import app.packed.bean.BeanSourceKind;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.util.CollectionUtil;
@@ -44,7 +41,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
      * the list will be sorted in the order of execution. With {@link app.packed.lifetime.RunState#INITIALIZING} lifecycle
      * operations first, and {@link app.packed.lifetime.RunState#STOPPING} lifecycle operations at the end.
      */
-    public final EnumMap<InternalBeanLifecycleKind, List<BeanLifecycleOperationHandle>> lifecycleHandles = new EnumMap<>(InternalBeanLifecycleKind.class);
+    public final EnumMap<InternalBeanLifecycleKind, List<LifecycleOperationHandle>> lifecycleHandles = new EnumMap<>(InternalBeanLifecycleKind.class);
 
     /**
      * The unique name of every operation.
@@ -66,7 +63,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
         all.add(os);
     }
 
-    public <T extends BeanLifecycleOperationHandle> void addLifecycleHandle(T handle) {
+    public void addLifecycleHandle(LifecycleOperationHandle handle) {
         lifecycleHandles.compute(handle.lifecycleKind, (_, v) -> {
             if (v == null) {
                 return List.of(handle);
@@ -74,21 +71,6 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
                 return CollectionUtil.copyAndAdd(v, handle);
             }
         });
-        OperationSetup os = OperationSetup.crack(handle);
-        if (handle.lifecycleKind == InternalBeanLifecycleKind.FACTORY) {
-            BeanSetup bean = OperationSetup.crack(handle).bean;
-            if (bean.beanKind == BeanLifetime.SINGLETON) {
-                assert (bean.bean.beanSourceKind != BeanSourceKind.INSTANCE);
-
-                bean.container.application.addCodegenAction(() -> {
-                    os.codeHolder.setMethodHandle(os.codeHolder.newMethodHandle());
-                });
-            }
-        } else {
-
-            os.codeHolder.setMethodHandle(os.codeHolder.asMethodHandle());
-        }
-       // return handle;
     }
 
     public OperationSetup first() {

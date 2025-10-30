@@ -30,7 +30,7 @@ import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
+import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 
 /** Implementation of {@link ApplicationTemplate}. */
 public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,

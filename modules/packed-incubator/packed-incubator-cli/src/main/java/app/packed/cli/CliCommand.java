@@ -15,12 +15,14 @@
  */
 package app.packed.cli;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.namespace.sandbox.NamespaceOperation;
 
@@ -31,7 +33,7 @@ import app.packed.namespace.sandbox.NamespaceOperation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceOperation
-@OnAnnotatedMethod(introspector = CliBeanIntrospector.class)
+@OnAnnotatedMethod(introspector = CliCommandBeanIntrospector.class)
 public @interface CliCommand {
 
     /**
@@ -62,4 +64,13 @@ public @interface CliCommand {
 //
 //
 //    }
+}
+
+final class CliCommandBeanIntrospector extends BeanIntrospector<CliExtension> {
+
+    /** {@inheritDoc} */
+    @Override
+    public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+        extension().ns().process(extension(), (CliCommand) annotation, method);
+    }
 }

@@ -22,6 +22,7 @@ import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 
 /** Implementation of {@link OperationTemplate}. */
 public final class PackedOperationTemplate implements OperationTemplate {
@@ -128,6 +129,13 @@ public final class PackedOperationTemplate implements OperationTemplate {
         return new PackedOperationInstaller(this, operationType, bean, operator);
     }
 
+    public PackedOperationInstaller newInstallerFromBeanAccess(OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
+        PackedOperationInstaller poi = newInstaller(operationType, bean, operator);
+        poi.operationTarget = new BeanAccessOperationTarget();
+        poi.namePrefix = "BeanInstanceAccess";
+        return poi;
+    }
+
     /** {@inheritDoc} */
     @Override
     public OperationTemplate withAppendBeanInstance(Class<?> beanClass) {
@@ -196,8 +204,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
         private List<Class<?>> args = List.of();
         private List<Class<? extends Throwable>> allowedThrowables = List.of(Throwable.class);
 
-        PackedBuilder() {
-        }
+        PackedBuilder() {}
 
         /** Copy constructor for creating a builder from an existing template. */
         PackedBuilder(PackedOperationTemplate template) {

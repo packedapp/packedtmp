@@ -24,12 +24,9 @@ import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.Main;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnMethod;
-import internal.app.packed.lifecycle.lifetime.entrypoint.OldEntryPointSetup.MainThreadOfControl;
-import internal.app.packed.operation.OperationSetup;
 
 /** An instance of this class is shared between all entry point extensions for a single application. */
 public class EntryPointManager {
@@ -73,12 +70,14 @@ public class EntryPointManager {
 
         bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
 
-        OperationTemplate temp = OperationTemplate.defaults().withReturnTypeDynamic();
-        MainOperationHandle os = method.newOperation(temp).install(MainOperationHandle::new);
+        // Ive commented this out as part of the refactoring
 
-        MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
+//        OperationTemplate temp = OperationTemplate.defaults().withReturnTypeDynamic();
+//        MainOperationHandle os = method.newOperation(temp).install(MainOperationHandle::new);
+//
+//        MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
 
-        mc.generatedMethodHandle = OperationSetup.crack(os).codeHolder.asMethodHandle();
+      //  mc.generatedMethodHandle = OperationSetup.crack(os).codeHolder.asMethodHandle();
     }
 
     public static class EntryPointConf {

@@ -34,7 +34,7 @@ import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.BindingAccessor.FromOperationResult;
+import internal.app.packed.binding.BindingProvider.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.context.ContextInfo;
@@ -42,8 +42,7 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.invoke.OperationCodeHolder;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
+import internal.app.packed.invoke.OperationCodeGenerator;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointSetup;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
@@ -53,7 +52,7 @@ import internal.app.packed.service.ServiceProviderSetup.OperationServiceProvider
 import internal.app.packed.service.util.ServiceMap;
 import internal.app.packed.util.accesshelper.OperationAccessHandler;
 
-/** The internal configuration of (bean) operation. */
+/** The internal configuration of an operation on a bean. */
 public final class OperationSetup implements ContextualizedComponentSetup, ComponentSetup {
 
     /** The bean this operation belongs to. */
@@ -96,15 +95,17 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     /** ServiceProviders bound specifically for the operation. */
     public final ServiceMap<OperationServiceProviderSetup> serviceProviders = new ServiceMap<>();
 
+    /** The target of the operation (field, method, methodhandle, ...) */
     public final PackedOperationTarget target;
 
-    /** The operation's template. */
+    /** The template that was used to create the operation. */
     public final PackedOperationTemplate template;
 
     /** The type of this operation. */
     public final OperationType type;
 
-    public final OperationCodeHolder codeHolder = new OperationCodeHolder(this);
+    /** Holds generated code for the operation. */
+    public final OperationCodeGenerator codeHolder = new OperationCodeGenerator(this);
 
     /**
      * Create a new operation.
@@ -170,7 +171,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     public void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
             requireNonNull(bs);
-            if (bs.resolver() != null && bs.resolver() instanceof FromOperationResult nested) {
+            if (bs.provider() != null && bs.provider() instanceof FromOperationResult nested) {
                 nested.operation().forEachBinding(binding);
             }
             binding.accept(bs);
@@ -258,9 +259,8 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         if (handle == null) {
             throw new InternalExtensionException(installer.operator.extensionType, handleFactory + " returned null, when creating a new OperationHandle");
         }
-        if (handle instanceof BeanLifecycleOperationHandle oh) {
-            installer.bean.operations.addLifecycleHandle(oh);
-        }
+        OperationAccessHandler.instance().onInstall(handle);
+
         return operation;
     }
 

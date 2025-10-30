@@ -16,16 +16,23 @@
 package app.packed.bean.lifecycle;
 
 import app.packed.operation.OperationHandle;
+import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
 
 /**
- *
+ * A mirror representing a {@link Stop} operation.
  */
 public final class StopOperationMirror extends LifecycleOperationMirror {
 
-    /**
-     * @param handle
-     */
+    /** The handle representing the operation. */
+    private final StopOperationHandle handle;
+
     public StopOperationMirror(OperationHandle<?> handle) {
+        this.handle = (StopOperationHandle) handle;
         super(handle);
+    }
+
+    public boolean isNaturalOrder() {
+        return handle.lifecycleKind == InternalBeanLifecycleKind.STOP_POST_ORDER;
     }
 }

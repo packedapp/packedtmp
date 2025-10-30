@@ -15,7 +15,6 @@
  */
 package internal.app.packed.service;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -27,8 +26,9 @@ import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
-import internal.app.packed.binding.BindingAccessor;
+import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.invoke.MethodHandleInvoker.ExportedServiceWrapper;
 import internal.app.packed.invoke.ServiceHelper;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
@@ -47,7 +47,7 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
 
     /** A map of exported service method method handles, must be computed. */
     @Nullable
-    private Map<Key<?>, MethodHandle> exportedServices;
+    private Map<Key<?>, ExportedServiceWrapper> exportedServices;
 
     /** Exported services from the container. */
     public final ServiceMap<ExportedService> exports = new ServiceMap<>();
@@ -80,8 +80,8 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
         return es;
     }
 
-    public Map<Key<?>, MethodHandle> exportedServices() {
-        return exports.toUnmodifiableMap(n -> ServiceHelper.fromOperation(n.operation));
+    public Map<Key<?>, ExportedServiceWrapper> exportedServices() {
+        return exports.toUnmodifiableMap(n -> ServiceHelper.toExportedService(n.operation));
     }
 
     public ServiceContract newContract() {
@@ -111,7 +111,7 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
     }
 
     public ServiceLocator newExportedServiceLocator(ExtensionContext context) {
-        Map<Key<?>, MethodHandle> m = exportedServices;
+        Map<Key<?>, ExportedServiceWrapper> m = exportedServices;
         if (m == null) {
             throw new UnsupportedOperationException("Exported services not available");
         }
@@ -130,9 +130,11 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
      *            the operation that provides the service
      * @return a provided service
      */
-    public void provideService(Key<?> key, OperationSetup operation, BindingAccessor resolution) {
-        super.provide(key, operation, resolution);
+    public void provideService(Key<?> key, ServiceProvideOperationHandle oh, BindingProvider resolution) {
 
+        super.provide(key, oh, resolution);
+
+        OperationSetup operation = OperationSetup.crack(oh);
         if (exportAll) {
             export(key, operation);
         }

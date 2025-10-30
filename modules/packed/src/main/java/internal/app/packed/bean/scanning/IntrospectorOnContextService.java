@@ -18,14 +18,22 @@ package internal.app.packed.bean.scanning;
 import java.util.Set;
 
 import app.packed.bean.scanning.BeanIntrospector.OnContextService;
-import app.packed.bean.scanning.BeanIntrospector.OnVariableUnwrapped;
 import app.packed.binding.Key;
 import app.packed.context.Context;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-public record IntrospectorOnServiceProvision(Key<?> key, Class<?> baseClass, Set<Class<? extends Context<?>>> contexts, OnVariableUnwrapped binder)
+public record IntrospectorOnContextService(Key<?> key, Class<?> baseClass, Set<Class<? extends Context<?>>> contexts, IntrospectorOnVariableUnwrapped binder)
         implements OnContextService {
 
+    public OperationSetup operation() {
+        return binder.var().operation;
+    }
+
+    public BeanSetup bean() {
+        return operation().bean;
+    }
 }

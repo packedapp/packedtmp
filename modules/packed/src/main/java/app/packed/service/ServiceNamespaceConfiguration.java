@@ -81,7 +81,8 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
         checkIsConfigurable();
         Map<Key<?>, ?> result;
         if (locator instanceof PackedServiceLocator psl) {
-            result = CollectionUtil.copyOf(psl.entries(), e -> e.bindTo(psl.context()));
+//            result = CollectionUtil.copyOf(psl.entries(), e -> e.bindTo(psl.context()));
+            return psl.keys();
         } else {
             result = CollectionUtil.copyOf(locator.toProviderMap(), p -> MethodHandleUtil.PROVIDER_GET.bindTo(p));
         }

@@ -25,9 +25,9 @@ import app.packed.operation.OperationMirror;
  */
 public class CliCommandMirror extends OperationMirror {
 
-    final CliCommandHandle handle;
+    final CliCommandOperationHandle handle;
 
-    CliCommandMirror(CliCommandHandle handle) {
+    CliCommandMirror(CliCommandOperationHandle handle) {
         super(handle);
         this.handle = handle;
     }

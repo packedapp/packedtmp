@@ -3,7 +3,6 @@ package app.packed.concurrent.other;
 import java.lang.annotation.Annotation;
 
 import app.packed.assembly.Assembly;
-import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.context.ContextTemplate;
@@ -15,7 +14,6 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import extensions.IncubatorExtension;
 import extensions.time.TimeExtension;
-import internal.app.packed.extension.InternalBeanIntrospector;
 
 // Tror den er separat fra Time extension
 
@@ -59,48 +57,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
         super(handle);
     }
 
-    private static final ContextTemplate CT = ContextTemplate.of(SchedulingContext.class).withImplementation(PackedSchedulingContext.class);
-
-    private static final OperationTemplate OT = OperationTemplate.defaults().withContext(CT);
-
     // Creates a new instance on every invocation
-
-    public static class ScheduledJobBeanIntrospector extends InternalBeanIntrospector<ScheduledJobExtension> {
-        @SuppressWarnings("unused")
-        @Override
-        public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {
-            Cron c = method.annotations().readRequired(Cron.class);
-
-            OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
-
-            InstanceBeanConfiguration<SchedulingBean> bean = extension().lifetimeRoot().base().installIfAbsent(SchedulingBean.class, handle -> {
-//                handle.bindServiceInstance(MethodHandle.class, operation.invoker().asMethodHandle());
-            });
-            // bean, add scheduling +
-            // Manytons dur ikke direkte
-
-            //
-            // bean.addSchedule
-            // parse expresion
-
-        }
-
-        @Override
-        public void onExtensionService(Key<?> key, OnContextService service) {
-            OnVariableUnwrapped binding = service.binder();
-
-            Class<?> hook = key.rawType();
-            if (hook == SchedulingContext.class) {
-                binding.bindContext(SchedulingContext.class);
-            } else if (hook == SchedulingHistory.class) {
-                binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
-
-                // binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
-            } else {
-                super.onExtensionService(key, service);
-            }
-        }
-    }
 
     //
     public ScheduledOperationConfiguration schedule(Assembly assembly) {
@@ -155,7 +112,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
 //        throw new UnsupportedOperationException();
 //    }
 
-    private static class SchedulingBean {}
+    static class SchedulingBean {}
 
     // How do we control
     /// Threads
@@ -169,6 +126,50 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
     // Altsaa hvad hvis vi reler paa defaulten...
     // Og ikke vil have den overskrives af foraeldren...
 }
+
+final class ScheduledJobBeanIntrospector extends BeanIntrospector<ScheduledJobExtension> {
+
+    private static final ContextTemplate CT = ContextTemplate.of(SchedulingContext.class).withImplementation(PackedSchedulingContext.class);
+
+    private static final OperationTemplate OT = OperationTemplate.defaults().withContext(CT);
+
+    @SuppressWarnings("unused")
+    @Override
+    public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {
+        Cron c = method.annotations().readRequired(Cron.class);
+
+        OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
+
+        // comment in again
+
+//        InstanceBeanConfiguration<SchedulingBean> bean = extension().lifetimeRoot().base().installIfAbsent(SchedulingBean.class, handle -> {
+////            handle.bindServiceInstance(MethodHandle.class, operation.invoker().asMethodHandle());
+//        });
+        // bean, add scheduling +
+        // Manytons dur ikke direkte
+
+        //
+        // bean.addSchedule
+        // parse expresion
+    }
+
+    @Override
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        OnVariableUnwrapped binding = service.binder();
+
+        Class<?> hook = key.rawType();
+        if (hook == SchedulingContext.class) {
+            binding.bindContext(SchedulingContext.class);
+        } else if (hook == SchedulingHistory.class) {
+            binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
+
+            // binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
+        } else {
+            super.onExtensionService(key, service);
+        }
+    }
+}
+
 // ScheduledComponentConfiguration
 // Was (below). Men giver god mening at splitte den op i 2...
 

@@ -44,9 +44,10 @@ import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
 import app.packed.service.mirrorold.ServiceProviderIsThisUsefulMirror;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.context.ContextSetup;
-import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
 import internal.app.packed.util.AbstractDelegatingStream;
 import sandbox.operation.mirror.DependenciesMirror;
 
@@ -61,7 +62,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@AutoInjectInheritable(introspector = MirrorImplementationBeanIntrospector.class)
+@AutoInjectInheritable(introspector = OperationMirrorBeanIntrospector.class)
 public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror {
 
     /** The handle of the operation we are mirroring. */
@@ -297,8 +298,16 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
             return new OfStream<>(stream);
         }
     }
+
 }
 
+final class OperationMirrorBeanIntrospector extends BaseExtensionBeanIntrospector {
+
+    @Override
+    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+        service.binder().bindInstance(service.operation().mirror());
+    }
+}
 //Class -> members
 //Scanning class -> Hooks
 //Bean -> Operation
@@ -475,7 +484,7 @@ class ZandboxOM {
 //    }
 //
 //    public static void main(String[] args) {
-////        SandboxOp.findAll(null, BeanLifecycleMirror.class).filter(m -> m.state() == RunState.INITIALIZED).count();
+    ////        SandboxOp.findAll(null, BeanLifecycleMirror.class).filter(m -> m.state() == RunState.INITIALIZED).count();
 //
 //    }
 

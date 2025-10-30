@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.invoke;
+package internal.app.packed.invoke.sandbox;
 
 import static java.util.Objects.requireNonNull;
 

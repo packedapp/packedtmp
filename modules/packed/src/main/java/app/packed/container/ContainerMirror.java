@@ -12,6 +12,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
+import app.packed.binding.Key;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
@@ -24,10 +25,11 @@ import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
 import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
 import internal.app.packed.util.PackedTreeView;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
@@ -40,7 +42,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected
  */
-@AutoInjectInheritable(introspector = MirrorImplementationBeanIntrospector.class)
+@AutoInjectInheritable(introspector = ContainerMirrorBeanIntrospector.class)
 public non-sealed class ContainerMirror implements ComponentMirror, ContainerBuildLocal.Accessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
@@ -126,15 +128,15 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
         return this == other || other instanceof ContainerMirror m && handle.container == m.handle.container;
     }
 
-//    /** {@return the deployment this container is a part of.} */
-//    public DeploymentMirror deployment() {
-//        return container.application.deployment.mirror();
-//    }
-
     /** {@return a {@link Set} view of all extensions that are used in the container.} */
     public final Set<Class<? extends Extension<?>>> extensionTypes() {
         return handle.container.extensionTypes();
     }
+
+//    /** {@return the deployment this container is a part of.} */
+//    public DeploymentMirror deployment() {
+//        return container.application.deployment.mirror();
+//    }
 
     /**
      * <p>
@@ -267,8 +269,16 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
 
         return mirrorClass.cast(mirror);
     }
+
 }
 
+final class ContainerMirrorBeanIntrospector extends BaseExtensionBeanIntrospector {
+
+    @Override
+    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+        service.binder().bindInstance(service.bean().container.mirror());
+    }
+}
 //public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {
 //  return Assemblies.verify(assembly, ContainerMirror.class, verifier);
 //}

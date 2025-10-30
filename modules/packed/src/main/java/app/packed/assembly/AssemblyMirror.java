@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.binding.Key;
 import app.packed.build.BuildCodeSourceMirror;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
@@ -17,8 +18,9 @@ import app.packed.util.AnnotationList;
 import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.assembly.AssemblySetup;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
 import internal.app.packed.util.PackedTreeView;
 
 /**
@@ -31,7 +33,7 @@ import internal.app.packed.util.PackedTreeView;
  * @see ApplicationMirror#assembly()
  * @see ContainerMirror#assembly()
  */
-@AutoInject(introspector = MirrorImplementationBeanIntrospector.class)
+@AutoInject(introspector = AssemblyMirrorBeanIntrospector.class)
 public final class AssemblyMirror implements BuildCodeSourceMirror {
 
     /** The assembly we are mirroring. */
@@ -172,16 +174,16 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
         throw new UnsupportedOperationException();
     }
 
-//    /** {@return the deployment this assembly is a part of.} */
-//    public DeploymentMirror deployment() {
-//        return assembly.container.application.deployment.mirror();
-//    }
-
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         return this == other || other instanceof AssemblyMirror m && assembly == m.assembly;
     }
+
+//    /** {@return the deployment this assembly is a part of.} */
+//    public DeploymentMirror deployment() {
+//        return assembly.container.application.deployment.mirror();
+//    }
 
     /** {@inheritDoc} */
     @Override
@@ -204,5 +206,13 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
     @Override
     public String toString() {
         return "Assembly:" + application().name() + ":/";
+    }
+}
+
+final class AssemblyMirrorBeanIntrospector extends BaseExtensionBeanIntrospector {
+
+    @Override
+    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+        service.binder().bindInstance(service.bean().container.assembly.mirror());
     }
 }

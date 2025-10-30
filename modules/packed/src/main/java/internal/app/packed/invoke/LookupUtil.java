@@ -74,16 +74,16 @@ public final class LookupUtil {
         }
     }
 
-//    // finds a method in a class that is different form lookup.lookupClass
-//    public static MethodHandle findVirtual(MethodHandles.Lookup lookup, Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
-//        MethodType mt = MethodType.methodType(returnType, parameterTypes);
-//        try {
-//            MethodHandles.Lookup l = MethodHandles.privateLookupIn(refc, lookup);
-//            return l.findVirtual(refc, name, mt);
-//        } catch (ReflectiveOperationException e) {
-//            throw new ExceptionInInitializerError(e);
-//        }
-//    }
+    // finds a method in a class that is different form lookup.lookupClass
+    public static MethodHandle findVirtual(MethodHandles.Lookup lookup, Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
+        MethodType mt = MethodType.methodType(returnType, parameterTypes);
+        try {
+            MethodHandles.Lookup l = MethodHandles.privateLookupIn(refc, lookup);
+            return l.findVirtual(refc, name, mt);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     public static MethodHandle findVirtual(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);

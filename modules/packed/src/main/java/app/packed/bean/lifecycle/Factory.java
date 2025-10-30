@@ -55,8 +55,13 @@ import app.packed.namespace.sandbox.NamespaceOperation;
 @Documented
 @NamespaceOperation
 // Maybe we can now use Singletons
-@BeanTrigger.OnAnnotatedField(introspector = Inject.Introspector.class, allowSet = true)
-@BeanTrigger.OnAnnotatedMethod(introspector = Inject.Introspector.class, allowInvoke = true)
+// Altsaa hvis vi har @Factory methods, så skal vi jo faktisk scanne først for dem...
+// Inde vi begynder at bygge en klasse
+// Og hvad med flere metoder???? -> Flere Beans???
+// Nej vi returnere en BeanConfiguration
+
+@BeanTrigger.OnAnnotatedField(introspector = InjectBeanIntrospector.class, allowSet = true)
+@BeanTrigger.OnAnnotatedMethod(introspector = InjectBeanIntrospector.class, allowInvoke = true)
 public @interface Factory {
     // Altsaa med mindre vi laver en inject annotatering for alle namespace kinds,
     // Kan vi kun styre det her, men hvordan styre vi det paa parameter niveau???

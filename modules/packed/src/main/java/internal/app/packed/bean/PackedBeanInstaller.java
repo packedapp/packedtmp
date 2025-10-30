@@ -140,5 +140,4 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
         }
         return BeanSetup.newBean(this, (PackedBean<?>) bean, factory);
     }
-
 }

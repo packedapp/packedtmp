@@ -24,9 +24,9 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger;
-import app.packed.extension.BaseExtension;
 import app.packed.namespace.sandbox.NamespaceOperation;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInjectOperationHandle;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.InjectOperationHandle;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
@@ -58,8 +58,8 @@ import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInjectOper
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceOperation
-@BeanTrigger.OnAnnotatedField(introspector = Inject.Introspector.class, allowSet = true)
-@BeanTrigger.OnAnnotatedMethod(introspector = Inject.Introspector.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedField(introspector = InjectBeanIntrospector.class, allowSet = true)
+@BeanTrigger.OnAnnotatedMethod(introspector = InjectBeanIntrospector.class, allowInvoke = true)
 public @interface Inject {
     // Altsaa med mindre vi laver en inject annotatering for alle namespace kinds,
     // Kan vi kun styre det her, men hvordan styre vi det paa parameter niveau???
@@ -69,15 +69,16 @@ public @interface Inject {
     //
     String namespace() default "main";
 
-    final class Introspector extends BeanIntrospector<BaseExtension> {
-        @Override
-        public void onAnnotatedField(Annotation annotation, OnField onField) {
-            BeanInjectOperationHandle.install((Inject) annotation, onField);
-        }
+}
 
-        @Override
-        public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod onMethod) {
-            BeanInjectOperationHandle.install((Inject) annotation, onMethod);
-        }
+final class InjectBeanIntrospector extends BaseExtensionBeanIntrospector {
+    @Override
+    public void onAnnotatedField(Annotation annotation, OnField onField) {
+        InjectOperationHandle.install((Inject) annotation, onField);
+    }
+
+    @Override
+    public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod onMethod) {
+        InjectOperationHandle.install((Inject) annotation, onMethod);
     }
 }

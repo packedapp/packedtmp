@@ -22,11 +22,13 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.binding.Key;
 import app.packed.build.Mirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.util.TreeView;
-import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
 
 /**
  *
@@ -38,7 +40,7 @@ import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
 // Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
 
 //Cluster|Node? < Java Process(Logical name) < Family
-@AutoInject(introspector = MirrorImplementationBeanIntrospector.class)
+@AutoInject(introspector = DeploymentBeanIntrospector.class)
 public class DeploymentMirror implements Mirror {
 
     /** The deployment we are mirroring. */
@@ -54,6 +56,7 @@ public class DeploymentMirror implements Mirror {
         // Will fail if the deployment mirror is not initialized by the framework
         this.deployment = setup;
     }
+
 
     /** {@return a tree of all the applications that make of the deployment.} */
     public TreeView<ApplicationMirror> applications() {
@@ -93,7 +96,14 @@ public class DeploymentMirror implements Mirror {
     public Stream<BeanMirror> operations() {
         throw new UnsupportedOperationException();
     }
+}
 
+final class DeploymentBeanIntrospector extends BaseExtensionBeanIntrospector {
+
+    @Override
+    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+        service.binder().bindInstance(service.bean().container.application.deployment.mirror());
+    }
 }
 
 ////Den har ikke et navn. Fordi vi er jo ikke unik per Java Process

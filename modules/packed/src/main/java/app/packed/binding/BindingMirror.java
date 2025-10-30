@@ -122,7 +122,7 @@ class Zandbox extends BindingMirror {
     }
 
     public Optional<BindingProviderKind> zProviderKind() {
-        return Optional.ofNullable(binding.resolver()).map(b -> b.kind());
+        return Optional.ofNullable(binding.provider()).map(b -> b.kind());
     }
 
 //    public final Optional<OperationMirror> zProvidingOperation() {

@@ -20,10 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import app.packed.operation.OperationTarget;
-import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 
 /**
  *
@@ -128,10 +126,6 @@ public sealed abstract class PackedOperationTarget {
         @Override
         public MethodHandle methodHandle() {
             return methodHandle;
-        }
-
-        public boolean needsBeanInstance() {
-            return !(target instanceof OperationConstructorTarget) && !Modifier.isStatic(target.modifiers());
         }
 
         @Override

@@ -21,12 +21,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.lifecycle.Initialize.Introspector;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger;
-import app.packed.extension.BaseExtension;
-import internal.app.packed.extension.InternalBeanIntrospector;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.InitializeOperationHandle;
 
 /**
  * Indicates that the annotated method must be invoked as part of the targeted bean's initialization.
@@ -73,7 +71,7 @@ import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitialize
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@BeanTrigger.OnAnnotatedMethod(introspector = Introspector.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedMethod(introspector = InitializeBeanIntrospector.class, allowInvoke = true)
 public @interface Initialize {
 
     /**
@@ -89,11 +87,12 @@ public @interface Initialize {
      */
     boolean naturalOrder() default true;
 
-    final class Introspector extends InternalBeanIntrospector<BaseExtension> {
-        @Override
-        public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
-            BeanInitializeOperationHandle.install((Initialize) annotation, method);
-        }
+}
+
+final class InitializeBeanIntrospector extends BaseExtensionBeanIntrospector {
+    @Override
+    public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+        InitializeOperationHandle.install((Initialize) annotation, method);
     }
 }
 

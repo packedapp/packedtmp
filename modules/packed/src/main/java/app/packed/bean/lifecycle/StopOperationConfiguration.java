@@ -16,14 +16,28 @@
 package app.packed.bean.lifecycle;
 
 import app.packed.operation.OperationHandle;
+import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
 
 /**
- *
+ * The configuration of a {@link Stop} operation.
  */
 public final class StopOperationConfiguration extends LifecycleOperationConfiguration {
 
+    /** The handle representing the operation. */
+    private final StopOperationHandle handle;
+
     public StopOperationConfiguration(OperationHandle<?> handle) {
+        this.handle = (StopOperationHandle) handle;
         super(handle);
     }
 
+    public boolean isNaturalOrder() {
+        return handle.lifecycleKind == InternalBeanLifecycleKind.STOP_POST_ORDER;
+    }
+
+    // Maaske kan man ikke rette det
+    public void setNaturalOrder(boolean isNaturalOrder) {
+        throw new UnsupportedOperationException();
+    }
 }

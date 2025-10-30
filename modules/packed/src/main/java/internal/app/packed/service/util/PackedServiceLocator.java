@@ -17,7 +17,6 @@ package internal.app.packed.service.util;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -27,12 +26,12 @@ import app.packed.binding.Provider;
 import app.packed.extension.ExtensionContext;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceSelection;
-import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.invoke.MethodHandleInvoker.ExportedServiceWrapper;
 
 /** Default implementation of ServiceLocator. */
-public record PackedServiceLocator(ExtensionContext context, Map<Key<?>, MethodHandle> entries) implements ServiceLocator {
+public record PackedServiceLocator(ExtensionContext context, Map<Key<?>, ExportedServiceWrapper> entries) implements ServiceLocator {
 
-    public static final Key<Map<Key<?>, MethodHandle>> KEY = new Key<>() {};
+    public static final Key<Map<Key<?>, ExportedServiceWrapper>> KEY = new Key<>() {};
 
     /** {@inheritDoc} */
     @Override
@@ -50,20 +49,15 @@ public record PackedServiceLocator(ExtensionContext context, Map<Key<?>, MethodH
     @Override
     public <T> Optional<T> find(Key<T> key) {
         requireNonNull(key, "key is null");
-        MethodHandle provider = entries.get(key);
+        ExportedServiceWrapper provider = entries.get(key);
 
         // Test if a provider was found that matches the specified key
         if (provider == null) {
             return Optional.empty();
         }
 
-        T t;
-        try {
-            // Call the provider
-            t = (T) provider.invokeExact(context);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+        @SuppressWarnings("unchecked")
+        T t = (T) provider.create(context);
         return Optional.of(t);
     }
 
@@ -83,19 +77,16 @@ public record PackedServiceLocator(ExtensionContext context, Map<Key<?>, MethodH
     @Override
     public <T> Optional<Provider<T>> findProvider(Key<T> key) {
         requireNonNull(key, "key is null");
-        MethodHandle provider = entries.get(key);
+        ExportedServiceWrapper provider = entries.get(key);
         if (provider == null) {
             return Optional.empty();
         }
         Provider<T> p = new Provider<>() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public T provide() {
-                try {
-                    return (T) provider.invokeExact(context);
-                } catch (Throwable e) {
-                    throw ThrowableUtil.orUndeclared(e);
-                }
+                return (T) provider.create(context);
             }
         };
         return Optional.of(p);

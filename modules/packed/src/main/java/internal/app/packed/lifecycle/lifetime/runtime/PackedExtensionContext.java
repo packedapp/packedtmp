@@ -15,17 +15,12 @@
  */
 package internal.app.packed.lifecycle.lifetime.runtime;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-
 import app.packed.bean.scanning.BeanTrigger.AutoInject;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.ValueBased;
 import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
-import internal.app.packed.invoke.LookupUtil;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 
 /**
@@ -37,15 +32,6 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** A context template for {@link ExtensionContext}. */
     public static final ContextTemplate CONTEXT_TEMPLATE = ContextTemplate.of(ExtensionContext.class).withImplementation(PackedExtensionContext.class);
-
-    /** A method handle for calling {@link #read(int)} at runtime. */
-    public static final MethodHandle MH_CONSTANT_POOL_READER;
-
-    static {
-        MethodHandle m = LookupUtil.findVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
-        MethodType mt = m.type().changeParameterType(0, ExtensionContext.class);
-        MH_CONSTANT_POOL_READER = m.asType(mt);
-    }
 
     public static final ExtensionContext EMPTY = new PackedExtensionContext(0);
 

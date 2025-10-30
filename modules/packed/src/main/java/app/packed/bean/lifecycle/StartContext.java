@@ -22,14 +22,15 @@ import app.packed.bean.scanning.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.extension.InternalBeanIntrospector;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
 
 /** A context object that can be injected into methods annotated with {@link OnStart}. */
 
 // Okay, den eneste maade vi supportere join er via OnStart
 // De forskellige scheduling operationer kan ikke supportere det
 // Det store problemer er phases
-@AutoInject(requiresContext = StartContext.class, introspector = StartContext.Introspector.class)
+@AutoInject(requiresContext = StartContext.class, introspector = StartContextBeanIntrospector.class)
 public interface StartContext extends Context<BaseExtension> {
 
     default Start.ForkMode forkMode() {
@@ -62,13 +63,15 @@ public interface StartContext extends Context<BaseExtension> {
         BEFORE_DEPENDANTS, AFTER_DEPENDANTS, BEFORE_READY;
     }
 
-    final class Introspector extends InternalBeanIntrospector<BaseExtension> {
 
-        @Override
-        public void onExtensionService(Key<?> key, OnContextService service) {
-            if (service.matchNoQualifiers(StartContext.class)) {
-                service.binder().bindContext(StartContext.class);
-            }
+}
+
+final class StartContextBeanIntrospector extends BaseExtensionBeanIntrospector {
+
+    @Override
+    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+        if (service.matchNoQualifiers(StartContext.class)) {
+            service.binder().bindContext(StartContext.class);
         }
     }
 }

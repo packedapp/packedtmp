@@ -15,7 +15,6 @@
  */
 package internal.app.packed.lifecycle.lifetime.runtime;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -26,8 +25,7 @@ import java.util.concurrent.StructuredTaskScope.Joiner;
 import app.packed.bean.lifecycle.StartContext;
 import app.packed.extension.ExtensionContext;
 import internal.app.packed.ValueBased;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -35,7 +33,7 @@ import internal.app.packed.util.ThrowableUtil;
  */
 final class StartRunner {
 
-    final Collection<LifecycleOnStartHandle> operations;
+    final Collection<StartOperationHandle> operations;
 
     /** The runtime component node we are building. */
     final ExtensionContext pool;
@@ -48,17 +46,15 @@ final class StartRunner {
     /** A structured task scope, used if forking. */
     StructuredTaskScope<Void, Void> ts;
 
-    StartRunner(Collection<LifecycleOnStartHandle> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
+    StartRunner(Collection<StartOperationHandle> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
         this.operations = methodHandles;
         this.pool = pool;
         this.runtime = runtime;
     }
 
-    private void run(LifecycleOnStartHandle h) {
-        OperationSetup os = OperationSetup.crack(h);
-        MethodHandle mh = os.codeHolder.methodHandle;
+    private void run(StartOperationHandle h) {
         try {
-            mh.invokeExact(pool, (StartContext) new PackedOnStartContext(this));
+            h.methodHandle.invokeExact(pool, (StartContext) new PackedOnStartContext(this));
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -67,7 +63,7 @@ final class StartRunner {
     void start() {
         long start = System.currentTimeMillis();
 
-        for (LifecycleOnStartHandle h : operations) {
+        for (StartOperationHandle h : operations) {
             if (h.fork) {
                 ts().fork(() -> run(h));
             } else {

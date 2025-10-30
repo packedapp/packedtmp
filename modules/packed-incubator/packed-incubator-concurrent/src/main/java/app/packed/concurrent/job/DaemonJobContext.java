@@ -27,7 +27,7 @@ import internal.app.packed.concurrent.daemon.DaemonSideBean;
  *
  */
 // I think we need a bit understand about where we are in the shutdown process, early, vs late
-@AutoInject(introspector = DaemonJob.Daemonintrospector.class, requiresContext = DaemonJobContext.class)
+@AutoInject(introspector = DaemonJobBeanIntrospector.class, requiresContext = DaemonJobContext.class)
 public sealed interface DaemonJobContext extends Context<BaseExtension> permits DaemonSideBean {
 
     /**

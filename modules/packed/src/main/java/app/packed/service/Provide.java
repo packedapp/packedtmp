@@ -15,16 +15,23 @@
  */
 package app.packed.service;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Modifier;
 
-import app.packed.bean.scanning.BeanTrigger;
+import app.packed.bean.BeanInstallationException;
+import app.packed.bean.BeanLifetime;
+import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedField;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
+import app.packed.build.BuildException;
 import app.packed.namespace.sandbox.NamespaceMetaAnnotation;
-import internal.app.packed.service.ServiceBeanIntrospector;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import internal.app.packed.service.ServiceProvideOperationHandle;
 
 /**
  * An annotation indicating that an annotated method or field on a bean provides a service to the container in which the
@@ -55,12 +62,37 @@ import internal.app.packed.service.ServiceBeanIntrospector;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceMetaAnnotation
-@OnAnnotatedMethod(introspector = ServiceBeanIntrospector.class, allowInvoke = true)
-@BeanTrigger.OnAnnotatedField(introspector = ServiceBeanIntrospector.class, allowGet = true)
+@OnAnnotatedMethod(introspector = ProvideBeanIntrospector.class, allowInvoke = true)
+@OnAnnotatedField(introspector = ProvideBeanIntrospector.class, allowGet = true)
 // Hvis vi laver meta annoteringen, skal vi jo naesten lave den om til en repeatable..
 // Syntes godt man maa smide flere pa
 public @interface Provide {
     // What about extensions? There name is FooExtension#main
     // Maybe just have it empty? and then ->Main | FooExtension#Main
     String namespace() default NamespaceMetaAnnotation.DEFAULT_NAMESPACE;
+}
+
+final class ProvideBeanIntrospector extends BaseExtensionBeanIntrospector {
+
+    /** {@inheritDoc} */
+    @Override
+    public void onAnnotatedField(Annotation annotation, OnField onField) {
+        if (!Modifier.isStatic(onField.modifiers())) {
+            if (beanKind() != BeanLifetime.SINGLETON) {
+                throw new BuildException("Not okay)");
+            }
+        }
+        ServiceProvideOperationHandle.install((Provide) annotation, onField);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+        if (!Modifier.isStatic(method.modifiers())) {
+            if (beanKind() != BeanLifetime.SINGLETON) {
+                throw new BeanInstallationException("Not okay)");
+            }
+        }
+        ServiceProvideOperationHandle.install((Provide) annotation, method);
+    }
 }

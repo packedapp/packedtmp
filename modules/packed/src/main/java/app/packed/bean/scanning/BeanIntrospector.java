@@ -56,7 +56,7 @@ import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnConstructor;
 import internal.app.packed.bean.scanning.IntrospectorOnField;
 import internal.app.packed.bean.scanning.IntrospectorOnMethod;
-import internal.app.packed.bean.scanning.IntrospectorOnServiceProvision;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariableUnwrapped;
 import internal.app.packed.extension.PackedExtensionHandle;
@@ -495,7 +495,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         Key<?> toKey();
     }
 
-    public sealed interface OnContextService permits IntrospectorOnServiceProvision {
+    public sealed interface OnContextService permits IntrospectorOnContextService {
 
         Class<?> baseClass();
 

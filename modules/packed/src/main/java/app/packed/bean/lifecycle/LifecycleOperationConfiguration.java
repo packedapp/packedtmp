@@ -21,8 +21,8 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public abstract sealed class LifecycleOperationConfiguration extends OperationConfiguration
-        permits FactoryOperationConfiguration, InjectOperationConfiguration, InitializeOperationConfiguration, StartOperationConfiguration, StopOperationConfiguration {
+public abstract sealed class LifecycleOperationConfiguration extends OperationConfiguration permits FactoryOperationConfiguration, InjectOperationConfiguration,
+        InitializeOperationConfiguration, StartOperationConfiguration, StopOperationConfiguration {
 
     /**
      * @param handle

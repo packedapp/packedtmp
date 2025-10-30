@@ -32,7 +32,7 @@ import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
+import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationInstaller}. */

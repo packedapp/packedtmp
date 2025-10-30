@@ -24,7 +24,6 @@ import app.packed.operation.OperationTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceNamespaceConfiguration;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
@@ -225,12 +224,12 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         ha.configuration().exportAs(ServiceLocator.class);
 
         // PackedServiceLocator needs a Map<Key, MethodHandle> which is created in the code generation phase
-        BeanSetup.crack(ha).bindCodeGenerator(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
+        ha.bindCodeGenerator(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
 
         // Alternative, If we do not use it for anything else
         newBeanBuilderSelf(DEFAULT_BEAN).installIfAbsent(PackedServiceLocator.class, BeanConfiguration.class, BeanHandle::new, bh -> {
             bh.exportAs(ServiceLocator.class);
-            BeanSetup.crack(bh).bindCodeGenerator(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
+            bh.bindCodeGenerator(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
         });
     }
 

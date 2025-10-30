@@ -34,7 +34,7 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
-import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
+import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 
 /** Implementation of {@link ApplicationRepository}. */
 @ValueBased

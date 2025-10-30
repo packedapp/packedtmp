@@ -40,6 +40,8 @@ public abstract class OperationAccessHandler extends AccessHelper {
      */
     public abstract OperationSetup getOperationHandleOperation(OperationHandle<?> handle);
 
+    public abstract void onInstall(OperationHandle<?> handle);
+
     /** Call {@link OperationHandle#onClose()}. */
     public abstract void invokeOperationHandleDoClose(OperationHandle<?> handle, boolean isClose);
 

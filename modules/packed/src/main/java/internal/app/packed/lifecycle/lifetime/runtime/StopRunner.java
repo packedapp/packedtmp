@@ -15,7 +15,6 @@
  */
 package internal.app.packed.lifecycle.lifetime.runtime;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Collection;
 import java.util.concurrent.StructureViolationException;
 import java.util.concurrent.StructuredTaskScope;
@@ -24,8 +23,7 @@ import java.util.concurrent.StructuredTaskScope.Joiner;
 import app.packed.bean.lifecycle.StopContext;
 import app.packed.extension.ExtensionContext;
 import app.packed.runtime.StopInfo;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -37,7 +35,7 @@ final class StopRunner {
 
     final Thread startingThread = Thread.currentThread();
 
-    final Collection<LifecycleOperationStopHandle> operations;
+    final Collection<StopOperationHandle> operations;
 
     /** The runtime component node we are building. */
     final ExtensionContext pool;
@@ -50,17 +48,15 @@ final class StopRunner {
 
     @SuppressWarnings("unchecked")
     StopRunner(Collection<?> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
-        this.operations = (Collection<LifecycleOperationStopHandle>) methodHandles;
+        this.operations = (Collection<StopOperationHandle>) methodHandles;
         this.pool = pool;
         this.runtime = runtime;
     }
 
-    private Void run(LifecycleOperationStopHandle h) {
-        OperationSetup os = OperationSetup.crack(h);
+    private Void run(StopOperationHandle h) {
 
-        MethodHandle mh = os.codeHolder.methodHandle;
         try {
-            mh.invokeExact(pool, (StopContext) new StopContext() {
+            h.methodHandle.invokeExact(pool, (StopContext) new StopContext() {
 
                 @Override
                 public boolean isApplicationStopping() {
@@ -85,7 +81,7 @@ final class StopRunner {
     //    IO.println("Starting app from " + Thread.currentThread());
         // Run all Startup methods
         // We run in a OnStartContext
-        for (LifecycleOperationStopHandle h : operations) {
+        for (StopOperationHandle h : operations) {
             if (h.fork) {
                 ts().fork(() -> run(h));
             } else {
@@ -117,7 +113,7 @@ final class StopRunner {
                 c -> c.withName("AppStopping").withThreadFactory(Thread.ofVirtual().name("CoolAppStartin", 0).factory()));
     }
 
-    record PackedOnStopContext(StopRunner runner, LifecycleOperationStopHandle handle) implements StopContext {
+    record PackedOnStopContext(StopRunner runner, StopOperationHandle handle) implements StopContext {
 
         /** {@inheritDoc} */
         @Override

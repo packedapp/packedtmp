@@ -39,11 +39,11 @@ import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedVariableCache;
-import internal.app.packed.binding.BindingAccessor;
-import internal.app.packed.binding.BindingAccessor.FromCodeGenerated;
-import internal.app.packed.binding.BindingAccessor.FromConstant;
-import internal.app.packed.binding.BindingAccessor.FromInvocationArgument;
-import internal.app.packed.binding.BindingAccessor.FromOperationResult;
+import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.binding.BindingProvider.FromCodeGeneratedConstant;
+import internal.app.packed.binding.BindingProvider.FromConstant;
+import internal.app.packed.binding.BindingProvider.FromInvocationArgument;
+import internal.app.packed.binding.BindingProvider.FromOperationResult;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.binding.SuppliedBindingKind;
 import internal.app.packed.context.ContextSetup;
@@ -116,7 +116,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
         return scanner.bean;
     }
 
-    private void bind(BindingAccessor accessor) {
+    private void bind(BindingProvider accessor) {
         assert (operation.bindings[index] == null);
         operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.authority(), accessor);
     }
@@ -126,7 +126,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
     public IntrospectorOnVariable bindComputedConstant(Supplier<?> supplier) {
         checkBeforeBind();
         // We can't really do any form of type checks until we call the supplier
-        bind(new FromCodeGenerated(supplier, SuppliedBindingKind.CODEGEN));
+        bind(new FromCodeGeneratedConstant(supplier, SuppliedBindingKind.CODEGEN));
         return this;
     }
 

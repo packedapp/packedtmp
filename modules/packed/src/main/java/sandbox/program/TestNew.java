@@ -98,20 +98,16 @@ public class TestNew extends BaseAssembly {
 
         static class MyI extends BeanIntrospector<MyExt> {
             @Override
-            public void onAnnotatedVariable(Annotation hook, OnVariable h ) {
-                if (hook.annotationType() == XX.class) {
-                    String str = h.annotations().readRequired(XX.class).value();
-                    h.bindInstance(str.toUpperCase());
-                } else {
-                    super.onAnnotatedVariable( hook, h);
-                }
+            public void onAnnotatedVariable(Annotation hook, OnVariable h) {
+                String str = h.annotations().readRequired(XX.class).value();
+                h.bindInstance(str.toUpperCase());
             }
         }
     }
 
     @Target({ ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    //@OnAnnotatedVariable(extension = MyExt.class)
+    // @OnAnnotatedVariable(extension = MyExt.class)
     @interface XX {
         String value();
     }

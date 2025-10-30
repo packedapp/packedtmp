@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.component.ComponentRealm;
 import app.packed.operation.OperationType;
-import internal.app.packed.binding.BindingAccessor.FromConstant;
+import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.invoke.LookupUtil;
 

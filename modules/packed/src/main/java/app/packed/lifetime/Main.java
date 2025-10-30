@@ -24,8 +24,7 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import app.packed.extension.BaseExtension;
-import internal.app.packed.extension.InternalBeanIntrospector;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
 
 // Maybe move to app.packed.application?
@@ -49,28 +48,21 @@ import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@OnAnnotatedMethod(introspector = Main.MainAnnotationBeanintrospector.class, allowInvoke = true)
-public @interface Main {
+@OnAnnotatedMethod(introspector = MainBeanIntrospector.class, allowInvoke = true)
+public @interface Main {}
 
-    final class MainAnnotationBeanintrospector extends InternalBeanIntrospector<BaseExtension> {
+final class MainBeanIntrospector extends BaseExtensionBeanIntrospector {
 
-        /**
-         * {@inheritDoc}
-         *
-         * @see app.packed.lifetime.Main
-         */
-        @Override
-        public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
-            // Handles @Main
-            if (annotation instanceof Main main) {
-                EntryPointManager.testMethodAnnotation(extension(), isInApplicationLifetime(), method, main);
-            } else {
-                super.onAnnotatedMethod(annotation, method);
-            }
-        }
+    /**
+     * {@inheritDoc}
+     *
+     * @see app.packed.lifetime.Main
+     */
+    @Override
+    public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+        EntryPointManager.testMethodAnnotation(extension(), isInApplicationLifetime(), method, (Main) annotation);
     }
 }
-
 //A single method. Will be executed.
 //and then shutdown container down again
 //Panic if it fails???? or do we not wrap exception??? I think we wrap...

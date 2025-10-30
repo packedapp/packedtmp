@@ -17,6 +17,8 @@ package internal.app.packed.lifecycle;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.bean.lifecycle.FactoryOperationConfiguration;
 import app.packed.bean.lifecycle.FactoryOperationMirror;
 import app.packed.bean.lifecycle.Initialize;
@@ -36,44 +38,53 @@ import app.packed.bean.lifecycle.StopOperationMirror;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate;
+import internal.app.packed.extension.BaseExtensionOperationHandle;
+import internal.app.packed.invoke.BeanLifecycleSupport;
 
 /** A handle for the a lifecycle operation on bean. */
-public abstract sealed class BeanLifecycleOperationHandle extends OperationHandle<OperationConfiguration> implements Comparable<BeanLifecycleOperationHandle> {
+public abstract sealed class LifecycleOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration> implements Comparable<LifecycleOperationHandle> {
 
     public final InternalBeanLifecycleKind lifecycleKind;
+
+    public MethodHandle methodHandle;
 
     /**
      * @param installer
      */
-    private BeanLifecycleOperationHandle(OperationInstaller installer, InternalBeanLifecycleKind lifecycleKind) {
+    private LifecycleOperationHandle(OperationInstaller installer, InternalBeanLifecycleKind lifecycleKind) {
         super(installer);
         this.lifecycleKind = requireNonNull(lifecycleKind);
     }
 
     /** {@inheritDoc} */
     @Override
-    public final int compareTo(BeanLifecycleOperationHandle entry) {
+    public final int compareTo(LifecycleOperationHandle entry) {
         return lifecycleKind.ordinal() - entry.lifecycleKind.ordinal();
+    }
+
+    @Override
+    protected void onInstall() {
+        bean().operations.addLifecycleHandle(this);
+        BeanLifecycleSupport.addLifecycleHandle(this);
     }
 
     public static byte complement(byte b) {
         return (byte) ~b;
     }
 
-    public static abstract non-sealed class AbstractInitializingOperationHandle extends BeanLifecycleOperationHandle {
+    public static abstract non-sealed class AbstractInitializingOperationHandle extends LifecycleOperationHandle {
         private AbstractInitializingOperationHandle(OperationInstaller installer, InternalBeanLifecycleKind lifecycleKind) {
             super(installer, lifecycleKind);
         }
     }
 
     /** A handle for initialization lifecycle operation. */
-    public static final class BeanFactoryOperationHandle extends AbstractInitializingOperationHandle {
+    public static final class FactoryOperationHandle extends AbstractInitializingOperationHandle {
 
-        public BeanFactoryOperationHandle(OperationInstaller installer) {
+        public FactoryOperationHandle(OperationInstaller installer) {
             super(installer, InternalBeanLifecycleKind.FACTORY);
         }
 
@@ -89,7 +100,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
     }
 
     /** A handle for initialization lifecycle operation. */
-    public static final class BeanInitializeOperationHandle extends AbstractInitializingOperationHandle {
+    public static final class InitializeOperationHandle extends AbstractInitializingOperationHandle {
 
         /** An operation template for {@link Inject} and {@link Initialize}. */
         private static final OperationTemplate OPERATION_LIFECYCLE_TEMPLATE = OperationTemplate.builder().returnIgnore().build();
@@ -97,7 +108,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
         /**
          * @param installer
          */
-        private BeanInitializeOperationHandle(OperationInstaller installer, InternalBeanLifecycleKind lifecycleKind) {
+        private InitializeOperationHandle(OperationInstaller installer, InternalBeanLifecycleKind lifecycleKind) {
             super(installer, lifecycleKind);
         }
 
@@ -114,16 +125,16 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
         public static void install(Initialize annotation, BeanIntrospector.OnMethod method) {
             InternalBeanLifecycleKind lk = annotation.naturalOrder() ? InternalBeanLifecycleKind.INITIALIZE_PRE_ORDER
                     : InternalBeanLifecycleKind.INITIALIZE_POST_ORDER;
-            method.newOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new BeanInitializeOperationHandle(i, lk));
+            method.newOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InitializeOperationHandle(i, lk));
         }
     }
 
-    public static final class BeanInjectOperationHandle extends AbstractInitializingOperationHandle {
+    public static final class InjectOperationHandle extends AbstractInitializingOperationHandle {
 
         /** An operation template for {@link Inject} and {@link Initialize}. */
         private static final OperationTemplate OPERATION_LIFECYCLE_TEMPLATE = OperationTemplate.builder().returnIgnore().build();
 
-        private BeanInjectOperationHandle(OperationInstaller installer) {
+        private InjectOperationHandle(OperationInstaller installer) {
             super(installer, InternalBeanLifecycleKind.INJECT);
         }
 
@@ -139,7 +150,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
 
         public static void install(Inject annotation, BeanIntrospector.OnField field) {
             // TODO we need wrap/unwrap
-            field.newSetOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new BeanInjectOperationHandle(i));
+            field.newSetOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InjectOperationHandle(i));
 
             // checkNotStatic
             // Det er jo inject service!???
@@ -150,11 +161,11 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
         }
 
         public static void install(Inject annotation, BeanIntrospector.OnMethod method) {
-            method.newOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new BeanInjectOperationHandle(i));
+            method.newOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InjectOperationHandle(i));
         }
     }
 
-    public static final class LifecycleOnStartHandle extends BeanLifecycleOperationHandle {
+    public static final class StartOperationHandle extends LifecycleOperationHandle {
 
         /** A context template for {@link StartContext}. */
         private static final ContextTemplate CONTEXT_ON_START_TEMPLATE = ContextTemplate.of(StartContext.class);
@@ -168,7 +179,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
 
         public boolean stopOnFailure;
 
-        private LifecycleOnStartHandle(OperationInstaller installer, Start annotation) {
+        private StartOperationHandle(OperationInstaller installer, Start annotation) {
             InternalBeanLifecycleKind lifecycleKind = annotation.naturalOrder() ? InternalBeanLifecycleKind.START_PRE_ORDER
                     : InternalBeanLifecycleKind.START_POST_ORDER;
             this.stopOnFailure = annotation.stopOnFailure();
@@ -189,11 +200,11 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
         }
 
         public static void install(Start annotation, BeanIntrospector.OnMethod method) {
-            method.newOperation(OPERATION_ON_START_TEMPLATE).install(i -> new LifecycleOnStartHandle(i, annotation));
+            method.newOperation(OPERATION_ON_START_TEMPLATE).install(i -> new StartOperationHandle(i, annotation));
         }
     }
 
-    public static final class LifecycleOperationStopHandle extends BeanLifecycleOperationHandle {
+    public static final class StopOperationHandle extends LifecycleOperationHandle {
 
         /** A context template for {@link StopContext}. */
         private static final ContextTemplate CONTEXT_ON_STOP_TEMPLATE = ContextTemplate.of(StopContext.class);
@@ -204,9 +215,8 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
 
         public boolean fork;
 
-        private LifecycleOperationStopHandle(OperationInstaller installer, Stop annotation) {
-            super(installer, annotation.naturalOrder() ? InternalBeanLifecycleKind.STOP_POST_ORDER
-                    : InternalBeanLifecycleKind.STOP_PRE_ORDER);
+        private StopOperationHandle(OperationInstaller installer, Stop annotation) {
+            super(installer, annotation.naturalOrder() ? InternalBeanLifecycleKind.STOP_POST_ORDER : InternalBeanLifecycleKind.STOP_PRE_ORDER);
             this.fork = annotation.fork();
         }
 
@@ -221,7 +231,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
         }
 
         public static void install(Stop annotation, BeanIntrospector.OnMethod method) {
-            method.newOperation(OPERATION_ON_STOP_TEMPLATE).install(i -> new LifecycleOperationStopHandle(i, annotation));
+            method.newOperation(OPERATION_ON_STOP_TEMPLATE).install(i -> new StopOperationHandle(i, annotation));
         }
     }
 }

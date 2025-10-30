@@ -41,13 +41,13 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
     NamespaceHandle<?, ?> addToNamespace;
 
     /** The bean the operation is being installed into. */
-    public final BeanSetup bean;
+    final BeanSetup bean;
 
     EmbeddedIntoOperation embeddedInto;
 
-    public String namePrefix = "tbd";
+    String namePrefix = "tbd";
 
-    public PackedOperationTarget operationTarget;
+    PackedOperationTarget operationTarget;
 
     /** The type of the operation. */
     final OperationType operationType;

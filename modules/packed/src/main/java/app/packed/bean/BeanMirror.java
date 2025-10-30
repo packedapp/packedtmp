@@ -37,8 +37,9 @@ import app.packed.operation.OperationMirror;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirrorold.ServiceProviderIsThisUsefulMirror;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.context.ContextSetup;
-import internal.app.packed.extension.MirrorImplementationBeanIntrospector;
+import internal.app.packed.extension.BaseExtensionBeanIntrospector;
 import internal.app.packed.lifecycle.PackedBeanLifecycleMirror;
 import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.DependenciesMirror;
@@ -48,7 +49,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <p>
  * An instance of BeanMirror (or a subclass hereof) can be injected at runtime simply by declaring a dependency on it.
  */
-@AutoInjectInheritable(introspector = MirrorImplementationBeanIntrospector.class)
+@AutoInjectInheritable(introspector = BeanMirrorBeanIntrospector.class)
 public non-sealed class BeanMirror implements Accessor, ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror {
 
     /** The handle of the bean we are mirroring. */
@@ -68,7 +69,6 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     public ApplicationMirror application() {
         return handle.bean.container.application.mirror();
     }
-
 
     /**
      * {@return the assembly where the bean's container is defined.}
@@ -382,6 +382,14 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
         public BeanMirror to() {
             return to.mirror();
         }
+    }
+}
+
+final class BeanMirrorBeanIntrospector extends BaseExtensionBeanIntrospector {
+
+    @Override
+    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+        service.binder().bindInstance(service.bean().mirror());
     }
 }
 

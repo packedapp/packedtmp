@@ -21,8 +21,8 @@ import java.util.ArrayList;
 
 import app.packed.binding.Key;
 import app.packed.service.mirror.ServiceProviderMirror;
-import internal.app.packed.binding.BindingAccessor;
-import internal.app.packed.binding.BindingAccessor.SupplierOrInstance;
+import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.binding.BindingProvider.SupplierOrInstance;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -42,7 +42,7 @@ public sealed interface ServiceProviderSetup {
 
     Key<?> key();
 
-    BindingAccessor binding();
+    BindingProvider binding();
 
     default ServiceProviderMirror mirror() {
         throw new UnsupportedOperationException();
@@ -63,7 +63,7 @@ public sealed interface ServiceProviderSetup {
         }
 
         @Override
-        public BindingAccessor binding() {
+        public BindingProvider binding() {
             return binding;
         }
 
@@ -80,7 +80,7 @@ public sealed interface ServiceProviderSetup {
 
     public static final class ContextServiceProviderSetup implements ServiceProviderSetup {
 
-        private final BindingAccessor binding;
+        private final BindingProvider binding;
 
         /** All bindings that uses this provider. */
         public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
@@ -89,14 +89,14 @@ public sealed interface ServiceProviderSetup {
 
         private final Key<?> key;
 
-        public ContextServiceProviderSetup(Key<?> key, ContextSetup context, BindingAccessor binding) {
+        public ContextServiceProviderSetup(Key<?> key, ContextSetup context, BindingProvider binding) {
             this.key = key;
             this.context = context;
             this.binding = binding;
         }
 
         @Override
-        public BindingAccessor binding() {
+        public BindingProvider binding() {
             return binding;
         }
 
@@ -114,7 +114,7 @@ public sealed interface ServiceProviderSetup {
     // extends OperationHandle
     public static final class NamespaceServiceProviderHandle implements ServiceProviderSetup {
 
-        private final BindingAccessor binding;
+        private final BindingProvider binding;
 
         /** All bindings that uses this provider. */
         public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
@@ -128,15 +128,15 @@ public sealed interface ServiceProviderSetup {
 
         private final OperationSetup operation;
 
-        public NamespaceServiceProviderHandle(Key<?> key, ServiceNamespaceHandle namespace, OperationSetup operation, BindingAccessor binding) {
+        public NamespaceServiceProviderHandle(Key<?> key, ServiceNamespaceHandle namespace, ServiceProvideOperationHandle oh, BindingProvider binding) {
             this.key = key;
             this.namespace = namespace;
-            this.operation = operation;
+            this.operation = OperationSetup.crack(oh);
             this.binding = binding;
         }
 
         @Override
-        public BindingAccessor binding() {
+        public BindingProvider binding() {
             return binding;
         }
 
@@ -179,7 +179,7 @@ public sealed interface ServiceProviderSetup {
         }
 
         @Override
-        public BindingAccessor binding() {
+        public BindingProvider binding() {
             // Implement binding logic here
             return null;
         }

@@ -28,11 +28,11 @@ import app.packed.bean.lifecycle.StartOperationMirror;
 import app.packed.bean.lifecycle.StopOperationMirror;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanFactoryOperationHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInjectOperationHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.InitializeOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.InjectOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
 
 /** Implementation of {@link BeanLifecycleMirror}. */
 @ValueBased
@@ -41,14 +41,14 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements Lifecycle {
     /** {@inheritDoc} */
     @Override
     public Optional<FactoryOperationMirror> factory() {
-        Stream<FactoryOperationMirror> stream = stream(BeanFactoryOperationHandle.class);
+        Stream<FactoryOperationMirror> stream = stream(FactoryOperationHandle.class);
         return stream.findAny();
     }
 
     /** {@inheritDoc} */
     @Override
     public Stream<InitializeOperationMirror> initializers() {
-        return stream(BeanInitializeOperationHandle.class);
+        return stream(InitializeOperationHandle.class);
     }
 
     /** {@inheritDoc} */
@@ -60,23 +60,23 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements Lifecycle {
     /** {@inheritDoc} */
     @Override
     public Stream<StartOperationMirror> starters() {
-        return stream(LifecycleOnStartHandle.class);
+        return stream(StartOperationHandle.class);
     }
 
     /** {@inheritDoc} */
     @Override
     public Stream<StopOperationMirror> stoppers() {
-        return stream(LifecycleOperationStopHandle.class);
+        return stream(StopOperationHandle.class);
     }
 
     /** {@inheritDoc} */
     @Override
     public Stream<InjectOperationMirror> injects() {
-        return stream(BeanInjectOperationHandle.class);
+        return stream(InjectOperationHandle.class);
     }
 
     @SuppressWarnings("unchecked")
-    private <M, H extends BeanLifecycleOperationHandle> Stream<M> stream(Class<H> type) {
+    private <M, H extends LifecycleOperationHandle> Stream<M> stream(Class<H> type) {
         return (Stream<M>) bean.operations.lifecycleHandles.values().stream().flatMap(List::stream).filter(h -> type.isInstance(h)).map(h -> h.mirror());
     }
 }

@@ -37,7 +37,7 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
     static final NamespaceTemplate<CliNamespaceHandle> TEMPLATE = NamespaceTemplate.of(CliNamespaceHandle.class, CliNamespaceHandle::new);
 
     /** All the commands within the namespace. */
-    final LinkedHashMap<String, CliCommandHandle> commands = new LinkedHashMap<>();
+    final LinkedHashMap<String, CliCommandOperationHandle> commands = new LinkedHashMap<>();
 
     final List<CliOptionMirror> options = new ArrayList<>();
 
@@ -57,7 +57,7 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
     }
 
     void process(CliExtension extension, CliCommand c, BeanIntrospector.OnMethod method) {
-        CliCommandHandle h = null;
+        CliCommandOperationHandle h = null;
         for (String n : c.name()) {
             if (commands.containsKey(n)) {
                 throw new BeanInstallationException("Multiple cli commands with the same name, name = " + c.name());
@@ -66,7 +66,7 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
 
         // For each name check that it doesn't exists in commands already
         if (isInApplicationLifetime(extension)) {
-            h = method.newOperation(OperationTemplate.defaults()).install(i -> new CliCommandHandle(i, this));
+            h = method.newOperation(OperationTemplate.defaults()).install(i -> new CliCommandOperationHandle(i, this));
 
             // OperationTemplate.
             // h.namespace(this)

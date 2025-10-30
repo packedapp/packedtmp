@@ -37,13 +37,12 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
-import internal.app.packed.binding.BindingAccessor.FromConstant;
+import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.component.ComponentBuildState;
 import internal.app.packed.context.publish.ContextualizedElement;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.PackedOperationInstaller;
-import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
+import internal.app.packed.service.ServiceProvideOperationHandle;
 import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
 import internal.app.packed.service.util.InternalServiceUtil;
 import internal.app.packed.util.accesshelper.AccessHelper;
@@ -123,7 +122,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     // Eager_never_fail, Eager_fail_if_not_used, Lazy_whenFirstUsed, LazyFailIfNotUsed, Some default for the container?
     public final <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
         checkIsOpen();
-        bean.bindCodeGenerator(key, supplier);
+        bean.bindCodeGeneratedConstant(key, supplier);
     }
 
     public final <K> void bindServiceInstance(Class<K> key, K constant) {
@@ -200,19 +199,15 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      */
     public final void exportAs(Key<?> key) {
         checkIsOpen();
-        bean.serviceNamespace().export(key, instanceProvideOperation());
+        OperationSetup operation = OperationSetup.crack(instanceProvideOperation());
+        bean.serviceNamespace().export(key, operation);
     }
 
     // Used from export/provide
-    // The only funny thing is the operation target
-    private OperationSetup instanceProvideOperation() {
+    private ServiceProvideOperationHandle instanceProvideOperation() {
         PackedOperationTemplate template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(beanClass());
 
-        PackedOperationInstaller installer = template.newInstaller(OperationType.of(beanClass()), bean, bean.installedBy);
-        installer.operationTarget = new BeanAccessOperationTarget();
-        installer.namePrefix = "InstantAccess";
-
-        return OperationSetup.crack(installer.install(OperationHandle::new));
+        return template.newInstallerFromBeanAccess(OperationType.of(beanClass()), bean, bean.installedBy).install(ServiceProvideOperationHandle::new);
     }
 
     /** {@inheritDoc} */
@@ -491,7 +486,7 @@ interface Zandbox<T> {
     void peekInstance(Consumer<? super T> consumer);
 
     // (BeanClass) void
-  //  void peekInstance(MethodHandle methodHandle);
+    // void peekInstance(MethodHandle methodHandle);
 
     // Altssa, er det ikke en bare en
     default void runOnInitialized(Op<?> op) {

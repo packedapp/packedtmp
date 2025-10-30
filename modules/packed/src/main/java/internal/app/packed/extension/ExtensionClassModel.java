@@ -37,7 +37,7 @@ import app.packed.extension.FrameworkExtension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
 import internal.app.packed.invoke.ExtensionLookupSupport;
-import internal.app.packed.invoke.MethodHandleWrapper.ExtensionFactory;
+import internal.app.packed.invoke.MethodHandleInvoker.ExtensionFactory;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
@@ -414,6 +414,7 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
                     // static final ExtensionDescriptor.of(FooExtension.class;
                     return m;
                 }
+
                 @Nullable
                 Builder b = (Builder) object;
                 if (b == null) {

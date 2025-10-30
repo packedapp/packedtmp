@@ -28,7 +28,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /** The configuration of an operation's binding. */
-// TODO make it single class, and have the bindings a field
+// TODO make it single class, and have the bindings a field, not sure it is possible, as service bindings are late
 public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetup, BindingSetup.HookBindingSetup, ServiceBindingSetup {
 
     /**
@@ -74,7 +74,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
         return m;
     }
 
-    public abstract BindingAccessor resolver();
+    public abstract BindingProvider provider();
 
     /**
      * A binding that was created do to some kind of binding hook.
@@ -85,9 +85,9 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
     public static final class HookBindingSetup extends BindingSetup {
 
         /** Provider for the binding. */
-        public final BindingAccessor provider;
+        public final BindingProvider provider;
 
-        public HookBindingSetup(OperationSetup operation, int index, ComponentRealm user, BindingAccessor provider) {
+        public HookBindingSetup(OperationSetup operation, int index, ComponentRealm user, BindingProvider provider) {
             super(operation, index, user);
             this.provider = requireNonNull(provider);
         }
@@ -99,7 +99,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
         }
 
         @Override
-        public BindingAccessor resolver() {
+        public BindingProvider provider() {
             return provider;
         }
     }
@@ -115,14 +115,14 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
 
         /** Provider for the binding. */
         @Nullable
-        public final BindingAccessor provider;
+        public final BindingProvider provider;
 
         /**
          * @param operation
          * @param index
          * @param user
          */
-        public ManualBindingSetup(OperationSetup operation, int index, ComponentRealm user, BindingAccessor provider) {
+        public ManualBindingSetup(OperationSetup operation, int index, ComponentRealm user, BindingProvider provider) {
             super(operation, index, user);
             this.provider = provider;
         }
@@ -136,7 +136,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
         /** {@inheritDoc} */
         @Override
         @Nullable
-        public BindingAccessor resolver() {
+        public BindingProvider provider() {
             return provider;
         }
     }

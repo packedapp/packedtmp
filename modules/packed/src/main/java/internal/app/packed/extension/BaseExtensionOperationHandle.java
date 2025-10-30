@@ -13,44 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cli;
+package internal.app.packed.extension;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-final class CliCommandHandle extends OperationHandle<CliCommandConfiguration> {
-
-    CliCommand command;
-
-    final List<String> names = new ArrayList<>();
-
-    final CliNamespaceHandle namespace;
+public abstract class BaseExtensionOperationHandle<C extends OperationConfiguration> extends OperationHandle<C> {
 
     /**
      * @param installer
      */
-    CliCommandHandle(OperationInstaller installer, CliNamespaceHandle namespace) {
+    public BaseExtensionOperationHandle(OperationInstaller installer) {
         super(installer);
-        this.namespace = requireNonNull(namespace);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected CliCommandConfiguration newOperationConfiguration() {
-        return new CliCommandConfiguration(this);
+    public OperationSetup operation() {
+        return OperationSetup.crack(this);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public CliCommandMirror newOperationMirror() {
-        return new CliCommandMirror(this);
+    public BeanSetup bean() {
+        return operation().bean;
     }
 }

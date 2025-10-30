@@ -17,14 +17,13 @@ package internal.app.packed.lifecycle.lifetime.entrypoint;
 
 import app.packed.lifetime.MainOperationMirror;
 import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationMirror;
+import internal.app.packed.extension.BaseExtensionOperationHandle;
 
 /**
  *
  */
-public class MainOperationHandle extends OperationHandle<OperationConfiguration> {
+public class MainOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration> {
 
     /**
      * @param installer
@@ -34,7 +33,7 @@ public class MainOperationHandle extends OperationHandle<OperationConfiguration>
     }
 
     @Override
-    protected OperationMirror newOperationMirror() {
+    protected MainOperationMirror newOperationMirror() {
        return new MainOperationMirror(this);
     }
 }

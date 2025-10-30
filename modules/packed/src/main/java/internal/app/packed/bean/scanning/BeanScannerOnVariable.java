@@ -62,7 +62,7 @@ final class BeanScannerOnVariable {
             Class<?> cl = v.rawType();
             Key<?> k = h.toKey();
             Set<Class<? extends Context<?>>> contexts = Set.of();
-            IntrospectorOnServiceProvision pcs = new IntrospectorOnServiceProvision(k, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(), contexts,
+            IntrospectorOnContextService pcs = new IntrospectorOnContextService(k, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(), contexts,
                     new IntrospectorOnVariableUnwrapped(h));
             contributor.introspector.onExtensionService(k, pcs);
 

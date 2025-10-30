@@ -23,7 +23,7 @@ import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.sandbox.ServiceProviderKind;
 import app.packed.service.sandbox.ServiceResolver;
 import app.packed.util.Nullable;
-import internal.app.packed.binding.BindingAccessor;
+import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.PackedBindingHandle;
 import internal.app.packed.context.ContextSetup;
@@ -128,7 +128,7 @@ public final class ServiceBindingSetup extends BindingSetup {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public BindingAccessor resolver() {
+    public BindingProvider provider() {
         return resolvedProvider == null ? null : resolvedProvider.binding();
     }
 }

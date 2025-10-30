@@ -31,11 +31,11 @@ import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
-import internal.app.packed.binding.BindingAccessor;
-import internal.app.packed.binding.BindingAccessor.FromCodeGenerated;
-import internal.app.packed.binding.BindingAccessor.FromConstant;
-import internal.app.packed.binding.BindingAccessor.FromLifetimeArena;
-import internal.app.packed.binding.BindingAccessor.FromOperationResult;
+import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.binding.BindingProvider.FromCodeGeneratedConstant;
+import internal.app.packed.binding.BindingProvider.FromConstant;
+import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
+import internal.app.packed.binding.BindingProvider.FromOperationResult;
 import internal.app.packed.binding.SuppliedBindingKind;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
@@ -47,7 +47,7 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanFactoryOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
 import internal.app.packed.lifecycle.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeSetup;
@@ -162,20 +162,21 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         });
     }
 
-    public BindingAccessor beanInstanceBindingProvider() {
+    public BindingProvider beanInstanceBindingProvider() {
         if (bean.beanSourceKind == BeanSourceKind.INSTANCE) {
             return new FromConstant(bean.beanSource.getClass(), bean.beanSource);
         } else if (beanKind == BeanLifetime.SINGLETON) { // we've already checked if instance
             return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, bean.beanClass);
         } else if (beanKind == BeanLifetime.UNMANAGED) {
             return new FromOperationResult(operations.first());
+        } else {
+            throw new Error();
         }
-        throw new Error();
     }
 
-    public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
+    public <K> void bindCodeGeneratedConstant(Key<K> key, Supplier<? extends K> supplier) {
         requireNonNull(supplier, "supplier is null");
-        serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromCodeGenerated(supplier, SuppliedBindingKind.CODEGEN)));
+        serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromCodeGeneratedConstant(supplier, SuppliedBindingKind.CODEGEN)));
     }
 
     /** {@inheritDoc} */
@@ -363,7 +364,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 //            ot = bean.template.initializationTemplate()
 
             // What if no scanning and OP?????
-            op.newOperationSetup(new NewOperation(bean, bean.installedBy, ot, i -> new BeanFactoryOperationHandle(i), null));
+            op.newOperationSetup(new NewOperation(bean, bean.installedBy, ot, i -> new FactoryOperationHandle(i), null));
         }
 
     }

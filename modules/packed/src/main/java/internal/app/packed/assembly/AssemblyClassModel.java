@@ -15,7 +15,7 @@ import app.packed.build.hook.BuildHook;
 import internal.app.packed.bean.scanning.BeanTriggerModelCustom;
 import internal.app.packed.build.hook.BuildHookMap;
 import internal.app.packed.build.hook.StaticBuildHookMap;
-import internal.app.packed.invoke.MethodHandleWrapper.BuildHookFactory;
+import internal.app.packed.invoke.MethodHandleInvoker.BuildHookFactory;
 import internal.app.packed.invoke.UserLookupSupport;
 
 /** A model of an {@link Assembly} class. */

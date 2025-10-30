@@ -26,9 +26,9 @@ import app.packed.namespace.NamespaceInstaller;
 import app.packed.service.ServiceNamespaceConfiguration;
 import app.packed.service.ServiceNamespaceMirror;
 import app.packed.util.Nullable;
-import internal.app.packed.binding.BindingAccessor;
-import internal.app.packed.binding.BindingAccessor.FromLifetimeArena;
-import internal.app.packed.binding.BindingAccessor.FromOperationResult;
+import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
+import internal.app.packed.binding.BindingProvider.FromOperationResult;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
@@ -80,7 +80,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
      *            the operation that provides the service
      * @return a provided service
      */
-    public final NamespaceServiceProviderHandle provide(Key<?> key, OperationSetup operation, BindingAccessor resolution) {
+    public final NamespaceServiceProviderHandle provide(Key<?> key, ServiceProvideOperationHandle operation, BindingProvider resolution) {
         // Have no idea what we are doing here
         if (resolution instanceof FromLifetimeArena fla) {
             if (key.rawType() != fla.type()) {
@@ -101,8 +101,9 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
         return newProvider;
     }
 
-    private String provideDublicateProvideErrorMsg(NamespaceServiceProviderHandle existingProvider, OperationSetup newOperation) {
+    private String provideDublicateProvideErrorMsg(NamespaceServiceProviderHandle existingProvider, ServiceProvideOperationHandle newOH) {
         OperationSetup existingOperation = existingProvider.operation();
+        OperationSetup newOperation = OperationSetup.crack(newOH);
 
         Key<?> key = existingProvider.key();
         // The same bean providing the same service

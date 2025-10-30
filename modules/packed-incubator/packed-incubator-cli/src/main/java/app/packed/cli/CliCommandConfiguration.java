@@ -27,12 +27,12 @@ import app.packed.operation.OperationConfiguration;
 public class CliCommandConfiguration extends OperationConfiguration {
 
     /** The handle for the command. */
-    private final CliCommandHandle handle;
+    private final CliCommandOperationHandle handle;
 
     /**
      * @param handle
      */
-    CliCommandConfiguration(CliCommandHandle handle) {
+    CliCommandConfiguration(CliCommandOperationHandle handle) {
         this.handle = requireNonNull(handle);
         super(handle);
     }

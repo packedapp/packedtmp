@@ -20,8 +20,8 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 
 /**
- * An operation that is invoked doing lifecycle events on the bean. Typically from the usage of {@link Inject},
- * {@link OnInitialize}, {@link OnStart}, or {@link OnStop}.
+ * An operation that is invoked doing lifecycle events on the bean. Typically from the usage of {@link Factory}
+ * {@link Inject}, {@link OnInitialize}, {@link OnStart}, or {@link OnStop}.
  */
 public sealed class LifecycleOperationMirror extends OperationMirror
         permits FactoryOperationMirror, InjectOperationMirror, InitializeOperationMirror, StartOperationMirror, StopOperationMirror {

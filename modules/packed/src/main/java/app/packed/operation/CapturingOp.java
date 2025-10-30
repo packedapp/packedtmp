@@ -94,6 +94,8 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
     /**
      * Create a new operation.
+     * <p>
+     * This constructor is package private for now. This may change in the future.
      *
      * @param function
      *            the function instance

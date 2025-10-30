@@ -20,7 +20,7 @@ import app.packed.bean.scanning.BeanTrigger.AutoInject;
 /**
  *
  */
-@AutoInject(introspector = ScheduledJobExtension.ScheduledJobBeanIntrospector.class, requiresContext = SchedulingContext.class)
+@AutoInject(introspector = ScheduledJobBeanIntrospector.class, requiresContext = SchedulingContext.class)
 public interface SchedulingHistory {
 
 }

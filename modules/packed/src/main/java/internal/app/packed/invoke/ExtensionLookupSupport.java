@@ -29,7 +29,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.extension.ExtensionClassModel;
-import internal.app.packed.invoke.MethodHandleWrapper.ExtensionFactory;
+import internal.app.packed.invoke.MethodHandleInvoker.ExtensionFactory;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 
@@ -111,12 +111,12 @@ public class ExtensionLookupSupport {
             Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
             l.ensureInitialized(extensionClass);
         } catch (IllegalAccessException e) {
-            // TODO this is likely the first place we check the extension is readable to Packed
+            // TODO this is likely the first place we check that an extension is readable by Packed
             // Better error message..
             // Maybe we have other stuff that we need to check here...
             // We need to be open.. In order to create the extension...
             // So probably no point in just checking for Readable...
-            throw new InternalExtensionException("Extension is not readable for Packed", e);
+            throw new InternalExtensionException("Extension is not readable for " + Framework.name(), e);
         }
     }
 }

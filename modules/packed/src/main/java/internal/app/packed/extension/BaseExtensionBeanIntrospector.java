@@ -16,12 +16,27 @@
 package internal.app.packed.extension;
 
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.extension.Extension;
+import app.packed.binding.Key;
+import app.packed.extension.BaseExtension;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 
 /**
- * An interna bean introspector that gives easy access to the introspected {@link BeanSetup bean};
+ *
  */
-public abstract class InternalBeanIntrospector<E extends Extension<E>> extends BeanIntrospector<E> {
+public abstract class BaseExtensionBeanIntrospector extends BeanIntrospector<BaseExtension> {
 
+    public final BeanSetup bean() {
+        return BeanSetup.crack(this);
+    }
+
+    @Override
+    public final void onExtensionService(Key<?> key, OnContextService service) {
+        onExtensionService(key, (IntrospectorOnContextService) service);
+    }
+
+    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+        super.onExtensionService(key, service);
+    }
 
 }

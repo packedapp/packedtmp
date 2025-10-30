@@ -114,6 +114,11 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
             public void invokeOperationHandleDoClose(OperationHandle<?> handle, boolean isClose) {
                 handle.onStateChange(isClose);
             }
+
+            @Override
+            public void onInstall(OperationHandle<?> handle) {
+                handle.onInstall();
+            }
         });
     }
 
@@ -315,6 +320,8 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     // Maybe we need both??? We have it for Extension, onAssemblyClose, onApplicationClose
     // As a okay you cannot do anything else
     protected void onClose() {}
+
+    protected void onInstall() {}
 
     /**
      * The owner on the bean on which the operation is located can no longer configure it.

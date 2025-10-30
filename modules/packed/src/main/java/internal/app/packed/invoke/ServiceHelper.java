@@ -18,34 +18,46 @@ package internal.app.packed.invoke;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.Map;
 
 import app.packed.bean.BeanSourceKind;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.application.GuestBeanHandle;
-import internal.app.packed.invoke.MethodHandleWrapper.ApplicationBaseLauncher;
+import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
+import internal.app.packed.invoke.MethodHandleInvoker.ExportedServiceWrapper;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
+import internal.app.packed.util.CollectionUtil;
 
 /**
  *
  */
 public class ServiceHelper {
 
-    public static ApplicationBaseLauncher fromGuestBeanHandle(GuestBeanHandle handle) {
-        // Cleanup
-        // return invokerfactory instead
-        OperationHandle<?> oh = handle.lifecycleInvokers().get(0);
+    /** A method handle for calling {@link PackedExtensionContext#read(int)} at runtime. */
+    static final MethodHandle MH_CONSTANT_POOL_READER;
 
-        MethodHandle m = OperationSetup.crack(oh).codeHolder.asMethodHandle();
-        m = m.asType(m.type().changeReturnType(Object.class));
+    static {
+        MethodHandle m = LookupUtil.findVirtual(MethodHandles.lookup(), PackedExtensionContext.class, "read", Object.class, int.class);
+        MethodType mt = m.type().changeParameterType(0, ExtensionContext.class);
+        MH_CONSTANT_POOL_READER = m.asType(mt);
+    }
+
+    public static Map<String, MethodHandle> forTestingMap(Map<String, OperationHandle<?>> ink) {
+        return CollectionUtil.copyOf(ink, v -> OperationSetup.crack(v).codeHolder.generate(true));
+    }
+
+    public static ApplicationBaseLauncher newApplicationBaseLauncher(GuestBeanHandle handle) {
+        MethodHandle m = OperationSetup.crack(handle.factory()).codeHolder.generate(true);
+        m = MethodHandles.explicitCastArguments(m, m.type().changeReturnType(Object.class));
         return new ApplicationBaseLauncher(m);
     }
 
-    public static MethodHandle fromOperation(OperationSetup o) {
+    public static ExportedServiceWrapper toExportedService(OperationSetup o) {
         MethodHandle mh;
 
         LifetimeStoreIndex accessor = null;
@@ -56,17 +68,18 @@ public class ServiceHelper {
                 o = o.bean.operations.first();
             }
         }
+
         if (!(o.target instanceof MemberOperationTarget) && o.bean.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
             // It is a a constant
             mh = MethodHandles.constant(Object.class, o.bean.bean.beanSource);
             mh = MethodHandles.dropArguments(mh, 0, ExtensionContext.class);
         } else if (accessor != null) {
-            mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor.index);
+            mh = MethodHandles.insertArguments(MH_CONSTANT_POOL_READER, 1, accessor.index);
         } else {
-            mh = o.codeHolder.newMethodHandle();
+            mh = o.codeHolder.generate(false);
         }
         mh = mh.asType(mh.type().changeReturnType(Object.class));
-        assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionContext.class)));
-        return mh;
+        assert mh.type() == MethodType.methodType(Object.class, ExtensionContext.class);
+        return new ExportedServiceWrapper(mh);
     }
 }
