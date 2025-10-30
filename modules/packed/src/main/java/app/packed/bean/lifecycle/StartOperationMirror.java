@@ -21,7 +21,7 @@ import app.packed.operation.OperationHandle;
  * Represents a starting operation.
  */
 // Mangler lidt en struktur for pre/post. Interceptor like
-public final class StartOperationMirror extends BeanLifecycleOperationMirror {
+public final class StartOperationMirror extends LifecycleOperationMirror {
 
     /**
      * @param handle

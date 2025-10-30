@@ -19,44 +19,30 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.bean.BeanSourceKind;
-import app.packed.bean.lifecycle.BeanLifecycleMirror;
-import app.packed.bean.lifecycle.BeanLifecycleModel;
+import app.packed.bean.BeanMirror.Lifecycle;
+import app.packed.bean.lifecycle.FactoryOperationMirror;
 import app.packed.bean.lifecycle.InitializeOperationMirror;
+import app.packed.bean.lifecycle.InjectOperationMirror;
+import app.packed.bean.lifecycle.LifecycleModel;
 import app.packed.bean.lifecycle.StartOperationMirror;
 import app.packed.bean.lifecycle.StopOperationMirror;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanFactoryOperationHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInjectOperationHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 
 /** Implementation of {@link BeanLifecycleMirror}. */
 @ValueBased
-public record PackedBeanLifecycleMirror(BeanSetup bean) implements BeanLifecycleMirror {
+public record PackedBeanLifecycleMirror(BeanSetup bean) implements Lifecycle {
 
-    /**
-     * If instances of this bean is created at runtime. This method will return the operation that creates the instance.
-     *
-     * @return operation that creates instances of the bean. Or empty if instances are never created
-     */
-    // instantiatedBy
-
-    // Syntes maaske bare skal lede efter den i operations()?
-    // Saa supportere vi ogsaa flere factory metodes hvis vi har brug for det en gang
-    // We don't support multi factory for default installs.
-    // However custom bean templates may support it
+    /** {@inheritDoc} */
     @Override
-    public Optional<InitializeOperationMirror> factory() {
-        if (bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-            return Optional.of((InitializeOperationMirror) bean.operations.first().mirror());
-        }
-        return Optional.empty();
-    }
-
-    @SuppressWarnings("unchecked")
-    private <M, H extends BeanLifecycleOperationHandle> Stream<M> stream(Class<H> type) {
-        return (Stream<M>) bean.operations.lifecycleHandles.values().stream().flatMap(List::stream).filter(h -> type.isInstance(h)).map(h -> h.mirror());
+    public Optional<FactoryOperationMirror> factory() {
+        Stream<FactoryOperationMirror> stream = stream(BeanFactoryOperationHandle.class);
+        return stream.findAny();
     }
 
     /** {@inheritDoc} */
@@ -67,7 +53,7 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements BeanLifecycle
 
     /** {@inheritDoc} */
     @Override
-    public BeanLifecycleModel kind() {
+    public LifecycleModel kind() {
         return bean.beanLifecycleKind;
     }
 
@@ -81,5 +67,16 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements BeanLifecycle
     @Override
     public Stream<StopOperationMirror> stoppers() {
         return stream(LifecycleOperationStopHandle.class);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Stream<InjectOperationMirror> injects() {
+        return stream(BeanInjectOperationHandle.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <M, H extends BeanLifecycleOperationHandle> Stream<M> stream(Class<H> type) {
+        return (Stream<M>) bean.operations.lifecycleHandles.values().stream().flatMap(List::stream).filter(h -> type.isInstance(h)).map(h -> h.mirror());
     }
 }

@@ -15,18 +15,14 @@
  */
 package app.packed.bean.lifecycle;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.BeanTrigger;
-import app.packed.extension.BaseExtension;
 import app.packed.namespace.sandbox.NamespaceOperation;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInjectOperationHandle;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
@@ -54,13 +50,14 @@ import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInjectOper
  * Injection of services into static fields or method are not supported. There is no general support for injecting into
  * static fields or methods. If you absolutely need it, it is fairly easy to support yourself
  */
-@Target({  ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceOperation
+// Maybe we can now use Singletons
 @BeanTrigger.OnAnnotatedField(introspector = Inject.Introspector.class, allowSet = true)
 @BeanTrigger.OnAnnotatedMethod(introspector = Inject.Introspector.class, allowInvoke = true)
-public @interface Inject {
+public @interface Factory {
     // Altsaa med mindre vi laver en inject annotatering for alle namespace kinds,
     // Kan vi kun styre det her, men hvordan styre vi det paa parameter niveau???
     ///// Ahhhh, bliver maaske noedt til at have en Namespace annotering
@@ -69,15 +66,15 @@ public @interface Inject {
     //
     String namespace() default "main";
 
-    final class Introspector extends BeanIntrospector<BaseExtension> {
-        @Override
-        public void onAnnotatedField(Annotation annotation, OnField onField) {
-            BeanInjectOperationHandle.install((Inject) annotation, onField);
-        }
-
-        @Override
-        public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod onMethod) {
-            BeanInjectOperationHandle.install((Inject) annotation, onMethod);
-        }
-    }
+//    final class Introspector extends BeanIntrospector<BaseExtension> {
+//        @Override
+//        public void onAnnotatedField(Annotation annotation, OnField onField) {
+//            BeanInjectOperationHandle.install((Factory) annotation, onField);
+//        }
+//
+//        @Override
+//        public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod onMethod) {
+//            BeanInjectOperationHandle.install((Factory) annotation, onMethod);
+//        }
+//    }
 }

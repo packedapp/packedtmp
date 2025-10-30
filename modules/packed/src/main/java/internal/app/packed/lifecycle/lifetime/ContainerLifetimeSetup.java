@@ -29,7 +29,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.AbstractInitializingOperationHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
@@ -56,9 +56,9 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     /** An object that is shared between all entry point extensions in the same application. */
     public final EntryPointManager entryPoints = new EntryPointManager();
 
-    public final List<BeanInitializeOperationHandle> initializationPost = new ArrayList<>();
+    public final List<AbstractInitializingOperationHandle> initializationPost = new ArrayList<>();
 
-    public final List<IndexedOperationHandle<BeanInitializeOperationHandle>> initializationPre = new ArrayList<>();
+    public final List<IndexedOperationHandle<AbstractInitializingOperationHandle>> initializationPre = new ArrayList<>();
 
     // Er ikke noedvendigvis fra et entrypoint, kan ogsaa vaere en completer
     public final Class<?> resultType;
@@ -97,7 +97,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     }
 
     public void initialize(ExtensionContext pool) {
-        for (IndexedOperationHandle<BeanInitializeOperationHandle> mh : initializationPre) {
+        for (IndexedOperationHandle<AbstractInitializingOperationHandle> mh : initializationPre) {
             try {
                 OperationSetup os = OperationSetup.crack(mh.operationHandle());
                 os.codeHolder.methodHandle.invokeExact(pool);
@@ -106,7 +106,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
             }
         }
 
-        for (BeanInitializeOperationHandle mh : initializationPost) {
+        for (AbstractInitializingOperationHandle mh : initializationPost) {
             try {
                 OperationSetup os = OperationSetup.crack(mh);
                 os.codeHolder.methodHandle.invokeExact(pool);
@@ -152,7 +152,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         for (List<BeanLifecycleOperationHandle> lop : bean.operations.lifecycleHandles.values()) {
             for (BeanLifecycleOperationHandle h : lop) {
                 switch (h.lifecycleKind) {
-                case FACTORY, INJECT, INITIALIZE_PRE_ORDER -> initializationPre.add(new IndexedOperationHandle<>((BeanInitializeOperationHandle) h, bean.lifetimeStoreIndex));
+                case FACTORY, INJECT, INITIALIZE_PRE_ORDER -> initializationPre.add(new IndexedOperationHandle<>((AbstractInitializingOperationHandle) h, bean.lifetimeStoreIndex));
                 case INITIALIZE_POST_ORDER -> startersPost.addFirst((LifecycleOnStartHandle) h);
                 case START_PRE_ORDER -> startersPre.add((LifecycleOnStartHandle) h);
                 case START_POST_ORDER -> startersPost.addFirst((LifecycleOnStartHandle) h);

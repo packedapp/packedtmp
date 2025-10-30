@@ -20,7 +20,7 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public final class InitializeOperationConfiguration extends BeanLifecycleOperationConfiguration {
+public final class InitializeOperationConfiguration extends LifecycleOperationConfiguration {
 
     /**
      * @param handle

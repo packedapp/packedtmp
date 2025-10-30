@@ -23,13 +23,13 @@ import app.packed.operation.OperationMirror;
  * An operation that is invoked doing lifecycle events on the bean. Typically from the usage of {@link Inject},
  * {@link OnInitialize}, {@link OnStart}, or {@link OnStop}.
  */
-public sealed class BeanLifecycleOperationMirror extends OperationMirror
-        permits InjectOperationMirror, InitializeOperationMirror, StartOperationMirror, StopOperationMirror {
+public sealed class LifecycleOperationMirror extends OperationMirror
+        permits FactoryOperationMirror, InjectOperationMirror, InitializeOperationMirror, StartOperationMirror, StopOperationMirror {
 
     /**
      * @param handle
      */
-    public BeanLifecycleOperationMirror(OperationHandle<?> handle) {
+    public LifecycleOperationMirror(OperationHandle<?> handle) {
         super(handle);
     }
 
@@ -42,14 +42,10 @@ public sealed class BeanLifecycleOperationMirror extends OperationMirror
         return bean().lifetime();
     }
 
-    public DependantOrder isNaturalOrder() {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@return the lifetime operation this operation is a part of.} */
     // IDK, supportere vi Lifecycle events there ikke har en Lifetime operation???
     // Saa er det ikke en lifetime. Fx restart
-    public BeanLifecycleOperationMirror lifetimeOperation() {
+    public LifecycleOperationMirror lifetimeOperation() {
         throw new UnsupportedOperationException();
     }
 

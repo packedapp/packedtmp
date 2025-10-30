@@ -21,17 +21,14 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public abstract sealed class BeanLifecycleOperationConfiguration extends OperationConfiguration
-        permits InjectOperationConfiguration, InitializeOperationConfiguration, StartOperationConfiguration, StopOperationConfiguration {
+public abstract sealed class LifecycleOperationConfiguration extends OperationConfiguration
+        permits FactoryOperationConfiguration, InjectOperationConfiguration, InitializeOperationConfiguration, StartOperationConfiguration, StopOperationConfiguration {
 
     /**
      * @param handle
      */
-    public BeanLifecycleOperationConfiguration(OperationHandle<?> handle) {
+    public LifecycleOperationConfiguration(OperationHandle<?> handle) {
         super(handle);
     }
 
-    public DependantOrder isNaturalOrder() {
-        throw new UnsupportedOperationException();
-    }
 }

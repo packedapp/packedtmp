@@ -21,10 +21,9 @@ import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.lifecycle.Inject;
+import app.packed.bean.lifecycle.Factory;
 import app.packed.operation.OperationType;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
-import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanFactoryOperationHandle;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
@@ -117,9 +116,9 @@ final record BeanScannerOnConstructors(Constructor<?> constructor, OperationType
         // See if we have a single constructor annotated with @Inject
         Constructor<?> constructor = null;
         for (Constructor<?> c : constructors) {
-            if (c.isAnnotationPresent(Inject.class)) {
+            if (c.isAnnotationPresent(Factory.class)) {
                 if (constructor != null) {
-                    String errorMsg = "Multiple constructors annotated with @" + Inject.class.getSimpleName() + " on class " + StringFormatter.format(clazz);
+                    String errorMsg = "Multiple constructors annotated with @" + Factory.class.getSimpleName() + " on class " + StringFormatter.format(clazz);
                     throw errorMaker.apply(errorMsg);
                 }
                 constructor = c;
@@ -174,7 +173,7 @@ final record BeanScannerOnConstructors(Constructor<?> constructor, OperationType
     }
 
     private static RuntimeException getErrMsg(Class<?> type, String visibility, Function<String, RuntimeException> errorMaker) {
-        String errorMsg = "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple " + visibility + " constructors on class "
+        String errorMsg = "No constructor annotated with @" + Factory.class.getSimpleName() + ". And multiple " + visibility + " constructors on class "
                 + StringFormatter.format(type);
         return errorMaker.apply(errorMsg);
     }
@@ -199,9 +198,9 @@ final record BeanScannerOnConstructors(Constructor<?> constructor, OperationType
             PackedOperationInstaller installer = ot.newInstaller(constructor.operationType(), scanner.bean, scanner.bean.installedBy);
 
             OperationSetup os = installer.newOperationFromMember(new OperationConstructorTarget(constructor.constructor()), mh,
-                    i -> new BeanInitializeOperationHandle(i, InternalBeanLifecycleKind.FACTORY));
+                    i -> new BeanFactoryOperationHandle(i));
 
-            //scanner.bean.operations.addLifecycleHandle((BeanLifecycleOperationHandle) os.handle());
+            // scanner.bean.operations.addLifecycleHandle((BeanLifecycleOperationHandle) os.handle());
             scanner.resolveBindings(os);
         }
 

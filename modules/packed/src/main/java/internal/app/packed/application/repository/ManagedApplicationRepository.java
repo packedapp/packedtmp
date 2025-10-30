@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.containerdynamic.ManagedInstance;
-import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.bean.lifecycle.StopContext;
 import app.packed.runtime.RunState;
@@ -30,7 +29,6 @@ import app.packed.runtime.StopOption;
  *
  */
 public final class ManagedApplicationRepository<I, H extends ApplicationHandle<I, ?>> extends AbstractApplicationRepository<I, H> {
-
 
     final ConcurrentHashMap<String, ManagedInstance<I>> instances = new ConcurrentHashMap<>();
 
@@ -54,14 +52,14 @@ public final class ManagedApplicationRepository<I, H extends ApplicationHandle<I
         return instances.values().stream();
     }
 
-    @Stop(order = DependantOrder.RUN_AFTER_DEPENDANTS)
+    @Stop
     public void stopAfterDependencis(StopContext c) {
         for (ManagedInstance<I> i : instances.values()) {
             c.await((l, u) -> i.await(RunState.TERMINATED, l, u));
         }
     }
 
-    @Stop(order = DependantOrder.RUN_BEFORE_DEPENDANTS)
+    @Stop(naturalOrder = false)
     // Need to wait on any installs to finish
     public void stopBeforeDependencies() {
         isStopped = true;

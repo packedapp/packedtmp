@@ -13,15 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.lifecycle;
+package internal.app.packed.lifecycle;
 
 /**
  *
+ * @see OnInitialize
+ * @see OnStart
+ * @see OnStop
  */
-enum StartupPhase {
+// BeanLifecycleOrder
+// DependencyOrder <---
+// In app.packed.lifetime/lifecycle?
 
-    //
-    BEFORE_DEPENDENCIES,
+//PreOrder, PostOrder | OperationDependencyORder->DependencyOrder (Or just Ordering)
 
-    AFTER_DEPENDENCIES;
+// remove this, and just have boolean naturalOrder
+public enum DependantOrder {
+
+    /** The operation will be executed before any other operation on beans that have this bean as a dependency. */
+    RUN_BEFORE_DEPENDANTS,
+
+    /** The operation will be executed after any dependencies. */
+    RUN_AFTER_DEPENDANTS;
 }

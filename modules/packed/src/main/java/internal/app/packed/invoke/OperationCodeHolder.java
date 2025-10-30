@@ -24,8 +24,7 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.invoke.MethodHandleUtil.LazyResolvable;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
-import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanFactoryOperationHandle;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -44,7 +43,6 @@ public final class OperationCodeHolder {
     public LazyResolvable lmh;
 
     public final OperationSetup operation;
-
 
     public MethodHandle methodHandle;
 
@@ -100,8 +98,7 @@ public final class OperationCodeHolder {
 
     public MethodHandle newMethodHandle() {
         MethodHandle mha = newMethodHandle0();
-        if (operation.handle() instanceof BeanInitializeOperationHandle fi)
-        if (fi.lifecycleKind == InternalBeanLifecycleKind.FACTORY) {
+        if (operation.handle() instanceof BeanFactoryOperationHandle) {
             BeanSetup bean = operation.bean;
             if (bean.beanKind == BeanLifetime.SINGLETON) {
                 assert (bean.bean.beanSourceKind != BeanSourceKind.INSTANCE);
@@ -116,6 +113,7 @@ public final class OperationCodeHolder {
         }
         return mha;
     }
+
     /**
      * Generates a method handle that can be used to invoke the underlying operation. *
      * <p>

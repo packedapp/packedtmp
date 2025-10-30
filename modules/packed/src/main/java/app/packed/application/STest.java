@@ -16,7 +16,7 @@
 package app.packed.application;
 
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Inject;
+import app.packed.bean.lifecycle.Factory;
 
 /**
  *
@@ -42,7 +42,7 @@ public class STest extends BaseAssembly {
     }
 
     public record A(String v) {
-        @Inject
+        @Factory
         public A() {
             this("Container");
         }

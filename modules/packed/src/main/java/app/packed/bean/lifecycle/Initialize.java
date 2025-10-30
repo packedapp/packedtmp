@@ -87,12 +87,12 @@ public @interface Initialize {
      * @return whether or not the annotated method should be run before or after dependent beans in the same lifetime are
      *         initialized.
      */
-    DependantOrder order() default DependantOrder.RUN_BEFORE_DEPENDANTS;
+    boolean naturalOrder() default true;
 
     final class Introspector extends InternalBeanIntrospector<BaseExtension> {
         @Override
         public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
-            BeanInitializeOperationHandle.fromInitializeAnnotation((Initialize) annotation, method);
+            BeanInitializeOperationHandle.install((Initialize) annotation, method);
         }
     }
 }

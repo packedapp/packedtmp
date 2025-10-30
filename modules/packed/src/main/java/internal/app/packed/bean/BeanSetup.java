@@ -19,7 +19,7 @@ import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.lifecycle.BeanLifecycleModel;
+import app.packed.bean.lifecycle.LifecycleModel;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.build.hook.BuildHook;
@@ -47,8 +47,7 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
-import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanFactoryOperationHandle;
 import internal.app.packed.lifecycle.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeSetup;
@@ -74,7 +73,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     public final BeanLifetime beanKind;
 
     /** The lifecycle kind of the bean. */
-    public final BeanLifecycleModel beanLifecycleKind = BeanLifecycleModel.UNMANAGED_LIFECYCLE;
+    public final LifecycleModel beanLifecycleKind = LifecycleModel.UNMANAGED_LIFECYCLE;
 
     /** Services that have been bound specifically for this bean. */
     public final ServiceMap<BeanServiceProviderSetup> serviceProviders = new ServiceMap<>();
@@ -364,7 +363,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 //            ot = bean.template.initializationTemplate()
 
             // What if no scanning and OP?????
-            op.newOperationSetup(new NewOperation(bean, bean.installedBy, ot, i -> new BeanInitializeOperationHandle(i, InternalBeanLifecycleKind.FACTORY), null));
+            op.newOperationSetup(new NewOperation(bean, bean.installedBy, ot, i -> new BeanFactoryOperationHandle(i), null));
         }
 
     }

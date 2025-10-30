@@ -21,7 +21,6 @@ import app.packed.build.BuildException;
  * An exception that is typically thrown when trying to install a stateless (static or foreign) bean that makes use of
  * functionality that is not available for stateless beans. For example, lifecycle annotations or non-static operation
  * methods on static beans.
- *
  */
 
 // Syntes det er okay at smide for stateless ogsaak
@@ -44,6 +43,8 @@ import app.packed.build.BuildException;
 
 //Hmm i bean pakken, men supportere ogsaa containere (Managed Container in UnmanagedContainer)
 // I guess this would typically be an issue with the extension. As the extension is providing the template..
+
+// StopNotSupported????? Now that we do not have static beans, ahh can well ogsaa bruges for foreign beanss
 public class UnsupportedLifecycleException extends BuildException {
 
     private static final long serialVersionUID = 1L;

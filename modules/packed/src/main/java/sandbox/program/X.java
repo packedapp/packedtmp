@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
-import app.packed.bean.lifecycle.OnStart;
+import app.packed.bean.lifecycle.Start;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.lifetime.Main;
 
@@ -57,13 +57,13 @@ public class X extends BaseAssembly {
             IO.println("Init F");
         }
 
-        @OnStart
+        @Start
       //  @Fork
         public static void start() {
             IO.println("start F");
         }
 
-        @OnStart(fork = true)
+        @Start(fork = true)
         public static void stardt() {
             IO.println("start F");
         }
@@ -89,7 +89,7 @@ public class X extends BaseAssembly {
             IO.println("Init NeedsF");
         }
 
-        @OnStart
+        @Start
         public static void start() {
             IO.println("start NeedsF");
         }

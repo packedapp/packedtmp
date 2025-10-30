@@ -17,9 +17,8 @@ package internal.app.packed.lifecycle.lifetime.runtime;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.DependantOrder;
-import app.packed.bean.lifecycle.OnStart;
-import app.packed.bean.lifecycle.OnStartContext;
+import app.packed.bean.lifecycle.Start;
+import app.packed.bean.lifecycle.StartContext;
 
 /**
  *
@@ -38,13 +37,13 @@ public class OnStartTest extends BaseAssembly {
 
     public static class Mine {
 
-        @OnStart(order = DependantOrder.RUN_BEFORE_DEPENDANTS)
-        public void onStart(OnStartContext context) {
+        @Start
+        public void onStart(StartContext context) {
             IO.println("1 - NICE " + Thread.currentThread());
         }
 
-        @OnStart(fork = true)
-        public void onStartdx(OnStartContext context) throws InterruptedException {
+        @Start(fork = true)
+        public void onStartdx(StartContext context) throws InterruptedException {
             IO.println("2 - Started " + Thread.currentThread());
             context.fork(() -> {
                 IO.println("2 - NICE from " + Thread.currentThread());
@@ -59,8 +58,8 @@ public class OnStartTest extends BaseAssembly {
             Thread.sleep(500);
         }
 
-        @OnStart(fork = true)
-        public void onStart2(OnStartContext context) throws InterruptedException {
+        @Start(fork = true)
+        public void onStart2(StartContext context) throws InterruptedException {
             IO.println("3 - Started " + Thread.currentThread());
             context.fork(() -> {
                 IO.println("3 - NICE " + Thread.currentThread());

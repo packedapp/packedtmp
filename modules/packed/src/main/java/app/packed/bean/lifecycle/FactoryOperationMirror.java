@@ -22,7 +22,7 @@ import java.util.List;
 import app.packed.operation.OperationHandle;
 
 /** A mirror representing an {@link OnInitialize} operation. */
-public final class InitializeOperationMirror extends LifecycleOperationMirror {
+public final class FactoryOperationMirror extends LifecycleOperationMirror {
 
     /** A handle for the initialization operation. */
     final OperationHandle<?> handle;
@@ -33,13 +33,13 @@ public final class InitializeOperationMirror extends LifecycleOperationMirror {
      * @param handle
      *            the operation's handle
      */
-    public InitializeOperationMirror(OperationHandle<?> handle) {
+    public FactoryOperationMirror(OperationHandle<?> handle) {
         super(handle);
         this.handle = requireNonNull(handle);
     }
 
     // Maybe OperationMirrorList
-    public List<InitializeOperationMirror> friends() {
+    public List<FactoryOperationMirror> friends() {
         throw new UnsupportedOperationException();
     }
     // ListWithPointer into initialization methods on the bean

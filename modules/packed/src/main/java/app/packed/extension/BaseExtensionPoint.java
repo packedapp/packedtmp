@@ -10,15 +10,11 @@ import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanTemplate;
-import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
 import app.packed.operation.Op;
-import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationInstaller;
 import app.packed.runtime.ManagedLifecycle;
-import app.packed.runtime.RunState;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
@@ -182,33 +178,3 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        return new PackedContainerBuilder(ContainerTemplate.IN_PARENT, s.extensionType, s.container.application, s.container);
 //    }
 
-class unknown {
-
-    public OperationConfiguration runLifecycleOperation(OperationInstaller operation, RunState state, DependantOrder ordering) {
-        throw new UnsupportedOperationException();
-    }
-
-    public OperationConfiguration runOnBeanInitialization(OperationInstaller operation, DependantOrder ordering) {
-        requireNonNull(ordering, "ordering is null");
-        throw new UnsupportedOperationException();
-//        OperationHandle handle = h.newOperation(OperationTemplate.defaults(), context());
-//        ((PackedOperationHandle) handle).operation().bean.addLifecycleOperation(BeanLifecycleOrder.fromInitialize(ordering), handle);
-//        return new OperationConfiguration(handle);
-    }
-
-    /**
-     * Creates a new inject operation from the specified delegating operation handle.
-     *
-     * @param h
-     *            the delegating handle that the operation should be created from.
-     * @return a configuration object representing the inject operation
-     * @see Inject
-     */
-    public OperationConfiguration runOnBeanInject(OperationInstaller operation) {
-//        PackedOperationHandle handle = (PackedOperationHandle) h.newOperation(OperationTemplate.defaults(), context());
-//        handle.operation().bean.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
-//        return new OperationConfiguration(handle);
-        throw new UnsupportedOperationException();
-    }
-
-}

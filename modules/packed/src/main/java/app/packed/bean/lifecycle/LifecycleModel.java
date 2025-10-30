@@ -58,7 +58,7 @@ package app.packed.bean.lifecycle;
 // NONE, UNMANAGED, MANAGED
 
 /// MAYBE THIS is only for beans....
-public enum BeanLifecycleModel {
+public enum LifecycleModel {
 
     /** A bean that has no lifecycle. */
     NO_LIFECYCLE,

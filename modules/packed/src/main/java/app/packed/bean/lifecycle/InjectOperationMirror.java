@@ -24,7 +24,7 @@ import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitialize
 
 /** A mirror representing an {@link OnInitialize} operation. */
 // Vi prøvede vist at samle alle Initialization handles. Men maaske er det fint at de har hver deres
-public final class InjectOperationMirror extends BeanLifecycleOperationMirror {
+public final class InjectOperationMirror extends LifecycleOperationMirror {
 
     /** A handle for the initialization operation. */
     final BeanInitializeOperationHandle handle;

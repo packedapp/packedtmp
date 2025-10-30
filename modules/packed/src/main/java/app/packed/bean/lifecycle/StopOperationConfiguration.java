@@ -20,7 +20,7 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public final class StopOperationConfiguration extends BeanLifecycleOperationConfiguration {
+public final class StopOperationConfiguration extends LifecycleOperationConfiguration {
 
     public StopOperationConfiguration(OperationHandle<?> handle) {
         super(handle);

@@ -84,14 +84,14 @@ import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnSta
 // When used on a field the target type must be Lazy
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@BeanTrigger.OnAnnotatedMethod(introspector = OnStart.Introspector.class, requiresContext = OnStartContext.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedMethod(introspector = Start.Introspector.class, requiresContext = StartContext.class, allowInvoke = true)
 
 // Hvordan sikre vi os at DB kører førend WEB
 // Hvis de ikke depender paa hinanden.
 //// Samtidig vil vi gerne maximere async tid, saa joine senest muligt
 
 // Tror phases er en daarlig ide. Fordi vi godt vil encapsulated foer og efter. Det fungere daar
-public @interface OnStart {
+public @interface Start {
 
     /**
      * If there are multiple methods with {@link OnStart} and the same {@link #order()} on a single bean. This attribute can
@@ -135,7 +135,7 @@ public @interface OnStart {
     // Jeg tror after_dependencies kraever vi monitorer bean state...
     // Fordi vi siger koer denne metode efter x-bean er started
     // Maybe RUN_AFTER_DEPENDENCIES
-    DependantOrder order() default DependantOrder.RUN_BEFORE_DEPENDANTS;
+    boolean naturalOrder() default true;
 
     /**
      * Whether or not the bean should be marked as failed to start if the method throws
@@ -175,7 +175,7 @@ public @interface OnStart {
     final class Introspector extends InternalBeanIntrospector<BaseExtension> {
         @Override
         public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
-            LifecycleOnStartHandle.install((OnStart) annotation, method);
+            LifecycleOnStartHandle.install((Start) annotation, method);
         }
     }
 

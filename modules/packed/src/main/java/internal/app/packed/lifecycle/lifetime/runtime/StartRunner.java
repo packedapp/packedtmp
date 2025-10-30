@@ -23,7 +23,7 @@ import java.util.concurrent.StructureViolationException;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.StructuredTaskScope.Joiner;
 
-import app.packed.bean.lifecycle.OnStartContext;
+import app.packed.bean.lifecycle.StartContext;
 import app.packed.extension.ExtensionContext;
 import internal.app.packed.ValueBased;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
@@ -58,7 +58,7 @@ final class StartRunner {
         OperationSetup os = OperationSetup.crack(h);
         MethodHandle mh = os.codeHolder.methodHandle;
         try {
-            mh.invokeExact(pool, (OnStartContext) new PackedOnStartContext(this));
+            mh.invokeExact(pool, (StartContext) new PackedOnStartContext(this));
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -102,7 +102,7 @@ final class StartRunner {
     }
 
     @ValueBased
-    record PackedOnStartContext(StartRunner runner) implements OnStartContext {
+    record PackedOnStartContext(StartRunner runner) implements StartContext {
 
 //        @Override
 //        public void fail(Throwable cause) {}

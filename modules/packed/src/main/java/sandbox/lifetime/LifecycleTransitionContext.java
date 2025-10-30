@@ -15,9 +15,9 @@
  */
 package sandbox.lifetime;
 
-import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopInfo.Reason;
+import internal.app.packed.lifecycle.DependantOrder;
 
 /**
  * A context that is available to all lifecycle transition operations.

@@ -15,7 +15,6 @@
  */
 package internal.app.packed.lifecycle;
 
-import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.runtime.RunState;
 
 /**

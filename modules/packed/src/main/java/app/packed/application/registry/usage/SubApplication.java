@@ -17,7 +17,7 @@ package app.packed.application.registry.usage;
 
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
-import app.packed.bean.lifecycle.OnStart;
+import app.packed.bean.lifecycle.Start;
 import app.packed.bean.lifecycle.Stop;
 
 /**
@@ -39,7 +39,7 @@ public class SubApplication extends BaseAssembly {
             IO.println("Sub initialied!!! YOU ARE FUCKING AWESOME");
         }
 
-        @OnStart
+        @Start
         public void start() {
             IO.println("Sub Started!!! YOU ARE FUCKING AWESOME");
         }

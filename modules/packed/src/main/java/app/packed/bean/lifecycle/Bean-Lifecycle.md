@@ -38,11 +38,12 @@ BeanFactory, BeanStart,... Why not BeanInject than???
 
 // Sub folder to Bean????
 
-// New Hierarchy
+// Skal vi have en Factory Operation, when Inject annotation is used for both
+// Maybe have an factory
+
 // LifecycleOperation
-//// BeanCreationLifecycleOperation
-////// BeanFactoryLifecycleOperation  (Maaske bliver de slaaet sammen en? Nej vi kan have flere inject men kun en factory
-////// BeanInjectLifecycleOperation
+//// BeanFactoryLifecycleOperation
+//// BeanInjectLifecycleOperation
 //// BeanInitializeLifecycleOperation
 //// BeanStartLifecycleOperation
 //// BeanStopLifecycleOperation

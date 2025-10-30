@@ -7,7 +7,6 @@ module app.packed {
     exports app.packed.assembly;
     exports app.packed.bean;
     exports app.packed.bean.lifecycle;
-    exports app.packed.bean.scanning;
     exports app.packed.binding;
     exports app.packed.build;
     exports app.packed.component;
@@ -23,6 +22,7 @@ module app.packed {
     exports app.packed.util;
 
     // temporary sandbox thingies
+    exports app.packed.bean.scanning;
     exports app.packed.bean.sidebean;
     exports app.packed.build.hook;
     exports app.packed.component.guest;

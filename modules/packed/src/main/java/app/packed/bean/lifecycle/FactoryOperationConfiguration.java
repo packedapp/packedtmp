@@ -15,22 +15,18 @@
  */
 package app.packed.bean.lifecycle;
 
+import app.packed.operation.OperationHandle;
+
 /**
  *
- * @see OnInitialize
- * @see OnStart
- * @see OnStop
  */
-// BeanLifecycleOrder
-// DependencyOrder <---
-// In app.packed.lifetime/lifecycle?
+public final class FactoryOperationConfiguration extends LifecycleOperationConfiguration {
 
-//PreOrder, PostOrder | OperationDependencyORder->DependencyOrder (Or just Ordering)
-public enum DependantOrder {
+    /**
+     * @param handle
+     */
+    public FactoryOperationConfiguration(OperationHandle<?> handle) {
+        super(handle);
+    }
 
-    /** The operation will be executed before any other operation on beans that have this bean as a dependency. */
-    RUN_BEFORE_DEPENDANTS,
-
-    /** The operation will be executed after any dependencies. */
-    RUN_AFTER_DEPENDANTS;
 }

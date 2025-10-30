@@ -20,7 +20,7 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public final class StopOperationMirror extends BeanLifecycleOperationMirror {
+public final class StopOperationMirror extends LifecycleOperationMirror {
 
     /**
      * @param handle

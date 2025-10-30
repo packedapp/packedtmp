@@ -23,7 +23,7 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
-import app.packed.bean.lifecycle.OnStart;
+import app.packed.bean.lifecycle.Start;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromGuest;
@@ -57,7 +57,7 @@ public class AaaTest extends BaseAssembly {
             IO.println(Thread.currentThread());
         }
 
-        @OnStart
+        @Start
         public void onStart() throws InterruptedException {
             Thread.sleep(1000);
             IO.println("STARTING");

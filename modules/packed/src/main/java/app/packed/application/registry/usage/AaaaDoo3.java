@@ -19,7 +19,7 @@ import app.packed.application.App;
 import app.packed.application.registry.ApplicationRegistryExtension;
 import app.packed.application.registry.LaunchableApplication;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.OnStart;
+import app.packed.bean.lifecycle.Start;
 import app.packed.runtime.ManagedLifecycle;
 
 /**
@@ -40,7 +40,7 @@ public class AaaaDoo3 extends BaseAssembly {
 
     public record MyBean(LaunchableApplication<ManagedLifecycle> launcher) {
 
-        @OnStart
+        @Start
         public void oni() {
             for (int i = 0; i < 10; i++) {
                 launcher.startNew();

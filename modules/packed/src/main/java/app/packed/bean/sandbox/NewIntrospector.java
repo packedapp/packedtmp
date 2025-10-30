@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.lifecycle.Initialize;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -32,7 +31,6 @@ import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.BeanInitializeOperationHandle;
 
 /**
  *
@@ -54,11 +52,11 @@ public interface NewIntrospector<E extends Extension<E>> {
 
 
     static void testMethodAnnotation(NewIntrospector<BaseExtension> ni) {
-        ni.onAnnotatedMethod(Initialize.class).install(null, i -> {
-            BeanInitializeOperationHandle h = new BeanInitializeOperationHandle(i, null);
-            // hack.bean.operations.addHandle(h);
-            return h;
-        });
+//        ni.onAnnotatedMethod(Initialize.class).install(null, i -> {
+//            BeanInitializeOperationHandle h = new BeanInitializeOperationHandle(i, null);
+//            // hack.bean.operations.addHandle(h);
+//            return h;
+//        });
 
     }
 

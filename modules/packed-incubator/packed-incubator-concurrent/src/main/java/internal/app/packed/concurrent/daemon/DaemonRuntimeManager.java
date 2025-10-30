@@ -17,7 +17,7 @@ package internal.app.packed.concurrent.daemon;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import app.packed.bean.lifecycle.OnStart;
+import app.packed.bean.lifecycle.Start;
 
 // Vi har jo strengt taget ikke brug for denne laengere
 // Med mindre vi vil se en liste af alle daemons
@@ -27,12 +27,12 @@ public final class DaemonRuntimeManager {
     // ConcurrentSet
     final ConcurrentHashMap<Thread, DaemonSideBean> deamons = new ConcurrentHashMap<>();
 
-    @OnStart
+    @Start
     public void onStart() {
         IO.println("On Start");
     }
 
-    @OnStart
+    @Start
     public void onStop() {
         IO.println("Bye");
     }

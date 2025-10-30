@@ -18,7 +18,7 @@ package internal.app.packed.concurrent.daemon;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.bean.lifecycle.OnStart;
+import app.packed.bean.lifecycle.Start;
 import app.packed.bean.sidebean.SidebeanService;
 import app.packed.concurrent.job.DaemonJobContext;
 
@@ -50,7 +50,7 @@ public final class DaemonSideBean implements DaemonJobContext {
     }
 
     ///////////////// Lifecycle
-    @OnStart
+    @Start
     protected void onStart(@SidebeanService ThreadFactory factory, @SidebeanService DaemonOperationInvoker invoker) {
         thread = factory.newThread(new Runnable() {
             @Override

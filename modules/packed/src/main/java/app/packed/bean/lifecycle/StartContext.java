@@ -29,10 +29,10 @@ import internal.app.packed.extension.InternalBeanIntrospector;
 // Okay, den eneste maade vi supportere join er via OnStart
 // De forskellige scheduling operationer kan ikke supportere det
 // Det store problemer er phases
-@AutoInject(requiresContext = OnStartContext.class, introspector = OnStartContext.Introspector.class)
-public interface OnStartContext extends Context<BaseExtension> {
+@AutoInject(requiresContext = StartContext.class, introspector = StartContext.Introspector.class)
+public interface StartContext extends Context<BaseExtension> {
 
-    default OnStart.ForkMode forkMode() {
+    default Start.ForkMode forkMode() {
         throw new UnsupportedOperationException();
     }
 
@@ -66,8 +66,8 @@ public interface OnStartContext extends Context<BaseExtension> {
 
         @Override
         public void onExtensionService(Key<?> key, OnContextService service) {
-            if (service.matchNoQualifiers(OnStartContext.class)) {
-                service.binder().bindContext(OnStartContext.class);
+            if (service.matchNoQualifiers(StartContext.class)) {
+                service.binder().bindContext(StartContext.class);
             }
         }
     }

@@ -13,9 +13,15 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanLocal.Accessor;
-import app.packed.bean.lifecycle.BeanLifecycleMirror;
+import app.packed.bean.lifecycle.FactoryOperationMirror;
+import app.packed.bean.lifecycle.InitializeOperationMirror;
+import app.packed.bean.lifecycle.InjectOperationMirror;
+import app.packed.bean.lifecycle.LifecycleModel;
+import app.packed.bean.lifecycle.StartOperationMirror;
+import app.packed.bean.lifecycle.StopOperationMirror;
 import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
 import app.packed.binding.Key;
+import app.packed.build.Mirror;
 import app.packed.build.action.BuildActionMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
@@ -62,6 +68,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     public ApplicationMirror application() {
         return handle.bean.container.application.mirror();
     }
+
 
     /**
      * {@return the assembly where the bean's container is defined.}
@@ -147,7 +154,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     }
 
     /** {@return a mirror detailing the lifecycle of the bean} */
-    public final BeanLifecycleMirror lifecycle() {
+    public final Lifecycle lifecycle() {
         return new PackedBeanLifecycleMirror(handle.bean);
     }
 
@@ -196,11 +203,6 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
         return handle.owner();
     }
 
-//    /** {@return any proxy the bean may have.} */
-//    public final Optional<BeanProxyMirror> proxy() {
-//        return Optional.empty();
-//    }
-
     /**
      * @param to
      *            the bean to return a relationship mirror to
@@ -213,6 +215,41 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
             throw new IllegalArgumentException("The specified bean is not part of the same deployment as this bean");
         }
         return new Relationship(handle.bean, other);
+    }
+
+//    /** {@return any proxy the bean may have.} */
+//    public final Optional<BeanProxyMirror> proxy() {
+//        return Optional.empty();
+//    }
+
+    /**
+     * This mirror represents the lifecycle of a bean.
+     *
+     * @see app.packed.bean.BeanMirror#lifecycle()
+     */
+    // Maybe an inner class on BeanMirror
+    public sealed interface Lifecycle extends Mirror permits PackedBeanLifecycleMirror {
+
+        /**
+         * If instances of this bean is created at runtime. This method will return the operation that creates the instance.
+         *
+         * @return operation that creates instances of the bean. Or empty if instances are never created
+         */
+        Optional<FactoryOperationMirror> factory();
+
+        /** {@return a list of all initialization operations on the bean, in the order they will be invoked} */
+        Stream<InitializeOperationMirror> initializers();
+
+        Stream<InjectOperationMirror> injects();
+
+        /** {@return the beans lifecycle kind} */
+        LifecycleModel kind();
+
+        /** {@return a list of all start operations on the bean, in the order they will be invoked} */
+        Stream<StartOperationMirror> starters();
+
+        /** {@return a list of all stop operations on the bean, in the order they will be invoked} */
+        Stream<StopOperationMirror> stoppers();
     }
 
     private record BeanDependenciesMirror(BeanSetup bean) implements DependenciesMirror {

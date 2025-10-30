@@ -26,7 +26,6 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanLifetime;
-import app.packed.bean.lifecycle.DependantOrder;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.container.ContainerHandle;
@@ -34,6 +33,7 @@ import app.packed.container.ContainerTemplate;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
+import internal.app.packed.lifecycle.DependantOrder;
 
 /**
  *
