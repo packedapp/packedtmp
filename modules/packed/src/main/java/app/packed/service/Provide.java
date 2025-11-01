@@ -24,13 +24,13 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Modifier;
 
 import app.packed.bean.BeanInstallationException;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanLifetime;
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedField;
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
+import app.packed.bean.BeanTrigger.OnAnnotatedField;
+import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import app.packed.build.BuildException;
 import app.packed.namespace.sandbox.NamespaceMetaAnnotation;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.service.ServiceProvideOperationHandle;
 
 /**

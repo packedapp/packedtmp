@@ -3,13 +3,12 @@ package app.packed.concurrent.other;
 import java.lang.annotation.Annotation;
 
 import app.packed.assembly.Assembly;
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.binding.Key;
+import app.packed.bean.BeanIntrospector;
+import app.packed.concurrent.cron.CronJob;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
 import app.packed.operation.Op;
-import app.packed.operation.Op1;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import extensions.IncubatorExtension;
@@ -136,14 +135,14 @@ final class ScheduledJobBeanIntrospector extends BeanIntrospector<ScheduledJobEx
     @SuppressWarnings("unused")
     @Override
     public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {
-        Cron c = method.annotations().readRequired(Cron.class);
+        CronJob c = method.annotations().readRequired(CronJob.class);
 
         OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
 
         // comment in again
 
 //        InstanceBeanConfiguration<SchedulingBean> bean = extension().lifetimeRoot().base().installIfAbsent(SchedulingBean.class, handle -> {
-////            handle.bindServiceInstance(MethodHandle.class, operation.invoker().asMethodHandle());
+        ////            handle.bindServiceInstance(MethodHandle.class, operation.invoker().asMethodHandle());
 //        });
         // bean, add scheduling +
         // Manytons dur ikke direkte
@@ -151,22 +150,6 @@ final class ScheduledJobBeanIntrospector extends BeanIntrospector<ScheduledJobEx
         //
         // bean.addSchedule
         // parse expresion
-    }
-
-    @Override
-    public void onExtensionService(Key<?> key, OnContextService service) {
-        OnVariableUnwrapped binding = service.binder();
-
-        Class<?> hook = key.rawType();
-        if (hook == SchedulingContext.class) {
-            binding.bindContext(SchedulingContext.class);
-        } else if (hook == SchedulingHistory.class) {
-            binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
-
-            // binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
-        } else {
-            super.onExtensionService(key, service);
-        }
     }
 }
 

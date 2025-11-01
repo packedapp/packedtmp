@@ -21,9 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
+import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
 import internal.app.packed.application.GuestBeanHandle;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
  * Can be used to annotated injectable parameters into a guest bean.

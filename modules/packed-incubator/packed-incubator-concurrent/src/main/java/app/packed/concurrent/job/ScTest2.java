@@ -21,6 +21,8 @@ import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.concurrent.ThreadNamespaceMirror;
+import app.packed.concurrent.daemon.DaemonJob;
+import app.packed.concurrent.daemon.DaemonJobContext;
 
 /**
  *

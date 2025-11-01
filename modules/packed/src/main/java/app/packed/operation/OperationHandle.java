@@ -22,13 +22,12 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.util.function.Function;
 
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.sidebean.SideBeanConfiguration;
-import app.packed.bean.sidebean.SideBeanUseSite;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.bean.sidebean.SidebeanUseSite;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionContext;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.component.ComponentBuildState;
@@ -297,7 +296,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         return new OperationMirror(this);
     }
 
-    public SideBeanUseSite newSidebeanInstance(SideBeanConfiguration<?> configuration) {
+    public SidebeanUseSite newSidebeanInstance(SidebeanConfiguration<?> configuration) {
         return configuration.addToOperation(this);
     }
 
@@ -435,7 +434,7 @@ interface Zandbox {
     // Hmm, kan jo ikke bare tage en tilfaeldig...
     default void invokeFromAncestor(Extension<?> extension) {}
 
-    default void invokeFromAncestor(ExtensionContext context) {}
+ //   default void invokeFromAncestor(ExtensionContext context) {}
 
     // Can be used to optimize invocation...
     // Very advanced though

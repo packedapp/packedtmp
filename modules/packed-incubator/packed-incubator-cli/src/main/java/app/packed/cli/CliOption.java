@@ -17,15 +17,15 @@ package app.packed.cli;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
 import app.packed.namespace.sandbox.NamespaceOperation;
 
 /**
  *
  */
 @NamespaceOperation
-@BeanTrigger.OnAnnotatedVariable(introspector = CliOptionBeanIntrospector.class)
+@OnAnnotatedVariable(introspector = CliOptionBeanIntrospector.class)
 public @interface CliOption {}
 
 final class CliOptionBeanIntrospector extends BeanIntrospector<CliExtension> {

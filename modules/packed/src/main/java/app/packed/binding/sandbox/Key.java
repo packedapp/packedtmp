@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.bean.scanning.BeanIntrospector.OnVariable;
+import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.binding.InvalidKeyException;
 import app.packed.binding.Qualifier;
 import app.packed.binding.Variable;

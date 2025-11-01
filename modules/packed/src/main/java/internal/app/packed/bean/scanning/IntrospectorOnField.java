@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.operation.OperationInstaller;

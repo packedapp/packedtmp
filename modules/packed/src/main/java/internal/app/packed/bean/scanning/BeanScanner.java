@@ -30,7 +30,7 @@ import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.scanning.InaccessibleBeanMemberException;
+import app.packed.bean.InaccessibleBeanMemberException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.operation.OperationSetup;

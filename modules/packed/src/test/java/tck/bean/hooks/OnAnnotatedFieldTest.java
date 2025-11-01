@@ -24,10 +24,10 @@ import java.lang.invoke.VarHandle.AccessMode;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
+import internal.app.packed.extension.ExtensionContext;
 import tck.AppAppTest;
 import tck.HookTestingExtension;
 import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;

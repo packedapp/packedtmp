@@ -4,13 +4,11 @@ import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
 import app.packed.bean.Bean;
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTemplate;
-import app.packed.bean.scanning.BeanSynthesizer;
-import app.packed.bean.sidebean.SideBeanConfiguration;
+import app.packed.bean.sandbox.BeanSynthesizer;
 import app.packed.build.action.BuildActionable;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
@@ -141,11 +139,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         return install(Bean.of(implementation));
     }
 
-    @BuildActionable("bean.install")
-    public <T> SideBeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, Consumer<? super SideBeanConfiguration<T>> installationAction) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Installs a component that will use the specified {@link Op} to instantiate the component instance.
      *
@@ -227,7 +220,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         ha.bindCodeGenerator(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
 
         // Alternative, If we do not use it for anything else
-        newBeanBuilderSelf(DEFAULT_BEAN).installIfAbsent(PackedServiceLocator.class, BeanConfiguration.class, BeanHandle::new, bh -> {
+        newBeanBuilderSelf(DEFAULT_BEAN).installIfAbsent(PackedServiceLocator.class, BeanHandle.class, BeanHandle::new, bh -> {
             bh.exportAs(ServiceLocator.class);
             bh.bindCodeGenerator(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
         });
@@ -330,6 +323,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     // transformAllBeans() <-- includes extension beans... (Must be open)
+    @SuppressWarnings("exports")
     public Runnable transformAllBeans(Consumer<? super BeanSynthesizer> transformer) {
         throw new UnsupportedOperationException();
     }
@@ -344,6 +338,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return A runnable that be can run after which the transformer will no longer be applied when installing beans.
      */
     // Also a version with BeanClass?? , Class<?>... beanClasses (
+    @SuppressWarnings("exports")
     public Runnable transformBeans(Consumer<? super BeanSynthesizer> transformer) {
         throw new UnsupportedOperationException();
     }
@@ -365,6 +360,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // Det maa sgu blive en extra metode
     // BeanInstaller.forceOpBind("XOp", 2, "FooBar");
 
+    @SuppressWarnings("exports")
     public void transformNextBean(Consumer<? super BeanSynthesizer> transformer) {}
 
     static class FromLinks {

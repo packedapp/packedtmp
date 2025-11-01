@@ -21,7 +21,7 @@ import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentRealm;
-import app.packed.container.ContainerPropagator;
+import app.packed.container.sandbox.ContainerPropagator;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import internal.app.packed.extension.ExtensionSetup;
@@ -94,6 +94,7 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
         return propagate(ContainerPropagator.LOCAL);
     }
 
+    @SuppressWarnings("exports")
     public NamespaceConfiguration<E> propagate(ContainerPropagator propagator) {
         // throw new UnsupportedOperationException();
 

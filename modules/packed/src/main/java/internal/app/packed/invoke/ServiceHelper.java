@@ -21,13 +21,13 @@ import java.lang.invoke.MethodType;
 import java.util.Map;
 
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.application.GuestBeanHandle;
+import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 import internal.app.packed.invoke.MethodHandleInvoker.ExportedServiceWrapper;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
-import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;

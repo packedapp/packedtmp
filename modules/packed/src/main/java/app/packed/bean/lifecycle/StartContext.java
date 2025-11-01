@@ -18,12 +18,12 @@ package app.packed.bean.lifecycle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.StructuredTaskScope;
 
-import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /** A context object that can be injected into methods annotated with {@link OnStart}. */
 
@@ -56,6 +56,7 @@ public interface StartContext extends Context<BaseExtension> {
 
     // Will fork and join before transitioning to running. However, it will ignore
     default void forkJoinBeforeRunning(Callable<?> callable) {}
+
     default void forkJoinBeforeRunning(Runnable runnable) {}
 
     // Maaske supportere vi kun 1 mode. Og saa maa man bruge scheduleOnce
@@ -63,23 +64,17 @@ public interface StartContext extends Context<BaseExtension> {
         BEFORE_DEPENDANTS, AFTER_DEPENDANTS, BEFORE_READY;
     }
 
-
 }
 
 final class StartContextBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        if (service.matchNoQualifiers(StartContext.class)) {
-            service.binder().bindContext(StartContext.class);
-        }
+        service.binder().bindContext(StartContext.class);
     }
 }
 
 // Pre-Post join er jo lidt en around interceptor...
-
-
-
 
 interface Sandbox {
 
@@ -96,10 +91,9 @@ interface Sandbox {
     // spawn23Threads->GetFirst->.join()->
     // Manual Join, vs AutoJoin
 
-
     // openTaskScope
 
-    default StructuredTaskScope<?,?> openTaskScope() {
+    default StructuredTaskScope<?, ?> openTaskScope() {
         throw new UnsupportedOperationException();
     }
 

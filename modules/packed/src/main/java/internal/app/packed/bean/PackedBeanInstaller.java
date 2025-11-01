@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.bean.Bean;
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLocal;
@@ -77,30 +76,28 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <H extends BeanHandle<T>, T extends BeanConfiguration> H installIfAbsent(Class<?> beanClass, Class<T> beanConfigurationClass,
-            Function<? super BeanInstaller, H> factory, Consumer<? super BeanHandle<?>> onNew) {
+    public <H extends BeanHandle<?>> H installIfAbsent(Class<?> beanClass, Class<? super H> handleClass,
+            Function<? super BeanInstaller, H> handleFactory, Consumer<? super H> onNew) {
         requireNonNull(beanClass, "beanClass is null");
-
         BeanClassKey e = new BeanClassKey(owner.authority(), beanClass);
         BeanSetup existingBean = installledByExtension.container.beans.beanClasses.get(e);
         if (existingBean != null) {
-            BeanConfiguration existingConfiguration = existingBean.handle().configuration();
+            BeanHandle<?> existingHandle = existingBean.handle();
 
             if (ContainerBeanStore.isMultiInstall(existingBean)) {
                 throw new IllegalArgumentException("MultiInstall Bean");
-            } else if (!beanConfigurationClass.isInstance(existingConfiguration)) {
-                throw new IllegalStateException("A previous bean has been installed that used another configuration type then " + beanConfigurationClass
-                        + " was " + existingConfiguration.getClass());
+            } else if (!handleClass.isInstance(existingHandle)) {
+                throw new IllegalStateException("A previous bean has been installed that used another handle type then " + existingHandle
+                        + " was " + existingHandle.getClass());
             } else {
                 // Probably need to check that we are the same extension that installed it
                 return (H) existingBean.handle();
             }
         }
 
-        BeanHandle<T> handle = BeanSetup.newBean(this, PackedBean.of(beanClass), factory);
+        H handle = BeanSetup.newBean(this, PackedBean.of(beanClass), handleFactory);
         onNew.accept(handle);
-
-        return (H) handle;
+        return handle;
     }
 
     /** {@inheritDoc} */
@@ -130,6 +127,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
         protected ProvidableBeanConfiguration<T> newBeanConfiguration() {
             return new ProvidableBeanConfiguration<>(this);
         }
+
     }
 
     /** {@inheritDoc} */

@@ -17,7 +17,7 @@ package internal.app.packed.bean.scanning;
 
 import java.util.Set;
 
-import app.packed.bean.scanning.BeanIntrospector.OnContextService;
+import app.packed.bean.BeanIntrospector.OnContextService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import internal.app.packed.bean.BeanSetup;

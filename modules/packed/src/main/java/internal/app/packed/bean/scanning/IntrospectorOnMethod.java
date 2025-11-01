@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;

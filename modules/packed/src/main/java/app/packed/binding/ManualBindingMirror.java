@@ -26,5 +26,4 @@ public class ManualBindingMirror extends BindingMirror {
     public ManualBindingMirror(BindingHandle handle) {
         super(handle);
     }
-
 }

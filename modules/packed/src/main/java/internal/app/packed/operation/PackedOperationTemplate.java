@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import app.packed.context.ContextTemplate;
-import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
@@ -20,8 +19,9 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 import internal.app.packed.context.PackedContextTemplate;
+import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 
 /** Implementation of {@link OperationTemplate}. */

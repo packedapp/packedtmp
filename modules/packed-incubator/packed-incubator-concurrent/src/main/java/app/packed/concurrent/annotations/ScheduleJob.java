@@ -15,14 +15,20 @@
  */
 package app.packed.concurrent.annotations;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import app.packed.concurrent.job2.JobExtension;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
+import app.packed.concurrent.JobExtension;
+import app.packed.concurrent.job2.impl.ScheduledOperationHandle;
+import internal.app.packed.concurrent.ScheduleImpl;
+import internal.app.packed.concurrent.ThreadNamespaceHandle;
 
 /**
  * <p>
@@ -31,7 +37,7 @@ import app.packed.concurrent.job2.JobExtension;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@OnAnnotatedMethod(allowInvoke = true, introspector = JobExtension.MyI.class)
+@OnAnnotatedMethod(allowInvoke = true, introspector = JobExtensionBeanIntrospector.class)
 public @interface ScheduleJob {
 
     String startingPoint() default "Running";
@@ -58,4 +64,27 @@ public @interface ScheduleJob {
     String withFixedDelayExpression() default "";
 
     TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
+}
+
+final class JobExtensionBeanIntrospector extends BeanIntrospector<JobExtension> {
+
+    @Override
+    public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod on) {
+        if (hook instanceof ScheduleJob schedule) {
+            // Parse the schedule
+            ScheduleImpl s = new ScheduleImpl(Duration.ofMillis(schedule.withFixedDelay()));
+
+            // Find the namespace we are installing the operation into
+            ThreadNamespaceHandle namespace = null;// main();
+
+            // Install the operation
+            ScheduledOperationHandle h = on.newOperation(ScheduledOperationHandle.SCHEDULING_OPERATION_TEMPLATE).install(namespace,
+                    ScheduledOperationHandle::new);
+
+            // Configure the handle
+            h.s = s;
+        } else {
+            super.onAnnotatedMethod(hook, on);
+        }
+    }
 }

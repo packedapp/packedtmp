@@ -21,25 +21,24 @@ import app.packed.build.hook.BuildHook;
  * A bean transformer
  */
 // What do we do about beans owned by extensions
-
-// Basically I think it is a lot of BeanPreppers
 public non-sealed abstract class BeanHook extends BuildHook {
 
     /**
-     * Invoked immediately after a new bean is created. But before the configuration is returned to the user.
+     * Invoked immediately after a new bean is created. But before the configuration object is returned to the user.
      *
      * @param configuration
      *            the configuration of the new bean
      */
     public void onNew(BeanConfiguration configuration) {}
 
-    // Argh besvaerligt at (at hvad?)
     public void onNew(@SuppressWarnings("exports") TransformerChain tc, BeanConfiguration bean) {}
 
     // Could add preSynthesize and postSynthsize if we want to support
-    // Maybe just transform?
+    // Maybe just transform? Sometimes it is just replace
+    // Like FooService with FooMockService
     public Bean<?> transform(Bean<?> bean) {
-        //bean.synthesize(c->c.)
+        //return Bean.of(FooMockService.class)
+        // bean.synthesize(c->c.)
         return bean;
     }
 

@@ -48,4 +48,26 @@ public enum InternalBeanLifecycleKind {
         this.runState = runState;
         this.ordering=ordering;
     }
+
+    /**
+    *
+    * @see OnInitialize
+    * @see OnStart
+    * @see OnStop
+    */
+   // BeanLifecycleOrder
+   // DependencyOrder <---
+   // In app.packed.lifetime/lifecycle?
+
+   //PreOrder, PostOrder | OperationDependencyORder->DependencyOrder (Or just Ordering)
+
+   // remove this, and just have boolean naturalOrder
+   public enum DependantOrder {
+
+       /** The operation will be executed before any other operation on beans that have this bean as a dependency. */
+       RUN_BEFORE_DEPENDANTS,
+
+       /** The operation will be executed after any dependencies. */
+       RUN_AFTER_DEPENDANTS;
+   }
 }

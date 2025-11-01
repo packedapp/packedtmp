@@ -15,12 +15,12 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHook;
 import app.packed.bean.BeanInstaller;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.lifecycle.LifecycleModel;
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.build.hook.BuildHook;
 import app.packed.component.ComponentKind;
@@ -36,6 +36,7 @@ import internal.app.packed.binding.BindingProvider.FromCodeGeneratedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
 import internal.app.packed.binding.BindingProvider.FromOperationResult;
+import internal.app.packed.binding.BindingProvider.FromSidebeanLifetimeArena;
 import internal.app.packed.binding.SuppliedBindingKind;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
@@ -167,6 +168,8 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
             return new FromConstant(bean.beanSource.getClass(), bean.beanSource);
         } else if (beanKind == BeanLifetime.SINGLETON) { // we've already checked if instance
             return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, bean.beanClass);
+        } else if (beanKind == BeanLifetime.SIDEBEAN) {
+            return new FromSidebeanLifetimeArena(bean.beanClass);
         } else if (beanKind == BeanLifetime.UNMANAGED) {
             return new FromOperationResult(operations.first());
         } else {
@@ -322,6 +325,8 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 
         installer.checkNotUsed();
 
+        // TODO Apply preBean Hooks
+        
         // Create the internal bean
         BeanSetup newBean = new BeanSetup(installer, bean);
 

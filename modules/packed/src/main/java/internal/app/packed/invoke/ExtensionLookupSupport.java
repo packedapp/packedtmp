@@ -24,7 +24,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 import app.packed.Framework;
-import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.InternalExtensionException;

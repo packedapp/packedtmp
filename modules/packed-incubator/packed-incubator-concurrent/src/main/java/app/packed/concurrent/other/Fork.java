@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.concurrent.job2.JobExtension;
+import app.packed.concurrent.JobExtension;
 import sandbox.extension.sandbox.DependantOperator;
 
 /**

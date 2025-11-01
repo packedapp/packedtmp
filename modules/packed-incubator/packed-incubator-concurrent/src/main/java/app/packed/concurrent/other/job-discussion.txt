@@ -1,1 +1,0 @@
-# Handling of shutdown on a job.. Policy

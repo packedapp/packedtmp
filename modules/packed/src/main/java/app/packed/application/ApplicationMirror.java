@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
+import app.packed.bean.BeanTrigger.AutoInjectInheritable;
 import app.packed.binding.Key;
 import app.packed.build.BuildGoal;
 import app.packed.build.Mirror;
@@ -28,7 +28,7 @@ import app.packed.util.TreeView;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.PackedTreeView;
 
@@ -277,7 +277,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     public <E extends ExtensionMirror<?>> void useIfPresent(Class<E> type, Consumer<? super E> action) {
         throw new UnsupportedOperationException();
     }
-
 }
 
 final class ApplicationMirrorIntrospector extends BaseExtensionBeanIntrospector {

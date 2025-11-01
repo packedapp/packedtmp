@@ -20,7 +20,7 @@ import java.util.List;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.BeanIntrospector;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.Main;

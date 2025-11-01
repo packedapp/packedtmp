@@ -22,8 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import app.packed.namespace.sandbox.NamespaceOperation;
 
 /**

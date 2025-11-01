@@ -21,7 +21,7 @@ import app.packed.extension.ExtensionHandle;
 /**
  *
  */
-public class ApplicationRepositoryExtension extends Extension<ApplicationRepositoryExtension>{
+public class ApplicationRepositoryExtension extends Extension<ApplicationRepositoryExtension> {
 
     protected ApplicationRepositoryExtension(ExtensionHandle<ApplicationRepositoryExtension> handle) {
         super(handle);

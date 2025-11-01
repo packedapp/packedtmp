@@ -16,7 +16,7 @@
 package internal.app.packed.concurrent;
 
 import app.packed.bean.lifecycle.Start;
-import app.packed.extension.ExtensionContext;
+import internal.app.packed.extension.ExtensionContext;
 
 // Runtime
 public class SchedulingTaskManager {

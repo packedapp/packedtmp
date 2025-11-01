@@ -15,6 +15,7 @@
  */
 package app.packed.concurrent.job;
 
+import app.packed.concurrent.JobConfiguration;
 import app.packed.operation.OperationHandle;
 
 /**

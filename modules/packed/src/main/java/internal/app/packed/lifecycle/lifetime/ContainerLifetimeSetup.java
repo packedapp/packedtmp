@@ -22,12 +22,12 @@ import java.util.Set;
 
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.CompositeLifetimeMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.AbstractInitializingOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;

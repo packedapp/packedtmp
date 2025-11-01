@@ -18,7 +18,7 @@ package internal.app.packed.bean.scanning;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Type;
 
-import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;

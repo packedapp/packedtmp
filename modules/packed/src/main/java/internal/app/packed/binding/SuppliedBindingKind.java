@@ -19,6 +19,7 @@ package internal.app.packed.binding;
  *
  */
 public enum SuppliedBindingKind {
+
     /** Generated doing codegen (possible lazy) */
     CODEGEN,
 

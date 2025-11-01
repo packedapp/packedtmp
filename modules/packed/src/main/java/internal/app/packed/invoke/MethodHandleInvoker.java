@@ -23,12 +23,12 @@ import java.lang.invoke.MethodType;
 
 import app.packed.build.hook.BuildHook;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.InternalExtensionException;
+import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
-import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

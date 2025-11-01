@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.build.BuildCodeSourceMirror;
 import app.packed.build.hook.BuildHookMirror;
@@ -20,7 +20,7 @@ import app.packed.util.TreeView.Node;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.util.PackedTreeView;
 
 /**

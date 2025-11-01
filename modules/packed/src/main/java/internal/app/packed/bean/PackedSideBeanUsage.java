@@ -16,7 +16,7 @@
 package internal.app.packed.bean;
 
 import app.packed.bean.BeanHandle;
-import app.packed.bean.sidebean.SideBeanUseSite;
+import app.packed.bean.sidebean.SidebeanUseSite;
 import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreEntry;
@@ -26,14 +26,14 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public sealed abstract class PackedSideBeanUsage implements SideBeanUseSite, LifetimeStoreEntry {
-    public final SideBeanHandle handle;
+public sealed abstract class PackedSideBeanUsage implements SidebeanUseSite, LifetimeStoreEntry {
+    public final SideBeanHandle<?> handle;
     public final BeanSetup bean;
 
     @Nullable
     public LifetimeStoreIndex lifetimeStoreIndex;
 
-    PackedSideBeanUsage(SideBeanHandle handle, BeanSetup bean) {
+    PackedSideBeanUsage(SideBeanHandle<?> handle, BeanSetup bean) {
         this.handle = handle;
         this.bean = bean;
     }
@@ -44,7 +44,7 @@ public sealed abstract class PackedSideBeanUsage implements SideBeanUseSite, Lif
          * @param handle
          * @param bean
          */
-        public OfBean(SideBeanHandle sideBeanHandle, BeanHandle<?> handle) {
+        public OfBean(SideBeanHandle<?> sideBeanHandle, BeanHandle<?> handle) {
             super(sideBeanHandle, BeanSetup.crack(handle));
         }
     }
@@ -55,7 +55,7 @@ public sealed abstract class PackedSideBeanUsage implements SideBeanUseSite, Lif
          * @param handle
          * @param bean
          */
-        public OfOperation(SideBeanHandle sideBeanHandle, OperationHandle<?> handle) {
+        public OfOperation(SideBeanHandle<?> sideBeanHandle, OperationHandle<?> handle) {
             super(sideBeanHandle, OperationSetup.crack(handle).bean);
         }
     }

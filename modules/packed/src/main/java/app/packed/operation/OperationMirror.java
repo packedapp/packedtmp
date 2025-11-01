@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
+import app.packed.bean.BeanTrigger.AutoInjectInheritable;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.component.ComponentMirror;
@@ -47,7 +47,7 @@ import app.packed.service.mirrorold.ServiceProviderIsThisUsefulMirror;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.context.ContextSetup;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.util.AbstractDelegatingStream;
 import sandbox.operation.mirror.DependenciesMirror;
 

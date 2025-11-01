@@ -15,15 +15,15 @@
  */
 package internal.app.packed.service;
 
-import app.packed.bean.scanning.BeanIntrospector.OnField;
-import app.packed.bean.scanning.BeanIntrospector.OnMethod;
+import app.packed.bean.BeanIntrospector.OnField;
+import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.binding.Key;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import app.packed.service.Provide;
 import internal.app.packed.binding.BindingProvider.FromOperationResult;
-import internal.app.packed.extension.BaseExtensionOperationHandle;
+import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 
 /**
  *
@@ -38,6 +38,7 @@ public class ServiceProvideOperationHandle extends BaseExtensionOperationHandle<
     public ServiceProvideOperationHandle(OperationInstaller installer) {
         super(installer);
     }
+
     public static void install(Provide annotation, OnMethod method) {
         // Checks that it is a valid key
         Key<?> key = method.toKey();

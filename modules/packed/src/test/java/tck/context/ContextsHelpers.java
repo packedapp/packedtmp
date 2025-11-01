@@ -15,7 +15,7 @@
  */
 package tck.context;
 
-import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationHandle;

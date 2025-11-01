@@ -17,13 +17,13 @@ package app.packed.bean.lifecycle;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.StopInfo;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
  * A context that can be injected into methods annotated with {@link Stop}.
@@ -52,8 +52,6 @@ final class StopContextBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        if (service.matchNoQualifiers(StopContext.class)) {
-            service.binder().bindContext(StopContext.class);
-        }
+        service.binder().bindContext(StopContext.class);
     }
 }

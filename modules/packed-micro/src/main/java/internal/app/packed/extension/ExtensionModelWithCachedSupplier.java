@@ -25,7 +25,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.util.function.Supplier;
 
-import app.packed.bean.scanning.InaccessibleBeanMemberException;
+import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
 import internal.app.packed.util.StringFormatter;
 

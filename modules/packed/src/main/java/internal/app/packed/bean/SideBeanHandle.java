@@ -16,17 +16,20 @@
 package internal.app.packed.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.sidebean.SideBeanConfiguration;
+import app.packed.bean.BeanMirror;
+import app.packed.bean.sidebean.SidebeanConfiguration;
+import internal.app.packed.lifecycle.LifecycleOperationHandle;
 
 /**
  *
  */
-public class SideBeanHandle extends BeanHandle<SideBeanConfiguration<?>> {
+public class SideBeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
-    public ArrayList<PackedSideBeanUsage> usage = new ArrayList<>();
+    private ArrayList<PackedSideBeanUsage> usage = new ArrayList<>();
 
     /**
      * @param installer
@@ -35,4 +38,25 @@ public class SideBeanHandle extends BeanHandle<SideBeanConfiguration<?>> {
         super(installer);
     }
 
+    @Override
+    protected SidebeanConfiguration<T> newBeanConfiguration() {
+        return new SidebeanConfiguration<>(this);
+    }
+
+    @Override
+    protected BeanMirror newBeanMirror() {
+        return super.newBeanMirror();
+    }
+
+    public void addUsage(PackedSideBeanUsage susage) {
+        usage.add(susage);
+
+        for (List<LifecycleOperationHandle> l : susage.bean.operations.lifecycleHandles.values()) {
+            for (LifecycleOperationHandle loh : l) {
+                System.out.println("XX");
+                susage.bean.operations.addLifecycleHandle(loh);
+            }
+        }
+
+    }
 }

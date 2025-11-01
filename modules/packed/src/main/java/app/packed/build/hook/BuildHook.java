@@ -52,7 +52,7 @@ import app.packed.operation.OperationBuildHook;
  * store state across multiple invocations of the same hook.
  */
 // Abstract class because we do not want a build hook to do multiple things
-
+// I think ditch build in the name of subclasses
 public sealed abstract class BuildHook implements BuildCodeSource
         permits ApplicationBuildHook, AssemblyBuildHook, ContainerBuildHook, BeanHook, OperationBuildHook {
 

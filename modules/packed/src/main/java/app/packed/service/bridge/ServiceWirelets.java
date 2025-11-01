@@ -23,7 +23,7 @@ import app.packed.binding.Key;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.BaseExtensionWirelet;
+import internal.app.packed.extension.base.BaseExtensionWirelet;
 
 /**
  * Various wirelets that applies to {@link BaseExtension}.

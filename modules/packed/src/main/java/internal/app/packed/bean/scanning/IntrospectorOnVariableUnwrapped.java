@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import app.packed.bean.scanning.BeanIntrospector.OnVariable;
-import app.packed.bean.scanning.BeanIntrospector.OnVariableUnwrapped;
+import app.packed.bean.BeanIntrospector.OnVariable;
+import app.packed.bean.BeanIntrospector.OnVariableUnwrapped;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;

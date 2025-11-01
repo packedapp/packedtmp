@@ -17,8 +17,8 @@ package app.packed.lifetime;
 
 import java.util.List;
 
-import app.packed.bean.scanning.BeanTrigger.AutoInject;
-import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
+import app.packed.bean.BeanTrigger.AutoInject;
+import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 
 /**
  *

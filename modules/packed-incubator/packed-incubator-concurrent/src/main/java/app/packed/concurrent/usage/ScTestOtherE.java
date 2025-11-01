@@ -20,16 +20,13 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.time.Duration;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import app.packed.concurrent.ScheduledOperationConfiguration;
-import app.packed.concurrent.SchedulingContext;
-import app.packed.concurrent.job2.JobExtension;
-import app.packed.concurrent.job2.JobExtensionPoint;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
+import app.packed.concurrent.JobExtension;
+import app.packed.concurrent.oldscheduling.SchedulingContext;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
@@ -71,10 +68,10 @@ public class ScTestOtherE extends BaseAssembly {
 
             @Override
             public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod on) {
-                ScheduleOther so = (ScheduleOther) hook;
-                ScheduledOperationConfiguration soc = extensionHandle().use(JobExtensionPoint.class).schedule(null /* on.newDelegatingOperation() */);
-                Duration p = Duration.parse(so.value());
-                soc.setMillies((int) p.toMillis());
+//                ScheduleOther so = (ScheduleOther) hook;
+//                ScheduledOperationConfiguration soc = extensionHandle().use(JobExtensionPoint.class).schedule(null /* on.newDelegatingOperation() */);
+//                Duration p = Duration.parse(so.value());
+//                soc.setMillies((int) p.toMillis());
             }
         }
     }

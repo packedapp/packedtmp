@@ -95,6 +95,7 @@ public class OperationMirrorTest extends AppAppTest {
                 super(handle);
             }
         }
+
         class MyHandle extends OperationHandle<OperationConfiguration>{
 
             /**

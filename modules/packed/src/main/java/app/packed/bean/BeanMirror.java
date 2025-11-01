@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -13,13 +14,13 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanLocal.Accessor;
+import app.packed.bean.BeanTrigger.AutoInjectInheritable;
 import app.packed.bean.lifecycle.FactoryOperationMirror;
 import app.packed.bean.lifecycle.InitializeOperationMirror;
 import app.packed.bean.lifecycle.InjectOperationMirror;
 import app.packed.bean.lifecycle.LifecycleModel;
 import app.packed.bean.lifecycle.StartOperationMirror;
 import app.packed.bean.lifecycle.StopOperationMirror;
-import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
 import app.packed.binding.Key;
 import app.packed.build.Mirror;
 import app.packed.build.action.BuildActionMirror;
@@ -39,8 +40,13 @@ import app.packed.service.mirrorold.ServiceProviderIsThisUsefulMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.context.ContextSetup;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
-import internal.app.packed.lifecycle.PackedBeanLifecycleMirror;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
+import internal.app.packed.lifecycle.LifecycleOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.InitializeOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.InjectOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
 import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.DependenciesMirror;
 
@@ -155,7 +161,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
 
     /** {@return a mirror detailing the lifecycle of the bean} */
     public final Lifecycle lifecycle() {
-        return new PackedBeanLifecycleMirror(handle.bean);
+        return new Lifecycle();
     }
 
     /**
@@ -228,28 +234,50 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
      * @see app.packed.bean.BeanMirror#lifecycle()
      */
     // Maybe an inner class on BeanMirror
-    public sealed interface Lifecycle extends Mirror permits PackedBeanLifecycleMirror {
+    public final class Lifecycle implements Mirror {
+
+        private Lifecycle() {}
 
         /**
          * If instances of this bean is created at runtime. This method will return the operation that creates the instance.
          *
          * @return operation that creates instances of the bean. Or empty if instances are never created
          */
-        Optional<FactoryOperationMirror> factory();
+        public Optional<FactoryOperationMirror> factory() {
+            Stream<FactoryOperationMirror> stream = stream(FactoryOperationHandle.class);
+            return stream.findAny();
+        }
 
         /** {@return a list of all initialization operations on the bean, in the order they will be invoked} */
-        Stream<InitializeOperationMirror> initializers();
-
-        Stream<InjectOperationMirror> injects();
+        public Stream<InitializeOperationMirror> initializers() {
+            return stream(InitializeOperationHandle.class);
+        }
 
         /** {@return the beans lifecycle kind} */
-        LifecycleModel kind();
+        public LifecycleModel kind() {
+            return handle.bean.beanLifecycleKind;
+        }
 
         /** {@return a list of all start operations on the bean, in the order they will be invoked} */
-        Stream<StartOperationMirror> starters();
+        public Stream<StartOperationMirror> starters() {
+            return stream(StartOperationHandle.class);
+        }
 
         /** {@return a list of all stop operations on the bean, in the order they will be invoked} */
-        Stream<StopOperationMirror> stoppers();
+        public Stream<StopOperationMirror> stoppers() {
+            return stream(StopOperationHandle.class);
+        }
+
+        /** {@inheritDoc} */
+        public Stream<InjectOperationMirror> injects() {
+            return stream(InjectOperationHandle.class);
+        }
+
+        @SuppressWarnings("unchecked")
+        private <M, H extends LifecycleOperationHandle> Stream<M> stream(Class<H> type) {
+            return (Stream<M>) handle.bean.operations.lifecycleHandles.values().stream().flatMap(List::stream).filter(h -> type.isInstance(h))
+                    .map(h -> h.mirror());
+        }
     }
 
     private record BeanDependenciesMirror(BeanSetup bean) implements DependenciesMirror {

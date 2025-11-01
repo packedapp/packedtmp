@@ -18,7 +18,7 @@ package internal.app.packed.lifecycle.lifetime.entrypoint;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.util.Nullable;
-import internal.app.packed.lifecycle.lifetime.runtime.ContainerRunner;
+import internal.app.packed.lifecycle.runtime.ContainerRunner;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

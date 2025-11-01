@@ -17,8 +17,8 @@ package app.packed.binding;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bean.scanning.BeanTrigger.AutoInject;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import app.packed.bean.BeanTrigger.AutoInject;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
  * A provider of instances.

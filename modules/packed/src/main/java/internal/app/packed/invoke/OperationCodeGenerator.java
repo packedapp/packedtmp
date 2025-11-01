@@ -23,6 +23,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
+import app.packed.bean.BeanLifetime;
 import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingProvider;
@@ -110,16 +111,29 @@ public final class OperationCodeGenerator {
         operation.bean.container.application.checkInCodegenPhase();
         ArrayList<Integer> permuters = new ArrayList<>();
 
+        MethodType invocationType = operation.template.invocationType();
+
         MethodHandle mh = operation.target.methodHandle();
-        // debug("%s: %s -> %s", operation.bean.path(), initial.type(), operation.template.invocationType());
+
+        boolean isSideBean = operation.bean.beanKind == BeanLifetime.SIDEBEAN;
+        if (isSideBean) {
+            invocationType = invocationType.insertParameterTypes(0, operation.bean.bean.beanClass);
+        }
+      //  debug("%s: %s", mh, invocationType);
 
         // instance fields and methods, needs a bean instance as the first parameter
         boolean requiresBeanInstance = operation.target instanceof MemberOperationTarget mot && !(mot.target instanceof OperationConstructorTarget)
                 && !Modifier.isStatic(mot.target.modifiers());
         if (requiresBeanInstance) {
-            BindingProvider beanInstanceProvider = operation.bean.beanInstanceBindingProvider();
-            mh = provide(mh, beanInstanceProvider, permuters);
+            if (!isSideBean) {
+                BindingProvider beanInstanceProvider = operation.bean.beanInstanceBindingProvider();
+                mh = provide(mh, beanInstanceProvider, permuters, isSideBean);
+            } else {
+                permuters.add(0);
+            }
         }
+
+        System.out.println(mh.type());
 
         for (BindingSetup binding : operation.bindings) {
             if (binding.provider() == null) {
@@ -127,40 +141,40 @@ public final class OperationCodeGenerator {
                 // Should not really be here where we fail, much earlier
                 throw new ProvisionException("Oops");
             }
-            mh = provide(mh, binding.provider(), permuters);
+            mh = provide(mh, binding.provider(), permuters, isSideBean);
         }
 
         int[] result = new int[permuters.size()];
         for (int i = 0; i < permuters.size(); i++) {
             result[i] = permuters.get(i);
         }
-        MethodType mt = operation.template.invocationType();
-
+     //   System.out.println("InvokeAs " + invocationType + "Target " + operation.target.methodHandle().type() + " Perm:" + permuters);
         // Embedded operations normally needs to return a value
         if (operation.embeddedInto != null) {
-            mt = mt.changeReturnType(operation.type.returnRawType());
+            invocationType = invocationType.changeReturnType(operation.type.returnRawType());
         }
 
         try {
-            mh = MethodHandles.permuteArguments(mh, mt, result);
+            mh = MethodHandles.permuteArguments(mh, invocationType, result);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Permuter array " + permuters);
             result[1] = 1;
-            mh = MethodHandles.permuteArguments(mh, mt, result);
+            mh = MethodHandles.permuteArguments(mh, invocationType, result);
 //            throw e;
         }
-        if (mh.type() != mt) {
+        if (mh.type() != invocationType) {
             System.err.println("OperationType " + operation.type.toString());
             System.err.println("Expected " + operation.template.methodType);
             System.err.println("Actual " + mh.type());
             throw new Error();
         }
+
         assert mh.type() == operation.template.invocationType();
         return mh;
     }
 
-    private MethodHandle provide(MethodHandle mh, BindingProvider p, ArrayList<Integer> permuters) {
+    private MethodHandle provide(MethodHandle mh, BindingProvider p, ArrayList<Integer> permuters, boolean isSidebean) {
         if (p instanceof FromConstant c) {
             return MethodHandles.insertArguments(mh, permuters.size(), c.constant());
         } else if (p instanceof FromCodeGeneratedConstant g) {
@@ -168,7 +182,7 @@ public final class OperationCodeGenerator {
             // TODO validate type
             return MethodHandles.insertArguments(mh, permuters.size(), constant);
         } else if (p instanceof FromInvocationArgument c) {
-            permuters.add(c.argumentIndex());
+            permuters.add(c.argumentIndex() + (isSidebean ? 1 : 0));
             return mh;
         } else if (p instanceof FromOperationResult fo) {
             MethodHandle methodHandle = fo.operation().codeHolder.generateMethodHandle();
@@ -179,25 +193,14 @@ public final class OperationCodeGenerator {
             }
             return mh;
         } else if (p instanceof FromLifetimeArena fla) {
-            permuters.add(0); // ExtensionContext is always 0
+            int index = isSidebean ? 1 : 0;
+            permuters.add(index); // ExtensionContext is always 0
             MethodHandle tmp = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, fla.index().index);
             assert tmp.type().returnType() == Object.class;
-//            IO.println("FLA ->" + fla.type());
-//            IO.println(mh.type());
-//
-//            // (LifetimePool)Object -> (LifetimePool)type
-//            IO.println("TMP Before " +tmp.type());
-
             // We need to convert it from Object to the expected type
             tmp = tmp.asType(tmp.type().changeReturnType(fla.type()));
 
-            // if (tmp.type().parameterCount() == 1) {
-//                if (tmp.type().returnType() == Hmm2.RAR.class) {
-//                 //  tmp = tmp.asType(tmp.type().changeReturnType(Hmm2.AR.class));
-//                }
-//            }
-
-            return MethodHandles.collectArguments(mh, 0, tmp);
+            return MethodHandles.collectArguments(mh, index, tmp);
         } else {
             IO.println(p.getClass());
             if (ClassUtil.isInnerOrLocal(operation.bean.bean.beanClass)) {

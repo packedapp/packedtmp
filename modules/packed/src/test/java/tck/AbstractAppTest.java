@@ -47,7 +47,7 @@ import internal.app.packed.application.PackedApplicationTemplate.ApplicationInst
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 import tck.AbstractAppTest.InternalTestState.State1Setup;
 import tck.AbstractAppTest.InternalTestState.State2Building;
 import tck.AbstractAppTest.InternalTestState.State3Build;

@@ -15,12 +15,21 @@
  */
 package app.packed.concurrent.other;
 
-import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.binding.Key;
+import app.packed.operation.Op1;
 
 /**
  *
  */
-@AutoInject(introspector = ScheduledJobBeanIntrospector.class, requiresContext = SchedulingContext.class)
-public interface SchedulingHistory {
+@AutoInject(introspector = SchedulingHistoryBeanIntrospector.class, requiresContext = SchedulingContext.class)
+public interface SchedulingHistory {}
 
+final class SchedulingHistoryBeanIntrospector extends BeanIntrospector<ScheduledJobExtension> {
+
+    @Override
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        service.binder().bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
+    }
 }

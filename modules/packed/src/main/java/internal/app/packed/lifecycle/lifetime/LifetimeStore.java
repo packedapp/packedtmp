@@ -17,8 +17,8 @@ package internal.app.packed.lifecycle.lifetime;
 
 import java.util.ArrayList;
 
-import app.packed.extension.ExtensionContext;
-import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.extension.ExtensionContext;
+import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 
 /**
  *

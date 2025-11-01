@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal.Accessor;
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.build.BuildLocal;
 import internal.app.packed.bean.PackedBeanBuildLocal;
 

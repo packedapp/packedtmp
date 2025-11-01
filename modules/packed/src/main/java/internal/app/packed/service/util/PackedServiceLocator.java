@@ -23,9 +23,9 @@ import java.util.Set;
 
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import app.packed.extension.ExtensionContext;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceSelection;
+import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.invoke.MethodHandleInvoker.ExportedServiceWrapper;
 
 /** Default implementation of ServiceLocator. */

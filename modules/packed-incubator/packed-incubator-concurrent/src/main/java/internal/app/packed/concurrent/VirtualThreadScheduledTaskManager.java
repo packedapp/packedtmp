@@ -25,8 +25,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import app.packed.concurrent.SchedulingContext;
-import app.packed.extension.ExtensionContext;
+import app.packed.concurrent.oldscheduling.SchedulingContext;
+import internal.app.packed.extension.ExtensionContext;
 
 /**
  *

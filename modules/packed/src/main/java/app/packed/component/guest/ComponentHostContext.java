@@ -17,11 +17,11 @@ package app.packed.component.guest;
 
 import java.util.Set;
 
-import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
+import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 
 /**
  * I think this probably mostly be informational. You would only need it for debugging.

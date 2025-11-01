@@ -1,6 +1,6 @@
 package tck;
 
-import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.util.AnnotationList;
 

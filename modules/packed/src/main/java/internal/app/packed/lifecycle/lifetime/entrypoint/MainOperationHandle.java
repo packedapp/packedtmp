@@ -15,15 +15,16 @@
  */
 package internal.app.packed.lifecycle.lifetime.entrypoint;
 
+import app.packed.lifetime.MainOperationConfiguration;
 import app.packed.lifetime.MainOperationMirror;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
-import internal.app.packed.extension.BaseExtensionOperationHandle;
+import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 
 /**
  *
  */
-public class MainOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration> {
+public final class MainOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration> {
 
     /**
      * @param installer
@@ -32,8 +33,15 @@ public class MainOperationHandle extends BaseExtensionOperationHandle<OperationC
         super(installer);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected MainOperationMirror newOperationMirror() {
        return new MainOperationMirror(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected OperationConfiguration newOperationConfiguration() {
+        return new MainOperationConfiguration(this);
     }
 }

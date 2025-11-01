@@ -29,7 +29,7 @@ import app.packed.binding.Key;
 import app.packed.runtime.RunState;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.deployment.FutureApplicationSetup;
-import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 
 /** Various implementations of {@link BaseImage} */
 

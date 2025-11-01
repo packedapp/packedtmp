@@ -24,8 +24,8 @@ import java.util.List;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.service.Provide;

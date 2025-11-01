@@ -15,8 +15,8 @@
  */
 package app.packed.concurrent.job;
 
-import app.packed.bean.scanning.BeanTrigger;
-import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
+import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
+import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 
 /**
  *
@@ -26,7 +26,7 @@ import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
 // Dette betyder ogsaa at main skal vaere void
 
 // JobHandler, Execute, ExecuteJob, idk
-@BeanTrigger.OnAnnotatedMethod(introspector = BaseExtensionHostGuestBeanintrospector.class, allowInvoke = true)
+@OnAnnotatedMethod(introspector = BaseExtensionHostGuestBeanintrospector.class, allowInvoke = true)
 public @interface ComputableJob {
 
     // Maybe it is just always OperationName... or Bean+OperationName

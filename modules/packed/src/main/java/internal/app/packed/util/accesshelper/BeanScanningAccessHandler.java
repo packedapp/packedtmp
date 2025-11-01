@@ -17,7 +17,7 @@ package internal.app.packed.util.accesshelper;
 
 import java.util.function.Supplier;
 
-import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.BeanIntrospector;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 

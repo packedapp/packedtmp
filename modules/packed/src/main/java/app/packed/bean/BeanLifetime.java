@@ -59,6 +59,8 @@ public enum BeanLifetime {
     // Can they be removed? Obviously if we have more than one
     FOREIGN,
 
+    SIDEBEAN,
+
     MANANGED,
 
     /**

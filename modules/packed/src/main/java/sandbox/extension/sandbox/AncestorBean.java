@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
-import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
+import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
+import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 
 // I virkeligheden er det jo en slags multi-return fra en operation...
 // Som bliver brugt til at populere en bean...

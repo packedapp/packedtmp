@@ -19,8 +19,8 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
-import app.packed.bean.scanning.ForeignBeanTrigger;
-import app.packed.bean.scanning.ForeignBeanTrigger.CustomBindingHook;
+import app.packed.bean.sandbox.ForeignBeanTrigger;
+import app.packed.bean.sandbox.ForeignBeanTrigger.CustomBindingHook;
 
 /**
  *

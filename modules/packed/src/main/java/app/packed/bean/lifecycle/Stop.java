@@ -23,9 +23,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
 
 /**

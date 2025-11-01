@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean.scanning;
 
-import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.BeanIntrospector;
 import app.packed.extension.Extension;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.accesshelper.BeanScanningAccessHandler;

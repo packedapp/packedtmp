@@ -27,7 +27,7 @@ import app.packed.application.containerdynamic.ManagedInstance;
 import app.packed.application.registry.LaunchableApplication;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
-import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 
 public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, ?>> implements ApplicationLauncherOrFuture<I, H>, LaunchableApplication<I> {
 

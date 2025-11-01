@@ -16,7 +16,7 @@
 package sandbox.service;
 
 import app.packed.bean.BeanHandle;
-import app.packed.bean.scanning.BeanIntrospector.OnVariable;
+import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.binding.Key;
 import app.packed.operation.OperationHandle;
 

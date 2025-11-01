@@ -44,7 +44,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     private MainServiceNamespaceHandle sm;
 
     /** The extension realm this extension is a part of. */
-    public final ExtensionTree tree;
+    public final ExtensionInstanceTree tree;
 
     /**
      * Creates a new extension setup.
@@ -57,10 +57,10 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
      *            the type of extension this setup class represents
      */
     private ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType) {
-        this(parent, container, extensionType, parent == null ? new ExtensionTree(container.application, extensionType) : parent.tree);
+        this(parent, container, extensionType, parent == null ? new ExtensionInstanceTree(container.application, extensionType) : parent.tree);
     }
 
-    private ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType, ExtensionTree tree) {
+    private ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType, ExtensionInstanceTree tree) {
         super(parent, tree.servicesToResolve);
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);

@@ -51,11 +51,8 @@ public sealed interface BeanInstaller permits PackedBeanInstaller {
     // These things can never be multi
     // AbsentInstalledComponent(boolean wasInstalled)
 
-    // Er det udelukken BeanClass vi reagere paa her???
-
-    //Shouldn't it be Consumer<? super H> onNew
-    <H extends BeanHandle<T>, T extends BeanConfiguration> H installIfAbsent(Class<?> beanClass, Class<T> beanConfigurationClass,
-            Function<? super BeanInstaller, H> configurationCreator, Consumer<? super BeanHandle<?>> onNew);
+    <H extends BeanHandle<?>> H installIfAbsent(Class<?> beanClass, Class<? super H> handleClass, Function<? super BeanInstaller, H> handleFactory,
+            Consumer<? super H> onNew);
 
     BeanInstaller namePrefix(String prefix);
 

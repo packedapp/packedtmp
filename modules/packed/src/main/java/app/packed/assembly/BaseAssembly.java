@@ -15,7 +15,7 @@
  */
 package app.packed.assembly;
 
-import app.packed.bean.scanning.ForeignBeanTrigger.JavaBaseSupport;
+import app.packed.bean.sandbox.ForeignBeanTrigger.JavaBaseSupport;
 
 /**
  *

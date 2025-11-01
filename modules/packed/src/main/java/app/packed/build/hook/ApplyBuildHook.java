@@ -42,3 +42,4 @@ public @interface ApplyBuildHook {
 // @BeanDefinition(name="asdasd")
 
 // Grunden til jeg ikke taenker er den rigtige løsning er at jeg tænker vi kommer til at lave meta (hook) annoteringer...
+// Maaske kunne vi have en MetaHook annotering

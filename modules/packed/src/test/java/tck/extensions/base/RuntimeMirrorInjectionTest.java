@@ -29,7 +29,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.scanning.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.BindingKind;
 import app.packed.binding.BindingMirror;
 import app.packed.component.ComponentRealm;
@@ -37,7 +37,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.extension.BaseExtensionHostGuestBeanintrospector;
+import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 import tck.ServiceLocatorAppTest;
 
 /**

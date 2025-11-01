@@ -70,6 +70,15 @@ public sealed interface BindingProvider {
         }
     }
 
+    public record FromSidebeanLifetimeArena(Class<?> type) implements BindingProvider {
+
+        /** {@inheritDoc} */
+        @Override
+        public BindingProviderKind kind() {
+            return BindingProviderKind.OPERATION_RESULT;
+        }
+    }
+
     /** Provides an instance from the result of an operation. */
     public record FromOperationResult(OperationSetup operation) implements BindingProvider {
 

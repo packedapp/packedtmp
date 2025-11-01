@@ -17,10 +17,10 @@ package app.packed.concurrent.usage;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.concurrent.ScheduledOperationMirror;
-import app.packed.concurrent.SchedulingContext;
-import app.packed.concurrent.job.DaemonJob;
-import app.packed.concurrent.job.DaemonJobContext;
+import app.packed.concurrent.daemon.DaemonJob;
+import app.packed.concurrent.daemon.DaemonJobContext;
+import app.packed.concurrent.oldscheduling.ScheduledOperationMirror;
+import app.packed.concurrent.oldscheduling.SchedulingContext;
 
 /**
  *

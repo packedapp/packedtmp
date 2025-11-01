@@ -19,11 +19,11 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.bean.BeanLifetime;
-import app.packed.extension.ExtensionContext;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifecycle.LifecycleOperationHandle;
+import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
-import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifecycle.LifecycleOperationHandle;
+import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -53,7 +53,10 @@ public class BeanLifecycleSupport {
                 });
             }
         } else {
-            throw new UnsupportedOperationException();
+            os.bean.container.application.addCodegenAction(() -> {
+                MethodHandle mh = os.codeHolder.generate(false);
+                handle.methodHandle = mh; // (ExtensionContext)Object
+            });
         }
     }
 

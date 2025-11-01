@@ -21,9 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import internal.app.packed.extension.BaseExtensionBeanIntrospector;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;
 
 /**
@@ -93,11 +93,14 @@ public @interface Start {
      * @return the bean order
      * @implNote current the framework will invoked them in the order returned by {@link Class#getMethods()}
      */
-    byte beanOperationOrder() default 0; // use -1 and, alternative before, after (String operation name)
+    byte beanInvocationOrder() default 0; // use -1 and, alternative before, after (String operation name)
 
-    // Fork with default settings, otherwise use Fork
     /**
+     *
      * {@return whether or not a new thread should be forked when running the annotated method.}
+     * <p>
+     * {@link StartContext} provides a number of special ways to fork.
+     * @see StartContext#fork(java.util.concurrent.Callable)
      */
     boolean fork() default false;
 

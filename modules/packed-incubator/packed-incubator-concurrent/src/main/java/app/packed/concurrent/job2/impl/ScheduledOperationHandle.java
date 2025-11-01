@@ -16,9 +16,9 @@
 package app.packed.concurrent.job2.impl;
 
 import app.packed.bean.lifecycle.Initialize;
-import app.packed.concurrent.ScheduledOperationConfiguration;
-import app.packed.concurrent.ScheduledOperationMirror;
-import app.packed.concurrent.SchedulingContext;
+import app.packed.concurrent.oldscheduling.ScheduledOperationConfiguration;
+import app.packed.concurrent.oldscheduling.ScheduledOperationMirror;
+import app.packed.concurrent.oldscheduling.SchedulingContext;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;

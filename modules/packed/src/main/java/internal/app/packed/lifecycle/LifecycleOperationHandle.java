@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.lifecycle.FactoryOperationConfiguration;
 import app.packed.bean.lifecycle.FactoryOperationMirror;
 import app.packed.bean.lifecycle.Initialize;
@@ -35,16 +36,15 @@ import app.packed.bean.lifecycle.Stop;
 import app.packed.bean.lifecycle.StopContext;
 import app.packed.bean.lifecycle.StopOperationConfiguration;
 import app.packed.bean.lifecycle.StopOperationMirror;
-import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.extension.BaseExtensionOperationHandle;
+import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 import internal.app.packed.invoke.BeanLifecycleSupport;
 
-/** A handle for the a lifecycle operation on bean. */
+/** An operation handle for lifecycle operation on a bean. */
 public abstract sealed class LifecycleOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration> implements Comparable<LifecycleOperationHandle> {
 
     public final InternalBeanLifecycleKind lifecycleKind;

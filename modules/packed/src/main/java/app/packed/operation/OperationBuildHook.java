@@ -28,26 +28,6 @@ public non-sealed abstract class OperationBuildHook extends BuildHook {
 
     }
 
-    // Hmm, not super nice name because it is actually just last chance
-    public void onConfigured(OperationConfiguration configuration) {}
-
-    /**
-     * Invoked immediately after a new container is created.
-     * <p>
-     * In general it is bad practice to install new beans from this method. As the assembly itself might want to set up some
-     * stuff
-     *
-     * <p>
-     * For assemblies with multiple processors. The processors for this method will be invoked in the reverse order of
-     * {@link #beforeBuild(ContainerConfiguration)}.
-     * <p>
-     * If {@link Assembly#build()} throws an exception this method will not be invoked.
-     *
-     * @param configuration
-     *            the configuration of the container
-     */
-    public void onNew(OperationConfiguration configuration) {}
-
     /**
      * When an application has finished building this method is called to check.
      * <p>
@@ -63,4 +43,15 @@ public non-sealed abstract class OperationBuildHook extends BuildHook {
      */
     // I don't like verify, because we might just write some debug info
     public void onBuildSuccess(OperationMirror mirror) {} // onBuild
+
+    // Hmm, not super nice name because it is actually just last chance
+    public void onConfigured(OperationConfiguration configuration) {}
+
+    /**
+     * Invoked immediately after a new operation is created. But before the configuration object is returned to the user.
+     *
+     * @param configuration
+     *            the configuration of the new operation
+     */
+    public void onNew(OperationConfiguration configuration) {}
 }

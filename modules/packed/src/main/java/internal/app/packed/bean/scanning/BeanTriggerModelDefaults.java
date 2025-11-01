@@ -17,12 +17,12 @@ package internal.app.packed.bean.scanning;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.AutoInject;
-import app.packed.bean.scanning.BeanTrigger.AutoInjectInheritable;
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedField;
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoInjectInheritable;
+import app.packed.bean.BeanTrigger.OnAnnotatedField;
+import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
+import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
 

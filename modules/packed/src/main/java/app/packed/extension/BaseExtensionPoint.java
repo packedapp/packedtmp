@@ -4,12 +4,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.bean.Bean;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTemplate;
+import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.build.action.BuildActionable;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
@@ -19,6 +20,7 @@ import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
+import internal.app.packed.bean.SideBeanHandle;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.ExtensionSetup;
@@ -46,13 +48,15 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public static final OldContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedLifecycle.class.getSimpleName()).provideExpose(ManagedLifecycle.class)
             .build();
 
+    private final static BeanTemplate SIDEBEAN = BeanTemplate.of(BeanLifetime.SIDEBEAN);
+
     /** Creates a new base extension point. */
     BaseExtensionPoint(ExtensionPointHandle usesite) {
         super(usesite);
     }
 
     public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = newBean(CONTAINER, handle()).install(bean, ProvidableBeanHandle::new);
+        ProvidableBeanHandle<T> h = newBean(CONTAINER, handle()).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -87,13 +91,10 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @implNote the implementation may use to return different bean configuration instances for subsequent invocations.
      *           Even for action and the returned bean
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> ProvidableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ProvidableBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        Function<BeanInstaller, ProvidableBeanHandle<?>> f = ProvidableBeanHandle::new;
-        BeanHandle<?> handle = newBean(CONTAINER, handle()).installIfAbsent(clazz, ProvidableBeanConfiguration.class, (Function) f,
-                h -> action.accept((ProvidableBeanConfiguration<T>) h.configuration()));
-        return (ProvidableBeanConfiguration<T>) handle.configuration();
+        return newBean(CONTAINER, handle())
+                .installIfAbsent(clazz, ProvidableBeanHandle.class, ProvidableBeanHandle<T>::new, h -> action.accept(h.configuration())).configuration();
     }
 
     /**
@@ -107,6 +108,14 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public <T> ProvidableBeanConfiguration<T> installInstance(T instance) {
         return install(Bean.ofInstance(instance));
+    }
+
+    @BuildActionable("bean.install")
+    public <T> SidebeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, Consumer<? super SidebeanConfiguration<T>> installationAction) {
+        BeanInstaller installer = newBean(SIDEBEAN, handle());
+        SideBeanHandle<T> h = installer.installIfAbsent(implementation, SideBeanHandle.class, SideBeanHandle<T>::new, _ -> {});
+
+        return h.configuration();
     }
 
     /**
@@ -177,4 +186,3 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        ExtensionSetup s = contextUse().usedBy();
 //        return new PackedContainerBuilder(ContainerTemplate.IN_PARENT, s.extensionType, s.container.application, s.container);
 //    }
-

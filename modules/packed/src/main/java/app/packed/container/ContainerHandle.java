@@ -15,14 +15,12 @@
  */
 package app.packed.container;
 
-import java.util.List;
 import java.util.Set;
 
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationHandle;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.util.accesshelper.AccessHelper;
@@ -125,17 +123,17 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
         return container.isExtensionUsed(extensionType);
     }
 
-    /**
-     * This method returns a list of the container's lifetime operations.
-     * <p>
-     * If the lifetime of the container container cannot be explicitly controlled, for example, if it is a child container.
-     * The returned list is empty.
-     *
-     * @return a list of lifetime operations of this container.
-     */
-    public final List<OperationHandle<?>> lifetimeOperations() {
-        return container.lifetimeOperations();
-    }
+//    /**
+//     * This method returns a list of the container's lifetime operations.
+//     * <p>
+//     * If the lifetime of the container container cannot be explicitly controlled, for example, if it is a child container.
+//     * The returned list is empty.
+//     *
+//     * @return a list of lifetime operations of this container.
+//     */
+//    public final List<OperationHandle<?>> lifetimeOperations() {
+//        return container.lifetimeOperations();
+//    }
 
     /**
      * {@inheritDoc}

@@ -22,9 +22,9 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanLifetime;
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanIntrospector.OnVariable;
+import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.component.guest.ComponentHostConfiguration;
@@ -41,7 +41,7 @@ import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 import internal.app.packed.invoke.ServiceHelper;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
-import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 
 /**
  *
