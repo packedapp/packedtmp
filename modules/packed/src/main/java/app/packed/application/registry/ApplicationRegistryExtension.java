@@ -28,6 +28,7 @@ import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.repository.AbstractApplicationRepository;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.invoke.ServiceHelper;
 
 /**
  * This extension allows creation of applications that consists of other (child) applications. These other applications,
@@ -69,7 +70,9 @@ public final class ApplicationRegistryExtension extends FrameworkExtension<Appli
                 .install(Bean.of(AbstractApplicationRepository.repositoryClassFor(template)), i -> new ApplicationRegistryBeanHandle<>(i, t));
 
         // Create a new installer for the guest bean
-        h.repository.mh = GuestBeanHandle.install(t, ExtensionSetup.crack(this), ExtensionSetup.crack(this).container.assembly);
+
+        GuestBeanHandle gbh = GuestBeanHandle.install(t, ExtensionSetup.crack(this), ExtensionSetup.crack(this).container.assembly);
+        h.repository.mh = ServiceHelper.newApplicationBaseLauncher(gbh);
         return h.configuration();
     }
 

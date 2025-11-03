@@ -23,8 +23,8 @@ import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanIntrospector.OnVariable;
+import app.packed.bean.BeanLifetime;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.component.guest.ComponentHostConfiguration;
@@ -38,8 +38,6 @@ import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.context.PackedComponentHostContext;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
-import internal.app.packed.invoke.ServiceHelper;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
 import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 
@@ -95,7 +93,7 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         return DEFAULT;
     }
 
-    public static ApplicationBaseLauncher install(PackedApplicationTemplate<?> template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
+    public static GuestBeanHandle install(PackedApplicationTemplate<?> template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
         // Create a new installer for the bean
         BeanInstaller installer = APPLICATION_GUEST_BEAN_TEMPLATE.newInstaller(installingExtension, owner);
 
@@ -103,7 +101,6 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         Bean<?> bean = template.op() == null ? Bean.of(template.guestClass()) : Bean.of((Op<?>) template.op());
 
         GuestBeanHandle h = installer.install(bean, GuestBeanHandle::new);
-
-        return ServiceHelper.newApplicationBaseLauncher(h);
+        return h;
     }
 }

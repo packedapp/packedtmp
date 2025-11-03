@@ -119,6 +119,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     /** The bean's template. */
     public final PackedBeanTemplate template;
 
+    // TODO tror vi har noget a.la. BOS -> SidebeanStore
     public final ArrayList<PackedSideBeanUsage> sideBeans = new ArrayList<>();
 
     /** Create a new bean. */
@@ -326,7 +327,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         installer.checkNotUsed();
 
         // TODO Apply preBean Hooks
-        
+
         // Create the internal bean
         BeanSetup newBean = new BeanSetup(installer, bean);
 

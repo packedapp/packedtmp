@@ -29,6 +29,7 @@ import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
+import internal.app.packed.invoke.ServiceHelper;
 import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link BootstrapApp}. */
@@ -127,15 +128,16 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         // Creates a new application installer and installs the specified assembly and build the final bootstrap application
         BOOTSTRAP_APP_TEMPLATE.newInstaller(null, BuildGoal.LAUNCH, null).install(assembly);
 
+        ApplicationBaseLauncher launcher = ApplicationBaseLauncher.EMPTY;
+        if (assembly.gbh != null) {
+            launcher = ServiceHelper.newApplicationBaseLauncher(assembly.gbh);
+        }
         // Returned the bootstrap implementation (represented by a construcing method handle) wrapped in this class.
-        return new PackedBootstrapApp<A, H>(template, assembly.launcher);
+        return new PackedBootstrapApp<A, H>(template, launcher);
     }
 
     /** The assembly responsible for building the bootstrap app. */
     private static class BootstrapAppAssembly extends BuildableAssembly {
-
-        /** The method handle to launch the application, the empty MH is used if A is Void.class */
-        private ApplicationBaseLauncher launcher = ApplicationBaseLauncher.EMPTY;
 
         /** The application template for the application type we need to bootstrap. */
         private final PackedApplicationTemplate<?> template;
@@ -143,6 +145,8 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         private BootstrapAppAssembly(PackedApplicationTemplate<?> template) {
             this.template = requireNonNull(template);
         }
+
+        private GuestBeanHandle gbh;
 
         /** {@inheritDoc} */
         @Override
@@ -155,7 +159,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
             ExtensionSetup es = ExtensionSetup.crack(assembly().containerRoot().use(BaseExtension.class));
 
             // Install the guest bean (code is shared with App-On-App) in the bootstrap application
-            this.launcher = GuestBeanHandle.install(template, es, es.container.assembly);
+            gbh = GuestBeanHandle.install(template, es, es.container.assembly);
         }
     }
 
