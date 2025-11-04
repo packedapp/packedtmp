@@ -15,10 +15,13 @@
  */
 package internal.app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.bean.BeanHandle;
 import app.packed.bean.sidebean.SidebeanUseSite;
 import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
+import internal.app.packed.invoke.OperationCodeGenerator;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreEntry;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 import internal.app.packed.operation.OperationSetup;
@@ -27,7 +30,11 @@ import internal.app.packed.operation.OperationSetup;
  *
  */
 public sealed abstract class PackedSideBeanUsage implements SidebeanUseSite, LifetimeStoreEntry {
+
+    /** The sidebean. */
     public final SideBeanHandle<?> handle;
+
+    /** The bean this sidebean is applied to. */
     public final BeanSetup bean;
 
     @Nullable
@@ -58,5 +65,18 @@ public sealed abstract class PackedSideBeanUsage implements SidebeanUseSite, Lif
         public OfOperation(SideBeanHandle<?> sideBeanHandle, OperationHandle<?> handle) {
             super(sideBeanHandle, OperationSetup.crack(handle).bean);
         }
+    }
+
+    public static class UsageSidebeanOperation {
+        public final PackedSideBeanUsage beanUsage;
+        public final OperationSetup operation;
+
+        UsageSidebeanOperation(PackedSideBeanUsage beanUsage, OperationSetup operation) {
+            this.beanUsage = requireNonNull(beanUsage);
+            this.operation = requireNonNull(operation);
+        }
+
+        public OperationCodeGenerator code = new OperationCodeGenerator(this);
+
     }
 }

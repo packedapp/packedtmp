@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import app.packed.bean.BeanLifetime;
 import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
+import internal.app.packed.bean.PackedSideBeanUsage.UsageSidebeanOperation;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromCodeGeneratedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
@@ -34,7 +35,7 @@ import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
 import internal.app.packed.binding.BindingProvider.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.invoke.MethodHandleUtil.LazyResolvable;
-import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 import internal.app.packed.util.types.ClassUtil;
@@ -55,8 +56,20 @@ public final class OperationCodeGenerator {
     /** The operation we are generating a method handle for */
     private final OperationSetup operation;
 
+    private final UsageSidebeanOperation sidebean;
+
     public OperationCodeGenerator(OperationSetup operation) {
         this.operation = requireNonNull(operation);
+        this.sidebean = null;
+    }
+
+    /**
+     * @param packedSideBeanUsage
+     */
+    public OperationCodeGenerator(UsageSidebeanOperation packedSideBeanUsage) {
+        this.operation = packedSideBeanUsage.operation;
+        this.sidebean = packedSideBeanUsage;
+
     }
 
     MethodHandle generate(boolean lazy) {
@@ -112,23 +125,23 @@ public final class OperationCodeGenerator {
         ArrayList<Integer> permuters = new ArrayList<>();
 
         MethodType invocationType = operation.template.invocationType();
+        // debug("%s: %s", mh, invocationType);
 
         MethodHandle mh = operation.target.methodHandle();
 
-        boolean isSideBean = operation.bean.beanKind == BeanLifetime.SIDEBEAN;
-        if (isSideBean) {
-            invocationType = invocationType.insertParameterTypes(0, operation.bean.bean.beanClass);
-        }
-      //  debug("%s: %s", mh, invocationType);
 
-        // instance fields and methods, needs a bean instance as the first parameter
-        boolean requiresBeanInstance = operation.target instanceof MemberOperationTarget mot && !(mot.target instanceof OperationConstructorTarget)
+        boolean requiresBeanInstance = !(operation.handle() instanceof FactoryOperationHandle) && operation.target instanceof MemberOperationTarget mot
                 && !Modifier.isStatic(mot.target.modifiers());
+
+        boolean isSideBean = operation.bean.beanKind == BeanLifetime.SIDEBEAN;
+        // If we are a sidebean, the generated method handle, must take a bean instance as the first parameter.
+        // This parameter will be bound later at the sidebean usage site, typically to lifetime array reader of the bean
         if (requiresBeanInstance) {
             if (!isSideBean) {
                 BindingProvider beanInstanceProvider = operation.bean.beanInstanceBindingProvider();
                 mh = provide(mh, beanInstanceProvider, permuters, isSideBean);
             } else {
+                invocationType = invocationType.insertParameterTypes(0, operation.bean.bean.beanClass);
                 permuters.add(0);
             }
         }
@@ -148,7 +161,8 @@ public final class OperationCodeGenerator {
         for (int i = 0; i < permuters.size(); i++) {
             result[i] = permuters.get(i);
         }
-     //   System.out.println("InvokeAs " + invocationType + "Target " + operation.target.methodHandle().type() + " Perm:" + permuters);
+        // System.out.println("InvokeAs " + invocationType + "Target " + operation.target.methodHandle().type() + " Perm:" +
+        // permuters);
         // Embedded operations normally needs to return a value
         if (operation.embeddedInto != null) {
             invocationType = invocationType.changeReturnType(operation.type.returnRawType());

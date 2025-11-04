@@ -55,7 +55,6 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
             usage.lifetimeStoreIndex = usage.bean.container.lifetime.store.add(usage);
         }
         sideBeanHandle.addUsage(usage);
-
         return usage;
     }
 
