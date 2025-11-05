@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
-import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
+import internal.app.packed.lifecycle.PackedBeanLifecycleKind;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.LazyNamer;
@@ -41,7 +41,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
      * the list will be sorted in the order of execution. With {@link app.packed.lifetime.RunState#INITIALIZING} lifecycle
      * operations first, and {@link app.packed.lifetime.RunState#STOPPING} lifecycle operations at the end.
      */
-    public final EnumMap<InternalBeanLifecycleKind, List<LifecycleOperationHandle>> lifecycleHandles = new EnumMap<>(InternalBeanLifecycleKind.class);
+    public final EnumMap<PackedBeanLifecycleKind, List<LifecycleOperationHandle>> lifecycleHandles = new EnumMap<>(PackedBeanLifecycleKind.class);
 
     /**
      * The unique name of every operation.

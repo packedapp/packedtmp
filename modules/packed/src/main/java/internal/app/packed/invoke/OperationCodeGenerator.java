@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import app.packed.bean.BeanLifetime;
 import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.PackedSideBeanUsage.UsageSidebeanOperation;
+import internal.app.packed.bean.AppliedSideBean.UsageSidebeanOperation;
+import internal.app.packed.bean.SideBeanHandle;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromCodeGeneratedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
@@ -129,18 +130,20 @@ public final class OperationCodeGenerator {
 
         MethodHandle mh = operation.target.methodHandle();
 
+        boolean isFactory = operation.handle() instanceof FactoryOperationHandle;
+        boolean isFactoryStore = isFactory && operation.bean.beanKind == BeanLifetime.SINGLETON;
 
-        boolean requiresBeanInstance = !(operation.handle() instanceof FactoryOperationHandle) && operation.target instanceof MemberOperationTarget mot
-                && !Modifier.isStatic(mot.target.modifiers());
+        boolean requiresBeanInstance = !isFactory && operation.target instanceof MemberOperationTarget mot && !Modifier.isStatic(mot.target.modifiers());
 
-        boolean isSideBean = operation.bean.beanKind == BeanLifetime.SIDEBEAN;
-        // If we are a sidebean, the generated method handle, must take a bean instance as the first parameter.
-        // This parameter will be bound later at the sidebean usage site, typically to lifetime array reader of the bean
+        boolean isSideBean = operation.bean.handle() instanceof SideBeanHandle;
+
         if (requiresBeanInstance) {
             if (!isSideBean) {
                 BindingProvider beanInstanceProvider = operation.bean.beanInstanceBindingProvider();
                 mh = provide(mh, beanInstanceProvider, permuters, isSideBean);
             } else {
+                // If we are a sidebean, the generated method handle, must take a bean instance as the first parameter.
+                // This parameter will be bound later at the sidebean usage site, typically to lifetime array reader of the bean
                 invocationType = invocationType.insertParameterTypes(0, operation.bean.bean.beanClass);
                 permuters.add(0);
             }
@@ -185,6 +188,13 @@ public final class OperationCodeGenerator {
         }
 
         assert mh.type() == operation.template.invocationType();
+
+        // We store container beans in a generic object array.
+        // Don't care about the exact type of the bean.
+        if (isFactoryStore) {
+            mh = mh.asType(mh.type().changeReturnType(Object.class));
+            mh = BeanLifecycleSupport.MH_INVOKE_INITIALIZER.bindTo(operation.bean).bindTo(mh);
+        }
         return mh;
     }
 

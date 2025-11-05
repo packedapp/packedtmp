@@ -47,14 +47,14 @@ import internal.app.packed.invoke.BeanLifecycleSupport;
 /** An operation handle for lifecycle operation on a bean. */
 public abstract sealed class LifecycleOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration> implements Comparable<LifecycleOperationHandle> {
 
-    public final InternalBeanLifecycleKind lifecycleKind;
+    public final PackedBeanLifecycleKind lifecycleKind;
 
     public MethodHandle methodHandle;
 
     /**
      * @param installer
      */
-    private LifecycleOperationHandle(OperationInstaller installer, InternalBeanLifecycleKind lifecycleKind) {
+    private LifecycleOperationHandle(OperationInstaller installer, PackedBeanLifecycleKind lifecycleKind) {
         super(installer);
         this.lifecycleKind = requireNonNull(lifecycleKind);
     }
@@ -76,7 +76,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
     }
 
     public static abstract non-sealed class AbstractInitializingOperationHandle extends LifecycleOperationHandle {
-        private AbstractInitializingOperationHandle(OperationInstaller installer, InternalBeanLifecycleKind lifecycleKind) {
+        private AbstractInitializingOperationHandle(OperationInstaller installer, PackedBeanLifecycleKind lifecycleKind) {
             super(installer, lifecycleKind);
         }
     }
@@ -85,7 +85,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
     public static final class FactoryOperationHandle extends AbstractInitializingOperationHandle {
 
         public FactoryOperationHandle(OperationInstaller installer) {
-            super(installer, InternalBeanLifecycleKind.FACTORY);
+            super(installer, PackedBeanLifecycleKind.FACTORY);
         }
 
         @Override
@@ -108,7 +108,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         /**
          * @param installer
          */
-        private InitializeOperationHandle(OperationInstaller installer, InternalBeanLifecycleKind lifecycleKind) {
+        private InitializeOperationHandle(OperationInstaller installer, PackedBeanLifecycleKind lifecycleKind) {
             super(installer, lifecycleKind);
         }
 
@@ -123,8 +123,8 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         }
 
         public static void install(Initialize annotation, BeanIntrospector.OnMethod method) {
-            InternalBeanLifecycleKind lk = annotation.naturalOrder() ? InternalBeanLifecycleKind.INITIALIZE_PRE_ORDER
-                    : InternalBeanLifecycleKind.INITIALIZE_POST_ORDER;
+            PackedBeanLifecycleKind lk = annotation.naturalOrder() ? PackedBeanLifecycleKind.INITIALIZE_PRE_ORDER
+                    : PackedBeanLifecycleKind.INITIALIZE_POST_ORDER;
             method.newOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InitializeOperationHandle(i, lk));
         }
     }
@@ -135,7 +135,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         private static final OperationTemplate OPERATION_LIFECYCLE_TEMPLATE = OperationTemplate.builder().returnIgnore().build();
 
         private InjectOperationHandle(OperationInstaller installer) {
-            super(installer, InternalBeanLifecycleKind.INJECT);
+            super(installer, PackedBeanLifecycleKind.INJECT);
         }
 
         @Override
@@ -180,8 +180,8 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         public boolean stopOnFailure;
 
         private StartOperationHandle(OperationInstaller installer, Start annotation) {
-            InternalBeanLifecycleKind lifecycleKind = annotation.naturalOrder() ? InternalBeanLifecycleKind.START_PRE_ORDER
-                    : InternalBeanLifecycleKind.START_POST_ORDER;
+            PackedBeanLifecycleKind lifecycleKind = annotation.naturalOrder() ? PackedBeanLifecycleKind.START_PRE_ORDER
+                    : PackedBeanLifecycleKind.START_POST_ORDER;
             this.stopOnFailure = annotation.stopOnFailure();
             this.interruptOnStopping = annotation.interruptOnStopping();
             this.fork = annotation.fork();
@@ -216,7 +216,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         public boolean fork;
 
         private StopOperationHandle(OperationInstaller installer, Stop annotation) {
-            super(installer, annotation.naturalOrder() ? InternalBeanLifecycleKind.STOP_POST_ORDER : InternalBeanLifecycleKind.STOP_PRE_ORDER);
+            super(installer, annotation.naturalOrder() ? PackedBeanLifecycleKind.STOP_POST_ORDER : PackedBeanLifecycleKind.STOP_PRE_ORDER);
             this.fork = annotation.fork();
         }
 

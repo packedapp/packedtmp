@@ -29,7 +29,7 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public sealed abstract class PackedSideBeanUsage implements SidebeanUseSite, LifetimeStoreEntry {
+public sealed abstract class AppliedSideBean implements SidebeanUseSite, LifetimeStoreEntry {
 
     /** The sidebean. */
     public final SideBeanHandle<?> handle;
@@ -40,12 +40,12 @@ public sealed abstract class PackedSideBeanUsage implements SidebeanUseSite, Lif
     @Nullable
     public LifetimeStoreIndex lifetimeStoreIndex;
 
-    PackedSideBeanUsage(SideBeanHandle<?> handle, BeanSetup bean) {
+    AppliedSideBean(SideBeanHandle<?> handle, BeanSetup bean) {
         this.handle = handle;
         this.bean = bean;
     }
 
-    public static final class OfBean extends PackedSideBeanUsage {
+    public static final class OfBean extends AppliedSideBean {
 
         /**
          * @param handle
@@ -56,7 +56,7 @@ public sealed abstract class PackedSideBeanUsage implements SidebeanUseSite, Lif
         }
     }
 
-    public static final class OfOperation extends PackedSideBeanUsage {
+    public static final class OfOperation extends AppliedSideBean {
 
         /**
          * @param handle
@@ -68,10 +68,10 @@ public sealed abstract class PackedSideBeanUsage implements SidebeanUseSite, Lif
     }
 
     public static class UsageSidebeanOperation {
-        public final PackedSideBeanUsage beanUsage;
+        public final AppliedSideBean beanUsage;
         public final OperationSetup operation;
 
-        UsageSidebeanOperation(PackedSideBeanUsage beanUsage, OperationSetup operation) {
+        UsageSidebeanOperation(AppliedSideBean beanUsage, OperationSetup operation) {
             this.beanUsage = requireNonNull(beanUsage);
             this.operation = requireNonNull(operation);
         }

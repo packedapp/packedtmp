@@ -29,7 +29,7 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle;
  */
 public class SideBeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
-    private ArrayList<PackedSideBeanUsage> usage = new ArrayList<>();
+    private ArrayList<AppliedSideBean> usage = new ArrayList<>();
 
     /**
      * @param installer
@@ -48,7 +48,7 @@ public class SideBeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
         return super.newBeanMirror();
     }
 
-    public void addUsage(PackedSideBeanUsage susage) {
+    public void addUsage(AppliedSideBean susage) {
         usage.add(susage);
 
         for (List<LifecycleOperationHandle> l : susage.bean.operations.lifecycleHandles.values()) {

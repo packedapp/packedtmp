@@ -18,10 +18,9 @@ package internal.app.packed.invoke;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bean.BeanLifetime;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.AppliedSideBean;
 import internal.app.packed.extension.ExtensionContext;
-import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
@@ -33,31 +32,17 @@ import internal.app.packed.util.ThrowableUtil;
 public class BeanLifecycleSupport {
 
     /** A MethodHandle for invoking invokeInitializer. */
-    private static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticSelf(MethodHandles.lookup(), "invokeFactory", void.class,
-            BeanSetup.class, MethodHandle.class, ExtensionContext.class);
+    static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticSelf(MethodHandles.lookup(), "invokeFactory", void.class, BeanSetup.class,
+            MethodHandle.class, ExtensionContext.class);
+
+    static final MethodHandle MH_INVOKE_INITIALIZER_SIDEBEAN = LookupUtil.findStaticSelf(MethodHandles.lookup(), "invokeFactory", void.class,
+            AppliedSideBean.class, MethodHandle.class, ExtensionContext.class);
 
     public static void addLifecycleHandle(LifecycleOperationHandle handle) {
         OperationSetup os = OperationSetup.crack(handle);
 
-        if (handle.lifecycleKind == InternalBeanLifecycleKind.FACTORY) {
-            if (os.bean.beanKind == BeanLifetime.SINGLETON) {
-                os.bean.container.application.addCodegenAction(() -> {
-                    MethodHandle mh = os.codeHolder.generate(false);
-
-                    // We store container beans in a generic object array.
-                    // Don't care about the exact type of the bean.
-                    mh = mh.asType(mh.type().changeReturnType(Object.class));
-
-                    mh = MH_INVOKE_INITIALIZER.bindTo(os.bean).bindTo(mh);
-                    handle.methodHandle = mh; // (ExtensionContext)Object
-                });
-            }
-        } else {
-            os.bean.container.application.addCodegenAction(() -> {
-                MethodHandle mh = os.codeHolder.generate(false);
-                handle.methodHandle = mh; // (ExtensionContext)Object
-            });
-        }
+        // (ExtensionContext)Object
+        os.bean.container.application.addCodegenAction(() -> handle.methodHandle = os.codeHolder.generate(false));
     }
 
     static void invokeFactory(BeanSetup bean, MethodHandle mh, ExtensionContext ec) {
@@ -79,5 +64,26 @@ public class BeanLifecycleSupport {
         // Store the new bean in the context
         PackedExtensionContext pec = (PackedExtensionContext) ec;
         pec.storeObject(bean.lifetimeStoreIndex, instance);
+    }
+
+    static void invokeFactory(AppliedSideBean sidebeanUsage, MethodHandle mh, ExtensionContext ec) {
+        Object instance;
+        try {
+            instance = mh.invokeExact(ec);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        if (instance == null) {
+            throw new NullPointerException(" returned null");
+        }
+
+        // Move to higher up
+        if (!sidebeanUsage.bean.bean.beanClass.isInstance(instance)) {
+            throw new Error("Expected " + sidebeanUsage.bean.bean.beanClass + ", was " + instance.getClass());
+        }
+
+        // Store the new bean in the context
+        PackedExtensionContext pec = (PackedExtensionContext) ec;
+        pec.storeObject(sidebeanUsage.lifetimeStoreIndex, instance);
     }
 }

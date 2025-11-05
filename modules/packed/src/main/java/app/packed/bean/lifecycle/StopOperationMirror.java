@@ -16,7 +16,7 @@
 package app.packed.bean.lifecycle;
 
 import app.packed.operation.OperationHandle;
-import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
+import internal.app.packed.lifecycle.PackedBeanLifecycleKind;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
 
 /**
@@ -33,6 +33,6 @@ public final class StopOperationMirror extends LifecycleOperationMirror {
     }
 
     public boolean isNaturalOrder() {
-        return handle.lifecycleKind == InternalBeanLifecycleKind.STOP_POST_ORDER;
+        return handle.lifecycleKind == PackedBeanLifecycleKind.STOP_POST_ORDER;
     }
 }

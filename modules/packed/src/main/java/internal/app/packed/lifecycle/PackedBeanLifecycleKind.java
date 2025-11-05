@@ -20,7 +20,7 @@ import app.packed.runtime.RunState;
 /**
  * The various internal bean lifecycle
  */
-public enum InternalBeanLifecycleKind {
+public enum PackedBeanLifecycleKind {
 
     /** Creates a bean instance. */
     FACTORY(RunState.INITIALIZING, DependantOrder.RUN_BEFORE_DEPENDANTS),
@@ -44,7 +44,7 @@ public enum InternalBeanLifecycleKind {
 
     public final DependantOrder ordering;
 
-    InternalBeanLifecycleKind(RunState runState, DependantOrder ordering) {
+    PackedBeanLifecycleKind(RunState runState, DependantOrder ordering) {
         this.runState = runState;
         this.ordering=ordering;
     }
