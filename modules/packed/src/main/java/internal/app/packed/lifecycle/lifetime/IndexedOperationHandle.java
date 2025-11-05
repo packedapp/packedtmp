@@ -15,12 +15,10 @@
  */
 package internal.app.packed.lifecycle.lifetime;
 
-import app.packed.operation.OperationHandle;
-
 /**
  *
  */
-public record IndexedOperationHandle<T extends OperationHandle<?>>(T operationHandle, LifetimeStoreIndex index) {
+public record IndexedOperationHandle<T>(T operationHandle, LifetimeStoreIndex index) {
 
 
 }

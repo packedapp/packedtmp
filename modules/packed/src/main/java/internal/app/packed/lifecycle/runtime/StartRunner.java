@@ -26,6 +26,7 @@ import app.packed.bean.lifecycle.StartContext;
 import internal.app.packed.ValueBased;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;
+import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -33,7 +34,7 @@ import internal.app.packed.util.ThrowableUtil;
  */
 final class StartRunner {
 
-    final Collection<StartOperationHandle> operations;
+    final Collection<SomeLifecycleOperationHandle<StartOperationHandle>> operations;
 
     /** The runtime component node we are building. */
     final ExtensionContext pool;
@@ -46,13 +47,13 @@ final class StartRunner {
     /** A structured task scope, used if forking. */
     StructuredTaskScope<Void, Void> ts;
 
-    StartRunner(Collection<StartOperationHandle> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
+    StartRunner(Collection<SomeLifecycleOperationHandle<StartOperationHandle>> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
         this.operations = methodHandles;
         this.pool = pool;
         this.runtime = runtime;
     }
 
-    private void run(StartOperationHandle h) {
+    private void run(SomeLifecycleOperationHandle<StartOperationHandle> h) {
         try {
             h.methodHandle.invokeExact(pool, (StartContext) new PackedOnStartContext(this));
         } catch (Throwable e) {
@@ -63,8 +64,8 @@ final class StartRunner {
     void start() {
         long start = System.currentTimeMillis();
 
-        for (StartOperationHandle h : operations) {
-            if (h.fork) {
+        for (SomeLifecycleOperationHandle<StartOperationHandle> h : operations) {
+            if (h.handle.fork) {
                 ts().fork(() -> run(h));
             } else {
                 run(h);

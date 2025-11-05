@@ -24,6 +24,7 @@ import app.packed.bean.lifecycle.StopContext;
 import app.packed.runtime.StopInfo;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
+import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -35,7 +36,7 @@ final class StopRunner {
 
     final Thread startingThread = Thread.currentThread();
 
-    final Collection<StopOperationHandle> operations;
+    final Collection<SomeLifecycleOperationHandle<StopOperationHandle>> operations;
 
     /** The runtime component node we are building. */
     final ExtensionContext pool;
@@ -48,12 +49,12 @@ final class StopRunner {
 
     @SuppressWarnings("unchecked")
     StopRunner(Collection<?> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
-        this.operations = (Collection<StopOperationHandle>) methodHandles;
+        this.operations = (Collection<SomeLifecycleOperationHandle<StopOperationHandle>>) methodHandles;
         this.pool = pool;
         this.runtime = runtime;
     }
 
-    private Void run(StopOperationHandle h) {
+    private Void run(SomeLifecycleOperationHandle<StopOperationHandle> h) {
 
         try {
             h.methodHandle.invokeExact(pool, (StopContext) new StopContext() {
@@ -81,8 +82,8 @@ final class StopRunner {
     //    IO.println("Starting app from " + Thread.currentThread());
         // Run all Startup methods
         // We run in a OnStartContext
-        for (StopOperationHandle h : operations) {
-            if (h.fork) {
+        for (SomeLifecycleOperationHandle<StopOperationHandle> h : operations) {
+            if (h.handle.fork) {
                 ts().fork(() -> run(h));
             } else {
                 run(h);

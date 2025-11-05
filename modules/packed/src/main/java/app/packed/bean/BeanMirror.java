@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -275,8 +274,9 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
 
         @SuppressWarnings("unchecked")
         private <M, H extends LifecycleOperationHandle> Stream<M> stream(Class<H> type) {
-            return (Stream<M>) handle.bean.operations.lifecycleHandles.values().stream().flatMap(List::stream).filter(h -> type.isInstance(h))
-                    .map(h -> h.mirror());
+throw new UnsupportedOperationException();
+            //            return (Stream<M>) handle.bean.operations.lifecycleHandles.values().stream().flatMap(List::stream).filter(h -> type.isInstance(h))
+//                    .map(h -> h.mirror());
         }
     }
 

@@ -15,6 +15,8 @@
  */
 package internal.app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.operation.OperationHandle;
 
 /**
@@ -24,7 +26,19 @@ import app.packed.operation.OperationHandle;
 // Maaske tilfoejer vi bare operationen til primary bean.
 // Nej det kan vi ikke fordi vi ikke nødvendigvis har en vi kan attache til.
 // Fx primary har ikke start, men sidebean har
-public sealed interface SomeOperationHandle<H extends OperationHandle<?>> {
-    record OnPrimary<H extends OperationHandle<?>>(H handle) implements SomeOperationHandle<H> {}
-    record OnSideBean<H extends OperationHandle<?>>(H handle, AppliedSideBean sidebean) implements SomeOperationHandle<H> {}
+public class SomeOperationHandle<H extends OperationHandle<?>> {
+
+    public final H handle;
+
+    private final AppliedSideBean sidebean;
+
+    public SomeOperationHandle(H operationHandle) {
+        this.handle = requireNonNull(operationHandle);
+        this.sidebean = null;
+    }
+
+    public SomeOperationHandle(H operationHandle, AppliedSideBean sidebean) {
+        this.handle = requireNonNull(operationHandle);
+        this.sidebean = requireNonNull(sidebean);
+    }
 }

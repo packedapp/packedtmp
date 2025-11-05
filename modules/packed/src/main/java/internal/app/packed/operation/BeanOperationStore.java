@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.PackedBeanLifecycleKind;
+import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.LazyNamer;
@@ -41,7 +42,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
      * the list will be sorted in the order of execution. With {@link app.packed.lifetime.RunState#INITIALIZING} lifecycle
      * operations first, and {@link app.packed.lifetime.RunState#STOPPING} lifecycle operations at the end.
      */
-    public final EnumMap<PackedBeanLifecycleKind, List<LifecycleOperationHandle>> lifecycleHandles = new EnumMap<>(PackedBeanLifecycleKind.class);
+    public final EnumMap<PackedBeanLifecycleKind, List<SomeLifecycleOperationHandle<LifecycleOperationHandle>>> lifecycleHandles = new EnumMap<>(PackedBeanLifecycleKind.class);
 
     /**
      * The unique name of every operation.
@@ -63,8 +64,8 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
         all.add(os);
     }
 
-    public void addLifecycleHandle(LifecycleOperationHandle handle) {
-        lifecycleHandles.compute(handle.lifecycleKind, (_, v) -> {
+    public void addLifecycleHandle(SomeLifecycleOperationHandle<LifecycleOperationHandle> handle) {
+        lifecycleHandles.compute(handle.lifecycleKind(), (_, v) -> {
             if (v == null) {
                 return List.of(handle);
             } else {

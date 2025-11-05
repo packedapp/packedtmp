@@ -23,6 +23,7 @@ import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.sidebean.SidebeanConfiguration;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
+import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
 
 /**
  *
@@ -51,8 +52,8 @@ public class SideBeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
     public void addUsage(AppliedSideBean susage) {
         usage.add(susage);
 
-        for (List<LifecycleOperationHandle> l : susage.bean.operations.lifecycleHandles.values()) {
-            for (LifecycleOperationHandle loh : l) {
+        for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.bean.operations.lifecycleHandles.values()) {
+            for (SomeLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
                 System.out.println("XX");
                 susage.bean.operations.addLifecycleHandle(loh);
             }

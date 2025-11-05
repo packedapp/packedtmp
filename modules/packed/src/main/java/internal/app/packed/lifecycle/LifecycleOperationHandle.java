@@ -17,8 +17,6 @@ package internal.app.packed.lifecycle;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.lifecycle.FactoryOperationConfiguration;
 import app.packed.bean.lifecycle.FactoryOperationMirror;
@@ -45,11 +43,10 @@ import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 import internal.app.packed.invoke.BeanLifecycleSupport;
 
 /** An operation handle for lifecycle operation on a bean. */
-public abstract sealed class LifecycleOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration> implements Comparable<LifecycleOperationHandle> {
+public abstract sealed class LifecycleOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration>
+        implements Comparable<LifecycleOperationHandle> {
 
     public final PackedBeanLifecycleKind lifecycleKind;
-
-    public MethodHandle methodHandle;
 
     /**
      * @param installer
@@ -67,8 +64,9 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
 
     @Override
     protected void onInstall() {
-        bean().operations.addLifecycleHandle(this);
-        BeanLifecycleSupport.addLifecycleHandle(this);
+        SomeLifecycleOperationHandle<LifecycleOperationHandle> soh = new SomeLifecycleOperationHandle<>(this);
+        bean().operations.addLifecycleHandle(soh);
+        BeanLifecycleSupport.addLifecycleHandle(soh);
     }
 
     public static byte complement(byte b) {

@@ -17,11 +17,31 @@ package internal.app.packed.lifecycle;
 
 import java.lang.invoke.MethodHandle;
 
+import internal.app.packed.bean.AppliedSideBean;
+import internal.app.packed.bean.SomeOperationHandle;
+
 /**
  *
  */
-public final class SomeLifecycleOperation {
+public final class SomeLifecycleOperationHandle<H extends LifecycleOperationHandle> extends SomeOperationHandle<H> {
 
     public MethodHandle methodHandle;
 
+    /**
+     * @param operationHandle
+     */
+    public SomeLifecycleOperationHandle(H operationHandle) {
+        super(operationHandle);
+    }
+
+    public SomeLifecycleOperationHandle(H operationHandle, AppliedSideBean sidebean) {
+        super(operationHandle, sidebean);
+    }
+
+    /**
+     * @return
+     */
+    public PackedBeanLifecycleKind lifecycleKind() {
+        return handle.lifecycleKind;
+    }
 }
