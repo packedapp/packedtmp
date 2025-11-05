@@ -22,8 +22,8 @@ import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.operation.OperationHandle;
-import internal.app.packed.bean.AppliedSideBean;
-import internal.app.packed.bean.SideBeanHandle;
+import internal.app.packed.bean.sidebean.SideBeanHandle;
+import internal.app.packed.bean.sidebean.SideBeanInstance;
 
 /**
  * A side bean configuration object.
@@ -49,7 +49,7 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
     }
 
     public SidebeanUseSite addToOperation(OperationHandle<?> handle) {
-        AppliedSideBean usage = new AppliedSideBean.OfOperation(sideBeanHandle, handle);
+        SideBeanInstance usage = new SideBeanInstance.OfOperation(sideBeanHandle, handle);
         usage.bean.sideBeans.add(usage);
         if (usage.bean.beanKind == BeanLifetime.SINGLETON) {
             usage.lifetimeStoreIndex = usage.bean.container.lifetime.store.add(usage);
@@ -60,7 +60,7 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
 
     // Kunne man taenke at tilfoeje den flere gange til den samme bean????
     public SidebeanUseSite addToBean(BeanHandle<?> handle) {
-        AppliedSideBean usage = new AppliedSideBean.OfBean(sideBeanHandle, handle);
+        SideBeanInstance usage = new SideBeanInstance.OfBean(sideBeanHandle, handle);
         usage.bean.sideBeans.add(usage);
         if (usage.bean.beanKind == BeanLifetime.SINGLETON) {
             usage.lifetimeStoreIndex = usage.bean.container.lifetime.store.add(usage);

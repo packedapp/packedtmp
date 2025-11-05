@@ -13,32 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.sidebean;
 
 import static java.util.Objects.requireNonNull;
 
 import app.packed.operation.OperationHandle;
+import app.packed.util.Nullable;
+import internal.app.packed.invoke.OperationCodeGenerator;
 
 /**
  * An operation handle that can either be a primary bean or an applied sidebean.
  */
-// Problemet er vi ikke kan extende denne, og fx gemme en MethodHandle
-// Maaske tilfoejer vi bare operationen til primary bean.
-// Nej det kan vi ikke fordi vi ikke nødvendigvis har en vi kan attache til.
-// Fx primary har ikke start, men sidebean har
 public class SomeOperationHandle<H extends OperationHandle<?>> {
 
     public final H handle;
 
-    private final AppliedSideBean sidebean;
+    @Nullable
+    final SideBeanInstance sidebean;
+
+
+    /** Holds generated code for the operation. */
+    public final OperationCodeGenerator codeHolder;
 
     public SomeOperationHandle(H operationHandle) {
         this.handle = requireNonNull(operationHandle);
         this.sidebean = null;
+        codeHolder = new OperationCodeGenerator(this);
     }
 
-    public SomeOperationHandle(H operationHandle, AppliedSideBean sidebean) {
+    public SomeOperationHandle(H operationHandle, SideBeanInstance sidebean) {
         this.handle = requireNonNull(operationHandle);
         this.sidebean = requireNonNull(sidebean);
+        codeHolder = new OperationCodeGenerator(this);
     }
 }

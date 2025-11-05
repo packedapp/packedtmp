@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
-
-import static java.util.Objects.requireNonNull;
+package internal.app.packed.bean.sidebean;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.sidebean.SidebeanUseSite;
 import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
-import internal.app.packed.invoke.OperationCodeGenerator;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreEntry;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 import internal.app.packed.operation.OperationSetup;
@@ -29,7 +27,7 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public sealed abstract class AppliedSideBean implements SidebeanUseSite, LifetimeStoreEntry {
+public sealed abstract class SideBeanInstance implements SidebeanUseSite, LifetimeStoreEntry {
 
     /** The sidebean. */
     public final SideBeanHandle<?> handle;
@@ -40,12 +38,12 @@ public sealed abstract class AppliedSideBean implements SidebeanUseSite, Lifetim
     @Nullable
     public LifetimeStoreIndex lifetimeStoreIndex;
 
-    AppliedSideBean(SideBeanHandle<?> handle, BeanSetup bean) {
+    SideBeanInstance(SideBeanHandle<?> handle, BeanSetup bean) {
         this.handle = handle;
         this.bean = bean;
     }
 
-    public static final class OfBean extends AppliedSideBean {
+    public static final class OfBean extends SideBeanInstance {
 
         /**
          * @param handle
@@ -56,7 +54,7 @@ public sealed abstract class AppliedSideBean implements SidebeanUseSite, Lifetim
         }
     }
 
-    public static final class OfOperation extends AppliedSideBean {
+    public static final class OfOperation extends SideBeanInstance {
 
         /**
          * @param handle
@@ -65,18 +63,5 @@ public sealed abstract class AppliedSideBean implements SidebeanUseSite, Lifetim
         public OfOperation(SideBeanHandle<?> sideBeanHandle, OperationHandle<?> handle) {
             super(sideBeanHandle, OperationSetup.crack(handle).bean);
         }
-    }
-
-    public static class UsageSidebeanOperation {
-        public final AppliedSideBean beanUsage;
-        public final OperationSetup operation;
-
-        UsageSidebeanOperation(AppliedSideBean beanUsage, OperationSetup operation) {
-            this.beanUsage = requireNonNull(beanUsage);
-            this.operation = requireNonNull(operation);
-        }
-
-        public OperationCodeGenerator code = new OperationCodeGenerator(this);
-
     }
 }

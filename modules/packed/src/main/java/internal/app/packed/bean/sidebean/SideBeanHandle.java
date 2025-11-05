@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.sidebean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +22,17 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.sidebean.SidebeanConfiguration;
+import internal.app.packed.invoke.BeanLifecycleSupport;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
 
 /**
  *
  */
+// SideBeanHandle -has many> SideBeanInstance
 public class SideBeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
-    private ArrayList<AppliedSideBean> usage = new ArrayList<>();
+    private ArrayList<SideBeanInstance> usage = new ArrayList<>();
 
     /**
      * @param installer
@@ -49,13 +51,14 @@ public class SideBeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
         return super.newBeanMirror();
     }
 
-    public void addUsage(AppliedSideBean susage) {
+    public void addUsage(SideBeanInstance susage) {
         usage.add(susage);
 
         for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.bean.operations.lifecycleHandles.values()) {
             for (SomeLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
                 System.out.println("XX");
                 susage.bean.operations.addLifecycleHandle(loh);
+                BeanLifecycleSupport.addLifecycleHandle(loh);
             }
         }
 

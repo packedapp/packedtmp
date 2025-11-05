@@ -34,6 +34,7 @@ import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.sidebean.SomeOperationHandle;
 import internal.app.packed.binding.BindingProvider.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.component.ComponentSetup;
@@ -42,7 +43,6 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.invoke.OperationCodeGenerator;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointSetup;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
@@ -75,6 +75,9 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     @Nullable
     private OperationHandle<?> handle;
 
+    @Nullable
+    public SomeOperationHandle<?> someHandle;
+
     /** The operator of the operation. */
     public final ExtensionSetup installedByExtension;
 
@@ -103,9 +106,6 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
 
     /** The type of this operation. */
     public final OperationType type;
-
-    /** Holds generated code for the operation. */
-    public final OperationCodeGenerator codeHolder = new OperationCodeGenerator(this);
 
     /**
      * Create a new operation.
@@ -224,6 +224,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
      * @return the operation setup
      */
     public static OperationSetup crack(OperationHandle<?> handle) {
+        requireNonNull(handle);
         return OperationAccessHandler.instance().getOperationHandleOperation(handle);
     }
 
@@ -259,6 +260,8 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         if (handle == null) {
             throw new InternalExtensionException(installer.operator.extensionType, handleFactory + " returned null, when creating a new OperationHandle");
         }
+        operation.someHandle = new SomeOperationHandle<>(handle);
+
         OperationAccessHandler.instance().onInstall(handle);
 
         return operation;

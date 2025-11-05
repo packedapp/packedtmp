@@ -48,11 +48,11 @@ public class ServiceHelper {
     }
 
     public static Map<String, MethodHandle> forTestingMap(Map<String, OperationHandle<?>> ink) {
-        return CollectionUtil.copyOf(ink, v -> OperationSetup.crack(v).codeHolder.generate(true));
+        return CollectionUtil.copyOf(ink, v -> OperationSetup.crack(v).someHandle.codeHolder.generate(true));
     }
 
     public static ApplicationBaseLauncher newApplicationBaseLauncher(GuestBeanHandle handle) {
-        MethodHandle m = OperationSetup.crack(handle.factory()).codeHolder.generate(true);
+        MethodHandle m = OperationSetup.crack(handle.factory()).someHandle.codeHolder.generate(true);
         m = MethodHandles.explicitCastArguments(m, m.type().changeReturnType(Object.class));
         return new ApplicationBaseLauncher(m);
     }
@@ -76,7 +76,7 @@ public class ServiceHelper {
         } else if (accessor != null) {
             mh = MethodHandles.insertArguments(MH_CONSTANT_POOL_READER, 1, accessor.index);
         } else {
-            mh = o.codeHolder.generate(false);
+            mh = o.someHandle.codeHolder.generate(false);
         }
         mh = mh.asType(mh.type().changeReturnType(Object.class));
         assert mh.type() == MethodType.methodType(Object.class, ExtensionContext.class);

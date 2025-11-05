@@ -15,8 +15,6 @@
  */
 package internal.app.packed.invoke;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -26,8 +24,8 @@ import java.util.ArrayList;
 import app.packed.bean.BeanLifetime;
 import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.AppliedSideBean.UsageSidebeanOperation;
-import internal.app.packed.bean.SideBeanHandle;
+import internal.app.packed.bean.sidebean.SideBeanHandle;
+import internal.app.packed.bean.sidebean.SomeOperationHandle;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromCodeGeneratedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
@@ -57,20 +55,14 @@ public final class OperationCodeGenerator {
     /** The operation we are generating a method handle for */
     private final OperationSetup operation;
 
-    private final UsageSidebeanOperation sidebean;
-
-    public OperationCodeGenerator(OperationSetup operation) {
-        this.operation = requireNonNull(operation);
-        this.sidebean = null;
-    }
+    private final SomeOperationHandle<?> someOperationHandle;
 
     /**
      * @param packedSideBeanUsage
      */
-    public OperationCodeGenerator(UsageSidebeanOperation packedSideBeanUsage) {
-        this.operation = packedSideBeanUsage.operation;
-        this.sidebean = packedSideBeanUsage;
-
+    public OperationCodeGenerator(SomeOperationHandle<?> someOperationHandle) {
+        this.someOperationHandle = someOperationHandle;
+        this.operation = OperationSetup.crack(someOperationHandle.handle);
     }
 
     MethodHandle generate(boolean lazy) {
@@ -209,7 +201,7 @@ public final class OperationCodeGenerator {
             permuters.add(c.argumentIndex() + (isSidebean ? 1 : 0));
             return mh;
         } else if (p instanceof FromOperationResult fo) {
-            MethodHandle methodHandle = fo.operation().codeHolder.generateMethodHandle();
+            MethodHandle methodHandle = fo.operation().someHandle.codeHolder.generateMethodHandle();
 
             mh = MethodHandles.collectArguments(mh, permuters.size(), methodHandle);
             for (int j = 0; j < methodHandle.type().parameterCount(); j++) {
