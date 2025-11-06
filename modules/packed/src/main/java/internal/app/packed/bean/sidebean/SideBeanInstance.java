@@ -38,9 +38,12 @@ public sealed abstract class SideBeanInstance implements SidebeanUseSite, Lifeti
     @Nullable
     public LifetimeStoreIndex lifetimeStoreIndex;
 
+    public final BeanSetup sidebean;
+
     SideBeanInstance(SideBeanHandle<?> handle, BeanSetup bean) {
         this.handle = handle;
         this.bean = bean;
+        this.sidebean = BeanSetup.crack(handle);
     }
 
     public static final class OfBean extends SideBeanInstance {

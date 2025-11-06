@@ -42,7 +42,11 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
      * the list will be sorted in the order of execution. With {@link app.packed.lifetime.RunState#INITIALIZING} lifecycle
      * operations first, and {@link app.packed.lifetime.RunState#STOPPING} lifecycle operations at the end.
      */
-    public final EnumMap<PackedBeanLifecycleKind, List<SomeLifecycleOperationHandle<LifecycleOperationHandle>>> lifecycleHandles = new EnumMap<>(PackedBeanLifecycleKind.class);
+    public final EnumMap<PackedBeanLifecycleKind, List<SomeLifecycleOperationHandle<LifecycleOperationHandle>>> lifecycleHandles = new EnumMap<>(
+            PackedBeanLifecycleKind.class);
+
+    public final EnumMap<PackedBeanLifecycleKind, List<SomeLifecycleOperationHandle<LifecycleOperationHandle>>> allLifecycleHandles = new EnumMap<>(
+            PackedBeanLifecycleKind.class);
 
     /**
      * The unique name of every operation.
@@ -65,7 +69,16 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
     }
 
     public void addLifecycleHandle(SomeLifecycleOperationHandle<LifecycleOperationHandle> handle) {
-        lifecycleHandles.compute(handle.lifecycleKind(), (_, v) -> {
+        if (handle.sidebean == null) {
+            lifecycleHandles.compute(handle.lifecycleKind(), (_, v) -> {
+                if (v == null) {
+                    return List.of(handle);
+                } else {
+                    return CollectionUtil.copyAndAdd(v, handle);
+                }
+            });
+        }
+        allLifecycleHandles.compute(handle.lifecycleKind(), (_, v) -> {
             if (v == null) {
                 return List.of(handle);
             } else {

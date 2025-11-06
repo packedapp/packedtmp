@@ -82,8 +82,8 @@ public class BeanLifecycleSupport {
         }
 
         // Move to higher up
-        if (!sidebeanUsage.bean.bean.beanClass.isInstance(instance)) {
-            throw new Error("Expected " + sidebeanUsage.bean.bean.beanClass + ", was " + instance.getClass());
+        if (!sidebeanUsage.sidebean.bean.beanClass.isInstance(instance)) {
+            throw new Error("Expected " + sidebeanUsage.sidebean.bean.beanClass + ", was " + instance.getClass());
         }
 
         // Store the new bean in the context

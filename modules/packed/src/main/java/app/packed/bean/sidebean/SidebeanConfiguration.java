@@ -49,6 +49,9 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
     }
 
     public SidebeanUseSite addToOperation(OperationHandle<?> handle) {
+        if (true) {
+            throw new UnsupportedOperationException();
+        }
         SideBeanInstance usage = new SideBeanInstance.OfOperation(sideBeanHandle, handle);
         usage.bean.sideBeans.add(usage);
         if (usage.bean.beanKind == BeanLifetime.SINGLETON) {

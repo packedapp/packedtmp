@@ -15,6 +15,9 @@
  */
 package internal.app.packed.invoke;
 
+import static java.lang.invoke.MethodHandles.collectArguments;
+import static java.lang.invoke.MethodHandles.permuteArguments;
+import static java.lang.invoke.MethodType.methodType;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
@@ -22,6 +25,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.MutableCallSite;
 import java.lang.invoke.WrongMethodTypeException;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -119,6 +123,40 @@ public class MethodHandleUtil {
         mh = mh.asCollector(Object[].class, mt.parameterCount()).asType(mt);
         callSite.setTarget(mh);
         return callSite.dynamicInvoker();
+    }
+
+    static MethodHandle merge(MethodHandle mh1, MethodHandle mh2) {
+        // mh1: (Bean, Ctx, rest...)void
+        // mh2: (Ctx) -> Bean
+        MethodType t1 = mh1.type();
+        Class<?> bean = t1.parameterType(0);
+        Class<?> ctx  = t1.parameterType(1);
+
+        // Sanity checks (optional)
+        MethodType t2 = mh2.type();
+        if (t2.parameterCount() != 1 || t2.parameterType(0) != ctx || t2.returnType() != bean) {
+            throw new IllegalArgumentException("mh2 must be (Ctx)->Bean matching mh1's first two params");
+        }
+
+        // 1) Insert mh2 at arg 0 of mh1 => (Ctx, Ctx, rest...)void
+        MethodHandle h = collectArguments(mh1, 0, mh2);
+
+        // 2) Duplicate the single Ctx across both positions and pass through rest...
+        Class<?>[] all = t1.parameterArray();                  // [Bean, Ctx, rest...]
+        Class<?>[] rest = Arrays.copyOfRange(all, 2, all.length);
+
+        Class<?>[] mergedParams = new Class<?>[1 + rest.length];
+        mergedParams[0] = ctx;
+        System.arraycopy(rest, 0, mergedParams, 1, rest.length);
+
+        MethodType mergedType = methodType(t1.returnType(), mergedParams);
+
+        int[] reorder = new int[2 + rest.length];
+        reorder[0] = 0;        // Ctx for mh2 (to make Bean)
+        reorder[1] = 0;        // same Ctx for mh1's own Ctx
+        for (int i = 0; i < rest.length; i++) reorder[i + 2] = i + 1; // pass-through rest
+
+        return permuteArguments(h, mergedType, reorder);
     }
 }
 

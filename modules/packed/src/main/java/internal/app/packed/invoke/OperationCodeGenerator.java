@@ -117,17 +117,29 @@ public final class OperationCodeGenerator {
         operation.bean.container.application.checkInCodegenPhase();
 
         boolean isSideBeanInstance = someOperationHandle.sidebean != null;
-
+        boolean isFactory = operation.handle() instanceof FactoryOperationHandle;
+        boolean isFactoryStore = isFactory && operation.bean.beanKind == BeanLifetime.SINGLETON;
 
         if (isSideBeanInstance) {
             MethodHandle methodHandle = OperationSetup.crack(someOperationHandle.handle).someHandle.codeHolder.generateMethodHandle();
+            if (isFactory) {
+                methodHandle = methodHandle.asType(methodHandle.type().changeReturnType(Object.class));
+                methodHandle = BeanLifecycleSupport.MH_INVOKE_INITIALIZER_SIDEBEAN.bindTo(someOperationHandle.sidebean).bindTo(methodHandle);
+                return methodHandle;
+            }
+            MethodHandle tmp = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, someOperationHandle.sidebean.lifetimeStoreIndex.index);
+            assert tmp.type().returnType() == Object.class;
+            // We need to convert it from Object to the expected type
+            tmp = tmp.asType(tmp.type().changeReturnType(someOperationHandle.sidebean.sidebean.bean.beanClass));
 
-        //    mh = mh.asType(mh.type().changeReturnType(Object.class));
-        //  mh = BeanLifecycleSupport.MH_INVOKE_INITIALIZER.bindTo(operation.bean).bindTo(mh);
+            System.out.println("XXXX " + isFactory);
+            System.out.println("YYYY " + OperationSetup.crack(someOperationHandle.handle).bean.beanKind);
+            System.out.println("XXXX " + methodHandle.type());
+            System.out.println("XXXX " + tmp.type());
+
+
+            return MethodHandleUtil.merge(methodHandle, tmp);
         }
-
-
-
 
         ArrayList<Integer> permuters = new ArrayList<>();
 
@@ -136,13 +148,9 @@ public final class OperationCodeGenerator {
 
         MethodHandle mh = operation.target.methodHandle();
 
-        boolean isFactory = operation.handle() instanceof FactoryOperationHandle;
-        boolean isFactoryStore = isFactory && operation.bean.beanKind == BeanLifetime.SINGLETON;
-
         boolean requiresBeanInstance = !isFactory && operation.target instanceof MemberOperationTarget mot && !Modifier.isStatic(mot.target.modifiers());
 
         boolean isSideBeanClass = operation.bean.handle() instanceof SideBeanHandle;
-
 
         if (requiresBeanInstance) {
             if (!isSideBeanClass) {

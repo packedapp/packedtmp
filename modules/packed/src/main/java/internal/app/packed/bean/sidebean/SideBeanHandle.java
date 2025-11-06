@@ -54,10 +54,9 @@ public class SideBeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
     public void addUsage(SideBeanInstance susage) {
         usage.add(susage);
 
-        for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.bean.operations.lifecycleHandles.values()) {
+        for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
             for (SomeLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
-                SomeLifecycleOperationHandle<LifecycleOperationHandle> newh= new SomeLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);
-                System.out.println("XX");
+                SomeLifecycleOperationHandle<LifecycleOperationHandle> newh = new SomeLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);
                 susage.bean.operations.addLifecycleHandle(newh);
                 BeanLifecycleSupport.addLifecycleHandle(newh);
             }

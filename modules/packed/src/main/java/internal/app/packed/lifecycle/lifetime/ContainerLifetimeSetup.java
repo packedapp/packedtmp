@@ -148,7 +148,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void orderDependenciesBeans0(BeanSetup bean) {
-        for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> lop : bean.operations.lifecycleHandles.values()) {
+        for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> lop : bean.operations.allLifecycleHandles.values()) {
             for (SomeLifecycleOperationHandle<LifecycleOperationHandle> h : lop) {
                 switch (h.lifecycleKind()) {
                 case FACTORY, INJECT, INITIALIZE_PRE_ORDER -> initializationPre.add(new IndexedOperationHandle(h, bean.lifetimeStoreIndex));
