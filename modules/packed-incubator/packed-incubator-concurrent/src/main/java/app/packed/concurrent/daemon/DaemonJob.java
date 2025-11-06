@@ -26,7 +26,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import app.packed.binding.Key;
 import app.packed.concurrent.ThreadKind;
-import app.packed.concurrent.daemon.impl.DaemonOperationHandle;
+import app.packed.concurrent.daemon.impl.DaemonJobOperationHandle;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
@@ -64,7 +64,7 @@ public @interface DaemonJob {
     /**
      * {@return whether or not the thread executing the annotated method, should be interrupted when the bean is shutdown}
      */
-    boolean interruptOnStop() default false;
+    boolean interruptOnStop() default true; // Maybe enum, false, true, asPerApplicationDefaults
 
     /**
      * <p>
@@ -84,7 +84,7 @@ final class DaemonJobBeanIntrospector extends BaseExtensionBeanIntrospector {
     /** {@inheritDoc} */
     @Override
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
-        DaemonOperationHandle.installFromAnnotation(this, method, (DaemonJob) annotation);
+        DaemonJobOperationHandle.installFromAnnotation(this, method, (DaemonJob) annotation);
     }
 
     /** {@inheritDoc} */

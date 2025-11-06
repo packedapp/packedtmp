@@ -115,6 +115,20 @@ public final class OperationCodeGenerator {
 
     private MethodHandle newMethodHandle() {
         operation.bean.container.application.checkInCodegenPhase();
+
+        boolean isSideBeanInstance = someOperationHandle.sidebean != null;
+
+
+        if (isSideBeanInstance) {
+            MethodHandle methodHandle = OperationSetup.crack(someOperationHandle.handle).someHandle.codeHolder.generateMethodHandle();
+
+        //    mh = mh.asType(mh.type().changeReturnType(Object.class));
+        //  mh = BeanLifecycleSupport.MH_INVOKE_INITIALIZER.bindTo(operation.bean).bindTo(mh);
+        }
+
+
+
+
         ArrayList<Integer> permuters = new ArrayList<>();
 
         MethodType invocationType = operation.template.invocationType();
@@ -127,12 +141,13 @@ public final class OperationCodeGenerator {
 
         boolean requiresBeanInstance = !isFactory && operation.target instanceof MemberOperationTarget mot && !Modifier.isStatic(mot.target.modifiers());
 
-        boolean isSideBean = operation.bean.handle() instanceof SideBeanHandle;
+        boolean isSideBeanClass = operation.bean.handle() instanceof SideBeanHandle;
+
 
         if (requiresBeanInstance) {
-            if (!isSideBean) {
+            if (!isSideBeanClass) {
                 BindingProvider beanInstanceProvider = operation.bean.beanInstanceBindingProvider();
-                mh = provide(mh, beanInstanceProvider, permuters, isSideBean);
+                mh = provide(mh, beanInstanceProvider, permuters, isSideBeanClass);
             } else {
                 // If we are a sidebean, the generated method handle, must take a bean instance as the first parameter.
                 // This parameter will be bound later at the sidebean usage site, typically to lifetime array reader of the bean
@@ -149,7 +164,7 @@ public final class OperationCodeGenerator {
                 // Should not really be here where we fail, much earlier
                 throw new ProvisionException("Oops");
             }
-            mh = provide(mh, binding.provider(), permuters, isSideBean);
+            mh = provide(mh, binding.provider(), permuters, isSideBeanClass);
         }
 
         int[] result = new int[permuters.size()];

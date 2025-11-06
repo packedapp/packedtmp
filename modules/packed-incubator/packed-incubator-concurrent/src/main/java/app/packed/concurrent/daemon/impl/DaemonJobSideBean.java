@@ -25,7 +25,7 @@ import app.packed.concurrent.daemon.DaemonJobContext;
 /**
  *
  */
-public final class DaemonSideBean implements DaemonJobContext {
+public final class DaemonJobSideBean implements DaemonJobContext {
 
     private volatile Thread thread;
 
@@ -56,7 +56,7 @@ public final class DaemonSideBean implements DaemonJobContext {
             @Override
             public void run() {
                 while (!isShutdown) {
-                    invoker.invoke(DaemonSideBean.this);
+                    invoker.invoke(DaemonJobSideBean.this);
                 }
             }
         });

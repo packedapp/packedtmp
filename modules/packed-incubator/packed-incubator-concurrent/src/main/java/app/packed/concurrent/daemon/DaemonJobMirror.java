@@ -17,7 +17,7 @@ package app.packed.concurrent.daemon;
 
 import app.packed.concurrent.JobMirror;
 import app.packed.concurrent.ThreadKind;
-import app.packed.concurrent.daemon.impl.DaemonOperationHandle;
+import app.packed.concurrent.daemon.impl.DaemonJobOperationHandle;
 import app.packed.operation.OperationHandle;
 
 /**
@@ -27,14 +27,14 @@ import app.packed.operation.OperationHandle;
  */
 public final class DaemonJobMirror extends JobMirror {
 
-    private final DaemonOperationHandle handle;
+    private final DaemonJobOperationHandle handle;
 
     /**
      * @param handle
      */
     public DaemonJobMirror(OperationHandle<?> handle) {
         super(handle);
-        this.handle = (DaemonOperationHandle) handle;
+        this.handle = (DaemonJobOperationHandle) handle;
     }
 
     public boolean hasThreadFactory() {

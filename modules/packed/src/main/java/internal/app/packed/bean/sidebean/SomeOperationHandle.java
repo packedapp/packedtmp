@@ -29,8 +29,7 @@ public class SomeOperationHandle<H extends OperationHandle<?>> {
     public final H handle;
 
     @Nullable
-    final SideBeanInstance sidebean;
-
+    public final SideBeanInstance sidebean;
 
     /** Holds generated code for the operation. */
     public final OperationCodeGenerator codeHolder;

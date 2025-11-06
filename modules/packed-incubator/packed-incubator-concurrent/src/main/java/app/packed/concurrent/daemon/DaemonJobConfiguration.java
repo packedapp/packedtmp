@@ -18,10 +18,11 @@ package app.packed.concurrent.daemon;
 import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.ThreadFactory;
+import java.util.function.BiConsumer;
 
 import app.packed.concurrent.JobConfiguration;
 import app.packed.concurrent.ThreadKind;
-import app.packed.concurrent.daemon.impl.DaemonOperationHandle;
+import app.packed.concurrent.daemon.impl.DaemonJobOperationHandle;
 import app.packed.operation.OperationHandle;
 
 /**
@@ -34,14 +35,14 @@ import app.packed.operation.OperationHandle;
 public final class DaemonJobConfiguration extends JobConfiguration {
 
     /** The daemon handle. */
-    private final DaemonOperationHandle handle;
+    private final DaemonJobOperationHandle handle;
 
     /**
      * @param handle
      */
     public DaemonJobConfiguration(OperationHandle<?> handle) {
         super(handle);
-        this.handle = (DaemonOperationHandle) handle;
+        this.handle = (DaemonJobOperationHandle) handle;
     }
 
     public DaemonJobConfiguration interruptOnStop(boolean value) {
@@ -54,6 +55,12 @@ public final class DaemonJobConfiguration extends JobConfiguration {
     public DaemonJobConfiguration restart(boolean restart) {
         checkIsConfigurable();
         handle.restart = restart;
+        return this;
+    }
+
+    // onProperty("blabla", DaemonJobConfiguration::restart);
+    // onProperty("blabla", (v, j)->j.interruptOnStop(true));
+    public DaemonJobConfiguration onProperty(String value, BiConsumer<String, ? super DaemonJobConfiguration> consumer) {
         return this;
     }
 

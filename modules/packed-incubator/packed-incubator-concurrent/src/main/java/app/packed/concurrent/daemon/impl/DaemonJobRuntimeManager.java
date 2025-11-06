@@ -22,10 +22,10 @@ import app.packed.bean.lifecycle.Start;
 // Vi har jo strengt taget ikke brug for denne laengere
 // Med mindre vi vil se en liste af alle daemons
 // Taenker vi maaske ogsaa kan dele en ConcurrentFaetter klasse nu..
-public final class DaemonRuntimeManager {
+public final class DaemonJobRuntimeManager {
 
     // ConcurrentSet
-    final ConcurrentHashMap<Thread, DaemonSideBean> deamons = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<Thread, DaemonJobSideBean> deamons = new ConcurrentHashMap<>();
 
     @Start
     public void onStart() {

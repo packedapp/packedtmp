@@ -42,9 +42,10 @@ public class BeanLifecycleSupport {
     public static void addLifecycleHandle(SomeLifecycleOperationHandle<LifecycleOperationHandle> handle) {
         OperationSetup os = OperationSetup.crack(handle.handle);
 
+
         // (ExtensionContext)Object
         os.bean.container.application.addCodegenAction(() -> {
-            handle.methodHandle = os.someHandle.codeHolder.generate(false);
+            handle.methodHandle = handle.codeHolder.generate(false);
         });
     }
 
