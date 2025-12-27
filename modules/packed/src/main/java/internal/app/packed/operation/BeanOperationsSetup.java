@@ -30,7 +30,7 @@ import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.LazyNamer;
 
 /** This class manages all operations declared by a bean. */
-public final class BeanOperationStore implements Iterable<OperationSetup> {
+public final class BeanOperationsSetup implements Iterable<OperationSetup> {
 
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> all = new ArrayList<>();

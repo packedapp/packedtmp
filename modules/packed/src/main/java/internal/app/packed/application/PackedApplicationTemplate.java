@@ -67,7 +67,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
     public PackedApplicationInstaller<H> newInstaller(@Nullable ApplicationInstallingSource source, BuildGoal goal, ApplicationBaseLauncher launcher,
             Wirelet... wirelets) {
         PackedApplicationInstaller<H> installer = new PackedApplicationInstaller<>(this, launcher, goal);
-        installer.containerInstaller.processBuildWirelets(wirelets);
+        installer.containerInstaller.processWirelets(wirelets);
         return installer;
     }
 

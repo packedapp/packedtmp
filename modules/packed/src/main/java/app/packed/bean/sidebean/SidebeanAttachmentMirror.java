@@ -15,11 +15,15 @@
  */
 package app.packed.bean.sidebean;
 
+import app.packed.bean.BeanMirror;
+
 /**
  *
  */
+// Was SidebeanUseSiteMirror
+public interface SidebeanAttachmentMirror {
 
-// SidebeanInstance
-public interface SidebeanUseSite {
-    // bindBuildConstant
+    BeanMirror primaryBean();
+
+    SidebeanMirror sidebean();
 }

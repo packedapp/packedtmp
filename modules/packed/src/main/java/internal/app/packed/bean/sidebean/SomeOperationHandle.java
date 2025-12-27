@@ -29,7 +29,7 @@ public class SomeOperationHandle<H extends OperationHandle<?>> {
     public final H handle;
 
     @Nullable
-    public final SideBeanInstance sidebean;
+    public final PackedSidebeanAttachment sidebean;
 
     /** Holds generated code for the operation. */
     public final OperationCodeGenerator codeHolder;
@@ -40,7 +40,7 @@ public class SomeOperationHandle<H extends OperationHandle<?>> {
         codeHolder = new OperationCodeGenerator(this);
     }
 
-    public SomeOperationHandle(H operationHandle, SideBeanInstance sidebean) {
+    public SomeOperationHandle(H operationHandle, PackedSidebeanAttachment sidebean) {
         this.handle = requireNonNull(operationHandle);
         this.sidebean = requireNonNull(sidebean);
         codeHolder = new OperationCodeGenerator(this);

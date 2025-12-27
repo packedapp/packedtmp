@@ -19,16 +19,14 @@ import java.util.concurrent.ThreadFactory;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.sidebean.SidebeanConfiguration;
-import app.packed.bean.sidebean.SidebeanUseSite;
 import app.packed.concurrent.ThreadKind;
 import app.packed.concurrent.daemon.DaemonJob;
 import app.packed.concurrent.daemon.DaemonJobConfiguration;
 import app.packed.concurrent.daemon.DaemonJobContext;
 import app.packed.concurrent.daemon.DaemonJobMirror;
+import app.packed.concurrent.daemon.impl.DaemonJobSideBean.DaemonOperationInvoker;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BaseExtensionPoint;
-import app.packed.extension.ExtensionHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.concurrent.ThreadNamespaceHandle;
@@ -82,21 +80,20 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
     }
 
     public static void installFromAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, DaemonJob annotation) {
-        ExtensionHandle<BaseExtension> extension = introspector.extensionHandle();
-        ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(extension);
+        ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(introspector.extensionHandle());
 
         // Create a new operation
-        OperationInstaller installer = method.newOperation(OPERATION_TEMPLATE);
-        DaemonJobOperationHandle handle = installer.install(namespace, (i, n) -> new DaemonJobOperationHandle(i, n, annotation));
+        DaemonJobOperationHandle handle = method.newOperation(OPERATION_TEMPLATE).install(namespace, (i, n) -> new DaemonJobOperationHandle(i, n, annotation));
 
-        // handle.lazySidebean(DaemonSideBean.class).addToOperation(handle)
+        // Lazy install the sidebean
+        SidebeanConfiguration<DaemonJobSideBean> sideBean = introspector.base().installSidebeanIfAbsent(DaemonJobSideBean.class, c -> {
+            c.attachmentBindInvoker(DaemonOperationInvoker.class);
+            c.attachmentBindConstant(ThreadFactory.class, Thread.ofPlatform().daemon().factory());
+        });
 
-        // Ahh vi kan jo ikke installere direkte til os selv fordi vi er BaseExtension
+        // Create a new attachment
+        sideBean.attachToOperation(handle);
 
-        SidebeanConfiguration<DaemonJobSideBean> sideBean = extension.use(BaseExtensionPoint.class).installSidebeanIfAbsent(DaemonJobSideBean.class,
-                c -> c.operationInvoker(DaemonJobSideBean.DaemonOperationInvoker.class));
-        SidebeanUseSite useSite = sideBean.addToOperation(handle);
-
-        System.out.println(useSite.toString());
+       // useSite.bindBuildConstant(ThreadFactory.class, Thread.ofPlatform().daemon().factory());
     }
 }

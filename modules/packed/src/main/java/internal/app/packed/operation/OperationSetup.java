@@ -35,7 +35,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.sidebean.SomeOperationHandle;
-import internal.app.packed.binding.BindingProvider.FromOperationResult;
+import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.context.ContextInfo;
@@ -130,9 +130,6 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         for (PackedContextTemplate ct : template.contexts) {
             contexts.put(ct.contextClass(), new ContextSetup(ct, this));
         }
-//        debug();
-//        System.err.println(template.methodType);
-//        new Exception().printStackTrace();
     }
 
     /** {@inheritDoc} */
@@ -171,7 +168,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     public void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
             requireNonNull(bs);
-            if (bs.provider() != null && bs.provider() instanceof FromOperationResult nested) {
+            if (bs.provider() != null && bs.provider() instanceof FromEmbeddedOperation nested) {
                 nested.operation().forEachBinding(binding);
             }
             binding.accept(bs);

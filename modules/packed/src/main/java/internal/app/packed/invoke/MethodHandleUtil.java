@@ -132,7 +132,7 @@ public class MethodHandleUtil {
         Class<?> bean = t1.parameterType(0);
         Class<?> ctx  = t1.parameterType(1);
 
-        // Sanity checks (optional)
+        // Sanity checks
         MethodType t2 = mh2.type();
         if (t2.parameterCount() != 1 || t2.parameterType(0) != ctx || t2.returnType() != bean) {
             throw new IllegalArgumentException("mh2 must be (Ctx)->Bean matching mh1's first two params");

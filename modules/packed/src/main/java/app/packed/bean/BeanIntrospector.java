@@ -50,9 +50,9 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnConstructor;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.bean.scanning.IntrospectorOnField;
 import internal.app.packed.bean.scanning.IntrospectorOnMethod;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariableUnwrapped;
 import internal.app.packed.extension.PackedExtensionHandle;
@@ -709,17 +709,15 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         Key<?> toKey();
     }
 
-    /**
-     * Represents a variable that can be bound at build time by an extension.
-     * <p>
-     *
-     */
 // Something about being embedded
 // For example, deep down, we cannot resolve something. And we need to
 // throw an exception. But we need to include the original method that could not
 // be resolved.
 // Or VariableBinder
 
+    /**
+     * Represents a variable that can be bound at build time by an extension.
+     */
     public sealed interface OnVariable permits IntrospectorOnVariable, OnVariableUnwrapped {
         /**
          * By default binding to static fields are not permitted. Any call to one of the bind methods of this interface will
@@ -737,10 +735,11 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         AnnotationList annotations();
 
         /**
-         * <p>
+         * {@return a set of available contexts}
+
+
          * This method exist only for informational purposes.
          *
-         * @return
          */
         default Set<Class<? extends Context<?>>> availableContexts() {
             return Set.of();
@@ -1124,7 +1123,6 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
             }
             return false;
         }
-
     }
 
     static {

@@ -272,7 +272,6 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
             return stream(InjectOperationHandle.class);
         }
 
-        @SuppressWarnings("unchecked")
         private <M, H extends LifecycleOperationHandle> Stream<M> stream(Class<H> type) {
 throw new UnsupportedOperationException();
             //            return (Stream<M>) handle.bean.operations.lifecycleHandles.values().stream().flatMap(List::stream).filter(h -> type.isInstance(h))

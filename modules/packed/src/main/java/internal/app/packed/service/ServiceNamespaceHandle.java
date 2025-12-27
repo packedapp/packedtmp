@@ -28,7 +28,7 @@ import app.packed.service.ServiceNamespaceMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
-import internal.app.packed.binding.BindingProvider.FromOperationResult;
+import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
@@ -121,7 +121,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
 
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
             // key.toStringSimple() + ">";
-        } else if (existingProvider.binding() instanceof FromOperationResult os) {
+        } else if (existingProvider.binding() instanceof FromEmbeddedOperation os) {
             if (os.operation().target instanceof MemberOperationTarget m && m.target instanceof OperationMethodTarget t) {
                 String ss = StringFormatter.formatShortWithParameters(t.method());
                 return "A method " + ss + " is already providing a service for " + key;

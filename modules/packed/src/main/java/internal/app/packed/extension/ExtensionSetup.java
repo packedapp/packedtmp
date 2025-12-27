@@ -171,7 +171,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         MainServiceNamespaceHandle s = sm;
         if (s == null) {
             MainServiceNamespaceHandle par = treeParent == null ? null : treeParent.services();
-            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(container.base());
+            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(container.baseExtension());
 
             s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, extensionType.getSimpleName() + "#main");
             s.init(par, container);

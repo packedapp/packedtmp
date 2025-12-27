@@ -31,12 +31,12 @@ import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
-import internal.app.packed.bean.sidebean.SideBeanInstance;
+import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromCodeGeneratedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
+import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
-import internal.app.packed.binding.BindingProvider.FromOperationResult;
 import internal.app.packed.binding.BindingProvider.FromSidebeanLifetimeArena;
 import internal.app.packed.binding.SuppliedBindingKind;
 import internal.app.packed.build.AuthoritySetup;
@@ -55,7 +55,7 @@ import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreEntry;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
-import internal.app.packed.operation.BeanOperationStore;
+import internal.app.packed.operation.BeanOperationsSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.PackedOp.NewOperation;
@@ -106,7 +106,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     String name;
 
     /** The operations of this bean. */
-    public final BeanOperationStore operations = new BeanOperationStore();
+    public final BeanOperationsSetup operations = new BeanOperationsSetup();
 
     /** The owner of the bean. */
     public final AuthoritySetup<?> owner;
@@ -117,11 +117,11 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     /** The registered bean. */
     public final PackedBean<?> bean;
 
-    /** The bean's template. */
+    /** The template used for creating this bean. */
     public final PackedBeanTemplate template;
 
     // TODO tror vi har noget a.la. BOS -> SidebeanStore
-    public final ArrayList<SideBeanInstance> sideBeans = new ArrayList<>();
+    public final ArrayList<PackedSidebeanAttachment> sideBeanAttachments = new ArrayList<>();
 
     /** Create a new bean. */
     private BeanSetup(PackedBeanInstaller installer, PackedBean<?> bean) {
@@ -173,7 +173,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         } else if (beanKind == BeanLifetime.SIDEBEAN) {
             return new FromSidebeanLifetimeArena(bean.beanClass);
         } else if (beanKind == BeanLifetime.UNMANAGED) {
-            return new FromOperationResult(operations.first());
+            return new FromEmbeddedOperation(operations.first());
         } else {
             throw new Error();
         }

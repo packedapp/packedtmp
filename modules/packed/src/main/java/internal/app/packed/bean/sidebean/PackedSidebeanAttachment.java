@@ -15,8 +15,11 @@
  */
 package internal.app.packed.bean.sidebean;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.bean.BeanHandle;
-import app.packed.bean.sidebean.SidebeanUseSite;
+import app.packed.bean.sidebean.SidebeanAttachment;
+import app.packed.binding.Key;
 import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -27,10 +30,7 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public sealed abstract class SideBeanInstance implements SidebeanUseSite, LifetimeStoreEntry {
-
-    /** The sidebean. */
-    public final SideBeanHandle<?> handle;
+public sealed abstract class PackedSidebeanAttachment implements SidebeanAttachment, LifetimeStoreEntry {
 
     /** The bean this sidebean is applied to. */
     public final BeanSetup bean;
@@ -38,33 +38,43 @@ public sealed abstract class SideBeanInstance implements SidebeanUseSite, Lifeti
     @Nullable
     public LifetimeStoreIndex lifetimeStoreIndex;
 
+    /** The sidebean. */
     public final BeanSetup sidebean;
 
-    SideBeanInstance(SideBeanHandle<?> handle, BeanSetup bean) {
-        this.handle = handle;
-        this.bean = bean;
+    PackedSidebeanAttachment(SidebeanHandle<?> handle, BeanSetup bean) {
+        this.bean = requireNonNull(bean);
         this.sidebean = BeanSetup.crack(handle);
     }
 
-    public static final class OfBean extends SideBeanInstance {
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> void bindBuildConstant(Key<T> key, T object) {}
+
+
+    public static final class OfBean extends PackedSidebeanAttachment {
 
         /**
          * @param handle
          * @param bean
          */
-        public OfBean(SideBeanHandle<?> sideBeanHandle, BeanHandle<?> handle) {
+        public OfBean(SidebeanHandle<?> sideBeanHandle, BeanHandle<?> handle) {
             super(sideBeanHandle, BeanSetup.crack(handle));
         }
+
     }
 
-    public static final class OfOperation extends SideBeanInstance {
+    public static final class OfOperation extends PackedSidebeanAttachment {
+
+        public final OperationSetup operation;
 
         /**
          * @param handle
          * @param bean
          */
-        public OfOperation(SideBeanHandle<?> sideBeanHandle, OperationHandle<?> handle) {
-            super(sideBeanHandle, OperationSetup.crack(handle).bean);
+        public OfOperation(SidebeanHandle<?> sideBeanHandle, OperationHandle<?> handle) {
+            OperationSetup operation = this.operation = OperationSetup.crack(handle);
+            super(sideBeanHandle, operation.bean);
         }
     }
 }

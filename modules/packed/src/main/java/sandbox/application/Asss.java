@@ -18,8 +18,6 @@ package sandbox.application;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.BeanLifetime;
-import app.packed.bean.BeanTemplate;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.build.BuildProcess;
 import app.packed.extension.Extension;
@@ -66,8 +64,8 @@ public class Asss extends BaseAssembly {
 
     @SuppressWarnings("unused")
     public void foo() {
-        BeanTemplate a = BeanTemplate.of(BeanLifetime.SINGLETON);
-        BeanTemplate.of(BeanLifetime.SINGLETON);
+//        BeanTemplate a = BeanTemplate.of(BeanLifetime.SINGLETON);
+  //      BeanTemplate.of(BeanLifetime.SINGLETON);
         // BeanTemplateWithBuilder b = BeanTemplateWithBuilder.builder().rcreateAs(String.class).build();
 
     }

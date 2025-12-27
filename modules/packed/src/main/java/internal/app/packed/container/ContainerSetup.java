@@ -64,7 +64,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     public final AssemblySetup assembly;
 
     @Nullable
-    private ExtensionSetup base;
+    private ExtensionSetup baseExtension;
 
     /** All the beans installed in the container. */
     public final ContainerBeanStore beans = new ContainerBeanStore();
@@ -97,6 +97,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
 
     public ContainerWireletSpecs wireletSpecs = new ContainerWireletSpecs();
 
+    WireletWrapper wireletWrapper;
     /**
      * Create a new container.
      *
@@ -119,7 +120,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = installer.nameFromWirelet != null || installer.isFromAssembly;
         this.wirelets = installer.unconsumedWirelets;
-        this.ws = new WireletWrapper(wirelets.toArray(i -> new Wirelet[i]));
+        this.wireletWrapper = new WireletWrapper(wirelets.toArray(i -> new Wirelet[i]));
     }
 
     /**
@@ -135,8 +136,8 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     }
 
     /** {@return the base extension for this container.} */
-    public ExtensionSetup base() {
-        return requireNonNull(base);
+    public ExtensionSetup baseExtension() {
+        return requireNonNull(baseExtension);
     }
 
     /** {@inheritDoc} */
@@ -155,6 +156,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         return ComponentKind.CONTAINER.pathNew(application.componentPath(), path);
     }
 
+    /** {@return the configuration of the container */
     public ContainerConfiguration configuration() {
         return handle().configuration();
     }
@@ -164,6 +166,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
+    /** {@inheritDoc} */
     @Override
     public ContainerHandle<?> handle() {
         return requireNonNull(handle);
@@ -214,6 +217,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         return handle().mirror();
     }
 
+    /** {@return the name of the container} */
     public String name() {
         return requireNonNull(name);
     }
@@ -314,30 +318,10 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         }
     }
 
-    WireletWrapper ws;
-
-//    @SuppressWarnings("unchecked")
-//    public <T extends Wirelet> WireletSelection<T> selectWireletsUnsafe(Class<T> wireletClass) {
-////        if (module != wireletClass.getModule()) {
-////            throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
-////        }
-//        WireletWrapper wirelets = ws;
-//        if (wirelets == null || wirelets.unconsumed() == 0) {
-//            return WireletSelection.of();
-//        }
-//        ArrayList<T> l = new ArrayList<>();
-//        for (Wirelet w : this.wirelets) {
-//            if (wireletClass.isInstance(w)) {
-//                l.add((T) w);
-//            }
-//        }
-//        return WireletSelectionList.of(l);
-//    }
-
     public MainServiceNamespaceHandle servicesMain() {
         MainServiceNamespaceHandle s = sm;
         if (s == null) {
-            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(base());
+            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(baseExtension());
             s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, "main");
             s.init(null, this);
         }
@@ -445,7 +429,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         }
 
         // BaseExtension is always present in any container.
-        container.base = ExtensionSetup.newExtension(BaseExtension.class, container, null);
+        container.baseExtension = ExtensionSetup.newExtension(BaseExtension.class, container, null);
 
         return container;
     }

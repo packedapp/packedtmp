@@ -101,7 +101,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
         checkNotUsed();
         // TODO can install container (assembly.isConfigurable());
         this.isFromAssembly = true;
-        processBuildWirelets(wirelets);
+        processWirelets(wirelets);
         ContainerSetup container = invokeAssemblyBuild(assembly);
         return (H) container.handle();
     }
@@ -112,7 +112,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     public H install(Wirelet... wirelets) {
         checkNotUsed();
         // TODO can install container
-        processBuildWirelets(wirelets);
+        processWirelets(wirelets);
         ContainerSetup container = ContainerSetup.newContainer(this, parent.application, parent.assembly);
         return (H) container.handle();
     }
@@ -161,12 +161,12 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
      * @param wirelets
      *            the wirelets to process
      */
-    public void processBuildWirelets(Wirelet[] wirelets) {
+    public void processWirelets(Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         for (Wirelet wirelet : wirelets) {
             requireNonNull(wirelet, "wirelet is null");
             switch (wirelet) {
-            case CompositeWirelet w -> processBuildWirelets(w.wirelets);
+            case CompositeWirelet w -> processWirelets(w.wirelets);
             case InternalBaseWirelet w -> w.onBuild(this);
 
             // Too map or not to map...

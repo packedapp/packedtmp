@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn compile:*)",
+      "Bash(rm:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(done)",
+      "Bash(javac:*)",
+      "Bash(find:*)",
+      "Bash(find-skills builder pattern)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

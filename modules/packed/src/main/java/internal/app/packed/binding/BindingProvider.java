@@ -80,7 +80,7 @@ public sealed interface BindingProvider {
     }
 
     /** Provides an instance from the result of an operation. */
-    public record FromOperationResult(OperationSetup operation) implements BindingProvider {
+    public record FromEmbeddedOperation(OperationSetup operation) implements BindingProvider {
 
         /** {@inheritDoc} */
         @Override

@@ -236,7 +236,7 @@ abstract class AbstractAppTest<A> {
                 assembly = AssemblySetup.newAssembly(b.containerInstaller, ba);
                 // Do
                 cc = assembly.container.configuration();
-                b.containerInstaller.processBuildWirelets(setup.wirelets.toArray(i -> new Wirelet[i]));
+                b.containerInstaller.processWirelets(setup.wirelets.toArray(i -> new Wirelet[i]));
             }
         }
 

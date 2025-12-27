@@ -41,14 +41,6 @@ public class ContainerWirelets {
         public ContainerOverrideNameWirelet(String name) {
             this.name = NameCheck.checkComponentName(name); // throws IAE
         }
-//
-//        /** {@inheritDoc} */
-//        @Override
-//        public void onImageLaunch(ContainerSetup c, ApplicationLaunchContext ic) {
-//            // Don't know if we have the context of runnable names
-//            throw new UnsupportedOperationException();
-//            // ic.name = name;
-//        }
 
         /** {@inheritDoc} */
         @Override

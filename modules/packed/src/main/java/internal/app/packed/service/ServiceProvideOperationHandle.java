@@ -22,7 +22,7 @@ import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import app.packed.service.Provide;
-import internal.app.packed.binding.BindingProvider.FromOperationResult;
+import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 
 /**
@@ -44,7 +44,7 @@ public class ServiceProvideOperationHandle extends BaseExtensionOperationHandle<
         Key<?> key = method.toKey();
 
         ServiceProvideOperationHandle oh = method.newOperation(OPERATION_TEMPLATE).install(ServiceProvideOperationHandle::new);
-        oh.bean().serviceNamespace().provideService(key, oh, new FromOperationResult(oh.operation()));
+        oh.bean().serviceNamespace().provideService(key, oh, new FromEmbeddedOperation(oh.operation()));
     }
 
     public static void install(Provide annotation, OnField onField) {
@@ -53,7 +53,7 @@ public class ServiceProvideOperationHandle extends BaseExtensionOperationHandle<
         Key<?> key = onField.toKey();
 
         ServiceProvideOperationHandle oh = onField.newGetOperation(OPERATION_TEMPLATE).install(ServiceProvideOperationHandle::new);
-        oh.bean().serviceNamespace().provideService(key, oh, new FromOperationResult(oh.operation()));
+        oh.bean().serviceNamespace().provideService(key, oh, new FromEmbeddedOperation(oh.operation()));
     }
 
 }

@@ -19,8 +19,6 @@ import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.concurrent.daemon.DaemonJob;
 import app.packed.concurrent.daemon.DaemonJobContext;
-import app.packed.concurrent.oldscheduling.ScheduledOperationMirror;
-import app.packed.concurrent.oldscheduling.SchedulingContext;
 
 /**
  *
@@ -35,7 +33,6 @@ public class ScTest extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        provideInstance("asdasd");
         install(MuB.class);
     }
 
@@ -47,19 +44,19 @@ public class ScTest extends BaseAssembly {
             Thread.sleep(100);
         }
 
-       // @ScheduleJob(withFixedDelay = 10)
-        public static void schd(SchedulingContext sc, ScheduledOperationMirror op) {
-            IO.println("SCHs®ED " + op.target());
-        }
-
-      //  @ScheduleJob(withFixedDelay = 88)
-        public static void sch(SchedulingContext sc, ScheduledOperationMirror op) {
-            IO.println("SCHED " + sc.invocationCount());
-//            IO.println(op.target());
-            if (sc.invocationCount() == 10) {
-                sc.cancel();
-                IO.println("Bye");
-            }
-        }
+//       // @ScheduleJob(withFixedDelay = 10)
+//        public static void schd(SchedulingContext sc, ScheduledOperationMirror op) {
+//            IO.println("SCHs®ED " + op.target());
+//        }
+//
+//      //  @ScheduleJob(withFixedDelay = 88)
+//        public static void sch(SchedulingContext sc, ScheduledOperationMirror op) {
+//            IO.println("SCHED " + sc.invocationCount());
+////            IO.println(op.target());
+//            if (sc.invocationCount() == 10) {
+//                sc.cancel();
+//                IO.println("Bye");
+//            }
+//        }
     }
 }

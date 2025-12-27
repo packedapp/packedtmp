@@ -171,7 +171,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         /** {@inheritDoc} */
         @Override
         AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller<?> containerBuilder) {
-            containerBuilder.processBuildWirelets(wirelets);
+            containerBuilder.processWirelets(wirelets);
             return assembly.build(applicationInstaller, containerBuilder);
         }
 
@@ -184,7 +184,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         /** {@inheritDoc} */
         @Override
         Assembly extractAssembly(PackedContainerInstaller<?> containerBuilder) {
-            containerBuilder.processBuildWirelets(wirelets);
+            containerBuilder.processWirelets(wirelets);
             return super.extractAssembly(containerBuilder);
         }
     }

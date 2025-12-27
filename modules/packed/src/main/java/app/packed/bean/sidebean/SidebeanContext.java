@@ -15,12 +15,13 @@
  */
 package app.packed.bean.sidebean;
 
+import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
  *
  */
-public interface SidebeanContext extends Context<BaseExtension> {
-
-}
+@AutoInject(requiresContext = SidebeanContext.class, introspector = BaseExtensionBeanIntrospector.class)
+public interface SidebeanContext extends Context<BaseExtension> {}

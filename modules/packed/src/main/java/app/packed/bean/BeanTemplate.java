@@ -98,10 +98,6 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
         return PackedBeanTemplate.builder(kind);
     }
 
-    static BeanTemplate of(BeanLifetime kind) {
-        return PackedBeanTemplate.builder(kind).build();
-    }
-
     /** A builder for {@link BeanTemplate}. */
     // Add component tags
     sealed interface Builder permits PackedBeanTemplate.PackedBuilder {
@@ -126,6 +122,8 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
 
         @SuppressWarnings("exports")
         Builder lifetime(LifetimeTemplate lifetime);
+
+        Builder addContext(ContextTemplate context);
 
         <T> Builder setLocal(BeanLocal<T> local, T value);
     }

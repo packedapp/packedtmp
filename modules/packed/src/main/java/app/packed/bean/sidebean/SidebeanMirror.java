@@ -15,24 +15,30 @@
  */
 package app.packed.bean.sidebean;
 
-import java.util.Collection;
+import static java.util.Objects.requireNonNull;
+
+import java.util.stream.Stream;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanMirror;
+import internal.app.packed.bean.sidebean.SidebeanHandle;
 
 /**
  * A mirror of a side bean.
  */
 public final class SidebeanMirror extends BeanMirror {
 
-    /**
-     * @param handle
-     */
+    /** The handle of the sidebean. */
+    final SidebeanHandle<?> handle;
+
     public SidebeanMirror(BeanHandle<?> handle) {
+        this.handle = (SidebeanHandle<?>) requireNonNull(handle);
         super(handle);
     }
 
-    public Collection<SidebeanUseSite> usage() {
+    /** {@return a stream of all places where this sidebean has been attached} */
+    public Stream<SidebeanAttachmentMirror> attachments() {
+     //   handle.attachments().
         throw new UnsupportedOperationException();
     }
 }

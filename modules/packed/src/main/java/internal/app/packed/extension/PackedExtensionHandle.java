@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.component.ComponentPath;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
@@ -81,14 +82,17 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         // Extract the extension class (<E>) from ExtensionPoint<E>
         Class<? extends Extension<?>> otherExtensionClass = TYPE_VARIABLE_EXTRACTOR.get(extensionPointClass);
 
-        // Check that the extension of requested extension point's is a direct dependency of this extension
-        if (!extension.model.dependsOn(otherExtensionClass)) {
-            // An extension cannot use its own extension point
-            if (otherExtensionClass == extension.extensionType) {
-                throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
+        // BaseExtension can do anything it wants
+        if (extension.extensionType != BaseExtension.class) {
+            // Check that the extension of requested extension point's is a direct dependency of this extension
+            if (!extension.model.dependsOn(otherExtensionClass)) {
+                // An extension cannot use its own extension point
+                if (otherExtensionClass == extension.extensionType) {
+                    throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
+                }
+                throw new InternalExtensionException(getClass().getSimpleName() + " must declare " + StringFormatter.format(otherExtensionClass)
+                        + " as a dependency in order to use " + extensionPointClass);
             }
-            throw new InternalExtensionException(getClass().getSimpleName() + " must declare " + StringFormatter.format(otherExtensionClass)
-                    + " as a dependency in order to use " + extensionPointClass);
         }
 
         ExtensionSetup otherExtension = extension.container.useExtension(otherExtensionClass, extension);

@@ -1,15 +1,15 @@
 
 BuildTime
-  SideBeanConfiguration
-  SideBeanUseSite
+  SidebeanConfiguration
+  SidebeanAttachment
 
 Runtime
-  SideBeanContext
-  SideBeanService  [Inject Invoker, BeanInfo]
+  SidebeanContext
+  SidebeanService  [Inject Invoker, BeanInfo]
 
 Mirrors
   SideBeanMirror
-  SideBeanUseSiteMirror
+  SideBeanAttachmentMirror
 -------------------------------------------------
 
 Context services

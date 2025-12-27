@@ -15,10 +15,15 @@
  */
 package app.packed.bean.sidebean;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
+import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
  * Can be used to annotated injectable parameters into a guest bean.
@@ -28,5 +33,14 @@ import java.lang.annotation.Target;
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-// Den bliver ikke resolvet som context service. Saa der er ingen problemer med fx ApplicationMirror
-public @interface SidebeanService {}
+@OnAnnotatedVariable(introspector = SidebeanInjectBeanIntrospector.class, requiresContext = SidebeanContext.class)
+public @interface SidebeanInject {}
+
+final class SidebeanInjectBeanIntrospector extends BaseExtensionBeanIntrospector {
+
+    @Override
+    public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
+        SidebeanHandle<?> handle = (SidebeanHandle<?>) bean().handle();
+        handle.onInject((SidebeanInject) annotation, v);
+    }
+}

@@ -17,28 +17,53 @@ package internal.app.packed.bean.sidebean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
+import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.bean.sidebean.SidebeanInject;
+import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.invoke.BeanLifecycleSupport;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
+import internal.app.packed.service.util.ServiceMap;
 
 /**
  *
  */
 // SideBeanHandle -has many> SideBeanInstance
-public class SideBeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
+public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
-    private ArrayList<SideBeanInstance> usage = new ArrayList<>();
+    private ArrayList<PackedSidebeanAttachment> usage = new ArrayList<>();
+
+    public final ServiceMap<BindingProvider> providers = new ServiceMap<>();
+
+    public final ServiceMap<OnVariable> injectionSites = new ServiceMap<>();
 
     /**
      * @param installer
      */
-    public SideBeanHandle(BeanInstaller installer) {
+    public SidebeanHandle(BeanInstaller installer) {
         super(installer);
+    }
+
+    public void addAttachment(PackedSidebeanAttachment susage) {
+        usage.add(susage);
+
+        for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
+            for (SomeLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
+                SomeLifecycleOperationHandle<LifecycleOperationHandle> newh = new SomeLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);
+                susage.bean.operations.addLifecycleHandle(newh);
+                BeanLifecycleSupport.addLifecycleHandle(newh);
+            }
+        }
+    }
+
+    public Stream<PackedSidebeanAttachment> attachments() {
+        return usage.stream();
     }
 
     @Override
@@ -51,16 +76,11 @@ public class SideBeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
         return super.newBeanMirror();
     }
 
-    public void addUsage(SideBeanInstance susage) {
-        usage.add(susage);
-
-        for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
-            for (SomeLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
-                SomeLifecycleOperationHandle<LifecycleOperationHandle> newh = new SomeLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);
-                susage.bean.operations.addLifecycleHandle(newh);
-                BeanLifecycleSupport.addLifecycleHandle(newh);
-            }
-        }
-
+    /**
+     * @param annotation
+     * @param v
+     */
+    public void onInject(SidebeanInject annotation, OnVariable v) {
+        injectionSites.put(v.toKey(), v);
     }
 }

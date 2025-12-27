@@ -102,7 +102,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      * @see CodeGenerated
      * @see BindableVariable#bindGeneratedConstant(Supplier)
      */
-
     @BuildActionable("bean.addCodeGenerator")
     public <K> void bindCodeGenerator(Class<K> key, Supplier<? extends K> supplier) {
         checkIsConfigurable();

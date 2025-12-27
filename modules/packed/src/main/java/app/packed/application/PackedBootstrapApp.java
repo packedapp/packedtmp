@@ -38,14 +38,14 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
 
     /** An application template that is used for the bootstrap app. */
     // TODO we need to restrict the extensions that can be used to BaseExtension
-    // If the guest been uses hooks from various extensions
+    // So beans do not uses hooks from various extensions
     private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE = (PackedApplicationTemplate<?>) ApplicationTemplate
             .ofManaged(PackedBootstrapApp.class).withComponentTags("bootstrap");
 
     /** The application launcher. */
     private final ApplicationBaseLauncher launcher;
 
-    /** The application template for new applications. */
+    /** The application template used for new applications. */
     private final PackedApplicationTemplate<H> template;
 
     /**
@@ -57,14 +57,6 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     private PackedBootstrapApp(PackedApplicationTemplate<H> template, ApplicationBaseLauncher launcher) {
         this.template = requireNonNull(template);
         this.launcher = requireNonNull(launcher);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedBootstrapApp<A, H> withExpectsResult(Class<?> resultType) {
-        // Could just be a stored internal wirelet for now.
-        // Ideen er bootstrapApp.expectsResult(FooBar.class).launch(...);
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -93,6 +85,12 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
 
     /** {@inheritDoc} */
     @Override
+    public Launcher<A> launcher(Assembly assembly, Wirelet... wirelets) {
+        return imageOf(assembly, wirelets);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.MIRROR, launcher, wirelets);
 
@@ -112,6 +110,14 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         installer.install(assembly);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public PackedBootstrapApp<A, H> withExpectsResult(Class<?> resultType) {
+        // Could just be a stored internal wirelet for now.
+        // Ideen er bootstrapApp.expectsResult(FooBar.class).launch(...);
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Builds a new bootstrap app for applications represented by the specified template.
      *
@@ -120,7 +126,6 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
      *            the template for the type applications that should be bootstrapped
      * @return a new bootstrap app
      */
-
     public static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> of(PackedApplicationTemplate<H> template) {
         // We need a an assembly to build the (bootstrap) application
         BootstrapAppAssembly assembly = new BootstrapAppAssembly(template);
@@ -139,14 +144,14 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     /** The assembly responsible for building the bootstrap app. */
     private static class BootstrapAppAssembly extends BuildableAssembly {
 
+        private GuestBeanHandle gbh;
+
         /** The application template for the application type we need to bootstrap. */
         private final PackedApplicationTemplate<?> template;
 
         private BootstrapAppAssembly(PackedApplicationTemplate<?> template) {
             this.template = requireNonNull(template);
         }
-
-        private GuestBeanHandle gbh;
 
         /** {@inheritDoc} */
         @Override
@@ -161,12 +166,6 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
             // Install the guest bean (code is shared with App-On-App) in the bootstrap application
             gbh = GuestBeanHandle.install(template, es, es.container.assembly);
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Launcher<A> launcher(Assembly assembly, Wirelet... wirelets) {
-        return imageOf(assembly, wirelets);
     }
 }
 

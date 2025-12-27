@@ -42,7 +42,7 @@ import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromCodeGeneratedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromInvocationArgument;
-import internal.app.packed.binding.BindingProvider.FromOperationResult;
+import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.binding.SuppliedBindingKind;
 import internal.app.packed.context.ContextSetup;
@@ -195,7 +195,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
         // Create the nested operation
         OperationSetup os = pop
                 .newOperationSetup(new NewOperation(operation.bean, bindingExtension, template, OperationHandle::new, new EmbeddedIntoOperation(operation, index)));
-        bind(new FromOperationResult(os));
+        bind(new FromEmbeddedOperation(os));
 
         // Resolve the new operation immediately
         scanner.resolveBindings(os);

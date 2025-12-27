@@ -80,4 +80,18 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
             return installer.newOperation(newOs.newHandle() );
         }
     }
+
+    static final class LazyGeneratedClass<R> extends TerminalOp<R> {
+
+        LazyGeneratedClass(MethodHandle methodHandle) {
+            super(OperationType.fromMethodType(methodHandle.type()), methodHandle);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OperationSetup newOperationSetup(NewOperation newos) {
+            return null;
+        }
+
+    }
 }

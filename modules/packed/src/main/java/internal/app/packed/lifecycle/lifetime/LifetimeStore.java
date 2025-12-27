@@ -25,7 +25,7 @@ import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
  */
 public final class LifetimeStore {
 
-    final ArrayList<Object> entries = new ArrayList<>();
+    final ArrayList<LifetimeStoreEntry> entries = new ArrayList<>();
 
     public LifetimeStoreIndex add(LifetimeStoreEntry entry) {
         entries.add(entry);

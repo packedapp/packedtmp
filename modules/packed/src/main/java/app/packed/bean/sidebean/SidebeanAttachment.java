@@ -15,13 +15,18 @@
  */
 package app.packed.bean.sidebean;
 
-import app.packed.bean.BeanMirror;
+import app.packed.binding.Key;
 
 /**
  *
  */
-public interface SidebeanUseSiteMirror {
-    BeanMirror primaryBean();
+// SidebeanInstance
+// SidebeanAttachment
+public interface SidebeanAttachment {
 
-    SidebeanMirror sidebean();
+    default <T> void bindBuildConstant(Class<T> key, T object) {
+        bindBuildConstant(Key.of(key), object);
+    }
+
+    <T> void bindBuildConstant(Key<T> key, T object);
 }

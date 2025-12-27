@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.sidebean.SideBeanInstance;
+import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
@@ -37,11 +37,10 @@ public class BeanLifecycleSupport {
             MethodHandle.class, ExtensionContext.class);
 
     static final MethodHandle MH_INVOKE_INITIALIZER_SIDEBEAN = LookupUtil.findStaticSelf(MethodHandles.lookup(), "invokeFactory", void.class,
-            SideBeanInstance.class, MethodHandle.class, ExtensionContext.class);
+            PackedSidebeanAttachment.class, MethodHandle.class, ExtensionContext.class);
 
     public static void addLifecycleHandle(SomeLifecycleOperationHandle<LifecycleOperationHandle> handle) {
         OperationSetup os = OperationSetup.crack(handle.handle);
-
 
         // (ExtensionContext)Object
         os.bean.container.application.addCodegenAction(() -> {
@@ -70,7 +69,7 @@ public class BeanLifecycleSupport {
         pec.storeObject(bean.lifetimeStoreIndex, instance);
     }
 
-    static void invokeFactory(SideBeanInstance sidebeanUsage, MethodHandle mh, ExtensionContext ec) {
+    static void invokeFactory(PackedSidebeanAttachment sidebeanUsage, MethodHandle mh, ExtensionContext ec) {
         Object instance;
         try {
             instance = mh.invokeExact(ec);

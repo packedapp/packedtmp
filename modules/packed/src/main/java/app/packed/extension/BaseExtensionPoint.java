@@ -10,17 +10,19 @@ import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTemplate;
 import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.bean.sidebean.SidebeanContext;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
+import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
-import internal.app.packed.bean.sidebean.SideBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
+import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.ExtensionSetup;
@@ -48,10 +50,12 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public static final OldContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedLifecycle.class.getSimpleName()).provideExpose(ManagedLifecycle.class)
             .build();
 
-    private final static BeanTemplate SIDEBEAN = BeanTemplate.of(BeanLifetime.SIDEBEAN);
+    private final static ContextTemplate SIDEBEAN_CONTEXT = ContextTemplate.of(SidebeanContext.class);
+
+    private final static BeanTemplate SIDEBEAN = BeanTemplate.builder(BeanLifetime.SIDEBEAN).addContext(SIDEBEAN_CONTEXT).build();
 
     /** Creates a new base extension point. */
-    BaseExtensionPoint(ExtensionPointHandle usesite) {
+    public BaseExtensionPoint(ExtensionPointHandle usesite) {
         super(usesite);
     }
 
@@ -113,7 +117,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @BuildActionable("bean.install")
     public <T> SidebeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, Consumer<? super SidebeanConfiguration<T>> installationAction) {
         BeanInstaller installer = newBean(SIDEBEAN, handle());
-        SideBeanHandle<T> h = installer.installIfAbsent(implementation, SideBeanHandle.class, SideBeanHandle<T>::new, _ -> {});
+        SidebeanHandle<T> h = installer.installIfAbsent(implementation, SidebeanHandle.class, SidebeanHandle<T>::new, _ -> {});
 
         return h.configuration();
     }

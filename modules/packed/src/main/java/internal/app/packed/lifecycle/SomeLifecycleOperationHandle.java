@@ -17,7 +17,7 @@ package internal.app.packed.lifecycle;
 
 import java.lang.invoke.MethodHandle;
 
-import internal.app.packed.bean.sidebean.SideBeanInstance;
+import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
 import internal.app.packed.bean.sidebean.SomeOperationHandle;
 
 /**
@@ -34,7 +34,7 @@ public final class SomeLifecycleOperationHandle<H extends LifecycleOperationHand
         super(operationHandle);
     }
 
-    public SomeLifecycleOperationHandle(H operationHandle, SideBeanInstance sidebean) {
+    public SomeLifecycleOperationHandle(H operationHandle, PackedSidebeanAttachment sidebean) {
         super(operationHandle, sidebean);
     }
 
