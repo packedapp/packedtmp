@@ -15,21 +15,29 @@
  */
 package internal.app.packed.lifecycle;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
-import internal.app.packed.bean.sidebean.SomeOperationHandle;
+import internal.app.packed.invoke.OperationCodeGenerator;
 import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-public final class SomeLifecycleOperationHandle<H extends LifecycleOperationHandle> extends SomeOperationHandle<H> {
+public final class SomeLifecycleOperationHandle<H extends LifecycleOperationHandle> {
 
     public MethodHandle methodHandle;
 
+    public final H handle;
+
+    /** Holds generated code for the operation. */
+    public final OperationCodeGenerator codeHolder;
+
     public SomeLifecycleOperationHandle(OperationSetup operation, H operationHandle, PackedSidebeanAttachment sidebean) {
-        super(operation, operationHandle, sidebean);
+        this.handle = requireNonNull(operationHandle);
+        this.codeHolder = new OperationCodeGenerator(operation, sidebean);
     }
 
     /**

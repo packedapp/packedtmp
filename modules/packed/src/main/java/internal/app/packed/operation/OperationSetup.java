@@ -34,7 +34,6 @@ import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.sidebean.SomeOperationHandle;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.component.ComponentSetup;
@@ -76,7 +75,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     @Nullable
     private OperationHandle<?> handle;
 
-    public OperationCodeGenerator codeHolder;
+    public final OperationCodeGenerator codeHolder;
 
     /** The operator of the operation. */
     public final ExtensionSetup installedByExtension;
@@ -130,6 +129,8 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         for (PackedContextTemplate ct : template.contexts) {
             contexts.put(ct.contextClass(), new ContextSetup(ct, this));
         }
+        // check is built
+        this.codeHolder = new OperationCodeGenerator(this, null);
     }
 
     /** {@inheritDoc} */
@@ -257,8 +258,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         if (handle == null) {
             throw new InternalExtensionException(installer.operator.extensionType, handleFactory + " returned null, when creating a new OperationHandle");
         }
-        SomeOperationHandle<?> someHandle = new SomeOperationHandle<>(operation, handle, null);
-        operation.codeHolder = someHandle.codeHolder;
+
 
         OperationAccessHandler.instance().onInstall(handle);
 

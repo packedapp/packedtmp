@@ -27,7 +27,6 @@ import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
-import internal.app.packed.bean.sidebean.SomeOperationHandle;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.invoke.MethodHandleUtil.LazyResolvable;
@@ -52,8 +51,6 @@ public final class OperationCodeGenerator {
     /** The operation we are generating a method handle for */
     private final OperationSetup operation;
 
-    private final SomeOperationHandle<?> someOperationHandle;
-
     @Nullable
     public
     final PackedSidebeanAttachment sidebean;
@@ -61,8 +58,7 @@ public final class OperationCodeGenerator {
     /**
      * @param packedSideBeanUsage
      */
-    public OperationCodeGenerator(OperationSetup operation, SomeOperationHandle<?> someOperationHandle, @Nullable PackedSidebeanAttachment sidebean) {
-        this.someOperationHandle = someOperationHandle;
+    public OperationCodeGenerator(OperationSetup operation, @Nullable PackedSidebeanAttachment sidebean) {
         this.operation = operation;
         this.sidebean = sidebean;
     }
