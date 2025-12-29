@@ -43,6 +43,7 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.invoke.OperationCodeGenerator;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointSetup;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
@@ -75,8 +76,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     @Nullable
     private OperationHandle<?> handle;
 
-    @Nullable
-    public SomeOperationHandle<?> someHandle;
+    public OperationCodeGenerator codeHolder;
 
     /** The operator of the operation. */
     public final ExtensionSetup installedByExtension;
@@ -257,7 +257,8 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         if (handle == null) {
             throw new InternalExtensionException(installer.operator.extensionType, handleFactory + " returned null, when creating a new OperationHandle");
         }
-        operation.someHandle = new SomeOperationHandle<>(handle);
+        SomeOperationHandle<?> someHandle = new SomeOperationHandle<>(operation, handle, null);
+        operation.codeHolder = someHandle.codeHolder;
 
         OperationAccessHandler.instance().onInstall(handle);
 

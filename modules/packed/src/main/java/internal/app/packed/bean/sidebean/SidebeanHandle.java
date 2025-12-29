@@ -28,6 +28,7 @@ import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.invoke.BeanLifecycleSupport;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.util.ServiceMap;
 
 /**
@@ -52,7 +53,7 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
     @Override
     protected void onConfigured() {
         if (!bindings.keySet().equals(injectionSites.keySet())) {
-            throw new IllegalStateException(bindings.keySet() + "  "  + injectionSites.keySet());
+            throw new IllegalStateException(bindings.keySet() + "  " + injectionSites.keySet());
         }
         for (PackedSidebeanBinding psb : bindings) {
             if (psb instanceof PackedSidebeanBinding.SharedConstant sc) {
@@ -74,7 +75,9 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
         for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
             for (SomeLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
-                SomeLifecycleOperationHandle<LifecycleOperationHandle> newh = new SomeLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);
+                OperationSetup operation = OperationSetup.crack(loh.handle);
+
+                SomeLifecycleOperationHandle<LifecycleOperationHandle> newh = new SomeLifecycleOperationHandle<LifecycleOperationHandle>(operation, loh.handle, susage);
                 susage.bean.operations.addLifecycleHandle(newh);
                 BeanLifecycleSupport.addLifecycleHandle(newh);
             }

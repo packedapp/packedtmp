@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.operation.OperationHandle;
 import internal.app.packed.invoke.OperationCodeGenerator;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * An operation handle that can either be a primary bean or an applied sidebean.
@@ -28,15 +29,11 @@ public class SomeOperationHandle<H extends OperationHandle<?>> {
     public final H handle;
 
     /** Holds generated code for the operation. */
+    @Deprecated
     public final OperationCodeGenerator codeHolder;
 
-    public SomeOperationHandle(H operationHandle) {
+    public SomeOperationHandle(OperationSetup operation, H operationHandle, PackedSidebeanAttachment sidebean) {
         this.handle = requireNonNull(operationHandle);
-        codeHolder = new OperationCodeGenerator(this, null);
-    }
-
-    protected SomeOperationHandle(H operationHandle, PackedSidebeanAttachment sidebean) {
-        this.handle = requireNonNull(operationHandle);
-        codeHolder = new OperationCodeGenerator(this, sidebean);
+        codeHolder = new OperationCodeGenerator(operation, this, sidebean);
     }
 }

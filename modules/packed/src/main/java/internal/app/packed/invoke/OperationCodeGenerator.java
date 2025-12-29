@@ -61,9 +61,9 @@ public final class OperationCodeGenerator {
     /**
      * @param packedSideBeanUsage
      */
-    public OperationCodeGenerator(SomeOperationHandle<?> someOperationHandle, @Nullable PackedSidebeanAttachment sidebean) {
+    public OperationCodeGenerator(OperationSetup operation, SomeOperationHandle<?> someOperationHandle, @Nullable PackedSidebeanAttachment sidebean) {
         this.someOperationHandle = someOperationHandle;
-        this.operation = OperationSetup.crack(someOperationHandle.handle);
+        this.operation = operation;
         this.sidebean = sidebean;
     }
 
@@ -126,7 +126,8 @@ public final class OperationCodeGenerator {
         boolean isSideBeanClass = operation.bean.handle() instanceof SidebeanHandle;
 
         if (isSideBeanInstance) {
-            MethodHandle methodHandle = OperationSetup.crack(someOperationHandle.handle).someHandle.codeHolder.generateMethodHandle();
+            // Get the incomplete MethodHandle
+            MethodHandle methodHandle = operation.codeHolder.generateMethodHandle();
             if (isFactory) {
                 methodHandle = methodHandle.asType(methodHandle.type().changeReturnType(Object.class));
                 methodHandle = BeanLifecycleSupport.MH_INVOKE_INITIALIZER_SIDEBEAN.bindTo(sidebean).bindTo(methodHandle);
@@ -138,7 +139,9 @@ public final class OperationCodeGenerator {
             tmp = tmp.asType(tmp.type().changeReturnType(sidebean.sidebean.bean.beanClass));
 
             System.out.println("XXXX " + isFactory);
-            System.out.println("YYYY " + OperationSetup.crack(someOperationHandle.handle).bean.beanKind);
+            System.out.println("XXXX " + operation.handle().getClass());
+
+            System.out.println("YYYY " + operation.bean.beanKind);
             System.out.println("XXXX " + methodHandle.type());
             System.out.println("XXXX " + tmp.type());
 
@@ -244,7 +247,7 @@ public final class OperationCodeGenerator {
 
         // The value is the result of calling an embedded operation
         case BindingProvider.FromEmbeddedOperation(OperationSetup operation) -> {
-            MethodHandle embeddedOperation = operation.someHandle.codeHolder.generateMethodHandle();
+            MethodHandle embeddedOperation = operation.codeHolder.generateMethodHandle();
             for (int j = 0; j < embeddedOperation.type().parameterCount(); j++) {
                 permuters.add(j);
             }

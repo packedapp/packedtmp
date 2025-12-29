@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
 import internal.app.packed.bean.sidebean.SomeOperationHandle;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
@@ -27,15 +28,8 @@ public final class SomeLifecycleOperationHandle<H extends LifecycleOperationHand
 
     public MethodHandle methodHandle;
 
-    /**
-     * @param operationHandle
-     */
-    public SomeLifecycleOperationHandle(H operationHandle) {
-        super(operationHandle);
-    }
-
-    public SomeLifecycleOperationHandle(H operationHandle, PackedSidebeanAttachment sidebean) {
-        super(operationHandle, sidebean);
+    public SomeLifecycleOperationHandle(OperationSetup operation, H operationHandle, PackedSidebeanAttachment sidebean) {
+        super(operation, operationHandle, sidebean);
     }
 
     /**
