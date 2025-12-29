@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -79,6 +80,9 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
 
     /** The operator of the operation. */
     public final ExtensionSetup installedByExtension;
+
+    static final AtomicInteger ID = new AtomicInteger();
+    public final int id = ID.incrementAndGet();
 
     /**
      * The name prefix of the operation.

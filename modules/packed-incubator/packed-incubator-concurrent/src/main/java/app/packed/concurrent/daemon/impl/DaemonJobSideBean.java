@@ -15,6 +15,8 @@
  */
 package app.packed.concurrent.daemon.impl;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -32,12 +34,13 @@ public final class DaemonJobSidebean implements DaemonJobContext {
     private volatile boolean isShutdown;
     private final ThreadFactory factory;
 
-    public DaemonJobSidebean( @SidebeanBinding ThreadFactory factory, @SidebeanBinding Integer i /* /, @SidebeanBinding DaemonOperationInvoker invoker */) {
+    final DaemonInvoker invoker;
+
+    public DaemonJobSidebean(@SidebeanBinding DaemonInvoker invoker, @SidebeanBinding ThreadFactory factory) {
         this.factory = factory;
+        this.invoker = requireNonNull(invoker);
         System.out.println();
         System.out.println(factory);
-        System.out.println("YESSSS " + i);
-        System.out.println();
     }
 
     /** {@inheritDoc} */
@@ -72,7 +75,7 @@ public final class DaemonJobSidebean implements DaemonJobContext {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-//                    invoker.invoke(DaemonJobSideBean.this);
+                    invoker.invoke(DaemonJobSidebean.this);
                 }
             }
         });

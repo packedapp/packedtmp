@@ -16,7 +16,6 @@
 package app.packed.concurrent.daemon.impl;
 
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.sidebean.SidebeanAttachment;
@@ -42,6 +41,8 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
     /** An operation template for a daemon job. */
     private static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withContext(CONTEXT_TEMPLATE).withReturnIgnore();
 
+    private SidebeanAttachment attachment;
+
     public boolean interruptOnStop;
 
     public boolean restart;
@@ -50,10 +51,8 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
 
     public ThreadKind threadKind;
 
-    DaemonJobOperationHandle(OperationInstaller installer, ThreadNamespaceHandle namespace, DaemonJob annotation) {
+    private DaemonJobOperationHandle(OperationInstaller installer, ThreadNamespaceHandle namespace) {
         super(installer, namespace);
-        this.threadKind = annotation.threadKind();
-        this.interruptOnStop = annotation.interruptOnStop();
     }
 
     /** {@inheritDoc} */
@@ -64,17 +63,16 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
 
     /** {@inheritDoc} */
     @Override
-    public DaemonJobMirror newOperationMirror() {
+    protected DaemonJobMirror newOperationMirror() {
         return new DaemonJobMirror(this);
     }
 
     @Override
-    protected void onClose() {
+    protected void onConfigured() {
         attachment.bindConstant(ThreadFactory.class, runtimeThreadFactory());
-        super.onClose();
     }
 
-    public ThreadFactory runtimeThreadFactory() {
+    private ThreadFactory runtimeThreadFactory() {
         ThreadFactory tf = threadFactory;
         if (tf == null) {
             tf = switch (threadKind) {
@@ -86,27 +84,21 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
         return tf;
     }
 
-    static final AtomicInteger AI = new AtomicInteger();
-
-    SidebeanAttachment attachment;
-
     public static void installFromAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, DaemonJob annotation) {
         ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(introspector.extensionHandle());
 
         // Create a new operation
-        DaemonJobOperationHandle handle = method.newOperation(OPERATION_TEMPLATE).install(namespace, (i, n) -> new DaemonJobOperationHandle(i, n, annotation));
+        DaemonJobOperationHandle handle = method.newOperation(OPERATION_TEMPLATE).install(namespace, DaemonJobOperationHandle::new);
+        handle.threadKind = annotation.threadKind();
+        handle.interruptOnStop = annotation.interruptOnStop();
 
         // Lazy install the sidebean
         SidebeanConfiguration<DaemonJobSidebean> sideBean = introspector.base().installSidebeanIfAbsent(DaemonJobSidebean.class, c -> {
-           // c.sidebeanBindInvoker(DaemonOperationInvoker.class);
+            c.sidebeanBindInvoker(DaemonInvoker.class);
             c.sidebeanBindConstant(ThreadFactory.class);
-            c.sidebeanBindConstant(Integer.class);
-
         });
+
         // Create a new attachment
         handle.attachment = sideBean.attachToOperation(handle);
-
-        handle.attachment.bindConstant(Integer.class, AI.incrementAndGet());
-       // useSite.bindBuildConstant(ThreadFactory.class, Thread.ofPlatform().daemon().factory());
     }
 }

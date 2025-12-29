@@ -29,15 +29,15 @@ public final class LookupUtil {
     /** Never instantiate. */
     private LookupUtil() {}
 
-//    public static MethodHandle findConstructor(MethodHandles.Lookup caller, Class<?> inClass, Class<?>... parameterTypes) {
-//        MethodType mt = MethodType.methodType(void.class, parameterTypes);
-//        try {
-//            MethodHandles.Lookup l = MethodHandles.privateLookupIn(inClass, caller);
-//            return l.findConstructor(inClass, mt);
-//        } catch (ReflectiveOperationException e) {
-//            throw new ExceptionInInitializerError(e);
-//        }
-//    }
+    public static MethodHandle findConstructor(MethodHandles.Lookup caller, Class<?> inClass, Class<?>... parameterTypes) {
+        MethodType mt = MethodType.methodType(void.class, parameterTypes);
+        try {
+            MethodHandles.Lookup l = MethodHandles.privateLookupIn(inClass, caller);
+            return l.findConstructor(inClass, mt);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     public static MethodHandle findStaticSelf(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);

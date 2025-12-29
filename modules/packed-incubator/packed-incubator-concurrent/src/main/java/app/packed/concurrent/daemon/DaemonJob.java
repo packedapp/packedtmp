@@ -24,10 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
-import app.packed.binding.Key;
 import app.packed.concurrent.ThreadKind;
 import app.packed.concurrent.daemon.impl.DaemonJobOperationHandle;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
@@ -86,13 +84,8 @@ final class DaemonJobBeanIntrospector extends BaseExtensionBeanIntrospector {
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
         DaemonJobOperationHandle.installFromAnnotation(this, method, (DaemonJob) annotation);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        service.binder().bindInvocationArgument(1);
-    }
 }
+
 //Could return, RESTART, EXIT, SLEEP, CONTINUE
 
 //Tror det er noget den annoterede metode kan returnere

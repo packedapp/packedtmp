@@ -15,26 +15,20 @@
  */
 package app.packed.concurrent.job;
 
-import java.util.Optional;
-
 import app.packed.application.App;
-import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
-import app.packed.concurrent.ThreadNamespaceMirror;
+import app.packed.concurrent.ThreadKind;
 import app.packed.concurrent.daemon.DaemonJob;
-import app.packed.concurrent.daemon.DaemonJobConfiguration;
 import app.packed.concurrent.daemon.DaemonJobContext;
-import app.packed.service.ProvidableBeanConfiguration;
 
 /**
  *
  */
 public class ScTest2 extends BaseAssembly {
 
-    @SuppressWarnings("unused")
     public static void main(String[] args) throws Exception {
-        ApplicationMirror m = App.mirrorOf(new ScTest2());
-        Optional<ThreadNamespaceMirror> o = m.namespace(ThreadNamespaceMirror.class);
+//        ApplicationMirror m = App.mirrorOf(new ScTest2());
+//        Optional<ThreadNamespaceMirror> o = m.namespace(ThreadNamespaceMirror.class);
 
 //        o.get().daemons().forEach(c -> {
 //            IO.println(c.name() + ":" + c.isInteruptAtStop());
@@ -49,17 +43,16 @@ public class ScTest2 extends BaseAssembly {
     @Override
     protected void build() {
         provideInstance("asdasd");
-        ProvidableBeanConfiguration<MuB> p = install(MuB.class);
+        install(MuB.class);
 
-        p.operations(DaemonJobConfiguration.class).findAny().get().threadFactory(e -> new Thread(e));
+//        p.operations(DaemonJobConfiguration.class).findAny().get().threadFactory(e -> new Thread(e));
     }
 
     public static class MuB {
 
-        @DaemonJob
-        public static void dae(DaemonJobContext sc) throws InterruptedException {
+        @DaemonJob(threadKind = ThreadKind.PLATFORM_THREAD)
+        public void dae(DaemonJobContext sc)    {
             IO.println("Daemon");
-            Thread.sleep(100);
         }
     }
 }

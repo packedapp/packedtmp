@@ -15,10 +15,13 @@
  */
 package internal.app.packed.extension.base;
 
+import app.packed.extension.BaseExtensionPoint;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -35,6 +38,12 @@ public abstract class BaseExtensionOperationHandle<C extends OperationConfigurat
 
     public final OperationSetup operation() {
         return OperationSetup.crack(this);
+    }
+
+    public BaseExtensionPoint applicationRootBase() {
+        ExtensionSetup baseExtension = bean().container.application.container().baseExtension();
+        return new PackedExtensionHandle<>(baseExtension).use(BaseExtensionPoint.class);
+
     }
 
     public final BeanSetup bean() {

@@ -82,5 +82,6 @@ public sealed abstract class PackedSidebeanAttachment implements SidebeanAttachm
             OperationSetup operation = this.operation = OperationSetup.crack(handle);
             super(sideBeanHandle, operation.bean);
         }
+
     }
 }

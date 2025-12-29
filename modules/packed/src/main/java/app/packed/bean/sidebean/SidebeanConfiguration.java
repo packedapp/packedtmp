@@ -108,7 +108,7 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
     }
 
     public <K> void sidebeanBindConstant(Key<K> key) {
-        sidebeanBind(key, new PackedSidebeanBinding.Constant(key));
+        sidebeanBind(key, new PackedSidebeanBinding.Constant());
     }
 
     public <K> void sidebeanBindConstantShared(Class<K> key, K constant) {
@@ -116,7 +116,7 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
     }
 
     public <K> void sidebeanBindConstantShared(Key<K> key, K constant) {
-        sidebeanBind(key, new PackedSidebeanBinding.SharedConstant(key, constant));
+        sidebeanBind(key, new PackedSidebeanBinding.SharedConstant(constant));
     }
 
     // bindAbstractInvoker???

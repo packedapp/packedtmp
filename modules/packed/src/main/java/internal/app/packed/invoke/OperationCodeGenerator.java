@@ -25,14 +25,16 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanLifetime;
 import app.packed.binding.Key;
 import app.packed.binding.ProvisionException;
+import app.packed.concurrent.daemon.impl.DaemonInvoker;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
+import internal.app.packed.bean.sidebean.PackedSidebeanAttachment.OfOperation;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding.Constant;
+import internal.app.packed.bean.sidebean.PackedSidebeanBinding.Invoker;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding.SharedConstant;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.binding.BindingProvider;
-import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromSidebeanAttachment;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.invoke.MethodHandleUtil.LazyResolvable;
@@ -54,6 +56,9 @@ public final class OperationCodeGenerator {
     @Nullable
     private MethodHandle cachedMethodHandle;
 
+    /** The invocation type of the method handle being generated. */
+    private MethodType invocationType;
+
     /** The operation we are generating a method handle for */
     private final OperationSetup operation;
 
@@ -66,7 +71,17 @@ public final class OperationCodeGenerator {
     public OperationCodeGenerator(OperationSetup operation, @Nullable PackedSidebeanAttachment sidebean) {
         this.operation = operation;
         this.sidebeanAttachment = sidebean;
+        this.invocationType = operation.template.invocationType();
     }
+
+    /**
+     * Creates an invoker as a method handle.
+     * <p>
+     * This method returns a method handle that can be used to invoke the underlying operation directly. The returned method
+     * handle will have a type matching {@link #invokerType()}.
+     *
+     * @return a method handle for invoking the underlying operation
+     */
 
     MethodHandle generate(boolean lazy) {
         if (lazy) {
@@ -79,15 +94,6 @@ public final class OperationCodeGenerator {
             return generateMethodHandle();
         }
     }
-
-    /**
-     * Creates an invoker as a method handle.
-     * <p>
-     * This method returns a method handle that can be used to invoke the underlying operation directly. The returned method
-     * handle will have a type matching {@link #invokerType()}.
-     *
-     * @return a method handle for invoking the underlying operation
-     */
 
     /**
      * Generates a method handle that can be used to invoke the underlying operation. *
@@ -116,21 +122,20 @@ public final class OperationCodeGenerator {
         return mh;
     }
 
-    MethodType invocationType;
-
     private MethodHandle newMethodHandle() {
         operation.bean.container.application.checkInCodegenPhase();
-
+        if (operation.id == 5) {
+            System.out.println("HMM");
+        }
         boolean isFactory = operation.handle() instanceof FactoryOperationHandle;
 
         boolean requiresBeanInstance = !isFactory && operation.target instanceof MemberOperationTarget mot && !Modifier.isStatic(mot.target.modifiers());
 
-        boolean isSideBeanInstance = sidebeanAttachment != null;
         boolean isSideBeanClass = operation.bean.handle() instanceof SidebeanHandle;
 
         // System.out.println("--> " + operation + " " + sidebeanAttachment);
-        if (isSideBeanInstance) {
-            // Get the incomplete MethodHandle
+        if (sidebeanAttachment != null) {
+            // Get the incomplete MethodHandle that each sidebean attachment needs to adjust
             MethodHandle methodHandle = operation.codeHolder.generateMethodHandle();
             if (isFactory) {
                 // System.out.println(" .... " + isFactory + " " + methodHandle.type());
@@ -141,6 +146,21 @@ public final class OperationCodeGenerator {
                         if (b instanceof Constant _) {
                             Object instance = sidebeanAttachment.constants.get(key);
                             methodHandle = MethodHandles.insertArguments(methodHandle, 1, instance);
+                        } else if (b instanceof Invoker _) {
+                            PackedSidebeanAttachment.OfOperation oo = (OfOperation) sidebeanAttachment;
+                            MethodHandle methodHandle2 = oo.operation.codeHolder.generate(false);
+                            MethodHandle mhh = DaemonInvoker.CONSTRUCTOR.bindTo(methodHandle2);
+                            methodHandle = MethodHandles.collectArguments(methodHandle, 1, mhh);
+                            MethodType finalType = methodHandle.type().dropParameterTypes(1, 2);
+                            int[] reorder = new int[methodHandle.type().parameterCount()];
+                            for (int i = 0, j = 0; i < reorder.length; i++) {
+                                if (i == 1) {
+                                    reorder[i] = 0; // The provider's input (now at 'pos') comes from final param 0
+                                } else {
+                                    reorder[i] = j++; // Other params map 1-to-1 to the remaining final params
+                                }
+                            }
+                            methodHandle = MethodHandles.permuteArguments(methodHandle, finalType, reorder);
                         }
                     }
                 }
@@ -152,20 +172,11 @@ public final class OperationCodeGenerator {
             assert tmp.type().returnType() == Object.class;
             // We need to convert it from Object to the expected type
             tmp = tmp.asType(tmp.type().changeReturnType(sidebeanAttachment.sidebean.bean.beanClass));
-//
-//            System.out.println("XXXX " + isFactory);
-//            System.out.println("XXXX " + operation.handle().getClass());
-//
-//            System.out.println("YYYY " + operation.bean.beanKind);
-//            System.out.println("XXXX " + methodHandle.type());
-//            System.out.println("XXXX " + tmp.type());
 
             return MethodHandleUtil.merge(methodHandle, tmp);
         }
 
         ArrayList<Integer> permuters = new ArrayList<>();
-
-        invocationType = operation.template.invocationType();
 
         MethodHandle mh = operation.target.methodHandle();
 
@@ -181,16 +192,11 @@ public final class OperationCodeGenerator {
             }
         }
 
-//        System.out.println(mh.type());
-
-        // System.out.println("InvokeAs " + invocationType + "Target " + operation.target.methodHandle().type() + " Perm:" +
-        // permuters);
         // Embedded operations normally needs to return a value
         if (operation.embeddedInto != null) {
             invocationType = invocationType.changeReturnType(operation.type.returnRawType());
         }
 
-        System.out.println(invocationType);
         for (BindingSetup binding : operation.bindings) {
             if (binding == null) {
                 System.out.println(operation.type);
@@ -210,12 +216,11 @@ public final class OperationCodeGenerator {
         try {
             mh = MethodHandles.permuteArguments(mh, invocationType, result);
         } catch (RuntimeException e) {
-            e.printStackTrace();
             System.err.println("Permuter array " + permuters);
-            result[1] = 1;
-            mh = MethodHandles.permuteArguments(mh, invocationType, result);
             throw e;
         }
+
+        // System.out.println(operation.id + ",, " + mh.type() + " " + operation);
 
         if (mh.type() != invocationType) {
             System.err.println("OperationType " + operation.type.toString());
@@ -223,8 +228,6 @@ public final class OperationCodeGenerator {
             System.err.println("Actual " + mh.type());
             throw new Error();
         }
-
-        assert mh.type() == operation.template.invocationType();
 
         // We need to store singleton beans in their respective lifetime.
         boolean isFactoryStore = isFactory && operation.bean.beanKind == BeanLifetime.SINGLETON;
@@ -286,8 +289,7 @@ public final class OperationCodeGenerator {
             // Shared constant can be bound immediately, otherwise we need to bind the actual for the attachment
             // at a later timer
             if (b instanceof SharedConstant sc) {
-                Object instance = sc.constant();
-                yield provide(mh, new FromConstant(instance.getClass(), instance), permuters, false);
+                yield MethodHandles.insertArguments(mh, pos, sc.constant());
             } else {
                 Class<?> clazz = mh.type().parameterType(extensionIndex + pos - 1);
                 invocationType = invocationType.appendParameterTypes(clazz);

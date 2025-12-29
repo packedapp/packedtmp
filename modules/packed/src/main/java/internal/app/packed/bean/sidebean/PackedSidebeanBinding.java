@@ -15,14 +15,12 @@
  */
 package internal.app.packed.bean.sidebean;
 
-import app.packed.binding.Key;
-
 /**
  *
  */
 public sealed interface PackedSidebeanBinding {
-    public record Constant(Key<?> key) implements PackedSidebeanBinding {}
-    public record SharedConstant(Key<?> key, Object constant) implements PackedSidebeanBinding {}
+    public record Constant() implements PackedSidebeanBinding {}
+    public record SharedConstant(Object constant) implements PackedSidebeanBinding {}
     public record Invoker(Class<?> invokerType) implements PackedSidebeanBinding {}
 
 }
