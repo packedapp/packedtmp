@@ -27,8 +27,11 @@ import app.packed.binding.Key;
 import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
+import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
+import internal.app.packed.bean.sidebean.PackedSidebeanBinding.SharedConstant;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.invoke.MethodHandleUtil.LazyResolvable;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
@@ -121,7 +124,7 @@ public final class OperationCodeGenerator {
         boolean isSideBeanInstance = sidebeanAttachment != null;
         boolean isSideBeanClass = operation.bean.handle() instanceof SidebeanHandle;
 
-        System.out.println("--> " + operation +"  " + sidebeanAttachment);
+        System.out.println("--> " + operation + "  " + sidebeanAttachment);
         if (isSideBeanInstance) {
             // Get the incomplete MethodHandle
             MethodHandle methodHandle = operation.codeHolder.generateMethodHandle();
@@ -262,9 +265,18 @@ public final class OperationCodeGenerator {
         }
 
         case BindingProvider.FromSidebeanAttachment(Key<?> key, SidebeanHandle<?> handle) -> {
-            System.out.println(handle);
-            // If this should mirror FromLifetimeArena for sidebeans, adapt here.
-            throw new UnsupportedOperationException("FromSidebeanLifetimeArena not implemented for type " + key);
+            PackedSidebeanBinding b = handle.bindings.get(key); // Existance has been checked
+            if (b instanceof SharedConstant sc) {
+                Object instance = sc.constant();
+                yield provide(mh, new FromConstant(instance.getClass(), instance), permuters, false);
+            }
+            if (isSidebean) {
+                System.out.println(b.getClass());
+                System.out.println(handle);
+                // If this should mirror FromLifetimeArena for sidebeans, adapt here.
+                throw new UnsupportedOperationException("FromSidebeanLifetimeArena not implemented for type " + key);
+            }
+            yield mh;
         }
         };
     }

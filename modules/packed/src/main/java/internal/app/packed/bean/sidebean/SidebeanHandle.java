@@ -16,7 +16,9 @@
 package internal.app.packed.bean.sidebean;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanHandle;
@@ -41,7 +43,7 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
     public final ServiceMap<PackedSidebeanBinding> bindings = new ServiceMap<>();
 
-    public final ServiceMap<IntrospectorOnVariable> injectionSites = new ServiceMap<>();
+    public final Set<Key<?>> injectionSites = new HashSet<>();
 
     /**
      * @param installer
@@ -52,13 +54,8 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
     @Override
     protected void onConfigured() {
-        if (!bindings.keySet().equals(injectionSites.keySet())) {
-            throw new IllegalStateException(bindings.keySet() + "  " + injectionSites.keySet());
-        }
-        for (PackedSidebeanBinding psb : bindings) {
-            if (psb instanceof PackedSidebeanBinding.SharedConstant sc) {
-                injectionSites.get(sc.key()).bindConstant(sc.constant());
-            }
+        if (!bindings.keySet().equals(injectionSites)) {
+            throw new IllegalStateException(bindings.keySet() + "  " + injectionSites);
         }
 
         super.onConfigured();
@@ -103,7 +100,7 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
     public void onInject(SidebeanBinding annotation, IntrospectorOnVariable v) {
         // This method is invoked, before #bindings is populated, so we cannot make any checks here
         Key<?> key = v.toKey();
-        injectionSites.put(key, v);
-       // v.bindSidebean(key, this);
+        injectionSites.add(key);
+        v.bindSidebean(key, this);
     }
 }
