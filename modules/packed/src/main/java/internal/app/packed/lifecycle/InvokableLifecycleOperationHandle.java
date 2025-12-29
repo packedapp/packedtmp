@@ -26,18 +26,19 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public final class SomeLifecycleOperationHandle<H extends LifecycleOperationHandle> {
+/// Generate multiple method handles for the same OperationHandle
+public final class InvokableLifecycleOperationHandle<H extends LifecycleOperationHandle> {
 
     public MethodHandle methodHandle;
 
     public final H handle;
 
     /** Holds generated code for the operation. */
-    public final OperationCodeGenerator codeHolder;
+    public final OperationCodeGenerator codeGenerator;
 
-    public SomeLifecycleOperationHandle(OperationSetup operation, H operationHandle, PackedSidebeanAttachment sidebean) {
+    public InvokableLifecycleOperationHandle(H operationHandle, PackedSidebeanAttachment sidebean) {
         this.handle = requireNonNull(operationHandle);
-        this.codeHolder = new OperationCodeGenerator(operation, sidebean);
+        this.codeGenerator = new OperationCodeGenerator(OperationSetup.crack(handle), sidebean);
     }
 
     /**

@@ -26,7 +26,7 @@ import app.packed.bean.lifecycle.StartContext;
 import internal.app.packed.ValueBased;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;
-import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
+import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -34,7 +34,7 @@ import internal.app.packed.util.ThrowableUtil;
  */
 final class StartRunner {
 
-    final Collection<SomeLifecycleOperationHandle<StartOperationHandle>> operations;
+    final Collection<InvokableLifecycleOperationHandle<StartOperationHandle>> operations;
 
     /** The runtime component node we are building. */
     final ExtensionContext pool;
@@ -47,13 +47,13 @@ final class StartRunner {
     /** A structured task scope, used if forking. */
     StructuredTaskScope<Void, Void> ts;
 
-    StartRunner(Collection<SomeLifecycleOperationHandle<StartOperationHandle>> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
+    StartRunner(Collection<InvokableLifecycleOperationHandle<StartOperationHandle>> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
         this.operations = methodHandles;
         this.pool = pool;
         this.runtime = runtime;
     }
 
-    private void run(SomeLifecycleOperationHandle<StartOperationHandle> h) {
+    private void run(InvokableLifecycleOperationHandle<StartOperationHandle> h) {
         try {
             h.methodHandle.invokeExact(pool, (StartContext) new PackedOnStartContext(this));
         } catch (Throwable e) {
@@ -65,7 +65,7 @@ final class StartRunner {
         System.out.println("STARTING " + Thread.currentThread());
         long start = System.currentTimeMillis();
 
-        for (SomeLifecycleOperationHandle<StartOperationHandle> h : operations) {
+        for (InvokableLifecycleOperationHandle<StartOperationHandle> h : operations) {
             if (h.handle.fork) {
                 ts().fork(() -> run(h));
             } else {

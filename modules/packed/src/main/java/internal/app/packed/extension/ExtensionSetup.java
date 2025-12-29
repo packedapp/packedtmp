@@ -75,7 +75,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     }
 
     public void closeApplication() {
-        ExtensionAccessHandler.instance().invokeExtensionOnAssemblyClose(instance);
+        ExtensionAccessHandler.instance().invoke_Extension_OnAssemblyClose(instance);
         tree.isConfigurable = false;
         closeApplication0();
     }
@@ -138,7 +138,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     /** Call {@link Extension#onAssemblyClose()}. */
     public void invokeExtensionOnAssemblyClose() {
         container.onAssemblyClose(this);
-        ExtensionAccessHandler.instance().invokeExtensionOnAssemblyClose(instance);
+        ExtensionAccessHandler.instance().invoke_Extension_OnAssemblyClose(instance);
     }
 
     /** {@inheritDoc} */
@@ -154,7 +154,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     }
 
     public ExtensionMirror<?> newExtensionMirror(Class<? extends ExtensionMirror<?>> mirrorClass) {
-        ExtensionMirror<?> mirror = ExtensionAccessHandler.instance().invokeExtensionNewExtensionMirror(instance());
+        ExtensionMirror<?> mirror = ExtensionAccessHandler.instance().invoke_Extension_NewExtensionMirror(instance());
         if (mirror == null) {
             throw new InternalExtensionException("Extension " + model.fullName() + " returned null from " + model.name() + ".newExtensionMirror()");
         }
@@ -187,12 +187,12 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
 
     public static ExtensionSetup crack(Extension<?> extension) {
         requireNonNull(extension, "extension is null");
-        return ExtensionAccessHandler.instance().getExtensionHandle(extension);
+        return ExtensionAccessHandler.instance().get_Extension_ExtensionSetup(extension);
     }
 
     public static PackedExtensionPointHandle crack(ExtensionPoint<?> extensionPoint) {
         requireNonNull(extensionPoint, "extensionPoint is null");
-        return ExtensionAccessHandler.instance().getExtensionPointPackedExtensionUseSite(extensionPoint);
+        return ExtensionAccessHandler.instance().get_ExtensionPoint_PackedExtensionPointHandle(extensionPoint);
     }
 
     /**
@@ -214,7 +214,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         // Create the new extension
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
 
-        // Create the new extension instance, using a MethodHandle
+        // Create the new extension instance
         Extension<?> instance = extension.instance = extension.model.factory.create(extension);
 
         // Add the extension to the container's map of extensions
@@ -226,7 +226,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         }
 
         // Invoke Extension#onNew() before returning the extension
-        ExtensionAccessHandler.instance().invokeExtensionOnNew(instance);
+        ExtensionAccessHandler.instance().invoke_Extension_OnNew(instance);
         return extension;
     }
 }

@@ -27,8 +27,7 @@ import app.packed.bean.sidebean.SidebeanConfiguration;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.invoke.BeanLifecycleSupport;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
-import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.service.util.ServiceMap;
 
 /**
@@ -73,11 +72,9 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
     public void addAttachment(PackedSidebeanAttachment susage) {
         usage.add(susage);
 
-        for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
-            for (SomeLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
-                OperationSetup operation = OperationSetup.crack(loh.handle);
-
-                SomeLifecycleOperationHandle<LifecycleOperationHandle> newh = new SomeLifecycleOperationHandle<LifecycleOperationHandle>(operation, loh.handle, susage);
+        for (List<InvokableLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
+            for (InvokableLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
+                InvokableLifecycleOperationHandle<LifecycleOperationHandle> newh = new InvokableLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);
                 susage.bean.operations.addLifecycleHandle(newh);
                 BeanLifecycleSupport.addLifecycleHandle(newh);
             }

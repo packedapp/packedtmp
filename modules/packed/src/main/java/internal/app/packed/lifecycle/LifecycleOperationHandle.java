@@ -41,7 +41,6 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 import internal.app.packed.invoke.BeanLifecycleSupport;
-import internal.app.packed.operation.OperationSetup;
 
 /** An operation handle for lifecycle operation on a bean. */
 public abstract sealed class LifecycleOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration>
@@ -65,7 +64,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
 
     @Override
     protected void onInstall() {
-        SomeLifecycleOperationHandle<LifecycleOperationHandle> soh = new SomeLifecycleOperationHandle<>(OperationSetup.crack(this), this, null);
+        InvokableLifecycleOperationHandle<LifecycleOperationHandle> soh = new InvokableLifecycleOperationHandle<>(this, null);
         bean().operations.addLifecycleHandle(soh);
         BeanLifecycleSupport.addLifecycleHandle(soh);
     }

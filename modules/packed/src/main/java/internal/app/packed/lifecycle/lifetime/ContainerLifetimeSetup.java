@@ -32,7 +32,7 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.AbstractInitializingOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
-import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
+import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.ThrowableUtil;
@@ -56,20 +56,20 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     /** An object that is shared between all entry point extensions in the same application. */
     public final EntryPointManager entryPoints = new EntryPointManager();
 
-    public final List<SomeLifecycleOperationHandle<AbstractInitializingOperationHandle>> initializationPost = new ArrayList<>();
+    public final List<InvokableLifecycleOperationHandle<AbstractInitializingOperationHandle>> initializationPost = new ArrayList<>();
 
-    public final List<IndexedOperationHandle<SomeLifecycleOperationHandle<AbstractInitializingOperationHandle>>> initializationPre = new ArrayList<>();
+    public final List<IndexedOperationHandle<InvokableLifecycleOperationHandle<AbstractInitializingOperationHandle>>> initializationPre = new ArrayList<>();
 
     // Er ikke noedvendigvis fra et entrypoint, kan ogsaa vaere en completer
     public final Class<?> resultType;
 
-    public final List<SomeLifecycleOperationHandle<StartOperationHandle>> startersPost = new ArrayList<>();
+    public final List<InvokableLifecycleOperationHandle<StartOperationHandle>> startersPost = new ArrayList<>();
 
-    public final List<SomeLifecycleOperationHandle<StartOperationHandle>> startersPre = new ArrayList<>();
+    public final List<InvokableLifecycleOperationHandle<StartOperationHandle>> startersPre = new ArrayList<>();
 
-    public final List<SomeLifecycleOperationHandle<StopOperationHandle>> stoppersPost = new ArrayList<>();
+    public final List<InvokableLifecycleOperationHandle<StopOperationHandle>> stoppersPost = new ArrayList<>();
 
-    public final List<SomeLifecycleOperationHandle<StopOperationHandle>> stoppersPre = new ArrayList<>();
+    public final List<InvokableLifecycleOperationHandle<StopOperationHandle>> stoppersPre = new ArrayList<>();
 
     public final LifetimeStore store = new LifetimeStore();
 
@@ -97,7 +97,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     }
 
     public void initialize(ExtensionContext pool) {
-        for (IndexedOperationHandle<SomeLifecycleOperationHandle<AbstractInitializingOperationHandle>> mh : initializationPre) {
+        for (IndexedOperationHandle<InvokableLifecycleOperationHandle<AbstractInitializingOperationHandle>> mh : initializationPre) {
             try {
                 mh.operationHandle().methodHandle.invokeExact(pool);
             } catch (Throwable e) {
@@ -105,7 +105,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
             }
         }
 
-        for (SomeLifecycleOperationHandle<AbstractInitializingOperationHandle> mh : initializationPost) {
+        for (InvokableLifecycleOperationHandle<AbstractInitializingOperationHandle> mh : initializationPost) {
             try {
                 mh.methodHandle.invokeExact(pool);
             } catch (Throwable e) {
@@ -148,15 +148,15 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void orderDependenciesBeans0(BeanSetup bean) {
-        for (List<SomeLifecycleOperationHandle<LifecycleOperationHandle>> lop : bean.operations.allLifecycleHandles.values()) {
-            for (SomeLifecycleOperationHandle<LifecycleOperationHandle> h : lop) {
+        for (List<InvokableLifecycleOperationHandle<LifecycleOperationHandle>> lop : bean.operations.allLifecycleHandles.values()) {
+            for (InvokableLifecycleOperationHandle<LifecycleOperationHandle> h : lop) {
                 switch (h.lifecycleKind()) {
                 case FACTORY, INJECT, INITIALIZE_PRE_ORDER -> initializationPre.add(new IndexedOperationHandle(h, bean.lifetimeStoreIndex));
-                case INITIALIZE_POST_ORDER -> startersPost.addFirst((SomeLifecycleOperationHandle) h);
-                case START_PRE_ORDER -> startersPre.add((SomeLifecycleOperationHandle) h);
-                case START_POST_ORDER -> startersPost.addFirst((SomeLifecycleOperationHandle) h);
-                case STOP_PRE_ORDER -> stoppersPre.add((SomeLifecycleOperationHandle) h);
-                case STOP_POST_ORDER -> stoppersPost.addFirst((SomeLifecycleOperationHandle) h);
+                case INITIALIZE_POST_ORDER -> startersPost.addFirst((InvokableLifecycleOperationHandle) h);
+                case START_PRE_ORDER -> startersPre.add((InvokableLifecycleOperationHandle) h);
+                case START_POST_ORDER -> startersPost.addFirst((InvokableLifecycleOperationHandle) h);
+                case STOP_PRE_ORDER -> stoppersPre.add((InvokableLifecycleOperationHandle) h);
+                case STOP_POST_ORDER -> stoppersPost.addFirst((InvokableLifecycleOperationHandle) h);
                 }
             }
         }

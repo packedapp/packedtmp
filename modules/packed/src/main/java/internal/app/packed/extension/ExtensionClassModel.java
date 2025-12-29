@@ -78,8 +78,8 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
     /** The extension we model. */
     private final Class<? extends Extension<?>> extensionClass;
 
-    /** A method handle for creating new instances of extensionClass. */
-    final ExtensionFactory factory; // (ExtensionSetup)Extension
+    /** A factory for creating new instances of {@link #extensionClass}. */
+    final ExtensionFactory factory;
 
     /** The (simple) name of the extension as returned by {@link Class#getSimpleName()}. */
     private final String name;
@@ -98,10 +98,10 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
      * @param builder
      *            the builder of the model
      */
-    private ExtensionClassModel(Builder builder, ExtensionFactory factory) {
+    private ExtensionClassModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
         this.realm = ComponentRealm.extension(extensionClass);
-        this.factory = requireNonNull(factory);
+        this.factory = ExtensionLookupSupport.findExtensionConstructor(extensionClass);
         this.orderingDepth = builder.depth;
         this.dependencies = Set.copyOf(builder.dependencies);
 
@@ -211,17 +211,6 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
     }
 
     /**
-     * Creates a new instance of the extension.
-     *
-     * @param extension
-     *            the setup of the extension
-     * @return a new extension instance
-     */
-    Extension<?> newInstance(ExtensionSetup extension) {
-        return factory.create(extension);
-    }
-
-    /**
      * Returns the depth of the extension in the extension dependency graph.
      * <p>
      * Extensions without any dependencies always have depth 0. Otherwise the depth of an extension it is the maximum depth
@@ -303,7 +292,7 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
          *
          * @return the extension model
          */
-        private ExtensionClassModel build(Loader loader) {
+        private ExtensionClassModel build(ExtensionClassModel.Loader loader) {
             DependsOn depende = extensionClass.getAnnotation(DependsOn.class);
             if (depende != null) {
                 dependsOn(false, depende.extensions());
@@ -317,7 +306,7 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
                 dependencies.add(dependencyType);
             }
 
-            return new ExtensionClassModel(this, ExtensionLookupSupport.findExtensionConstructor(extensionClass));
+            return new ExtensionClassModel(this);
         }
 
         /**

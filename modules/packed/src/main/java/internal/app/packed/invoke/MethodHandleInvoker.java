@@ -56,8 +56,9 @@ public abstract class MethodHandleInvoker {
         }
     }
 
+    /** A factory class for creating instances of {@link Extension} */
     public static final class ExtensionFactory extends MethodHandleInvoker {
-        private final MethodHandle mh;
+        private final MethodHandle mh; // (ExtensionHandle)Extension
 
         public ExtensionFactory(MethodHandle mh) {
             this.mh = requireNonNull(mh);

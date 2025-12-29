@@ -31,17 +31,13 @@ public abstract class ExtensionAccessHandler extends AccessHelper {
 
     private static final Supplier<ExtensionAccessHandler> CONSTANT = StableValue.supplier(() -> init(ExtensionAccessHandler.class, Extension.class));
 
-    public static ExtensionAccessHandler instance() {
-        return CONSTANT.get();
-    }
-
     /**
      * Gets the ExtensionSetup from an Extension.
      *
      * @param extension the extension
      * @return the extension setup
      */
-    public abstract ExtensionSetup getExtensionHandle(Extension<?> extension);
+    public abstract ExtensionSetup get_Extension_ExtensionSetup(Extension<?> extension);
 
     /**
      * Gets the PackedExtensionPointHandle from an ExtensionPoint.
@@ -49,7 +45,7 @@ public abstract class ExtensionAccessHandler extends AccessHelper {
      * @param extensionPoint the extension point
      * @return the packed extension use site
      */
-    public abstract PackedExtensionPointHandle getExtensionPointPackedExtensionUseSite(ExtensionPoint<?> extensionPoint);
+    public abstract PackedExtensionPointHandle get_ExtensionPoint_PackedExtensionPointHandle(ExtensionPoint<?> extensionPoint);
 
     /**
      * Invokes the protected newExtensionMirror method on an Extension.
@@ -57,28 +53,7 @@ public abstract class ExtensionAccessHandler extends AccessHelper {
      * @param extension the extension
      * @return the extension mirror
      */
-    public abstract ExtensionMirror<?> invokeExtensionNewExtensionMirror(Extension<?> extension);
-
-    /**
-     * Invokes the protected onClose method on an Extension.
-     *
-     * @param extension the extension
-     */
-    public abstract void invokeExtensionOnApplicationClose(Extension<?> extension);
-
-    /**
-     * Invokes the protected onConfigured method on an Extension.
-     *
-     * @param extension the extension
-     */
-    public abstract void invokeExtensionOnAssemblyClose(Extension<?> extension);
-
-    /**
-     * Invokes the protected onNew method on an Extension.
-     *
-     * @param extension the extension
-     */
-    public abstract void invokeExtensionOnNew(Extension<?> extension);
+    public abstract ExtensionMirror<?> invoke_Extension_NewExtensionMirror(Extension<?> extension);
 
     /**
      * Invokes the protected newExtensionPoint method on an Extension.
@@ -87,5 +62,30 @@ public abstract class ExtensionAccessHandler extends AccessHelper {
      * @param usesite the use site handle
      * @return the extension point
      */
-    public abstract ExtensionPoint<?> newExtensionPoint(Extension<?> extension, ExtensionPointHandle usesite);
+    public abstract ExtensionPoint<?> invoke_Extension_NewExtensionPoint(Extension<?> extension, ExtensionPointHandle usesite);
+
+    /**
+     * Invokes the protected onClose method on an Extension.
+     *
+     * @param extension the extension
+     */
+    public abstract void invoke_Extension_OnApplicationClose(Extension<?> extension);
+
+    /**
+     * Invokes the protected onConfigured method on an Extension.
+     *
+     * @param extension the extension
+     */
+    public abstract void invoke_Extension_OnAssemblyClose(Extension<?> extension);
+
+    /**
+     * Invokes the protected onNew method on an Extension.
+     *
+     * @param extension the extension
+     */
+    public abstract void invoke_Extension_OnNew(Extension<?> extension);
+
+    public static ExtensionAccessHandler instance() {
+        return CONSTANT.get();
+    }
 }

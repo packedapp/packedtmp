@@ -99,7 +99,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
 
         PackedExtensionPointHandle c = new PackedExtensionPointHandle(otherExtension, extension);
         // Create a new extension point
-        ExtensionPoint<?> newExtensionPoint = ExtensionAccessHandler.instance().newExtensionPoint(otherExtension.instance(), c);
+        ExtensionPoint<?> newExtensionPoint = ExtensionAccessHandler.instance().invoke_Extension_NewExtensionPoint(otherExtension.instance(), c);
 
         if (newExtensionPoint == null) {
             throw new NullPointerException(

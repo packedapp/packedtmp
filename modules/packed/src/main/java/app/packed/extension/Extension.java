@@ -516,37 +516,37 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         AccessHelper.initHandler(ExtensionAccessHandler.class, new ExtensionAccessHandler() {
 
             @Override
-            public ExtensionSetup getExtensionHandle(Extension<?> extension) {
+            public ExtensionSetup get_Extension_ExtensionSetup(Extension<?> extension) {
                 return extension.extension;
             }
 
             @Override
-            public PackedExtensionPointHandle getExtensionPointPackedExtensionUseSite(ExtensionPoint<?> extensionPoint) {
+            public PackedExtensionPointHandle get_ExtensionPoint_PackedExtensionPointHandle(ExtensionPoint<?> extensionPoint) {
                 return extensionPoint.handle;
             }
 
             @Override
-            public ExtensionMirror<?> invokeExtensionNewExtensionMirror(Extension<?> extension) {
+            public ExtensionMirror<?> invoke_Extension_NewExtensionMirror(Extension<?> extension) {
                 return extension.newExtensionMirror();
             }
 
             @Override
-            public void invokeExtensionOnApplicationClose(Extension<?> extension) {
+            public void invoke_Extension_OnApplicationClose(Extension<?> extension) {
                 extension.onClose();
             }
 
             @Override
-            public void invokeExtensionOnAssemblyClose(Extension<?> extension) {
+            public void invoke_Extension_OnAssemblyClose(Extension<?> extension) {
                 extension.onConfigured();
             }
 
             @Override
-            public void invokeExtensionOnNew(Extension<?> extension) {
+            public void invoke_Extension_OnNew(Extension<?> extension) {
                 extension.onNew();
             }
 
             @Override
-            public ExtensionPoint<?> newExtensionPoint(Extension<?> extension, ExtensionPointHandle usesite) {
+            public ExtensionPoint<?> invoke_Extension_NewExtensionPoint(Extension<?> extension, ExtensionPointHandle usesite) {
                 return extension.newExtensionPoint(usesite);
             }
         });
