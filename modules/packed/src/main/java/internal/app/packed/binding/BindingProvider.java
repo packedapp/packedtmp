@@ -17,6 +17,8 @@ package internal.app.packed.binding;
 
 import java.util.function.Supplier;
 
+import app.packed.binding.Key;
+import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 import internal.app.packed.operation.OperationSetup;
@@ -70,12 +72,12 @@ public sealed interface BindingProvider {
         }
     }
 
-    public record FromSidebeanLifetimeArena(Class<?> type) implements BindingProvider {
+    public record FromSidebeanAttachment(Key<?> key, SidebeanHandle<?> handle) implements BindingProvider {
 
         /** {@inheritDoc} */
         @Override
         public BindingProviderKind kind() {
-            return BindingProviderKind.OPERATION_RESULT;
+            throw new UnsupportedOperationException();
         }
     }
 

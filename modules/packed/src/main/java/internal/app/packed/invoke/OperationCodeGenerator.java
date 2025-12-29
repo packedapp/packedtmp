@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLifetime;
+import app.packed.binding.Key;
 import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
@@ -44,7 +45,7 @@ public final class OperationCodeGenerator {
     public LazyResolvable cachedLazyMethodHandle;
 
     /** The generated method handle. */
-    // Vi har behov for cachen fordi kode generering kalde generate rekursivt.
+    // Vi har behov for at cache fordi kode generering kalde generate rekursivt.
     @Nullable
     private MethodHandle cachedMethodHandle;
 
@@ -52,15 +53,14 @@ public final class OperationCodeGenerator {
     private final OperationSetup operation;
 
     @Nullable
-    public
-    final PackedSidebeanAttachment sidebean;
+    public final PackedSidebeanAttachment sidebeanAttachment;
 
     /**
      * @param packedSideBeanUsage
      */
     public OperationCodeGenerator(OperationSetup operation, @Nullable PackedSidebeanAttachment sidebean) {
         this.operation = operation;
-        this.sidebean = sidebean;
+        this.sidebeanAttachment = sidebean;
     }
 
     MethodHandle generate(boolean lazy) {
@@ -118,21 +118,22 @@ public final class OperationCodeGenerator {
 
         boolean requiresBeanInstance = !isFactory && operation.target instanceof MemberOperationTarget mot && !Modifier.isStatic(mot.target.modifiers());
 
-        boolean isSideBeanInstance = sidebean != null;
+        boolean isSideBeanInstance = sidebeanAttachment != null;
         boolean isSideBeanClass = operation.bean.handle() instanceof SidebeanHandle;
 
+        System.out.println("--> " + operation +"  " + sidebeanAttachment);
         if (isSideBeanInstance) {
             // Get the incomplete MethodHandle
             MethodHandle methodHandle = operation.codeHolder.generateMethodHandle();
             if (isFactory) {
                 methodHandle = methodHandle.asType(methodHandle.type().changeReturnType(Object.class));
-                methodHandle = BeanLifecycleSupport.MH_INVOKE_INITIALIZER_SIDEBEAN.bindTo(sidebean).bindTo(methodHandle);
+                methodHandle = BeanLifecycleSupport.MH_INVOKE_INITIALIZER_SIDEBEAN.bindTo(sidebeanAttachment).bindTo(methodHandle);
                 return methodHandle;
             }
-            MethodHandle tmp = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, sidebean.lifetimeStoreIndex.index);
+            MethodHandle tmp = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, sidebeanAttachment.lifetimeStoreIndex.index);
             assert tmp.type().returnType() == Object.class;
             // We need to convert it from Object to the expected type
-            tmp = tmp.asType(tmp.type().changeReturnType(sidebean.sidebean.bean.beanClass));
+            tmp = tmp.asType(tmp.type().changeReturnType(sidebeanAttachment.sidebean.bean.beanClass));
 
             System.out.println("XXXX " + isFactory);
             System.out.println("XXXX " + operation.handle().getClass());
@@ -217,6 +218,7 @@ public final class OperationCodeGenerator {
     }
 
     private MethodHandle provide(MethodHandle mh, BindingProvider p, ArrayList<Integer> permuters, boolean isSidebean) {
+        System.out.println("----> " + p + "  " + isSidebean);
         int extensionIndex = isSidebean ? 1 : 0;
         int pos = permuters.size();
 
@@ -259,9 +261,10 @@ public final class OperationCodeGenerator {
             yield MethodHandles.collectArguments(mh, extensionIndex, tmp);
         }
 
-        case BindingProvider.FromSidebeanLifetimeArena(Class<?> type) -> {
+        case BindingProvider.FromSidebeanAttachment(Key<?> key, SidebeanHandle<?> handle) -> {
+            System.out.println(handle);
             // If this should mirror FromLifetimeArena for sidebeans, adapt here.
-            throw new UnsupportedOperationException("FromSidebeanLifetimeArena not implemented for type " + type);
+            throw new UnsupportedOperationException("FromSidebeanLifetimeArena not implemented for type " + key);
         }
         };
     }

@@ -38,11 +38,13 @@ import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedVariableCache;
+import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromComputedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
-import internal.app.packed.binding.BindingProvider.FromInvocationArgument;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
+import internal.app.packed.binding.BindingProvider.FromInvocationArgument;
+import internal.app.packed.binding.BindingProvider.FromSidebeanAttachment;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.binding.SuppliedBindingKind;
 import internal.app.packed.context.ContextSetup;
@@ -199,6 +201,13 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
 
         // Resolve the new operation immediately
         scanner.resolveBindings(os);
+        return this;
+    }
+
+    // not on interface
+    public IntrospectorOnVariable bindSidebean(Key<?> key, SidebeanHandle<?> sidebean) {
+        checkBeforeBind();
+        bind(new FromSidebeanAttachment(key, sidebean));
         return this;
     }
 

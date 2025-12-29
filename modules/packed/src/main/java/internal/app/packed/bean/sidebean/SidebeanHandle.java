@@ -24,10 +24,11 @@ import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.sidebean.SidebeanBinding;
 import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.binding.Key;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.invoke.BeanLifecycleSupport;
-import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.service.util.ServiceMap;
 
 /**
@@ -101,6 +102,8 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
      */
     public void onInject(SidebeanBinding annotation, IntrospectorOnVariable v) {
         // This method is invoked, before #bindings is populated, so we cannot make any checks here
-        injectionSites.put(v.toKey(), v);
+        Key<?> key = v.toKey();
+        injectionSites.put(key, v);
+       // v.bindSidebean(key, this);
     }
 }

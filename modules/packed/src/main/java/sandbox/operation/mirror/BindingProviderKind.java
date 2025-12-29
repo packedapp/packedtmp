@@ -28,7 +28,7 @@ public enum BindingProviderKind {
     /** An argument that is provided when invoking the operation. */
     ARGUMENT,
 
-    /** The binding is a result of another operation (possible on arguments to the operation). */
+    /** The binding is a result of another operation (possible an arguments to the operation). */
     OPERATION_RESULT;
 }
 // LifetimeConstant

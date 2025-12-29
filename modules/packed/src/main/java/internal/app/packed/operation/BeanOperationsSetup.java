@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.PackedBeanLifecycleKind;
-import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.LazyNamer;
@@ -34,8 +34,6 @@ public final class BeanOperationsSetup implements Iterable<OperationSetup> {
 
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> all = new ArrayList<>();
-
-    public CompoundOperation initialization;
 
     /**
      * All lifecycle operations for the bean. Is initially unsorted as operations can be added in any order. But in the end
@@ -69,7 +67,7 @@ public final class BeanOperationsSetup implements Iterable<OperationSetup> {
     }
 
     public void addLifecycleHandle(InvokableLifecycleOperationHandle<LifecycleOperationHandle> handle) {
-        if (handle.codeGenerator.sidebean == null) {
+        if (handle.codeGenerator.sidebeanAttachment == null) {
             lifecycleHandles.compute(handle.lifecycleKind(), (_, v) -> {
                 if (v == null) {
                     return List.of(handle);

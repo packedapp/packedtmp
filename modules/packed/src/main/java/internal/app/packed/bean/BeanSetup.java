@@ -37,7 +37,6 @@ import internal.app.packed.binding.BindingProvider.FromComputedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
-import internal.app.packed.binding.BindingProvider.FromSidebeanLifetimeArena;
 import internal.app.packed.binding.SuppliedBindingKind;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
@@ -171,7 +170,8 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         } else if (beanKind == BeanLifetime.SINGLETON) { // we've already checked if instance
             return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, bean.beanClass);
         } else if (beanKind == BeanLifetime.SIDEBEAN) {
-            return new FromSidebeanLifetimeArena(bean.beanClass);
+            throw new UnsupportedOperationException();
+            //return new FromSidebeanAttachment(bean.beanClass, null);
         } else if (beanKind == BeanLifetime.UNMANAGED) {
             return new FromEmbeddedOperation(operations.first());
         } else {
