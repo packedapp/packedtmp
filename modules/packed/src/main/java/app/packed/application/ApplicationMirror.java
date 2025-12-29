@@ -283,7 +283,7 @@ final class ApplicationMirrorIntrospector extends BaseExtensionBeanIntrospector 
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        service.binder().bindInstance(service.bean().container.application.mirror());
+        service.binder().bindConstant(service.bean().container.application.mirror());
     }
 }
 

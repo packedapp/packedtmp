@@ -276,7 +276,7 @@ final class ContainerMirrorBeanIntrospector extends BaseExtensionBeanIntrospecto
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        service.binder().bindInstance(service.bean().container.mirror());
+        service.binder().bindConstant(service.bean().container.mirror());
     }
 }
 //public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {

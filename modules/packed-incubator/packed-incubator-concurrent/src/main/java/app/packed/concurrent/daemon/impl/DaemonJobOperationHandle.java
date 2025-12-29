@@ -24,7 +24,6 @@ import app.packed.concurrent.daemon.DaemonJob;
 import app.packed.concurrent.daemon.DaemonJobConfiguration;
 import app.packed.concurrent.daemon.DaemonJobContext;
 import app.packed.concurrent.daemon.DaemonJobMirror;
-import app.packed.concurrent.daemon.impl.DaemonJobSideBean.DaemonOperationInvoker;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationInstaller;
@@ -86,11 +85,10 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
         DaemonJobOperationHandle handle = method.newOperation(OPERATION_TEMPLATE).install(namespace, (i, n) -> new DaemonJobOperationHandle(i, n, annotation));
 
         // Lazy install the sidebean
-        SidebeanConfiguration<DaemonJobSideBean> sideBean = introspector.base().installSidebeanIfAbsent(DaemonJobSideBean.class, c -> {
-            c.attachmentBindInvoker(DaemonOperationInvoker.class);
-            c.attachmentBindConstant(ThreadFactory.class, Thread.ofPlatform().daemon().factory());
+        SidebeanConfiguration<DaemonJobSidebean> sideBean = introspector.base().installSidebeanIfAbsent(DaemonJobSidebean.class, c -> {
+           // c.sidebeanBindInvoker(DaemonOperationInvoker.class);
+            c.sidebeanBindConstantShared(ThreadFactory.class, Thread.ofPlatform().daemon().factory());
         });
-
         // Create a new attachment
         sideBean.attachToOperation(handle);
 

@@ -18,13 +18,13 @@ package internal.app.packed.concurrent;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
+import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 
 /**
  *
  */
-public class ThreadedOperationHandle<C extends OperationConfiguration> extends OperationHandle<C> {
+public class ThreadedOperationHandle<C extends OperationConfiguration> extends BaseExtensionOperationHandle<C> {
 
     public final ThreadNamespaceHandle namespace;
 

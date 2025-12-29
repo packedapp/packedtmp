@@ -102,7 +102,7 @@ final class DeploymentBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        service.binder().bindInstance(service.bean().container.application.deployment.mirror());
+        service.binder().bindConstant(service.bean().container.application.deployment.mirror());
     }
 }
 

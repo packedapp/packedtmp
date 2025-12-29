@@ -71,8 +71,8 @@ public record IntrospectorOnVariableUnwrapped(IntrospectorOnVariable var) implem
     }
 
     @Override
-    public IntrospectorOnVariableUnwrapped bindInstance(@Nullable Object obj) {
-        var.bindInstance(obj);
+    public IntrospectorOnVariableUnwrapped bindConstant(@Nullable Object obj) {
+        var.bindConstant(obj);
         return this;
     }
 

@@ -33,7 +33,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
 import internal.app.packed.binding.BindingProvider;
-import internal.app.packed.binding.BindingProvider.FromCodeGeneratedConstant;
+import internal.app.packed.binding.BindingProvider.FromComputedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
@@ -179,9 +179,9 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         }
     }
 
-    public <K> void bindCodeGeneratedConstant(Key<K> key, Supplier<? extends K> supplier) {
+    public <K> void bindComputedConstant(Key<K> key, Supplier<? extends K> supplier) {
         requireNonNull(supplier, "supplier is null");
-        serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromCodeGeneratedConstant(supplier, SuppliedBindingKind.CODEGEN)));
+        serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromComputedConstant(supplier, SuppliedBindingKind.CODEGEN)));
     }
 
     /** {@inheritDoc} */

@@ -24,7 +24,6 @@ import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
 import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
-import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -40,10 +39,9 @@ public class BeanLifecycleSupport {
             PackedSidebeanAttachment.class, MethodHandle.class, ExtensionContext.class);
 
     public static void addLifecycleHandle(SomeLifecycleOperationHandle<LifecycleOperationHandle> handle) {
-        OperationSetup os = OperationSetup.crack(handle.handle);
 
         // (ExtensionContext)Object
-        os.bean.container.application.addCodegenAction(() -> {
+        handle.handle.operation().bean.container.application.addCodegenAction(() -> {
             handle.methodHandle = handle.codeHolder.generate(false);
         });
     }

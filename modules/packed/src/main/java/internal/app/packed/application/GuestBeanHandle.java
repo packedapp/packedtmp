@@ -30,7 +30,6 @@ import app.packed.binding.Variable;
 import app.packed.component.guest.ComponentHostConfiguration;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.context.Context;
-import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.ServiceLocator;
@@ -98,7 +97,7 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         BeanInstaller installer = APPLICATION_GUEST_BEAN_TEMPLATE.newInstaller(installingExtension, owner);
 
         // Create the bean
-        Bean<?> bean = template.op() == null ? Bean.of(template.guestClass()) : Bean.of((Op<?>) template.op());
+        Bean<?> bean = template.op() == null ? Bean.of(template.guestClass()) : Bean.of(template.op());
 
         GuestBeanHandle h = installer.install(bean, GuestBeanHandle::new);
         return h;

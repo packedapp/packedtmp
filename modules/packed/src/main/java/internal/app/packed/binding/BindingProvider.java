@@ -31,7 +31,7 @@ public sealed interface BindingProvider {
     sealed interface SupplierOrInstance extends BindingProvider {}
 
     /** Provides an instance from a constant that is created at code generation time. */
-    public record FromCodeGeneratedConstant(Supplier<?> supplier, SuppliedBindingKind suppliedBindingkind) implements SupplierOrInstance {
+    public record FromComputedConstant(Supplier<?> supplier, SuppliedBindingKind suppliedBindingkind) implements SupplierOrInstance {
 
         /** {@inheritDoc} */
         @Override

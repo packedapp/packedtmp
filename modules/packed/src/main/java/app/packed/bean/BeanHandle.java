@@ -120,18 +120,18 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      */
     // Is lazy, or eager?
     // Eager_never_fail, Eager_fail_if_not_used, Lazy_whenFirstUsed, LazyFailIfNotUsed, Some default for the container?
-    public final <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
+    public final <K> void bindComputedConstant(Key<K> key, Supplier<? extends K> supplier) {
         checkIsOpen();
-        bean.bindCodeGeneratedConstant(key, supplier);
+        bean.bindComputedConstant(key, supplier);
     }
 
-    public final <K> void bindServiceInstance(Class<K> key, K constant) {
-        bindServiceInstance(Key.of(key), constant);
+    public final <K> void bindConstant(Class<K> key, K constant) {
+        bindConstant(Key.of(key), constant);
     }
 
     // Problemet med dette navn er at folk kan tror det er en bean instance
     // Hmm vi kaldet det bind
-    public final <K> void bindServiceInstance(Key<K> key, K instance) {
+    public final <K> void bindConstant(Key<K> key, K instance) {
         requireNonNull(key);
 
         // Add a service provider for the instance
@@ -324,16 +324,16 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle, boolean)
      */
     /* package private */ final void onStateChange(boolean isClose) {
+        if (  state == ComponentBuildState.CONFIGURABLE_AND_OPEN) {
+            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
+            onConfigured();
+        }
 
         if (isClose) {
             int i = onStateChange(0, isClose);
             onClose();
             onStateChange(i, isClose);
             state = ComponentBuildState.CLOSED;
-        } else {
-            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
-
-            onConfigured();
         }
     }
 

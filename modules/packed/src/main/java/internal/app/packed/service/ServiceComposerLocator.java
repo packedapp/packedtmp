@@ -21,7 +21,7 @@ import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.assembly.AbstractComposer.ComposerAction;
 import app.packed.assembly.Assembly;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.GuestBinding;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
@@ -41,7 +41,7 @@ public class ServiceComposerLocator {
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
             private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-                    .of(ApplicationTemplate.ofUnmanaged(new Op1<@FromGuest ServiceLocator, ServiceLocator>(e -> e) {}));
+                    .of(ApplicationTemplate.ofUnmanaged(new Op1<@GuestBinding ServiceLocator, ServiceLocator>(e -> e) {}));
         }
         return ServiceLocatorBootstrap.APP;
     }

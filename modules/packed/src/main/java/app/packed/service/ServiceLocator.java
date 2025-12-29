@@ -32,7 +32,7 @@ import app.packed.assembly.Assembly;
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.GuestBinding;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op1;
 import app.packed.runtime.RunState;
@@ -318,7 +318,7 @@ public interface ServiceLocator extends ApplicationInterface {
         // ServiceLocatorBootstrap because we cannot have private static fields on interfaces
         class ServiceLocatorBootstrap {
             private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-                    .of(ApplicationTemplate.ofUnmanaged(new Op1<@FromGuest ServiceLocator, ServiceLocator>(e -> e) {}));
+                    .of(ApplicationTemplate.ofUnmanaged(new Op1<@GuestBinding ServiceLocator, ServiceLocator>(e -> e) {}));
         }
         return ServiceLocatorBootstrap.APP;
     }

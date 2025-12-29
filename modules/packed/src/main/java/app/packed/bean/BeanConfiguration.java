@@ -146,7 +146,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     // Lazy_Per_ApplicationInstance, ...
     public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
         checkIsConfigurable();
-        handle.bindCodeGenerator(key, supplier);
+        handle.bindComputedConstant(key, supplier);
     }
 
     public <K> BeanConfiguration bindServiceInstance(Class<K> key, K instance) {
@@ -182,7 +182,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      */
     public <K> BeanConfiguration bindServiceInstance(Key<K> key, K instance) {
         checkIsConfigurable();
-        handle.bindServiceInstance(key, instance);
+        handle.bindConstant(key, instance);
         return this;
     }
 

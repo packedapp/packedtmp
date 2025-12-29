@@ -69,7 +69,7 @@ public final class BeanOperationsSetup implements Iterable<OperationSetup> {
     }
 
     public void addLifecycleHandle(SomeLifecycleOperationHandle<LifecycleOperationHandle> handle) {
-        if (handle.sidebean == null) {
+        if (handle.codeHolder.sidebean == null) {
             lifecycleHandles.compute(handle.lifecycleKind(), (_, v) -> {
                 if (v == null) {
                     return List.of(handle);

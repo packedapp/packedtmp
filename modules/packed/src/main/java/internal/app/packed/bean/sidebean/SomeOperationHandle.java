@@ -18,7 +18,6 @@ package internal.app.packed.bean.sidebean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.operation.OperationHandle;
-import app.packed.util.Nullable;
 import internal.app.packed.invoke.OperationCodeGenerator;
 
 /**
@@ -28,21 +27,16 @@ public class SomeOperationHandle<H extends OperationHandle<?>> {
 
     public final H handle;
 
-    @Nullable
-    public final PackedSidebeanAttachment sidebean;
-
     /** Holds generated code for the operation. */
     public final OperationCodeGenerator codeHolder;
 
     public SomeOperationHandle(H operationHandle) {
         this.handle = requireNonNull(operationHandle);
-        this.sidebean = null;
-        codeHolder = new OperationCodeGenerator(this);
+        codeHolder = new OperationCodeGenerator(this, null);
     }
 
-    public SomeOperationHandle(H operationHandle, PackedSidebeanAttachment sidebean) {
+    protected SomeOperationHandle(H operationHandle, PackedSidebeanAttachment sidebean) {
         this.handle = requireNonNull(operationHandle);
-        this.sidebean = requireNonNull(sidebean);
-        codeHolder = new OperationCodeGenerator(this);
+        codeHolder = new OperationCodeGenerator(this, sidebean);
     }
 }

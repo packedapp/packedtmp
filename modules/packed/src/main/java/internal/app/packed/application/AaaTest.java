@@ -26,7 +26,7 @@ import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.Start;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.component.guest.ComponentHostContext;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.GuestBinding;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -79,7 +79,7 @@ public class AaaTest extends BaseAssembly {
         /** Manages the lifecycle of the app. */
         private final ManagedLifecycle lifecycle;
 
-        AApp(@FromGuest ManagedLifecycle lc, ComponentHostContext context) {
+        AApp(@GuestBinding ManagedLifecycle lc, ComponentHostContext context) {
             this.lifecycle = lc;
         }
 

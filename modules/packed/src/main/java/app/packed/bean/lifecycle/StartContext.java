@@ -42,6 +42,8 @@ public interface StartContext extends Context<BaseExtension> {
      *
      * @throws UnsupportedOperationException
      *             if called outside of X
+     *
+     *             @throws IllegalStateException if started
      */
     // I should be able to fork multiple
     // if used from forkMode=true. I think submit as siebling.

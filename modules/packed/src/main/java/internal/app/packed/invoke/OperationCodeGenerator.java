@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanLifetime;
 import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
+import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.bean.sidebean.SomeOperationHandle;
 import internal.app.packed.binding.BindingProvider;
@@ -40,25 +41,30 @@ import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget
  */
 public final class OperationCodeGenerator {
 
+    @Nullable
+    public LazyResolvable cachedLazyMethodHandle;
+
     /** The generated method handle. */
     // Vi har behov for cachen fordi kode generering kalde generate rekursivt.
     @Nullable
     private MethodHandle cachedMethodHandle;
-
-    @Nullable
-    public LazyResolvable cachedLazyMethodHandle;
 
     /** The operation we are generating a method handle for */
     private final OperationSetup operation;
 
     private final SomeOperationHandle<?> someOperationHandle;
 
+    @Nullable
+    public
+    final PackedSidebeanAttachment sidebean;
+
     /**
      * @param packedSideBeanUsage
      */
-    public OperationCodeGenerator(SomeOperationHandle<?> someOperationHandle) {
+    public OperationCodeGenerator(SomeOperationHandle<?> someOperationHandle, @Nullable PackedSidebeanAttachment sidebean) {
         this.someOperationHandle = someOperationHandle;
         this.operation = OperationSetup.crack(someOperationHandle.handle);
+        this.sidebean = sidebean;
     }
 
     MethodHandle generate(boolean lazy) {
@@ -112,23 +118,24 @@ public final class OperationCodeGenerator {
     private MethodHandle newMethodHandle() {
         operation.bean.container.application.checkInCodegenPhase();
 
-        boolean isSideBeanInstance = someOperationHandle.sidebean != null;
         boolean isFactory = operation.handle() instanceof FactoryOperationHandle;
 
         boolean requiresBeanInstance = !isFactory && operation.target instanceof MemberOperationTarget mot && !Modifier.isStatic(mot.target.modifiers());
+
+        boolean isSideBeanInstance = sidebean != null;
         boolean isSideBeanClass = operation.bean.handle() instanceof SidebeanHandle;
 
         if (isSideBeanInstance) {
             MethodHandle methodHandle = OperationSetup.crack(someOperationHandle.handle).someHandle.codeHolder.generateMethodHandle();
             if (isFactory) {
                 methodHandle = methodHandle.asType(methodHandle.type().changeReturnType(Object.class));
-                methodHandle = BeanLifecycleSupport.MH_INVOKE_INITIALIZER_SIDEBEAN.bindTo(someOperationHandle.sidebean).bindTo(methodHandle);
+                methodHandle = BeanLifecycleSupport.MH_INVOKE_INITIALIZER_SIDEBEAN.bindTo(sidebean).bindTo(methodHandle);
                 return methodHandle;
             }
-            MethodHandle tmp = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, someOperationHandle.sidebean.lifetimeStoreIndex.index);
+            MethodHandle tmp = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, sidebean.lifetimeStoreIndex.index);
             assert tmp.type().returnType() == Object.class;
             // We need to convert it from Object to the expected type
-            tmp = tmp.asType(tmp.type().changeReturnType(someOperationHandle.sidebean.sidebean.bean.beanClass));
+            tmp = tmp.asType(tmp.type().changeReturnType(sidebean.sidebean.bean.beanClass));
 
             System.out.println("XXXX " + isFactory);
             System.out.println("YYYY " + OperationSetup.crack(someOperationHandle.handle).bean.beanKind);
@@ -156,9 +163,12 @@ public final class OperationCodeGenerator {
             }
         }
 
-        System.out.println(mh.type());
+//        System.out.println(mh.type());
 
         for (BindingSetup binding : operation.bindings) {
+            if (binding == null) {
+                System.out.println(operation.type);
+            }
             if (binding.provider() == null) {
                 // Should not really be here where we fail, much earlier
                 throw new ProvisionException("Oops for " + operation.type);
@@ -220,7 +230,7 @@ public final class OperationCodeGenerator {
 
         // A Supplier has been provided by the user, the result of which
         // TODO could add a LazyConstant, which will create it on first usage, Possible runtime
-        case BindingProvider.FromCodeGeneratedConstant(Supplier<?> supplier, _) -> {
+        case BindingProvider.FromComputedConstant(Supplier<?> supplier, _) -> {
             Object constant = supplier.get();
             // TODO check type of supplied constant
             yield MethodHandles.insertArguments(mh, pos, constant);

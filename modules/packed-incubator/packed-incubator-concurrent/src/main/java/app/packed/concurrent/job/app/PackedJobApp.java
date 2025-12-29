@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.component.guest.ComponentHostContext;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.GuestBinding;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -40,7 +40,7 @@ final class PackedJobApp implements JobApp {
     /** Manages the lifecycle of the app. */
     private final ManagedLifecycle lifecycle;
 
-    PackedJobApp(@FromGuest ManagedLifecycle lc, @FromGuest Future<?> result, ComponentHostContext context) {
+    PackedJobApp(@GuestBinding ManagedLifecycle lc, @GuestBinding Future<?> result, ComponentHostContext context) {
         this.lifecycle = lc;
     }
 

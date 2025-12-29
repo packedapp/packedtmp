@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck;
+package internal.app.packed.bean.sidebean;
 
-import app.packed.application.ApplicationTemplate;
-import app.packed.application.BootstrapApp;
-import app.packed.component.guest.GuestBinding;
-import app.packed.operation.Op1;
-import app.packed.service.ServiceLocator;
+import app.packed.binding.Key;
 
 /**
  *
  */
-public class ServiceLocatorAppTest extends AbstractBootstrapedAppTest<ServiceLocator> {
-
-    private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-            .of(ApplicationTemplate.ofUnmanaged(new Op1<@GuestBinding ServiceLocator, ServiceLocator>(e -> e) {}));
-
-    public ServiceLocatorAppTest() {
-        super(APP);
-    }
+public sealed interface PackedSidebeanBinding {
+    public record Constant(Key<?> key) implements PackedSidebeanBinding {}
+    public record SharedConstant(Key<?> key, Object constant) implements PackedSidebeanBinding {}
+    public record Invoker(Class<?> invokerType) implements PackedSidebeanBinding {}
 
 }

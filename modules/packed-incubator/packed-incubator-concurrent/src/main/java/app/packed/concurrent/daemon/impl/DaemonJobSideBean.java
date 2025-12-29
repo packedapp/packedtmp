@@ -19,17 +19,22 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.lifecycle.Start;
-import app.packed.bean.sidebean.SidebeanInject;
+import app.packed.bean.sidebean.SidebeanBinding;
 import app.packed.concurrent.daemon.DaemonJobContext;
 
 /**
  *
  */
-public final class DaemonJobSideBean implements DaemonJobContext {
+public final class DaemonJobSidebean implements DaemonJobContext {
 
     private volatile Thread thread;
 
     private volatile boolean isShutdown;
+    private final ThreadFactory factory;
+
+    public DaemonJobSidebean(@SidebeanBinding ThreadFactory factory  /*/, @SidebeanBinding DaemonOperationInvoker invoker */) {
+        this.factory=factory;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -51,12 +56,19 @@ public final class DaemonJobSideBean implements DaemonJobContext {
 
     ///////////////// Lifecycle
     @Start
-    protected void onStart(@SidebeanInject ThreadFactory factory, @SidebeanInject DaemonOperationInvoker invoker) {
+    protected void onStart() {
+        System.out.println(factory.getClass());
         thread = factory.newThread(new Runnable() {
             @Override
             public void run() {
                 while (!isShutdown) {
-                    invoker.invoke(DaemonJobSideBean.this);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+//                    invoker.invoke(DaemonJobSideBean.this);
                 }
             }
         });

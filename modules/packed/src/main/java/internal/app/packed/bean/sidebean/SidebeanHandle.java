@@ -21,11 +21,10 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.sidebean.SidebeanBinding;
 import app.packed.bean.sidebean.SidebeanConfiguration;
-import app.packed.bean.sidebean.SidebeanInject;
-import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.invoke.BeanLifecycleSupport;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.SomeLifecycleOperationHandle;
@@ -39,15 +38,35 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
     private ArrayList<PackedSidebeanAttachment> usage = new ArrayList<>();
 
-    public final ServiceMap<BindingProvider> providers = new ServiceMap<>();
+    public final ServiceMap<PackedSidebeanBinding> bindings = new ServiceMap<>();
 
-    public final ServiceMap<OnVariable> injectionSites = new ServiceMap<>();
+    public final ServiceMap<IntrospectorOnVariable> injectionSites = new ServiceMap<>();
 
     /**
      * @param installer
      */
     public SidebeanHandle(BeanInstaller installer) {
         super(installer);
+    }
+
+    @Override
+    protected void onConfigured() {
+        if (!bindings.keySet().equals(injectionSites.keySet())) {
+            throw new IllegalStateException(bindings.keySet() + "  "  + injectionSites.keySet());
+        }
+        for (PackedSidebeanBinding psb : bindings) {
+            if (psb instanceof PackedSidebeanBinding.SharedConstant sc) {
+                injectionSites.get(sc.key()).bindConstant(sc.constant());
+            }
+        }
+
+        super.onConfigured();
+    }
+
+    public void checkUnusued() {
+        if (!usage.isEmpty()) {
+            throw new IllegalStateException();
+        }
     }
 
     public void addAttachment(PackedSidebeanAttachment susage) {
@@ -80,7 +99,8 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
      * @param annotation
      * @param v
      */
-    public void onInject(SidebeanInject annotation, OnVariable v) {
+    public void onInject(SidebeanBinding annotation, IntrospectorOnVariable v) {
+        // This method is invoked, before #bindings is populated, so we cannot make any checks here
         injectionSites.put(v.toKey(), v);
     }
 }

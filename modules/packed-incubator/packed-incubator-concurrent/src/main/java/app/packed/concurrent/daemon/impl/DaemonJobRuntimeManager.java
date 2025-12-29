@@ -25,7 +25,7 @@ import app.packed.bean.lifecycle.Start;
 public final class DaemonJobRuntimeManager {
 
     // ConcurrentSet
-    final ConcurrentHashMap<Thread, DaemonJobSideBean> deamons = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<Thread, DaemonJobSidebean> deamons = new ConcurrentHashMap<>();
 
     @Start
     public void onStart() {

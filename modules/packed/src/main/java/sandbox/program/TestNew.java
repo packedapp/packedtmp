@@ -100,7 +100,7 @@ public class TestNew extends BaseAssembly {
             @Override
             public void onAnnotatedVariable(Annotation hook, OnVariable h) {
                 String str = h.annotations().readRequired(XX.class).value();
-                h.bindInstance(str.toUpperCase());
+                h.bindConstant(str.toUpperCase());
             }
         }
     }

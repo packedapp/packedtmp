@@ -42,7 +42,7 @@ public class OnStartTest extends BaseAssembly {
             IO.println("1 - NICE " + Thread.currentThread());
         }
 
-        @Start(fork = true)
+       // @Start(fork = true)
         public void onStartdx(StartContext context) throws InterruptedException {
             IO.println("2 - Started " + Thread.currentThread());
             context.fork(() -> {

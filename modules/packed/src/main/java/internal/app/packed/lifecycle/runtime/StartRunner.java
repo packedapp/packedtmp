@@ -62,6 +62,7 @@ final class StartRunner {
     }
 
     void start() {
+        System.out.println("STARTING " + Thread.currentThread());
         long start = System.currentTimeMillis();
 
         for (SomeLifecycleOperationHandle<StartOperationHandle> h : operations) {
@@ -76,6 +77,7 @@ final class StartRunner {
             try {
                 IO.println(Thread.currentThread() == startingThread);
                 IO.println(ts.toString());
+                System.out.println("TRYING TO JOIN " + Thread.currentThread());
                 ts.join();
                 IO.println("Joined " + (System.currentTimeMillis() - start));
             } catch (InterruptedException e) {
@@ -94,6 +96,7 @@ final class StartRunner {
         if (Thread.currentThread() != startingThread) {
             throw new StructureViolationException();
         }
+        System.out.println("!!!!!!!!!!!! Creating new scope for thread " + Thread.currentThread());
         return ts = StructuredTaskScope.open(Joiner.awaitAllSuccessfulOrThrow(),
                 c -> c.withName("AppStart").withThreadFactory(Thread.ofVirtual().name("CoolAppStartin", 0).factory()));
     }
@@ -113,6 +116,9 @@ final class StartRunner {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public void fork(Runnable runnable) {
+            if (Thread.currentThread() != runner.startingThread) {
+                throw new IllegalStateException("Operation is already forked");
+            }
             runner.ts().fork((Callable) Executors.callable(runnable));
         }
 

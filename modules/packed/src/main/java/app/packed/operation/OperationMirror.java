@@ -305,7 +305,7 @@ final class OperationMirrorBeanIntrospector extends BaseExtensionBeanIntrospecto
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        service.binder().bindInstance(service.operation().mirror());
+        service.binder().bindConstant(service.operation().mirror());
     }
 }
 //Class -> members

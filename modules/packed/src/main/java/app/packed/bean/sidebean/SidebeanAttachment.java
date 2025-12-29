@@ -24,9 +24,16 @@ import app.packed.binding.Key;
 // SidebeanAttachment
 public interface SidebeanAttachment {
 
-    default <T> void bindBuildConstant(Class<T> key, T object) {
-        bindBuildConstant(Key.of(key), object);
+    /**
+     * @param <T>
+     * @param key
+     * @param object
+     *
+     * @see SidebeanConfiguration#sidebeanBindConstant(Class)
+     */
+    default <T> void bindConstant(Class<T> key, T object) {
+        bindConstant(Key.of(key), object);
     }
 
-    <T> void bindBuildConstant(Key<T> key, T object);
+    <T> void bindConstant(Key<T> key, T object);
 }

@@ -44,7 +44,7 @@ public final class BaseExtensionHostGuestBeanintrospector extends BeanIntrospect
             binding.bindContext(ExtensionContext.class);
         } else if (hook == ComponentHostContext.class) {
             ComponentHostContext c = beanHandle(GuestBeanHandle.class).get().toContext();
-            binding.bindInstance(c);
+            binding.bindConstant(c);
         } else {
             super.onExtensionService(key, service);
         }

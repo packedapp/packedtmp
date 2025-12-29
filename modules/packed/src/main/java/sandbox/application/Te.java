@@ -18,7 +18,7 @@ package sandbox.application;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.GuestBinding;
 
 /**
  * Must have a main in a bean with application lifetime.
@@ -58,5 +58,5 @@ public final class Te {
         BOOTSTRAP.getClass();
     }
 
-    record Holder(@FromGuest ApplicationMirror am) {}
+    record Holder(@GuestBinding ApplicationMirror am) {}
 }

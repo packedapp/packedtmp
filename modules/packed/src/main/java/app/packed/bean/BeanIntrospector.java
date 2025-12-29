@@ -70,6 +70,20 @@ import internal.app.packed.util.accesshelper.BeanScanningAccessHandler;
  */
 public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implements Accessor {
 
+    static {
+        AccessHelper.initHandler(BeanScanningAccessHandler.class, new BeanScanningAccessHandler() {
+            @Override
+            public BeanSetup invokeBeanIntrospectorBean(BeanIntrospector<?> introspector) {
+                return introspector.bean();
+            }
+
+            @Override
+            public void invokeBeanIntrospectorInitialize(BeanIntrospector<?> introspector, BeanIntrospectorSetup ref) {
+                introspector.initialize(ref);
+            }
+        });
+    }
+
     /**
      * The internal configuration of this introspector. Is initially null but populated via
      * {@link #initialize(BeanIntrospectorSetup)}.
@@ -194,14 +208,6 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         return s;
     }
 
-    /**
-     * {@return whether or not the extension that implements this introspector is also the extension that is installing the
-     * bean.}
-     */
-    public final boolean isInstallingExtension() {
-        return introspector().extensionClass == bean().installedBy.extensionType;
-    }
-
     /** {@return whether or not the bean is in same lifetime as the application.} */
     public final boolean isInApplicationLifetime() {
         BeanSetup b = bean();
@@ -211,6 +217,14 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
     /** {@return whether or not the bean is in same lifetime as its container.} */
     public final boolean isInContainerLifetime() {
         return bean().lifetime instanceof ContainerLifetimeSetup;
+    }
+
+    /**
+     * {@return whether or not the extension that implements this introspector is also the extension that is installing the
+     * bean.}
+     */
+    public final boolean isInstallingExtension() {
+        return introspector().extensionClass == bean().installedBy.extensionType;
     }
 
     public void onAnnotatedClass(Annotation annotation, BeanIntrospector.OnClass onClass) {
@@ -629,6 +643,12 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         Variable variable();
     }
 
+// Something about being embedded
+// For example, deep down, we cannot resolve something. And we need to
+// throw an exception. But we need to include the original method that could not
+// be resolved.
+// Or VariableBinder
+
     /**
      * This class represents a {@link Method} from which an {@link OperationHandle operation} can be created.
      */
@@ -709,12 +729,6 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         Key<?> toKey();
     }
 
-// Something about being embedded
-// For example, deep down, we cannot resolve something. And we need to
-// throw an exception. But we need to include the original method that could not
-// be resolved.
-// Or VariableBinder
-
     /**
      * Represents a variable that can be bound at build time by an extension.
      */
@@ -776,6 +790,21 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         OnVariable bindComputedConstant(Supplier<@Nullable ?> supplier);
 
         /**
+         * Binds the specified constant value to the underlying variable.
+         *
+         * @param value
+         *            the value to bind
+         * @throws IllegalArgumentException
+         *             if {@code null} is specified and null is not a valid value for the variable
+         * @throws ClassCastException
+         *             if the type of the value is not assignable to the underlying parameter
+         * @throws IllegalStateException
+         *             if the variable has already been bound.
+         * @see #bindGeneratedConstant(Supplier)
+         */
+        OnVariable bindConstant(@Nullable Object value);
+
+        /**
          * Binds the specified context to the underlying variable.
          * <p>
          * If you need to perform any kind of transformations on a particular context you can use {@link #bindOp(Op)} instead.
@@ -790,21 +819,6 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
          * @see #availableContexts()
          */
         OnVariable bindContext(Class<? extends Context<?>> context);
-
-        /**
-         * Binds the specified constant value to the underlying variable.
-         *
-         * @param value
-         *            the value to bind
-         * @throws IllegalArgumentException
-         *             if {@code null} is specified and null is not a valid value for the variable
-         * @throws ClassCastException
-         *             if the type of the value is not assignable to the underlying parameter
-         * @throws IllegalStateException
-         *             if the variable has already been bound.
-         * @see #bindGeneratedConstant(Supplier)
-         */
-        OnVariable bindInstance(@Nullable Object value);
 
         /**
          * @param index
@@ -1123,19 +1137,5 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
             }
             return false;
         }
-    }
-
-    static {
-        AccessHelper.initHandler(BeanScanningAccessHandler.class, new BeanScanningAccessHandler() {
-            @Override
-            public BeanSetup invokeBeanIntrospectorBean(BeanIntrospector<?> introspector) {
-                return introspector.bean();
-            }
-
-            @Override
-            public void invokeBeanIntrospectorInitialize(BeanIntrospector<?> introspector, BeanIntrospectorSetup ref) {
-                introspector.initialize(ref);
-            }
-        });
     }
 }

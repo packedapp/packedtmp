@@ -23,8 +23,8 @@ import java.lang.invoke.VarHandle;
 import java.util.function.Function;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.sidebean.SidebeanConfiguration;
 import app.packed.bean.sidebean.SidebeanAttachment;
+import app.packed.bean.sidebean.SidebeanConfiguration;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
@@ -100,26 +100,6 @@ import internal.app.packed.util.accesshelper.OperationAccessHandler;
 // interceptor().add(...);
 // interceptor().peek(e->IO.println(e));
 public non-sealed class OperationHandle<C extends OperationConfiguration> extends ComponentHandle {
-
-    static {
-        AccessHelper.initHandler(OperationAccessHandler.class, new OperationAccessHandler() {
-
-            @Override
-            public OperationSetup getOperationHandleOperation(OperationHandle<?> handle) {
-                return handle.operation;
-            }
-
-            @Override
-            public void invokeOperationHandleDoClose(OperationHandle<?> handle, boolean isClose) {
-                handle.onStateChange(isClose);
-            }
-
-            @Override
-            public void onInstall(OperationHandle<?> handle) {
-                handle.onInstall();
-            }
-        });
-    }
 
     /** The lazy generated operation configuration. */
     @Nullable
@@ -360,6 +340,26 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** {@return the type of this operation} */
     public final OperationType type() {
         return operation.type;
+    }
+
+    static {
+        AccessHelper.initHandler(OperationAccessHandler.class, new OperationAccessHandler() {
+
+            @Override
+            public OperationSetup getOperationHandleOperation(OperationHandle<?> handle) {
+                return handle.operation;
+            }
+
+            @Override
+            public void invokeOperationHandleDoClose(OperationHandle<?> handle, boolean isClose) {
+                handle.onStateChange(isClose);
+            }
+
+            @Override
+            public void onInstall(OperationHandle<?> handle) {
+                handle.onInstall();
+            }
+        });
     }
 }
 

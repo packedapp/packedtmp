@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.binding.Key;
 import app.packed.component.guest.ComponentHostContext;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.GuestBinding;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -36,7 +36,7 @@ final class PackedApp implements App {
     /** Manages the lifecycle of the app. */
     private final ManagedLifecycle lifecycle;
 
-    PackedApp(@FromGuest ManagedLifecycle lc, ComponentHostContext context) {
+    PackedApp(@GuestBinding ManagedLifecycle lc, ComponentHostContext context) {
         this.lifecycle = lc;
     }
 

@@ -39,7 +39,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedVariableCache;
 import internal.app.packed.binding.BindingProvider;
-import internal.app.packed.binding.BindingProvider.FromCodeGeneratedConstant;
+import internal.app.packed.binding.BindingProvider.FromComputedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromInvocationArgument;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
@@ -126,13 +126,13 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
     public IntrospectorOnVariable bindComputedConstant(Supplier<?> supplier) {
         checkBeforeBind();
         // We can't really do any form of type checks until we call the supplier
-        bind(new FromCodeGeneratedConstant(supplier, SuppliedBindingKind.CODEGEN));
+        bind(new FromComputedConstant(supplier, SuppliedBindingKind.CODEGEN));
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public IntrospectorOnVariable bindInstance(@Nullable Object obj) {
+    public IntrospectorOnVariable bindConstant(@Nullable Object obj) {
         checkBeforeBind();
         if (obj == null) {
             if (variable.rawType().isPrimitive()) {

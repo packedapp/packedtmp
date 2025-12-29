@@ -146,7 +146,7 @@ public final class TypeVariableExtractor {
         if (baseType == childClass.getSuperclass()) {
             return findTypeParameterFromSuperClass0(childClass, typeVariableIndexOnBaseClass, ep);
         }
-        Type pp = findTypeParameterFromSuperClass((Class<?>) childClass.getSuperclass(), typeVariableIndexOnBaseClass, ep);
+        Type pp = findTypeParameterFromSuperClass(childClass.getSuperclass(), typeVariableIndexOnBaseClass, ep);
         if (pp instanceof TypeVariable) {
             TypeVariable<?>[] tvs = childClass.getSuperclass().getTypeParameters();
             for (int i = 0; i < tvs.length; i++) {

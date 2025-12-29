@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sidebean;
+package app.packed.component.guest;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
@@ -33,14 +33,17 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-@OnAnnotatedVariable(introspector = SidebeanInjectBeanIntrospector.class, requiresContext = SidebeanContext.class)
-public @interface SidebeanInject {}
+@OnAnnotatedVariable(introspector = FromGuestBeanIntrospector.class, requiresContext = ComponentHostContext.class)
+// Den bliver ikke resolvet som context service. Saa der er ingen problemer med fx ApplicationMirror
+public @interface GuestBinding {
 
-final class SidebeanInjectBeanIntrospector extends BaseExtensionBeanIntrospector {
+}
+
+final class FromGuestBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
     public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
-        SidebeanHandle<?> handle = (SidebeanHandle<?>) bean().handle();
-        handle.onInject((SidebeanInject) annotation, v);
+        GuestBeanHandle gbh = (GuestBeanHandle) bean().handle();
+        gbh.resolve(this, v);
     }
 }

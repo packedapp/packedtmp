@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.guest;
+package app.packed.bean.sidebean;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -22,8 +22,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
-import internal.app.packed.application.GuestBeanHandle;
+import internal.app.packed.bean.scanning.IntrospectorOnVariable;
+import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.AbstractInitializingOperationHandle;
 
 /**
  * Can be used to annotated injectable parameters into a guest bean.
@@ -33,17 +35,24 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-@OnAnnotatedVariable(introspector = FromGuestBeanIntrospector.class, requiresContext = ComponentHostContext.class)
-// Den bliver ikke resolvet som context service. Saa der er ingen problemer med fx ApplicationMirror
-public @interface FromGuest {
+@OnAnnotatedVariable(introspector = SidebeanInjectBeanIntrospector.class, requiresContext = SidebeanContext.class)
+public @interface SidebeanBinding {}
 
-}
-
-final class FromGuestBeanIntrospector extends BaseExtensionBeanIntrospector {
+final class SidebeanInjectBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
     public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
-        GuestBeanHandle gbh = (GuestBeanHandle) bean().handle();
-        gbh.resolve(this, v);
+        if (bean().handle() instanceof SidebeanHandle<?> sh) {
+            IntrospectorOnVariable iov = (IntrospectorOnVariable) v;
+            // I probably want to use this for Guest as well
+            if (!(iov.operation.handle() instanceof AbstractInitializingOperationHandle)) {
+                throw new RuntimeException("" + iov.operation.bean.bean.beanClass);
+            }
+
+            sh.onInject((SidebeanBinding) annotation, iov);
+        } else {
+            // Can only be used on a side bean
+            throw new RuntimeException();
+        }
     }
 }

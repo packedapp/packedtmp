@@ -117,7 +117,8 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @BuildActionable("bean.install")
     public <T> SidebeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, Consumer<? super SidebeanConfiguration<T>> installationAction) {
         BeanInstaller installer = newBean(SIDEBEAN, handle());
-        SidebeanHandle<T> h = installer.installIfAbsent(implementation, SidebeanHandle.class, SidebeanHandle<T>::new, _ -> {});
+        SidebeanHandle<T> h = installer.installIfAbsent(implementation, SidebeanHandle.class, SidebeanHandle<T>::new,
+                ha -> installationAction.accept(ha.configuration()));
 
         return h.configuration();
     }

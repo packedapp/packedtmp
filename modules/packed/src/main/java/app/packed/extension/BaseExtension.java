@@ -217,12 +217,12 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         ha.configuration().exportAs(ServiceLocator.class);
 
         // PackedServiceLocator needs a Map<Key, MethodHandle> which is created in the code generation phase
-        ha.bindCodeGenerator(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
+        ha.bindComputedConstant(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
 
         // Alternative, If we do not use it for anything else
         newBeanBuilderSelf(DEFAULT_BEAN).installIfAbsent(PackedServiceLocator.class, BeanHandle.class, BeanHandle::new, bh -> {
             bh.exportAs(ServiceLocator.class);
-            bh.bindCodeGenerator(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
+            bh.bindComputedConstant(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
         });
     }
 

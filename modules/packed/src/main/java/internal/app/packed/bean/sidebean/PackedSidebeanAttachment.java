@@ -49,7 +49,7 @@ public sealed abstract class PackedSidebeanAttachment implements SidebeanAttachm
 
     /** {@inheritDoc} */
     @Override
-    public <T> void bindBuildConstant(Key<T> key, T object) {}
+    public <T> void bindConstant(Key<T> key, T object) {}
 
 
     public static final class OfBean extends PackedSidebeanAttachment {

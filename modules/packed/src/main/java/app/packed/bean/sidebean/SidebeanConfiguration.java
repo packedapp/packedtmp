@@ -26,6 +26,7 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.binding.Key;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
+import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
 
 /**
@@ -40,33 +41,11 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
         super(handle);
     }
 
-    public <K> void attachmentBindConstant(Class<K> key, K constant) {
-        attachmentConstant(Key.of(key), constant);
+    public void initOnly() {
+        // Ideen er egentlig at vi ikke beholder en instans af sidebeanen
+        // Men den kalder ind i en anden klasse med den som parameter
+        // Problemet er lidt af vi aldrig kan afregistrer den. Saa ved ikke om den er brugbar
     }
-
-    public <K> void attachmentConstant(Key<K> key, K constant) {
-        checkIsConfigurable();
-//        handle.bindCodeGenerator(key, supplier);
-    }
-
-    public <K> void attachmentBindCodeGenerator(Class<K> key, Supplier<? extends K> supplier) {
-        attachmentBindCodeGenerator(Key.of(key), supplier);
-    }
-
-    public <K> void attachmentBindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
-        checkIsConfigurable();
-//        handle.bindCodeGenerator(key, supplier);
-    }
-
-    public <K> void attachmentBindInvoker(Class<K> key) {
-        attachmentBindInvoker(Key.of(key));
-    }
-
-    public <K> void attachmentBindInvoker(Key<K> key) {
-        checkIsConfigurable();
-//        handle.bindCodeGenerator(key, supplier);
-    }
-
 
     private SidebeanAttachment attachTo(PackedSidebeanAttachment usage) {
         // For example, for a cron
@@ -96,15 +75,53 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
         return attachTo(new PackedSidebeanAttachment.OfOperation(handle, operationHandle));
     }
 
-    public SidebeanAttachment attachToParameter(OperationHandle<?> operationHandle) {
-        return attachTo(new PackedSidebeanAttachment.OfOperation(handle, operationHandle));
-    }
-
-
     // Hmm, fx for CurrentTime... Vil vi vil bare tilfoeje en til beanen
     // Kunne man bruge den samme til flere beans?
     // For example, InvocationCount
     public SidebeanAttachment attachToVariable(OnVariable handle) {
         throw new UnsupportedOperationException();
+    }
+
+    private void sidebeanBind(Key<?> key, PackedSidebeanBinding binding) {
+        checkIsConfigurable();
+        if (handle.bindings.putIfAbsent(key, binding) != null) {
+            throw new IllegalArgumentException(key + " has already been registered");
+        }
+    }
+
+    public <K> void sidebeanBindComputedConstant(Class<K> key, Supplier<? extends K> supplier) {
+        sidebeanBindComputedConstant(Key.of(key), supplier);
+    }
+
+    public <K> void sidebeanBindComputedConstant(Key<K> key, Supplier<? extends K> supplier) {
+        checkIsConfigurable();
+//        handle.bindCodeGenerator(key, supplier);
+    }
+
+    /**
+     * @param <K>
+     * @param key
+     * @see SidebeanAttachment#bindConstant(Class, Object)
+     */
+    public <K> void sidebeanBindConstant(Class<K> key) {
+        sidebeanBindConstant(Key.of(key));
+    }
+
+    public <K> void sidebeanBindConstant(Key<K> key) {
+        sidebeanBind(key, new PackedSidebeanBinding.Constant(key));
+    }
+
+    public <K> void sidebeanBindConstantShared(Class<K> key, K constant) {
+        sidebeanBindConstantShared(Key.of(key), constant);
+    }
+
+    public <K> void sidebeanBindConstantShared(Key<K> key, K constant) {
+        sidebeanBind(key, new PackedSidebeanBinding.SharedConstant(key, constant));
+    }
+
+    // bindAbstractInvoker???
+    public void sidebeanBindInvoker(Class<?> invokerClass) {
+        Key<?> invokerKey = Key.of(invokerClass);
+        sidebeanBind(invokerKey, new PackedSidebeanBinding.Invoker(invokerClass));
     }
 }
