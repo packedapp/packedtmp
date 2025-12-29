@@ -16,8 +16,10 @@
 package app.packed.concurrent.daemon.impl;
 
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.sidebean.SidebeanAttachment;
 import app.packed.bean.sidebean.SidebeanConfiguration;
 import app.packed.concurrent.ThreadKind;
 import app.packed.concurrent.daemon.DaemonJob;
@@ -66,6 +68,12 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
         return new DaemonJobMirror(this);
     }
 
+    @Override
+    protected void onClose() {
+        attachment.bindConstant(ThreadFactory.class, runtimeThreadFactory());
+        super.onClose();
+    }
+
     public ThreadFactory runtimeThreadFactory() {
         ThreadFactory tf = threadFactory;
         if (tf == null) {
@@ -78,6 +86,10 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
         return tf;
     }
 
+    static final AtomicInteger AI = new AtomicInteger();
+
+    SidebeanAttachment attachment;
+
     public static void installFromAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, DaemonJob annotation) {
         ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(introspector.extensionHandle());
 
@@ -87,11 +99,14 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
         // Lazy install the sidebean
         SidebeanConfiguration<DaemonJobSidebean> sideBean = introspector.base().installSidebeanIfAbsent(DaemonJobSidebean.class, c -> {
            // c.sidebeanBindInvoker(DaemonOperationInvoker.class);
-            c.sidebeanBindConstantShared(ThreadFactory.class, Thread.ofPlatform().daemon().factory());
+            c.sidebeanBindConstant(ThreadFactory.class);
+            c.sidebeanBindConstant(Integer.class);
+
         });
         // Create a new attachment
-        sideBean.attachToOperation(handle);
+        handle.attachment = sideBean.attachToOperation(handle);
 
+        handle.attachment.bindConstant(Integer.class, AI.incrementAndGet());
        // useSite.bindBuildConstant(ThreadFactory.class, Thread.ofPlatform().daemon().factory());
     }
 }

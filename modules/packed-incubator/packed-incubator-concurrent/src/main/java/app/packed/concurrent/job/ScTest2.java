@@ -22,7 +22,9 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.concurrent.ThreadNamespaceMirror;
 import app.packed.concurrent.daemon.DaemonJob;
+import app.packed.concurrent.daemon.DaemonJobConfiguration;
 import app.packed.concurrent.daemon.DaemonJobContext;
+import app.packed.service.ProvidableBeanConfiguration;
 
 /**
  *
@@ -39,6 +41,7 @@ public class ScTest2 extends BaseAssembly {
 //        });
 
         App.run(new ScTest2());
+
         Thread.sleep(10000);
     }
 
@@ -46,7 +49,9 @@ public class ScTest2 extends BaseAssembly {
     @Override
     protected void build() {
         provideInstance("asdasd");
-        install(MuB.class);
+        ProvidableBeanConfiguration<MuB> p = install(MuB.class);
+
+        p.operations(DaemonJobConfiguration.class).findAny().get().threadFactory(e -> new Thread(e));
     }
 
     public static class MuB {

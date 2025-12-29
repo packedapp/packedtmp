@@ -26,6 +26,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreEntry;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.service.util.ServiceMap;
 
 /**
  *
@@ -41,16 +42,21 @@ public sealed abstract class PackedSidebeanAttachment implements SidebeanAttachm
     /** The sidebean. */
     public final BeanSetup sidebean;
 
+    public final ServiceMap<Object> constants = new ServiceMap<>();
+
     PackedSidebeanAttachment(SidebeanHandle<?> handle, BeanSetup bean) {
         this.bean = requireNonNull(bean);
         this.sidebean = BeanSetup.crack(handle);
     }
 
-
     /** {@inheritDoc} */
     @Override
-    public <T> void bindConstant(Key<T> key, T object) {}
-
+    public <T> void bindConstant(Key<T> key, T object) {
+        // TODO check type
+        if (constants.putIfAbsent(key, object) != null) {
+            throw new IllegalStateException();
+        }
+    }
 
     public static final class OfBean extends PackedSidebeanAttachment {
 
