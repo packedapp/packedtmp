@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.sidebean.SidebeanAttachment;
 import app.packed.binding.Key;
-import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreEntry;
@@ -44,9 +43,9 @@ public sealed abstract class PackedSidebeanAttachment implements SidebeanAttachm
 
     public final ServiceMap<Object> constants = new ServiceMap<>();
 
-    PackedSidebeanAttachment(SidebeanHandle<?> handle, BeanSetup bean) {
+    PackedSidebeanAttachment(BeanSetup sidebean, BeanSetup bean) {
         this.bean = requireNonNull(bean);
-        this.sidebean = BeanSetup.crack(handle);
+        this.sidebean = requireNonNull(sidebean);
     }
 
     /** {@inheritDoc} */
@@ -64,7 +63,7 @@ public sealed abstract class PackedSidebeanAttachment implements SidebeanAttachm
          * @param handle
          * @param bean
          */
-        public OfBean(SidebeanHandle<?> sideBeanHandle, BeanHandle<?> handle) {
+        public OfBean(BeanSetup sideBeanHandle, BeanHandle<?> handle) {
             super(sideBeanHandle, BeanSetup.crack(handle));
         }
 
@@ -78,8 +77,8 @@ public sealed abstract class PackedSidebeanAttachment implements SidebeanAttachm
          * @param handle
          * @param bean
          */
-        public OfOperation(SidebeanHandle<?> sideBeanHandle, OperationHandle<?> handle) {
-            OperationSetup operation = this.operation = OperationSetup.crack(handle);
+        public OfOperation(BeanSetup  sideBeanHandle, OperationSetup operation) {
+            this.operation = requireNonNull(operation);
             super(sideBeanHandle, operation.bean);
         }
 

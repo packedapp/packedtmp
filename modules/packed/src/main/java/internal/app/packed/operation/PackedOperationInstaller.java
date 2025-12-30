@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import app.packed.bean.sidebean.SidebeanConfiguration;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
@@ -48,6 +49,8 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
     String namePrefix = "tbd";
 
     PackedOperationTarget operationTarget;
+
+    BeanSetup attachToSidebean;
 
     /** The type of the operation. */
     final OperationType operationType;
@@ -102,5 +105,15 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
         operationTarget = new MemberOperationTarget(member, directMH);
 
         return newOperation((Function) configurationCreator);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationInstaller attachToSidebean(SidebeanConfiguration<?> configuration) {
+        if (attachToSidebean != null) {
+            throw new IllegalStateException("A sidebean has already been attached");
+        }
+        attachToSidebean = BeanSetup.crack(requireNonNull(configuration));
+        return this;
     }
 }

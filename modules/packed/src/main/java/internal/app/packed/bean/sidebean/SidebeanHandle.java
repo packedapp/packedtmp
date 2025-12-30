@@ -23,7 +23,9 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.sidebean.SidebeanAttachment;
 import app.packed.bean.sidebean.SidebeanBinding;
 import app.packed.bean.sidebean.SidebeanConfiguration;
 import app.packed.binding.Key;
@@ -39,11 +41,11 @@ import internal.app.packed.service.util.ServiceMap;
 // SideBeanHandle -has many> SideBeanInstance
 public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
-    private ArrayList<PackedSidebeanAttachment> usage = new ArrayList<>();
-
     public final ServiceMap<PackedSidebeanBinding> bindings = new ServiceMap<>();
 
     public final Set<Key<?>> injectionSites = new HashSet<>();
+
+    private ArrayList<PackedSidebeanAttachment> usage = new ArrayList<>();
 
     /**
      * @param installer
@@ -52,22 +54,25 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
         super(installer);
     }
 
-    @Override
-    protected void onConfigured() {
-        if (!bindings.keySet().equals(injectionSites)) {
-            throw new IllegalStateException(bindings.keySet() + "  " + injectionSites);
-        }
-
-        super.onConfigured();
+    public Stream<PackedSidebeanAttachment> attachments() {
+        return usage.stream();
     }
 
-    public void checkUnusued() {
-        if (!usage.isEmpty()) {
-            throw new IllegalStateException();
+    public SidebeanAttachment attachTo(PackedSidebeanAttachment usage) {
+        // For example, for a cron
+        usage.bean.sideBeanAttachments.add(usage);
+
+        // Im guessing we need to make room for it no matter what
+        if (usage.bean.beanKind == BeanLifetime.SINGLETON) {
+            usage.lifetimeStoreIndex = usage.bean.container.lifetime.store.add(usage);
         }
+        attachTolifecycle(usage);
+
+        return usage;
     }
 
-    public void addAttachment(PackedSidebeanAttachment susage) {
+
+    private void attachTolifecycle(PackedSidebeanAttachment susage) {
         usage.add(susage);
 
         for (List<InvokableLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
@@ -79,8 +84,10 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
         }
     }
 
-    public Stream<PackedSidebeanAttachment> attachments() {
-        return usage.stream();
+    public void checkUnusued() {
+        if (!usage.isEmpty()) {
+            throw new IllegalStateException();
+        }
     }
 
     @Override
@@ -93,6 +100,15 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
         return super.newBeanMirror();
     }
 
+    @Override
+    protected void onConfigured() {
+        if (!bindings.keySet().equals(injectionSites)) {
+            throw new IllegalStateException(bindings.keySet() + "  " + injectionSites);
+        }
+
+        super.onConfigured();
+    }
+
     /**
      * @param annotation
      * @param v
@@ -101,6 +117,6 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
         // This method is invoked, before #bindings is populated, so we cannot make any checks here
         Key<?> key = v.toKey();
         injectionSites.add(key);
-        v.bindSidebean(key, this);
+        v.bindSidebeanBinding(key, this);
     }
 }

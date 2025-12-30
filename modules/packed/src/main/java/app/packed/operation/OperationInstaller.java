@@ -18,6 +18,7 @@ package app.packed.operation;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import app.packed.bean.sidebean.SidebeanConfiguration;
 import app.packed.extension.ExtensionPoint;
 import app.packed.namespace.NamespaceHandle;
 
@@ -28,6 +29,8 @@ import app.packed.namespace.NamespaceHandle;
  * {@link IllegalStateException}.
  */
 public interface OperationInstaller /* permits PackedOperationInstaller */ {
+
+    OperationInstaller attachToSidebean(SidebeanConfiguration<?> configuration);
 
     // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);
     OperationInstaller delegateTo(ExtensionPoint.ExtensionPointHandle extension);

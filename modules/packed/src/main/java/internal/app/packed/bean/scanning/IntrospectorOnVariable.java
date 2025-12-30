@@ -205,7 +205,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
     }
 
     // not on interface
-    public IntrospectorOnVariable bindSidebean(Key<?> key, SidebeanHandle<?> sidebean) {
+    public IntrospectorOnVariable bindSidebeanBinding(Key<?> key, SidebeanHandle<?> sidebean) {
         checkBeforeBind();
         bind(new FromSidebeanAttachment(key, sidebean));
         return this;

@@ -45,6 +45,7 @@ public sealed interface DaemonJobContext extends Context<BaseExtension> permits 
 
     void awaitShutdown() throws InterruptedException;
 }
+
 final class DaemonJobContextBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     /** {@inheritDoc} */
@@ -53,8 +54,3 @@ final class DaemonJobContextBeanIntrospector extends BaseExtensionBeanIntrospect
         service.binder().bindContext(DaemonJobContext.class);
     }
 }
-
-// should probably check isShutdown();
-
-//void onShutdown(); <--- cleans up
-

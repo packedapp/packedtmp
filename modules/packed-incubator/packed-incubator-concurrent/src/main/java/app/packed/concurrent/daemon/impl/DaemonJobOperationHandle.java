@@ -18,7 +18,6 @@ package app.packed.concurrent.daemon.impl;
 import java.util.concurrent.ThreadFactory;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.sidebean.SidebeanAttachment;
 import app.packed.bean.sidebean.SidebeanConfiguration;
 import app.packed.concurrent.ThreadKind;
 import app.packed.concurrent.daemon.DaemonJob;
@@ -35,13 +34,9 @@ import internal.app.packed.concurrent.ThreadedOperationHandle;
 /** An operation handle for a daemon operation. */
 public final class DaemonJobOperationHandle extends ThreadedOperationHandle<DaemonJobConfiguration> {
 
-    /** A context template for a daemon job. */
-    private static final ContextTemplate CONTEXT_TEMPLATE = ContextTemplate.of(DaemonJobContext.class);
-
     /** An operation template for a daemon job. */
-    private static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withContext(CONTEXT_TEMPLATE).withReturnIgnore();
-
-    private SidebeanAttachment attachment;
+    private static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withContext(ContextTemplate.of(DaemonJobContext.class))
+            .withReturnIgnore();
 
     public boolean interruptOnStop;
 
@@ -69,10 +64,6 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
 
     @Override
     protected void onConfigured() {
-        attachment.bindConstant(ThreadFactory.class, runtimeThreadFactory());
-    }
-
-    private ThreadFactory runtimeThreadFactory() {
         ThreadFactory tf = threadFactory;
         if (tf == null) {
             tf = switch (threadKind) {
@@ -81,24 +72,21 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
             case VIRTUAL_THREAD -> Thread.ofVirtual().factory();
             };
         }
-        return tf;
+
+       sidebeanAttachment().bindConstant(ThreadFactory.class, tf);
     }
 
-    public static void installFromAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, DaemonJob annotation) {
-        ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(introspector.extensionHandle());
-
-        // Create a new operation
-        DaemonJobOperationHandle handle = method.newOperation(OPERATION_TEMPLATE).install(namespace, DaemonJobOperationHandle::new);
-        handle.threadKind = annotation.threadKind();
-        handle.interruptOnStop = annotation.interruptOnStop();
-
+    public static void onDaemonJobAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, DaemonJob annotation) {
         // Lazy install the sidebean
         SidebeanConfiguration<DaemonJobSidebean> sideBean = introspector.base().installSidebeanIfAbsent(DaemonJobSidebean.class, c -> {
             c.sidebeanBindInvoker(DaemonInvoker.class);
             c.sidebeanBindConstant(ThreadFactory.class);
         });
 
-        // Create a new attachment
-        handle.attachment = sideBean.attachToOperation(handle);
+        ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(introspector.extensionHandle());
+
+        DaemonJobOperationHandle handle = method.newOperation(OPERATION_TEMPLATE).attachToSidebean(sideBean).install(namespace, DaemonJobOperationHandle::new);
+        handle.threadKind = annotation.threadKind();
+        handle.interruptOnStop = annotation.interruptOnStop();
     }
 }

@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.bean.sidebean.SidebeanAttachment;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
@@ -35,6 +36,8 @@ import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
+import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.component.ComponentSetup;
@@ -110,6 +113,8 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     /** The type of this operation. */
     public final OperationType type;
 
+    public SidebeanAttachment attachment;
+
     /**
      * Create a new operation.
      *
@@ -135,6 +140,12 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         }
         // check is built
         this.codeHolder = new OperationCodeGenerator(this, null);
+        if (installer.attachToSidebean != null) {
+            SidebeanHandle<?> handle2 = (SidebeanHandle<?>) installer.attachToSidebean.handle();
+            this.attachment = handle2.attachTo(new PackedSidebeanAttachment.OfOperation(installer.attachToSidebean, this));
+        } else {
+            this.attachment = null;
+        }
     }
 
     /** {@inheritDoc} */
@@ -262,7 +273,6 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         if (handle == null) {
             throw new InternalExtensionException(installer.operator.extensionType, handleFactory + " returned null, when creating a new OperationHandle");
         }
-
 
         OperationAccessHandler.instance().onInstall(handle);
 

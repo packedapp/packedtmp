@@ -23,10 +23,12 @@ import app.packed.operation.OperationHandle;
 /**
  * A mirror for a daemon operation.
  *
- * @see Daemon
+ * @see DaemonJob
+ * @see DaemonJobConfiguration
  */
 public final class DaemonJobMirror extends JobMirror {
 
+    /** The handle for the daemon job operation. */
     private final DaemonJobOperationHandle handle;
 
     /**

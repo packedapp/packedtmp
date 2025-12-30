@@ -32,15 +32,14 @@ public final class DaemonJobSidebean implements DaemonJobContext {
     private volatile Thread thread;
 
     private volatile boolean isShutdown;
+
     private final ThreadFactory factory;
 
     final DaemonInvoker invoker;
 
-    public DaemonJobSidebean(@SidebeanBinding DaemonInvoker invoker, @SidebeanBinding ThreadFactory factory) {
-        this.factory = factory;
+    public DaemonJobSidebean(@SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonInvoker invoker) {
+        this.factory = requireNonNull(factory);
         this.invoker = requireNonNull(invoker);
-        System.out.println();
-        System.out.println(factory);
     }
 
     /** {@inheritDoc} */

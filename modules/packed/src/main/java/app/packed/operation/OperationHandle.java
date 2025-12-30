@@ -24,7 +24,6 @@ import java.util.function.Function;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.sidebean.SidebeanAttachment;
-import app.packed.bean.sidebean.SidebeanConfiguration;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
@@ -276,8 +275,8 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         return new OperationMirror(this);
     }
 
-    public SidebeanAttachment newSidebeanInstance(SidebeanConfiguration<?> configuration) {
-        return configuration.attachToOperation(this);
+    public SidebeanAttachment sidebeanAttachment() {
+        return operation.attachment;
     }
 
     /**

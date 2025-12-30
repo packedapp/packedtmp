@@ -21,10 +21,9 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector.OnVariable;
-import app.packed.bean.BeanLifetime;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.binding.Key;
-import app.packed.operation.OperationHandle;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
@@ -47,18 +46,6 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
         // Problemet er lidt af vi aldrig kan afregistrer den. Saa ved ikke om den er brugbar
     }
 
-    private SidebeanAttachment attachTo(PackedSidebeanAttachment usage) {
-        // For example, for a cron
-        usage.bean.sideBeanAttachments.add(usage);
-
-        // Im guessing we need to make room for it no matter what
-        if (usage.bean.beanKind == BeanLifetime.SINGLETON) {
-            usage.lifetimeStoreIndex = usage.bean.container.lifetime.store.add(usage);
-        }
-        handle.addAttachment(usage);
-
-        return usage;
-    }
 
     /**
      * Attaches this side bean to the specified bean (handle).
@@ -68,12 +55,9 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
      * @return
      */
     public SidebeanAttachment attachToBean(BeanHandle<?> beanHandle) {
-        return attachTo(new PackedSidebeanAttachment.OfBean(handle, beanHandle));
+        return handle.attachTo(new PackedSidebeanAttachment.OfBean(BeanSetup.crack(handle), beanHandle));
     }
 
-    public SidebeanAttachment attachToOperation(OperationHandle<?> operationHandle) {
-        return attachTo(new PackedSidebeanAttachment.OfOperation(handle, operationHandle));
-    }
 
     // Hmm, fx for CurrentTime... Vil vi vil bare tilfoeje en til beanen
     // Kunne man bruge den samme til flere beans?

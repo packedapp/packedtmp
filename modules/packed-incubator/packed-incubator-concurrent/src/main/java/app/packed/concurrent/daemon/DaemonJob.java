@@ -82,7 +82,7 @@ final class DaemonJobBeanIntrospector extends BaseExtensionBeanIntrospector {
     /** {@inheritDoc} */
     @Override
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
-        DaemonJobOperationHandle.installFromAnnotation(this, method, (DaemonJob) annotation);
+        DaemonJobOperationHandle.onDaemonJobAnnotation(this, method, (DaemonJob) annotation);
     }
 }
 
