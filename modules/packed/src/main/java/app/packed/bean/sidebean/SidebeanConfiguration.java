@@ -90,14 +90,6 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
         sidebeanBind(key, new PackedSidebeanBinding.Constant());
     }
 
-    public <K> void sidebeanBindConstantShared(Class<K> key, K constant) {
-        sidebeanBindConstantShared(Key.of(key), constant);
-    }
-
-    public <K> void sidebeanBindConstantShared(Key<K> key, K constant) {
-        sidebeanBind(key, new PackedSidebeanBinding.SharedConstant(constant));
-    }
-
     // bindAbstractInvoker???
     public void sidebeanBindInvoker(Class<?> invokerClass) {
         Key<?> invokerKey = Key.of(invokerClass);

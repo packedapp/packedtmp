@@ -46,6 +46,18 @@ public interface OperationInstaller /* permits PackedOperationInstaller */ {
      *
      * @throws IllegalStateException
      *             if the installer has already been used
+     *
+     *
+     * @throws InaccessibleBeanMemberException
+     *             if the framework does not have access to invoke the method
+     * @throws InternalExtensionException
+     *             if the extension does not have access to invoke the method
+     *
+     * @see OperationTarget.OfMethodHandle
+     * @see Lookup#unreflect(Method)
+     * @see BeanMethodHook#allowInvoke()
+     * @see BeanClassHook#allowFullPrivilegeAccess()
+     *
      */
     <H extends OperationHandle<?>> H install(Function<? super OperationInstaller, H> factory);
 

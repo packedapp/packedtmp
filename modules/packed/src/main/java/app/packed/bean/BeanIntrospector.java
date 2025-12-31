@@ -696,21 +696,11 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         int modifiers();
 
         /**
-         * Creates a new operation that can invoke the underlying method.
+         * Creates an operation installer for installing an operation that invokes the underlying method.
          *
          * @param template
          *            a template for the operation
-         * @return an operation handle
-         *
-         * @throws InaccessibleBeanMemberException
-         *             if the framework does not have access to invoke the method
-         * @throws InternalExtensionException
-         *             if the extension does not have access to invoke the method
-         *
-         * @see OperationTarget.OfMethodHandle
-         * @see Lookup#unreflect(Method)
-         * @see BeanMethodHook#allowInvoke()
-         * @see BeanClassHook#allowFullPrivilegeAccess()
+         * @return an operation installer
          */
         OperationInstaller newOperation(OperationTemplate template);
 

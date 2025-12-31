@@ -20,10 +20,10 @@ import app.packed.binding.Key;
 /**
  *
  */
-// SidebeanInstance
-// SidebeanAttachment
+// Was SidebeanInstance
 public interface SidebeanAttachment {
 
+    // I should probably be able to get the configuration???
     /**
      * @param <T>
      * @param key

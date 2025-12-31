@@ -32,7 +32,6 @@ import internal.app.packed.bean.sidebean.PackedSidebeanAttachment.OfOperation;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding.Constant;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding.Invoker;
-import internal.app.packed.bean.sidebean.PackedSidebeanBinding.SharedConstant;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.bean.sidebean.SidebeanInvoker;
 import internal.app.packed.binding.BindingProvider;
@@ -313,20 +312,15 @@ public final class OperationCodeGenerator {
             yield MethodHandles.collectArguments(mh, extensionIndex, beanFetcher);
         }
 
-        case BindingProvider.FromSidebeanAttachment(Key<?> key, SidebeanHandle<?> handle) -> {
+        case BindingProvider.FromSidebeanAttachment(Key<?> _, SidebeanHandle<?> _) -> {
             extensionIndex = 1;
-            PackedSidebeanBinding b = handle.bindings.get(key); // We have already checked that this is non null
             // Shared constant can be bound immediately, otherwise we need to bind the actual for the attachment
             // at a later timer
-            if (b instanceof SharedConstant sc) {
-                yield MethodHandles.insertArguments(mh, pos, sc.constant());
-            } else {
-                Class<?> clazz = mh.type().parameterType(extensionIndex + pos - 1);
-                invocationType = invocationType.appendParameterTypes(clazz);
-                // System.out.println("Addingp permuter" + (bindingIndex + 1));
-                permuters.add(pos + 1);
-                yield mh;
-            }
+            Class<?> clazz = mh.type().parameterType(extensionIndex + pos - 1);
+            invocationType = invocationType.appendParameterTypes(clazz);
+            // System.out.println("Addingp permuter" + (bindingIndex + 1));
+            permuters.add(pos + 1);
+            yield mh;
         }
         };
     }
