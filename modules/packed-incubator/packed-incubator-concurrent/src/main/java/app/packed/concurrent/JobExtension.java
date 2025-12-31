@@ -15,12 +15,10 @@
  */
 package app.packed.concurrent;
 
-import app.packed.bean.BeanConfiguration;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.extension.FrameworkExtension;
-import internal.app.packed.concurrent.SchedulingTaskManager;
 
 /**
  * This extension allows for multiple threads within an application.
@@ -56,11 +54,6 @@ public class JobExtension extends FrameworkExtension<JobExtension> {
 
     /** Creates a new thread extension. */
 
-    BeanConfiguration newSchedulingBean() {
-        BeanConfiguration b = provide(SchedulingTaskManager.class);
-//        b.bindServiceInstance(ExecutorConfiguration.class, main().scheduler);
-        return b;
-    }
 
     /**
      * Schedules an operation.

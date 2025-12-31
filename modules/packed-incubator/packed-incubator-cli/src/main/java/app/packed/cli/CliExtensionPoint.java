@@ -30,6 +30,6 @@ public class CliExtensionPoint extends ExtensionPoint<CliExtension> {
     }
 
     public CliNamespaceConfiguration namespace() {
-        return extension().ns().configuration(extension(), handle());
+        return extension().namespaceHandle().configuration(extension(), handle());
     }
 }

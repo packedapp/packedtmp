@@ -17,9 +17,8 @@ package app.packed.concurrent.job;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.concurrent.ThreadKind;
-import app.packed.concurrent.daemon.DaemonJob;
-import app.packed.concurrent.daemon.DaemonJobContext;
+import app.packed.concurrent.DaemonJob;
+import app.packed.concurrent.DaemonJobContext;
 
 /**
  *
@@ -36,7 +35,7 @@ public class ScTest2 extends BaseAssembly {
 
         App.run(new ScTest2());
 
-        Thread.sleep(10000);
+      //  Thread.sleep(10000);
     }
 
     /** {@inheritDoc} */
@@ -50,7 +49,7 @@ public class ScTest2 extends BaseAssembly {
 
     public static class MuB {
 
-        @DaemonJob(threadKind = ThreadKind.PLATFORM_THREAD)
+        @DaemonJob
         public void dae(DaemonJobContext sc)    {
             IO.println("Daemon");
         }

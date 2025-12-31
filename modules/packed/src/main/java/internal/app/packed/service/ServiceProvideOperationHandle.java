@@ -47,7 +47,7 @@ public class ServiceProvideOperationHandle extends BaseExtensionOperationHandle<
         oh.bean().serviceNamespace().provideService(key, oh, new FromEmbeddedOperation(oh.operation()));
     }
 
-    public static void install(Provide annotation, OnField onField) {
+    public static void onProvideAnnotation(Provide annotation, OnField onField) {
 
         // Checks that it is a valid key
         Key<?> key = onField.toKey();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent.daemon.impl;
+package internal.app.packed.concurrent.daemon;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,8 +21,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.lifecycle.Start;
+import app.packed.bean.lifecycle.Stop;
 import app.packed.bean.sidebean.SidebeanBinding;
-import app.packed.concurrent.daemon.DaemonJobContext;
+import app.packed.concurrent.DaemonJobContext;
 
 /**
  *
@@ -35,7 +36,7 @@ public final class DaemonJobSidebean implements DaemonJobContext {
 
     private final ThreadFactory factory;
 
-    final DaemonInvoker invoker;
+    private final DaemonInvoker invoker;
 
     public DaemonJobSidebean(@SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonInvoker invoker) {
         this.factory = requireNonNull(factory);
@@ -63,7 +64,7 @@ public final class DaemonJobSidebean implements DaemonJobContext {
     ///////////////// Lifecycle
     @Start
     protected void onStart() {
-        System.out.println(factory.getClass());
+        System.out.println("Starting daemon");
         thread = factory.newThread(new Runnable() {
             @Override
             public void run() {
@@ -82,7 +83,10 @@ public final class DaemonJobSidebean implements DaemonJobContext {
         thread.start();
     }
 
+    @Stop
     protected void onStop() {
+        System.out.println("Stopping daemon");
+
         isShutdown = true;
         Thread t = thread;
         if (t != null) {

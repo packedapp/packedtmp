@@ -39,7 +39,7 @@ public class ServiceExportOperationHandle extends BaseExtensionOperationHandle<O
         super(installer);
     }
 
-    public static void install(Export annotation, OnMethod method) {
+    public static void onExportAnnotation(OnMethod method, Export annotation) {
         // Checks that it is a valid key
         // Checks that it is a valid key
         Key<?> key = method.toKey();

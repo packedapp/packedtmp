@@ -16,23 +16,26 @@
 package internal.app.packed.lifecycle.lifetime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanSourceKind;
+import app.packed.component.ComponentRealm;
 import app.packed.lifetime.CompositeLifetimeMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.extension.ExtensionContext;
+import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.AbstractInitializingOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
-import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.ThrowableUtil;
@@ -125,7 +128,26 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     }
 
     public void orderDependencies() {
-        for (BeanSetup bs : beans) {
+        // We need to make sure that extensions are initialized first in order
+        // We do a stable sort, where BaseExtension are first,
+        // And application is last.
+        ArrayList<BeanSetup> sorted = new ArrayList<>(beans);
+        Collections.sort(sorted, (a, b) -> {
+            if (a.owner.authority() == b.owner.authority()) {
+                return 0;
+            }
+            if (a.owner.authority().equals(ComponentRealm.application())) {
+                return 1;
+            }
+            if (b.owner.authority().equals(ComponentRealm.application())) {
+                return -1;
+            }
+            ExtensionSetup es1 = (ExtensionSetup) a.owner;
+            ExtensionSetup es2 = (ExtensionSetup) b.owner;
+            return es1.compareTo(es2);
+        });
+
+        for (BeanSetup bs : sorted) {
             orderDependenciesBeans(bs);
         }
     }
@@ -178,7 +200,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
 }
 
-///** Beans that have independent lifetime of all the container's in this lifetime. */
+/// ** Beans that have independent lifetime of all the container's in this lifetime. * /
 //private final ArrayList<BeanLifetimeSetup> beanLifetimes = new ArrayList<>(); // what are using this for??
 
 //Vi kan sagtens folde bedste foraeldre ind ogsaa...

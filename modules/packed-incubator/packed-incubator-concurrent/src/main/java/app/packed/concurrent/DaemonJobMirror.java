@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent.daemon;
+package app.packed.concurrent;
 
-import app.packed.concurrent.JobMirror;
-import app.packed.concurrent.ThreadKind;
-import app.packed.concurrent.daemon.impl.DaemonJobOperationHandle;
 import app.packed.operation.OperationHandle;
+import internal.app.packed.concurrent.daemon.DaemonJobOperationHandle;
 
 /**
  * A mirror for a daemon operation.

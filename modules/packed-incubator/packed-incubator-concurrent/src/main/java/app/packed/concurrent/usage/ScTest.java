@@ -17,8 +17,8 @@ package app.packed.concurrent.usage;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.concurrent.daemon.DaemonJob;
-import app.packed.concurrent.daemon.DaemonJobContext;
+import app.packed.concurrent.DaemonJob;
+import app.packed.concurrent.DaemonJobContext;
 
 /**
  *

@@ -77,7 +77,8 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
             // EntryPoint.LaunchLifetime
         }
 
-        h.command = c;
+        // populate from annotation instead
+       // h.command = c;
 
         if (commands.putIfAbsent(c.name()[0], h) != null) {
             throw new BeanInstallationException("Multiple cli commands with the same name, name = " + c.name());
@@ -90,7 +91,7 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
      * @param c
      * @param onVariable
      */
-    void process(CliExtension extension, CliOption c, OnVariable onVariable) {
+    void onCliOptionAnnotation(CliExtension extension, CliOption annotation, OnVariable onVariable) {
         throw new UnsupportedOperationException();
     }
 }

@@ -110,10 +110,9 @@ public final class ServiceBindingSetup extends BindingSetup {
                 }
             }
             case NAMESPACE_SERVICE -> {
-                for (@SuppressWarnings("unused")
-                String namespace : resolver.namespaces()) {
+                for (String _ : resolver.namespaces()) {
                     // We only use main for now
-                    MainServiceNamespaceHandle h = operation.bean.container.servicesMain();
+                    MainServiceNamespaceHandle h = operation.bean.serviceNamespace();
                     NamespaceServiceProviderHandle sps = h.provider(key);
                     if (sps != null) {
                         return sps;

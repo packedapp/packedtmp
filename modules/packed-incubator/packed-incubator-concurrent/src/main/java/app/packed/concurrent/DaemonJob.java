@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent.daemon;
+package app.packed.concurrent;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
-import app.packed.concurrent.ThreadKind;
-import app.packed.concurrent.daemon.impl.DaemonJobOperationHandle;
+import internal.app.packed.concurrent.daemon.DaemonJobOperationHandle;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
@@ -62,7 +61,7 @@ public @interface DaemonJob {
     /**
      * {@return whether or not the thread executing the annotated method, should be interrupted when the bean is shutdown}
      */
-    boolean interruptOnStop() default true; // Maybe enum, false, true, asPerApplicationDefaults
+    boolean interruptOnStop() default true; // Maybe enum, false, true, asPerANamespaceDefaults
 
     /**
      * <p>

@@ -195,6 +195,10 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         for (OperationSetup os : operations) {
             result.addAll(os.dependsOn());
         }
+//        for (PackedSidebeanAttachment psa : sideBeanAttachments) {
+//            result.addAll(psa.sidebean.dependsOn());
+//        }
+//        Debug.debug(bean.beanClass + " " + result);
         return result;
     }
 

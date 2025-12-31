@@ -20,12 +20,12 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLifetime;
 import app.packed.binding.Key;
 import app.packed.binding.ProvisionException;
-import app.packed.concurrent.daemon.impl.DaemonInvoker;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
 import internal.app.packed.bean.sidebean.PackedSidebeanAttachment.OfOperation;
@@ -37,6 +37,10 @@ import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromSidebeanAttachment;
 import internal.app.packed.binding.BindingSetup;
+import internal.app.packed.concurrent.daemon.DaemonInvoker;
+import internal.app.packed.concurrent.daemon.DaemonJobSidebean;
+import internal.app.packed.concurrent.daemon.HowDoesThisWork;
+import internal.app.packed.concurrent.daemon.HowDoesThisWorkWithParam;
 import internal.app.packed.invoke.MethodHandleUtil.LazyResolvable;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
@@ -72,6 +76,13 @@ public final class OperationCodeGenerator {
         this.operation = operation;
         this.sidebeanAttachment = sidebean;
         this.invocationType = operation.template.invocationType();
+    }
+
+    boolean isDebug() {
+        if(true) {
+            return operation.bean.bean.beanClass == HowDoesThisWork.class || operation.bean.bean.beanClass == HowDoesThisWorkWithParam.class;
+        }
+        return operation.bean.bean.beanClass == DaemonJobSidebean.class && operation.handle() instanceof FactoryOperationHandle;
     }
 
     /**
@@ -124,71 +135,32 @@ public final class OperationCodeGenerator {
 
     private MethodHandle newMethodHandle() {
         operation.bean.container.application.checkInCodegenPhase();
-        if (operation.id == 5) {
-            System.out.println("HMM");
-        }
-        boolean isFactory = operation.handle() instanceof FactoryOperationHandle;
 
-        boolean requiresBeanInstance = !isFactory && operation.target instanceof MemberOperationTarget mot && !Modifier.isStatic(mot.target.modifiers());
-
-        boolean isSideBeanClass = operation.bean.handle() instanceof SidebeanHandle;
-
-        // System.out.println("--> " + operation + " " + sidebeanAttachment);
+        // If sidebeanAttachment we use special method. The special thing about sidebean attachments is that the sidebean itself
+        // has already had its operations through this method. But parameters that use SidebeanBinding will have been left
+        // unresolved for each attachment. And must there be bound individually for each attachment, using this special method
         if (sidebeanAttachment != null) {
-            // Get the incomplete MethodHandle that each sidebean attachment needs to adjust
-            MethodHandle methodHandle = operation.codeHolder.generateMethodHandle();
-            if (isFactory) {
-                // System.out.println(" .... " + isFactory + " " + methodHandle.type());
-                for (BindingSetup binding : operation.bindings) {
-                    if (binding.provider() instanceof FromSidebeanAttachment a) {
-                        Key<?> key = a.key();
-                        PackedSidebeanBinding b = a.handle().bindings.get(key); // Existance has been checked
-                        if (b instanceof Constant _) {
-                            Object instance = sidebeanAttachment.constants.get(key);
-                            methodHandle = MethodHandles.insertArguments(methodHandle, 1, instance);
-                        } else if (b instanceof Invoker _) {
-                            PackedSidebeanAttachment.OfOperation oo = (OfOperation) sidebeanAttachment;
-                            MethodHandle methodHandle2 = oo.operation.codeHolder.generate(false);
-                            MethodHandle mhh = DaemonInvoker.CONSTRUCTOR.bindTo(methodHandle2);
-                            methodHandle = MethodHandles.collectArguments(methodHandle, 1, mhh);
-                            MethodType finalType = methodHandle.type().dropParameterTypes(1, 2);
-                            int[] reorder = new int[methodHandle.type().parameterCount()];
-                            for (int i = 0, j = 0; i < reorder.length; i++) {
-                                if (i == 1) {
-                                    reorder[i] = 0; // The provider's input (now at 'pos') comes from final param 0
-                                } else {
-                                    reorder[i] = j++; // Other params map 1-to-1 to the remaining final params
-                                }
-                            }
-                            methodHandle = MethodHandles.permuteArguments(methodHandle, finalType, reorder);
-                        }
-                    }
-                }
-                methodHandle = methodHandle.asType(methodHandle.type().changeReturnType(Object.class));
-                methodHandle = BeanLifecycleSupport.MH_INVOKE_INITIALIZER_SIDEBEAN.bindTo(sidebeanAttachment).bindTo(methodHandle);
-                return methodHandle;
-            }
-            MethodHandle tmp = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, sidebeanAttachment.lifetimeStoreIndex.index);
-            assert tmp.type().returnType() == Object.class;
-            // We need to convert it from Object to the expected type
-            tmp = tmp.asType(tmp.type().changeReturnType(sidebeanAttachment.sidebean.bean.beanClass));
-
-            return MethodHandleUtil.merge(methodHandle, tmp);
+            return newSidebeanAttachment();
         }
+
+        boolean isFactory = operation.handle() instanceof FactoryOperationHandle;
+        boolean requiresBeanInstance = !isFactory && operation.target instanceof MemberOperationTarget mot && !Modifier.isStatic(mot.target.modifiers());
+        boolean isSideBeanClass = operation.bean.handle() instanceof SidebeanHandle;
 
         ArrayList<Integer> permuters = new ArrayList<>();
 
         MethodHandle mh = operation.target.methodHandle();
 
         if (requiresBeanInstance) {
-            if (!isSideBeanClass) {
-                BindingProvider beanInstanceProvider = operation.bean.beanInstanceBindingProvider();
-                mh = provide(mh, beanInstanceProvider, permuters, isSideBeanClass);
-            } else {
+            if (isSideBeanClass) {
                 // If we are a sidebean, the generated method handle, must take a bean instance as the first parameter.
-                // This parameter will be bound later at the sidebean usage site, typically to lifetime array reader of the bean
+                // This parameter will be bound later at the sidebean usage site, (typically to lifetime array reader of the bean)
                 invocationType = invocationType.insertParameterTypes(0, operation.bean.bean.beanClass);
                 permuters.add(0);
+            } else {
+                // Otherwise we fetch the binding provider that can get the bean instance to use.
+                BindingProvider beanInstanceProvider = operation.bean.beanInstanceBindingProvider();
+                mh = provide(mh, 0, beanInstanceProvider, permuters, isSideBeanClass);
             }
         }
 
@@ -197,15 +169,22 @@ public final class OperationCodeGenerator {
             invocationType = invocationType.changeReturnType(operation.type.returnRawType());
         }
 
-        for (BindingSetup binding : operation.bindings) {
-            if (binding == null) {
-                System.out.println(operation.type);
-            }
-            if (binding.provider() == null) {
+        if (isDebug()) {
+            System.out.println("==========");
+            System.out.println("Invoked as: " + invocationType);
+            System.out.println("Target    : " + mh.type());
+            System.out.println();
+        }
+
+        for (int i = 0; i < operation.bindings.length; i++) {
+            BindingSetup binding = operation.bindings[i];
+            if (binding == null || binding.provider() == null) {
                 // Should not really be here where we fail, much earlier
+                System.out.println(operation.type);
+                System.out.println(Arrays.toString(operation.bindings));
                 throw new ProvisionException("Oops for " + operation.type);
             }
-            mh = provide(mh, binding.provider(), permuters, isSideBeanClass);
+            mh = provide(mh, i, binding.provider(), permuters, isSideBeanClass);
         }
 
         int[] result = new int[permuters.size()];
@@ -213,14 +192,30 @@ public final class OperationCodeGenerator {
             result[i] = permuters.get(i);
         }
 
+        if (Arrays.equals(result, new int[] { 0, 2, 3 })) {
+            System.out.println("MODIFYIN®†");
+             result = new int[] { 0, 1, 2 };
+        }
+
+        if (isDebug()) {
+            System.out.println("Invoked as: " + invocationType);
+            System.out.println("Target    : " + mh.type());
+            System.out.println("Permuters : " + Arrays.toString(result));
+        }
+
         try {
             mh = MethodHandles.permuteArguments(mh, invocationType, result);
         } catch (RuntimeException e) {
+            System.err.println("Invoked as: " + invocationType);
+            System.err.println("Target    : " + mh.type());
             System.err.println("Permuter array " + permuters);
             throw e;
         }
 
-        // System.out.println(operation.id + ",, " + mh.type() + " " + operation);
+        if (isDebug()) {
+            System.out.println("Final     : " + mh.type());
+            System.out.println("==========");
+        }
 
         if (mh.type() != invocationType) {
             System.err.println("OperationType " + operation.type.toString());
@@ -229,7 +224,7 @@ public final class OperationCodeGenerator {
             throw new Error();
         }
 
-        // We need to store singleton beans in their respective lifetime.
+        // Singleton beans needs to be stored in their respective lifetime.
         boolean isFactoryStore = isFactory && operation.bean.beanKind == BeanLifetime.SINGLETON;
         if (isFactoryStore) {
             mh = mh.asType(mh.type().changeReturnType(Object.class)); // We store in Object[]
@@ -240,11 +235,53 @@ public final class OperationCodeGenerator {
         return mh;
     }
 
-    private MethodHandle provide(MethodHandle mh, BindingProvider p, ArrayList<Integer> permuters, boolean isSidebean) {
-        // System.out.println("----> " + p + " " + isSidebean);
-        int extensionIndex = isSidebean ? 1 : 0;
-        int pos = permuters.size();
+    private MethodHandle newSidebeanAttachment() {
+        boolean isFactory = operation.handle() instanceof FactoryOperationHandle;
 
+        // Get the incomplete MethodHandle that each sidebean attachment needs to adjust
+        MethodHandle methodHandle = operation.codeHolder.generateMethodHandle();
+        if (isFactory) {
+            // System.out.println(" .... " + isFactory + " " + methodHandle.type());
+            for (BindingSetup binding : operation.bindings) {
+                if (binding.provider() instanceof FromSidebeanAttachment a) {
+                    Key<?> key = a.key();
+                    PackedSidebeanBinding b = a.handle().bindings.get(key); // Existance has been checked
+                    if (b instanceof Constant _) {
+                        Object instance = sidebeanAttachment.constants.get(key);
+                        methodHandle = MethodHandles.insertArguments(methodHandle, 1, instance);
+                    } else if (b instanceof Invoker _) {
+                        PackedSidebeanAttachment.OfOperation oo = (OfOperation) sidebeanAttachment;
+                        MethodHandle methodHandle2 = oo.operation.codeHolder.generate(false);
+                        MethodHandle mhh = DaemonInvoker.CONSTRUCTOR.bindTo(methodHandle2);
+                        methodHandle = MethodHandles.collectArguments(methodHandle, 1, mhh);
+                        MethodType finalType = methodHandle.type().dropParameterTypes(1, 2);
+                        int[] reorder = new int[methodHandle.type().parameterCount()];
+                        for (int i = 0, j = 0; i < reorder.length; i++) {
+                            if (i == 1) {
+                                reorder[i] = 0; // The provider's input (now at 'pos') comes from final param 0
+                            } else {
+                                reorder[i] = j++; // Other params map 1-to-1 to the remaining final params
+                            }
+                        }
+                        methodHandle = MethodHandles.permuteArguments(methodHandle, finalType, reorder);
+                    }
+                }
+            }
+            methodHandle = methodHandle.asType(methodHandle.type().changeReturnType(Object.class));
+            methodHandle = BeanLifecycleSupport.MH_INVOKE_INITIALIZER_SIDEBEAN.bindTo(sidebeanAttachment).bindTo(methodHandle);
+            return methodHandle;
+        }
+        MethodHandle tmp = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, sidebeanAttachment.lifetimeStoreIndex.index);
+        assert tmp.type().returnType() == Object.class;
+        // We need to convert it from Object to the expected type
+        tmp = tmp.asType(tmp.type().changeReturnType(sidebeanAttachment.sidebean.bean.beanClass));
+
+        return MethodHandleUtil.merge(methodHandle, tmp);
+    }
+
+    private MethodHandle provide(MethodHandle mh, int bindingIndex, BindingProvider p, ArrayList<Integer> permuters, boolean isSidebean) {
+        int extensionIndex = 0;
+        int pos = permuters.size();
         return switch (p) {
         // A constant has been supplied by the user
         case BindingProvider.FromConstant(_, Object constant) -> {
@@ -278,13 +315,14 @@ public final class OperationCodeGenerator {
         case BindingProvider.FromLifetimeArena(_, LifetimeStoreIndex index, Class<?> type) -> {
             // read from constant pool via extIdx
             permuters.add(extensionIndex);
-            MethodHandle tmp = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, index.index);
-            assert tmp.type().returnType() == Object.class;
-            tmp = tmp.asType(tmp.type().changeReturnType(type));
-            yield MethodHandles.collectArguments(mh, extensionIndex, tmp);
+            MethodHandle beanFetcher = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, index.index);
+            assert beanFetcher.type().returnType() == Object.class;
+            beanFetcher = beanFetcher.asType(beanFetcher.type().changeReturnType(type));
+            yield MethodHandles.collectArguments(mh, extensionIndex, beanFetcher);
         }
 
         case BindingProvider.FromSidebeanAttachment(Key<?> key, SidebeanHandle<?> handle) -> {
+            extensionIndex = 1;
             PackedSidebeanBinding b = handle.bindings.get(key); // We have already checked that this is non null
             // Shared constant can be bound immediately, otherwise we need to bind the actual for the attachment
             // at a later timer
@@ -293,7 +331,8 @@ public final class OperationCodeGenerator {
             } else {
                 Class<?> clazz = mh.type().parameterType(extensionIndex + pos - 1);
                 invocationType = invocationType.appendParameterTypes(clazz);
-                permuters.add(extensionIndex + pos);
+                System.out.println("Addingp permuter" + (bindingIndex + 1));
+                permuters.add(pos + 1);
                 yield mh;
             }
         }

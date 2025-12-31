@@ -18,7 +18,6 @@ package app.packed.concurrent;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentRealm;
-import app.packed.concurrent.daemon.DaemonJobMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
@@ -37,13 +36,8 @@ public class JobNamespaceMirror extends NamespaceMirror<BaseExtension> {
         super(handle);
     }
 
-    /** {@return the owner of the namespace} */
-    public ComponentRealm owner() {
-        return ComponentRealm.application();
-    }
-
     /** {@return a stream of all jobs that have been defined in the namespace or descendant namespaces} */
-    public Stream<JobMirror> allDaemons() {
+    public Stream<DaemonJobMirror> allDaemons() {
         return allJobs().filter(DaemonJobMirror.class::isInstance).map(DaemonJobMirror.class::cast);
     }
 
@@ -53,7 +47,6 @@ public class JobNamespaceMirror extends NamespaceMirror<BaseExtension> {
     }
 
     /** {@return a stream of all jobs that have been defined in the namespace} */
-    @SuppressWarnings("exports")
     public Stream<DaemonJobMirror> daemons() {
         return jobs().filter(DaemonJobMirror.class::isInstance).map(DaemonJobMirror.class::cast);
     }
@@ -61,5 +54,10 @@ public class JobNamespaceMirror extends NamespaceMirror<BaseExtension> {
     /** {@return a stream of all jobs that have been defined in the namespace} */
     public Stream<JobMirror> jobs() {
         return Stream.of();
+    }
+
+    /** {@return the owner of the namespace} */
+    public ComponentRealm owner() {
+        return ComponentRealm.application();
     }
 }

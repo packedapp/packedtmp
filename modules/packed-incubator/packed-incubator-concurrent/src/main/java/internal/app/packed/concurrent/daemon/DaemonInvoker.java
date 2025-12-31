@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent.daemon.impl;
+package internal.app.packed.concurrent.daemon;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.concurrent.daemon.DaemonJobContext;
+import app.packed.concurrent.DaemonJobContext;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.invoke.LookupUtil;
 

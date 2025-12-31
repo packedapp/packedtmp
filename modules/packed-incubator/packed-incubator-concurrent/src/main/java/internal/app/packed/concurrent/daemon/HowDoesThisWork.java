@@ -13,26 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifecycle.lifetime;
-
-import java.util.ArrayList;
-
-import internal.app.packed.extension.ExtensionContext;
-import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
+package internal.app.packed.concurrent.daemon;
 
 /**
  *
  */
-public final class LifetimeStore {
+public class HowDoesThisWork {
+    public HowDoesThisWork() {
 
-   public final ArrayList<LifetimeStoreEntry> entries = new ArrayList<>();
-
-    public LifetimeStoreIndex add(LifetimeStoreEntry entry) {
-        entries.add(entry);
-        return new LifetimeStoreIndex (entries.size() - 1);
-    }
-
-    public ExtensionContext newRuntimePool() {
-        return PackedExtensionContext.create(this , entries.size());
     }
 }

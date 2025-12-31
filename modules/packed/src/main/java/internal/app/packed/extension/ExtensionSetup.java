@@ -75,7 +75,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     }
 
     public void closeApplication() {
-        ExtensionAccessHandler.instance().invoke_Extension_OnAssemblyClose(instance);
+        //ExtensionAccessHandler.instance().invoke_Extension_OnAssemblyClose(instance);
         tree.isConfigurable = false;
         closeApplication0();
     }

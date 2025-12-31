@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent.daemon.impl;
+package internal.app.packed.concurrent.daemon;
 
 import java.util.concurrent.ThreadFactory;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.concurrent.DaemonJob;
+import app.packed.concurrent.DaemonJobConfiguration;
+import app.packed.concurrent.DaemonJobContext;
+import app.packed.concurrent.DaemonJobMirror;
 import app.packed.concurrent.ThreadKind;
-import app.packed.concurrent.daemon.DaemonJob;
-import app.packed.concurrent.daemon.DaemonJobConfiguration;
-import app.packed.concurrent.daemon.DaemonJobContext;
-import app.packed.concurrent.daemon.DaemonJobMirror;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationInstaller;
@@ -82,6 +82,10 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
             c.sidebeanBindInvoker(DaemonInvoker.class);
             c.sidebeanBindConstant(ThreadFactory.class);
         });
+
+        introspector.base().install(DaemonJobRuntimeManager.class).provide();
+        introspector.base().install(HowDoesThisWork.class).provide();
+        introspector.base().install(HowDoesThisWorkWithParam.class).provide();
 
         ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(introspector.extensionHandle());
 

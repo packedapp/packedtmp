@@ -21,6 +21,7 @@ import app.packed.extension.InternalExtensionException;
 import internal.app.packed.ValueBased;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
+import internal.app.packed.lifecycle.lifetime.LifetimeStore;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 
 /**
@@ -33,19 +34,22 @@ public final class PackedExtensionContext implements ExtensionContext {
     /** A context template for {@link ExtensionContext}. */
     public static final ContextTemplate CONTEXT_TEMPLATE = ContextTemplate.of(ExtensionContext.class).withImplementation(PackedExtensionContext.class);
 
-    public static final ExtensionContext EMPTY = new PackedExtensionContext(0);
+    public static final ExtensionContext EMPTY = new PackedExtensionContext(null, 0);
 
     final Object[] objects;
 
-    private PackedExtensionContext(int size) {
+    final LifetimeStore store;
+    private PackedExtensionContext(LifetimeStore store, int size) {
         objects = new Object[size];
+        this.store=store;
+
     }
 
-    public static ExtensionContext create(int size) {
+    public static ExtensionContext create(LifetimeStore store, int size) {
         if (size == 0) {
             return EMPTY;
         } else {
-            return new PackedExtensionContext(size);
+            return new PackedExtensionContext(store, size);
         }
     }
 
@@ -61,6 +65,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     public Object read(int index) {
         Object value = objects[index];
         if (value == null) {
+            System.out.println(store.entries.get(index));
             throw new InternalExtensionException("Bean with index " + index + " has not been initialized");
         }
         return value;

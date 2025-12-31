@@ -68,12 +68,12 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
         throw new UnsupportedOperationException();
     }
 
-    CliNamespaceHandle ns() {
+    CliNamespaceHandle namespaceHandle() {
         return applicationRoot().namespaceLazy(CliNamespaceHandle.TEMPLATE, "main");
     }
 
     public CliNamespaceConfiguration namespace() {
-        return ns().configuration(this);
+        return namespaceHandle().configuration(this);
     }
 
     private ContainerInstaller<?> newContainer() {
@@ -98,7 +98,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     @Override
     protected void onClose() {
-        IO.println("Have commands for " + ns().commands.keySet());
+        IO.println("Have commands for " + namespaceHandle().commands.keySet());
 
         super.onClose();
     }

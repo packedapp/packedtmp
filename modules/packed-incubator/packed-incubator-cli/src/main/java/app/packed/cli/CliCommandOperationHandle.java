@@ -28,8 +28,6 @@ import app.packed.operation.OperationInstaller;
  */
 final class CliCommandOperationHandle extends OperationHandle<CliCommandConfiguration> {
 
-    CliCommand command;
-
     final List<String> names = new ArrayList<>();
 
     final CliNamespaceHandle namespace;

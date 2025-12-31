@@ -82,7 +82,7 @@ final class ProvideBeanIntrospector extends BaseExtensionBeanIntrospector {
                 throw new BuildException("Not okay)");
             }
         }
-        ServiceProvideOperationHandle.install((Provide) annotation, onField);
+        ServiceProvideOperationHandle.onProvideAnnotation((Provide) annotation, onField);
     }
 
     /** {@inheritDoc} */

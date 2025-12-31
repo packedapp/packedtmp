@@ -39,6 +39,6 @@ final class ExportBeanIntrospector extends BaseExtensionBeanIntrospector {
                 throw new BeanInstallationException("Not okay)");
             }
         }
-        ServiceExportOperationHandle.install((Export) annotation, method);
+        ServiceExportOperationHandle.onExportAnnotation(method, (Export) annotation);
     }
 }

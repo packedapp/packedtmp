@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent.daemon;
+package app.packed.concurrent;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.function.BiConsumer;
 
-import app.packed.concurrent.JobConfiguration;
-import app.packed.concurrent.ThreadKind;
-import app.packed.concurrent.daemon.impl.DaemonJobOperationHandle;
 import app.packed.operation.OperationHandle;
+import internal.app.packed.concurrent.daemon.DaemonJobOperationHandle;
 
 /**
  * The configuration of a daemon operation.

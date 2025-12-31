@@ -15,16 +15,11 @@
  */
 package app.packed.bean.sidebean;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.binding.Key;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
 
@@ -36,8 +31,8 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
     private final SidebeanHandle<?> handle;
 
     public SidebeanConfiguration(BeanHandle<?> handle) {
-        this.handle = (SidebeanHandle<?>) requireNonNull(handle);
         super(handle);
+        this.handle = (SidebeanHandle<?>) handle;
     }
 
     public void initOnly() {
@@ -47,24 +42,24 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
     }
 
 
-    /**
-     * Attaches this side bean to the specified bean (handle).
-     *
-     * @param beanHandle
-     *            the handle of the bean to attach the sidebean to
-     * @return
-     */
-    public SidebeanAttachment attachToBean(BeanHandle<?> beanHandle) {
-        return handle.attachTo(new PackedSidebeanAttachment.OfBean(BeanSetup.crack(handle), beanHandle));
-    }
-
-
-    // Hmm, fx for CurrentTime... Vil vi vil bare tilfoeje en til beanen
-    // Kunne man bruge den samme til flere beans?
-    // For example, InvocationCount
-    public SidebeanAttachment attachToVariable(OnVariable handle) {
-        throw new UnsupportedOperationException();
-    }
+//    /**
+//     * Attaches this side bean to the specified bean (handle).
+//     *
+//     * @param beanHandle
+//     *            the handle of the bean to attach the sidebean to
+//     * @return
+//     */
+//    public SidebeanAttachment attachToBean(BeanHandle<?> beanHandle) {
+//        return handle.attachTo(new PackedSidebeanAttachment.OfBean(BeanSetup.crack(handle), beanHandle));
+//    }
+//
+//
+//    // Hmm, fx for CurrentTime... Vil vi vil bare tilfoeje en til beanen
+//    // Kunne man bruge den samme til flere beans?
+//    // For example, InvocationCount
+//    public SidebeanAttachment attachToVariable(OnVariable handle) {
+//        throw new UnsupportedOperationException();
+//    }
 
     private void sidebeanBind(Key<?> key, PackedSidebeanBinding binding) {
         checkIsConfigurable();

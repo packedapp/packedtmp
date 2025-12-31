@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent.daemon;
+package app.packed.concurrent;
 
 import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
-import app.packed.concurrent.daemon.impl.DaemonJobSidebean;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.concurrent.daemon.DaemonJobSidebean;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**

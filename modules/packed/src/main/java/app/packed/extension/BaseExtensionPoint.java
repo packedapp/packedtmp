@@ -119,7 +119,6 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         BeanInstaller installer = newBean(SIDEBEAN, handle());
         SidebeanHandle<T> h = installer.installIfAbsent(implementation, SidebeanHandle.class, SidebeanHandle<T>::new,
                 ha -> installationAction.accept(ha.configuration()));
-
         return h.configuration();
     }
 

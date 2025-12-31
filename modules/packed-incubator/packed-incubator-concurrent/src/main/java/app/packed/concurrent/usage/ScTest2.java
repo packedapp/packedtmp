@@ -20,10 +20,10 @@ import java.util.Optional;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
+import app.packed.concurrent.DaemonJob;
+import app.packed.concurrent.DaemonJobContext;
 import app.packed.concurrent.ThreadNamespaceMirror;
 import app.packed.concurrent.annotations.ScheduleJob;
-import app.packed.concurrent.daemon.DaemonJob;
-import app.packed.concurrent.daemon.DaemonJobContext;
 import app.packed.concurrent.oldscheduling.ScheduledOperationMirror;
 import app.packed.concurrent.oldscheduling.SchedulingContext;
 

@@ -1,9 +1,24 @@
+Job is managed by Packed
+
+Job
+  DaemonJob
+  ScheduledJob
+    CronScheduled
+    ScheduleRecurrent
+
+
+Hierachy
+
+
+
+
 === DomainObjects
 Schedule
 
 ScheduleOnce(nanos)
 ScheduleCron()  (Knows Timezones, alternativ @CalendarScheduled)
 ScheduleRecurrent
+
 
 
 ------
