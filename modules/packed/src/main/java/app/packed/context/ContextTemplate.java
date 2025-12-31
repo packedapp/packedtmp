@@ -47,25 +47,34 @@ import internal.app.packed.context.PackedContextTemplate;
 
 // Vi depender paa en context, or context impl.
 
+@Deprecated
 public sealed interface ContextTemplate permits PackedContextTemplate {
 
+    @Deprecated
     /** {@return the context this template is a part of.} */
     Class<? extends Context<?>> contextClass();
 
+    @Deprecated
     /** {@return the type of value the context provides.} */
     Class<? extends Context<?>> contextImplementationClass();
 
+    @Deprecated
     /** {@return the extension the context is a part of.} */
     Class<? extends Extension<?>> extensionClass();
 
+    @Deprecated
     boolean isHidden();
 
+    @Deprecated
     ContextTemplate withHidden();
 
+    @Deprecated
     ContextTemplate withImplementation(Class<? extends Context<?>> implementationClass);
 
+    @Deprecated
     ContextTemplate withBindAsConstant();
 
+    @Deprecated
     static ContextTemplate of(Class<? extends Context<?>> contextClass) {
         return PackedContextTemplate.of(contextClass);
     }

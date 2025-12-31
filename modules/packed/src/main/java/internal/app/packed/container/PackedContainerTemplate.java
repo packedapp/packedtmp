@@ -24,7 +24,7 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
-import app.packed.context.ContextTemplate;
+import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
@@ -87,7 +87,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerTemplate<H> withLifetimeOperationAddContext(int index, ContextTemplate template) {
+    public PackedContainerTemplate<H> withLifetimeOperationAddContext(int index, Class<? extends Context<?>> template) {
         throw new UnsupportedOperationException();
     }
 

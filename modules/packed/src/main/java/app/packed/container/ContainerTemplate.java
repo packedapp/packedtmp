@@ -19,12 +19,10 @@ import java.util.Optional;
 
 import app.packed.binding.Key;
 import app.packed.component.guest.OldContainerTemplateLink;
-import app.packed.context.ContextTemplate;
+import app.packed.context.Context;
 import app.packed.extension.Extension;
-import app.packed.operation.Op1;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import sandbox.extension.context.ContextSpanKind;
 
 /**
  * A container template must be specified when creating a new container.
@@ -136,7 +134,7 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
 //        ContainerTemplate<H> carrierType(Class<?> beanClass);
 
     // Har kun visibility for the installing extension
-    ContainerTemplate<H> withLifetimeOperationAddContext(int index, ContextTemplate template);
+    ContainerTemplate<H> withLifetimeOperationAddContext(int index, Class<? extends Context<?>> template);
 
     default <T> ContainerTemplate<H> withLocal(ContainerBuildLocal<T> containerLocal, T value) {
         throw new UnsupportedOperationException();
@@ -159,16 +157,16 @@ interface Zandbox {
         throw new UnsupportedOperationException();
     }
 
-    // @ContextProvide(Context.class) T, hvor T=ArgType
-    Zandbox addContextFromArg(ContextTemplate template);
-
-    @SuppressWarnings("unchecked")
-    // We have a trivial usecases where the bean is the same parameter
-    // Take a record? that matches the parameters?
-    <T> Zandbox addContextFromParent(ContextTemplate template, ContextSpanKind span, Class<?> extensionBean, Op1<T, ?>... op);
-
-    // Soeger vi kun i samme lifetime?
-    Zandbox addContextFromProvide(ContextTemplate template, ContextSpanKind containerSpan);
+//    // @ContextProvide(Context.class) T, hvor T=ArgType
+//    Zandbox addContextFromArg(ContextTemplate template);
+//
+//    @SuppressWarnings("unchecked")
+//    // We have a trivial usecases where the bean is the same parameter
+//    // Take a record? that matches the parameters?
+//    <T> Zandbox addContextFromParent(ContextTemplate template, ContextSpanKind span, Class<?> extensionBean, Op1<T, ?>... op);
+//
+//    // Soeger vi kun i samme lifetime?
+//    Zandbox addContextFromProvide(ContextTemplate template, ContextSpanKind containerSpan);
 
     // BeanSpan not supported
     // OperationSpan I will have to think about that

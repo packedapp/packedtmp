@@ -19,13 +19,11 @@ import java.util.Set;
 
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
-import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.util.accesshelper.AccessHelper;
 import internal.app.packed.util.accesshelper.ContainerAccessHandler;
-import sandbox.extension.context.ContextSpanKind;
 
 /**
  * A container handle is a build-time reference to an installed container. They are created by the framework when an
@@ -210,9 +208,9 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
 
 interface ZandboxHandle {
     // ditch beanBlass, and just make sure there is a bean that can do it
-    default ZandboxHandle zContextFromBean(Class<?> beanClass, ContextTemplate template, ContextSpanKind span) {
-        throw new UnsupportedOperationException();
-    }
+//    default ZandboxHandle zContextFromBean(Class<?> beanClass, ContextTemplate template, ContextSpanKind span) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * <p>

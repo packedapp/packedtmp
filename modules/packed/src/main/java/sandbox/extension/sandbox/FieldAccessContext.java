@@ -15,24 +15,20 @@
  */
 package sandbox.extension.sandbox;
 
-import java.lang.invoke.VarHandle.AccessMode;
-
-import app.packed.context.ContextTemplate;
-
 /**
  *
  */
 public class FieldAccessContext {
 
-    static ContextTemplate get(Class<?> returnType) {
-        throw new UnsupportedOperationException();
-    }
-
-    static ContextTemplate set(Class<?> invocationType) {
-        throw new UnsupportedOperationException();
-    }
-
-    static ContextTemplate access(AccessMode accessMode, Class<?> invocationType) {
-        throw new UnsupportedOperationException();
-    }
+//    static ContextTemplate get(Class<?> returnType) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    static ContextTemplate set(Class<?> invocationType) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    static ContextTemplate access(AccessMode accessMode, Class<?> invocationType) {
+//        throw new UnsupportedOperationException();
+//    }
 }

@@ -5,7 +5,6 @@ import java.lang.annotation.Annotation;
 import app.packed.assembly.Assembly;
 import app.packed.bean.BeanIntrospector;
 import app.packed.concurrent.cron.CronJob;
-import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
 import app.packed.operation.Op;
@@ -128,9 +127,8 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
 
 final class ScheduledJobBeanIntrospector extends BeanIntrospector<ScheduledJobExtension> {
 
-    private static final ContextTemplate CT = ContextTemplate.of(SchedulingContext.class).withImplementation(PackedSchedulingContext.class);
 
-    private static final OperationTemplate OT = OperationTemplate.defaults().withContext(CT);
+    private static final OperationTemplate OT = OperationTemplate.defaults();
 
     @SuppressWarnings("unused")
     @Override
