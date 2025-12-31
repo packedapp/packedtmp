@@ -27,13 +27,13 @@ import internal.app.packed.concurrent.daemon.DaemonJobSidebean.DaemonOperationIn
  */
 public final class DaemonJobSidebeanWithManager {
 
-    private volatile Thread thread;
+    volatile Thread thread;
 
-    private volatile boolean isShutdown;
+    volatile boolean isShutdown;
 
-    private final ThreadFactory factory;
+    final ThreadFactory factory;
 
-    private final DaemonOperationInvoker invoker;
+    final DaemonOperationInvoker invoker;
 
     public DaemonJobSidebeanWithManager(DaemonJobRuntimeManager manager, @SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonOperationInvoker invoker) {
         this.factory = requireNonNull(factory);

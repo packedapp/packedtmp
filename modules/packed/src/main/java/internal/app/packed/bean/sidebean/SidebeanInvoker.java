@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.concurrent.daemon;
+package internal.app.packed.bean.sidebean;
 
 import java.lang.classfile.ClassFile;
 import java.lang.classfile.CodeBuilder;
@@ -101,13 +101,18 @@ public class SidebeanInvoker {
         });
 
         // Define the class using MethodHandles.Lookup
+        // Use privateLookupIn to get access to the interface's package
+        // This requires the interface's module to open its package to this module
         try {
-            MethodHandles.Lookup lookup = MethodHandles.lookup();
-            MethodHandles.Lookup definedLookup = lookup.defineHiddenClass(bytes, true);
+            MethodHandles.Lookup ifaceLookup = MethodHandles.privateLookupIn(iface, MethodHandles.lookup());
+            MethodHandles.Lookup definedLookup = ifaceLookup.defineHiddenClass(bytes, true);
             Class<?> generatedClass = definedLookup.lookupClass();
 
-            return definedLookup.findConstructor(generatedClass,
+            MethodHandle constructor = definedLookup.findConstructor(generatedClass,
                 MethodType.methodType(void.class, MethodHandle.class, ExtensionContext.class));
+
+            // Change return type from generated class to the interface
+            return constructor.asType(MethodType.methodType(iface, MethodHandle.class, ExtensionContext.class));
         } catch (IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException("Failed to generate invoker for " + iface, e);
         }

@@ -34,15 +34,10 @@ import internal.app.packed.bean.sidebean.PackedSidebeanBinding.Constant;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding.Invoker;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding.SharedConstant;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidebean.SidebeanInvoker;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromSidebeanAttachment;
 import internal.app.packed.binding.BindingSetup;
-import internal.app.packed.concurrent.daemon.DaemonInvoker;
-import internal.app.packed.concurrent.daemon.DaemonJobSidebean;
-import internal.app.packed.concurrent.daemon.DaemonJobSidebeanWithManager;
-import internal.app.packed.concurrent.daemon.HowDoesThisWork;
-import internal.app.packed.concurrent.daemon.HowDoesThisWorkWithParam;
-import internal.app.packed.concurrent.daemon.SidebeanInvoker;
 import internal.app.packed.invoke.MethodHandleUtil.LazyResolvable;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
@@ -78,12 +73,13 @@ public final class OperationCodeGenerator {
     }
 
     boolean isDebug() {
-        if (false) {
-            return operation.bean.bean.beanClass == HowDoesThisWork.class || operation.bean.bean.beanClass == HowDoesThisWorkWithParam.class;
-        }
-        return (operation.bean.bean.beanClass == DaemonJobSidebean.class || operation.bean.bean.beanClass == DaemonJobSidebeanWithManager.class)
-
-                && operation.handle() instanceof FactoryOperationHandle;
+        return false;
+//        if (false) {
+//            return operation.bean.bean.beanClass == HowDoesThisWork.class || operation.bean.bean.beanClass == HowDoesThisWorkWithParam.class;
+//        }
+//        return (operation.bean.bean.beanClass == DaemonJobSidebean.class || operation.bean.bean.beanClass == DaemonJobSidebeanWithManager.class)
+//
+//                && operation.handle() instanceof FactoryOperationHandle;
     }
 
     /**
@@ -247,12 +243,8 @@ public final class OperationCodeGenerator {
                     } else if (b instanceof Invoker invokerType) {
                         PackedSidebeanAttachment.OfOperation oo = (OfOperation) sidebeanAttachment;
                         MethodHandle methodHandle2 = oo.operation.codeHolder.generate(false);
-                        MethodHandle mhh = DaemonInvoker.CONSTRUCTOR.bindTo(methodHandle2);
-                        System.out.println(mhh.type());
-                        mhh = SidebeanInvoker.generateInvoker(invokerType.invokerType());
+                        MethodHandle mhh = SidebeanInvoker.generateInvoker(invokerType.invokerType());
                         mhh = mhh.bindTo(methodHandle2);
-                        System.out.println(mhh.type());
-                        System.out.println(methodHandle);
                         methodHandle = MethodHandles.collectArguments(methodHandle, 1, mhh);
                         MethodType finalType = methodHandle.type().dropParameterTypes(1, 2);
                         int[] reorder = new int[methodHandle.type().parameterCount()];

@@ -84,7 +84,7 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
             c.sidebeanBindConstant(ThreadFactory.class);
         });
 
-        SidebeanConfiguration<DaemonJobSidebeanWithManager> sideBean2 = introspector.base().installSidebeanIfAbsent(DaemonJobSidebeanWithManager.class, c -> {
+        introspector.base().installSidebeanIfAbsent(DaemonJobSidebeanWithManager.class, c -> {
             c.sidebeanBindInvoker(DaemonOperationInvoker.class);
             c.sidebeanBindConstant(ThreadFactory.class);
         });
