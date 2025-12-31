@@ -35,7 +35,7 @@ public class ScTest2 extends BaseAssembly {
 
         App.run(new ScTest2());
 
-      //  Thread.sleep(10000);
+        Thread.sleep(10000);
     }
 
     /** {@inheritDoc} */
@@ -50,8 +50,9 @@ public class ScTest2 extends BaseAssembly {
     public static class MuB {
 
         @DaemonJob
-        public void dae(DaemonJobContext sc)    {
+        public void dae(DaemonJobContext sc) throws Exception    {
             IO.println("Daemon");
+            throw new Exception();
         }
     }
 }

@@ -531,5 +531,5 @@ interface Zandbox {
 
     // If immutable... IDK
     // Fx fra mirrors. Har composite operations ogsaa templates???
-    OperationTemplate template();
+    //OperationTemplate template();
 }

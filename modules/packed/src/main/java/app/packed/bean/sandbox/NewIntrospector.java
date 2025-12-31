@@ -19,7 +19,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.bean.BeanInstallationException;
@@ -79,7 +78,7 @@ public interface NewIntrospector<E extends Extension<E>> {
         OnAnnotatedField<E, T> allowStaticField();
 
         // Men saa fikser vi jo templaten, ved ikke om vi kan have forskellige templates
-        void install(OperationTemplate template, Consumer<? super OnAnnotatedField<E, T>> action);
+        //void install(OperationTemplate template, Consumer<? super OnAnnotatedField<E, T>> action);
     }
 
     // Smart med at extende OperationInstaller fungere ikke rigtig med fields
@@ -143,7 +142,7 @@ public interface NewIntrospector<E extends Extension<E>> {
          * @see BeanMethodHook#allowInvoke()
          * @see BeanClassHook#allowFullPrivilegeAccess()
          */
-        OperationInstaller newOperation(OperationTemplate template);
+        OperationInstaller newOperation();
 
         /** {@return the default type of operation that will be created.} */
         OperationType operationType();
