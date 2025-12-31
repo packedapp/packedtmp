@@ -15,6 +15,8 @@
  */
 package internal.app.packed.bean.sidebean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -74,7 +76,7 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
     private void attachTolifecycle(PackedSidebeanAttachment susage) {
         usage.add(susage);
-
+        requireNonNull(susage);
         for (List<InvokableLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
             for (InvokableLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
                 InvokableLifecycleOperationHandle<LifecycleOperationHandle> newh = new InvokableLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);

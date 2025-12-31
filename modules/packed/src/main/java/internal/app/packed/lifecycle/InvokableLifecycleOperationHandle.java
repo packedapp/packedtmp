@@ -38,7 +38,11 @@ public final class InvokableLifecycleOperationHandle<H extends LifecycleOperatio
 
     public InvokableLifecycleOperationHandle(H operationHandle, PackedSidebeanAttachment sidebean) {
         this.handle = requireNonNull(operationHandle);
-        this.codeGenerator = new OperationCodeGenerator(OperationSetup.crack(handle), sidebean);
+        if (sidebean == null) {
+            this.codeGenerator = OperationSetup.crack(handle).codeHolder;
+        } else {
+            this.codeGenerator = new OperationCodeGenerator(OperationSetup.crack(handle), sidebean);
+        }
     }
 
     /**

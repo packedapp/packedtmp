@@ -36,9 +36,9 @@ public final class DaemonJobSidebean implements DaemonJobContext {
 
     private final ThreadFactory factory;
 
-    private final DaemonInvoker invoker;
+    private final DaemonOperationInvoker invoker;
 
-    public DaemonJobSidebean(@SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonInvoker invoker) {
+    public DaemonJobSidebean(@SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonOperationInvoker invoker) {
         this.factory = requireNonNull(factory);
         this.invoker = requireNonNull(invoker);
     }

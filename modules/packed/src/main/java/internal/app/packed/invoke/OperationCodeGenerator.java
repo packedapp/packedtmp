@@ -39,8 +39,10 @@ import internal.app.packed.binding.BindingProvider.FromSidebeanAttachment;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.concurrent.daemon.DaemonInvoker;
 import internal.app.packed.concurrent.daemon.DaemonJobSidebean;
+import internal.app.packed.concurrent.daemon.DaemonJobSidebeanWithManager;
 import internal.app.packed.concurrent.daemon.HowDoesThisWork;
 import internal.app.packed.concurrent.daemon.HowDoesThisWorkWithParam;
+import internal.app.packed.concurrent.daemon.SidebeanInvoker;
 import internal.app.packed.invoke.MethodHandleUtil.LazyResolvable;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
@@ -55,11 +57,6 @@ public final class OperationCodeGenerator {
     @Nullable
     public LazyResolvable cachedLazyMethodHandle;
 
-    /** The generated method handle. */
-    // Vi har behov for at cache fordi kode generering kalde generate rekursivt.
-    @Nullable
-    private MethodHandle cachedMethodHandle;
-
     /** The invocation type of the method handle being generated. */
     private MethodType invocationType;
 
@@ -68,6 +65,8 @@ public final class OperationCodeGenerator {
 
     @Nullable
     public final PackedSidebeanAttachment sidebeanAttachment;
+
+    private final Supplier<MethodHandle> cachedMH = StableValue.supplier(() -> newMethodHandle());
 
     /**
      * @param packedSideBeanUsage
@@ -79,10 +78,12 @@ public final class OperationCodeGenerator {
     }
 
     boolean isDebug() {
-        if(true) {
+        if (false) {
             return operation.bean.bean.beanClass == HowDoesThisWork.class || operation.bean.bean.beanClass == HowDoesThisWorkWithParam.class;
         }
-        return operation.bean.bean.beanClass == DaemonJobSidebean.class && operation.handle() instanceof FactoryOperationHandle;
+        return (operation.bean.bean.beanClass == DaemonJobSidebean.class || operation.bean.bean.beanClass == DaemonJobSidebeanWithManager.class)
+
+                && operation.handle() instanceof FactoryOperationHandle;
     }
 
     /**
@@ -98,7 +99,7 @@ public final class OperationCodeGenerator {
         if (lazy) {
             LazyResolvable lazyMH = cachedLazyMethodHandle;
             if (lazyMH == null) {
-                lazyMH = cachedLazyMethodHandle = MethodHandleUtil.lazyF(operation.template.methodType, () -> newMethodHandle());
+                lazyMH = cachedLazyMethodHandle = MethodHandleUtil.lazyF(operation.template.methodType, cachedMH);
             }
             return lazyMH.handle();
         } else {
@@ -124,13 +125,7 @@ public final class OperationCodeGenerator {
      *             if called before the code generating phase of the application.
      */
     private MethodHandle generateMethodHandle() {
-        // Maybe have a check here instead, and specifically mention generateMethodHandle when calling
-        // Check only called once
-        MethodHandle mh = cachedMethodHandle;
-        if (mh == null) {
-            mh = cachedMethodHandle = newMethodHandle();
-        }
-        return mh;
+        return cachedMH.get();
     }
 
     private MethodHandle newMethodHandle() {
@@ -160,7 +155,7 @@ public final class OperationCodeGenerator {
             } else {
                 // Otherwise we fetch the binding provider that can get the bean instance to use.
                 BindingProvider beanInstanceProvider = operation.bean.beanInstanceBindingProvider();
-                mh = provide(mh, 0, beanInstanceProvider, permuters, isSideBeanClass);
+                mh = provide(mh, 0, beanInstanceProvider, permuters);
             }
         }
 
@@ -172,7 +167,7 @@ public final class OperationCodeGenerator {
         if (isDebug()) {
             System.out.println("==========");
             System.out.println("Invoked as: " + invocationType);
-            System.out.println("Target    : " + mh.type());
+            System.out.println("Method    : " + operation.type.toMethodType());
             System.out.println();
         }
 
@@ -184,7 +179,7 @@ public final class OperationCodeGenerator {
                 System.out.println(Arrays.toString(operation.bindings));
                 throw new ProvisionException("Oops for " + operation.type);
             }
-            mh = provide(mh, i, binding.provider(), permuters, isSideBeanClass);
+            mh = provide(mh, i, binding.provider(), permuters);
         }
 
         int[] result = new int[permuters.size()];
@@ -194,13 +189,13 @@ public final class OperationCodeGenerator {
 
         if (Arrays.equals(result, new int[] { 0, 2, 3 })) {
             System.out.println("MODIFYIN®†");
-             result = new int[] { 0, 1, 2 };
+            result = new int[] { 0, 1, 2 };
         }
 
         if (isDebug()) {
             System.out.println("Invoked as: " + invocationType);
             System.out.println("Target    : " + mh.type());
-            System.out.println("Permuters : " + Arrays.toString(result));
+            System.out.println("Permuters : " + Arrays.toString(result) + " was " + permuters);
         }
 
         try {
@@ -249,10 +244,15 @@ public final class OperationCodeGenerator {
                     if (b instanceof Constant _) {
                         Object instance = sidebeanAttachment.constants.get(key);
                         methodHandle = MethodHandles.insertArguments(methodHandle, 1, instance);
-                    } else if (b instanceof Invoker _) {
+                    } else if (b instanceof Invoker invokerType) {
                         PackedSidebeanAttachment.OfOperation oo = (OfOperation) sidebeanAttachment;
                         MethodHandle methodHandle2 = oo.operation.codeHolder.generate(false);
                         MethodHandle mhh = DaemonInvoker.CONSTRUCTOR.bindTo(methodHandle2);
+                        System.out.println(mhh.type());
+                        mhh = SidebeanInvoker.generateInvoker(invokerType.invokerType());
+                        mhh = mhh.bindTo(methodHandle2);
+                        System.out.println(mhh.type());
+                        System.out.println(methodHandle);
                         methodHandle = MethodHandles.collectArguments(methodHandle, 1, mhh);
                         MethodType finalType = methodHandle.type().dropParameterTypes(1, 2);
                         int[] reorder = new int[methodHandle.type().parameterCount()];
@@ -279,7 +279,7 @@ public final class OperationCodeGenerator {
         return MethodHandleUtil.merge(methodHandle, tmp);
     }
 
-    private MethodHandle provide(MethodHandle mh, int bindingIndex, BindingProvider p, ArrayList<Integer> permuters, boolean isSidebean) {
+    private MethodHandle provide(MethodHandle mh, int bindingIndex, BindingProvider p, ArrayList<Integer> permuters) {
         int extensionIndex = 0;
         int pos = permuters.size();
         return switch (p) {
@@ -331,7 +331,7 @@ public final class OperationCodeGenerator {
             } else {
                 Class<?> clazz = mh.type().parameterType(extensionIndex + pos - 1);
                 invocationType = invocationType.appendParameterTypes(clazz);
-                System.out.println("Addingp permuter" + (bindingIndex + 1));
+                // System.out.println("Addingp permuter" + (bindingIndex + 1));
                 permuters.add(pos + 1);
                 yield mh;
             }

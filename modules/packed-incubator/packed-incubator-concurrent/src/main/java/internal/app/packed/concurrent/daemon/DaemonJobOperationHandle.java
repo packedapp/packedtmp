@@ -30,6 +30,7 @@ import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.concurrent.ThreadNamespaceHandle;
 import internal.app.packed.concurrent.ThreadedOperationHandle;
+import internal.app.packed.concurrent.daemon.DaemonJobSidebean.DaemonOperationInvoker;
 
 /** An operation handle for a daemon operation. */
 public final class DaemonJobOperationHandle extends ThreadedOperationHandle<DaemonJobConfiguration> {
@@ -79,9 +80,15 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
     public static void onDaemonJobAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, DaemonJob annotation) {
         // Lazy install the sidebean
         SidebeanConfiguration<DaemonJobSidebean> sideBean = introspector.base().installSidebeanIfAbsent(DaemonJobSidebean.class, c -> {
-            c.sidebeanBindInvoker(DaemonInvoker.class);
+            c.sidebeanBindInvoker(DaemonOperationInvoker.class);
             c.sidebeanBindConstant(ThreadFactory.class);
         });
+
+        SidebeanConfiguration<DaemonJobSidebeanWithManager> sideBean2 = introspector.base().installSidebeanIfAbsent(DaemonJobSidebeanWithManager.class, c -> {
+            c.sidebeanBindInvoker(DaemonOperationInvoker.class);
+            c.sidebeanBindConstant(ThreadFactory.class);
+        });
+
 
         introspector.base().install(DaemonJobRuntimeManager.class).provide();
         introspector.base().install(HowDoesThisWork.class).provide();

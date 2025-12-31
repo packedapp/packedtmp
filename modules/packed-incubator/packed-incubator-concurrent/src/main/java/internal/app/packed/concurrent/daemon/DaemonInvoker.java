@@ -19,16 +19,18 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.concurrent.DaemonJobContext;
+import internal.app.packed.concurrent.daemon.DaemonJobSidebean.DaemonOperationInvoker;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.invoke.LookupUtil;
 
 /**
  *
  */
-public record DaemonInvoker(MethodHandle methodHandle, ExtensionContext extensionContext) {
+public record DaemonInvoker(MethodHandle methodHandle, ExtensionContext extensionContext) implements DaemonOperationInvoker {
 
    public static final MethodHandle CONSTRUCTOR = LookupUtil.findConstructor(MethodHandles.lookup(), DaemonInvoker.class, MethodHandle.class, ExtensionContext.class);
 
+    @Override
     public void invoke(DaemonJobContext djc) {
         try {
             methodHandle.invokeExact(extensionContext, djc);
