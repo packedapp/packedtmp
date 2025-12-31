@@ -25,8 +25,8 @@ import java.util.concurrent.StructuredTaskScope.Joiner;
 import app.packed.bean.lifecycle.StartContext;
 import internal.app.packed.ValueBased;
 import internal.app.packed.extension.ExtensionContext;
-import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;
 import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHandle;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

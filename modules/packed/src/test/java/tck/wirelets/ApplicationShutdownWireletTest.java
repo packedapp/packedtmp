@@ -17,8 +17,8 @@ package tck.wirelets;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import app.packed.container.Wirelets;
 import app.packed.container.Wirelet;
+import app.packed.container.Wirelets;
 import tck.AppAppTest;
 
 /**

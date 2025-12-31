@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import app.packed.binding.Key;
 import app.packed.binding.DublicateKeyProvisionException;
+import app.packed.binding.Key;
 import app.packed.service.Provide;
 import tck.AppAppTest;
 import testutil.stubs.Qualifiers.IntQualifier;

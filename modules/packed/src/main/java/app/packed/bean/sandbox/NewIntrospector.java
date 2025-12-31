@@ -19,15 +19,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
 
@@ -164,7 +161,7 @@ public interface NewIntrospector<E extends Extension<E>> {
 
         OnAnnotatedMethod<E, T> allowStaticField();
 
-        <H extends OperationHandle<?>> H install(OperationTemplate template, Function<? super OnAnnotatedMethod<E, T>, H> factory);
+//        <H extends OperationHandle<?>> H install(OperationTemplate template, Function<? super OnAnnotatedMethod<E, T>, H> factory);
     }
 
 }

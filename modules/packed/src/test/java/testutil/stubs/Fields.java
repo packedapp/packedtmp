@@ -22,8 +22,8 @@ import static testutil.MemberFinder.findFieldOnThisClass;
 
 import java.lang.reflect.Field;
 
-import app.packed.bean.lifecycle.Inject;
 import app.packed.bean.lifecycle.Initialize;
+import app.packed.bean.lifecycle.Inject;
 import testutil.stubs.Letters.A;
 /**
  *

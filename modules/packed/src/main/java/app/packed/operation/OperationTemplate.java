@@ -52,7 +52,6 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     List<Class<? extends Throwable>> allowedThrowables();
 
-
     /**
      * @return the method type representing the invocation
      */

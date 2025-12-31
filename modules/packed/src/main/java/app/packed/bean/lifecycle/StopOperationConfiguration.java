@@ -16,8 +16,8 @@
 package app.packed.bean.lifecycle;
 
 import app.packed.operation.OperationHandle;
-import internal.app.packed.lifecycle.PackedBeanLifecycleKind;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
+import internal.app.packed.lifecycle.PackedBeanLifecycleKind;
 
 /**
  * The configuration of a {@link Stop} operation.

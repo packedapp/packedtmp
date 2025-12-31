@@ -16,8 +16,8 @@
 package app.packed.bean.lifecycle;
 
 import app.packed.operation.OperationHandle;
-import internal.app.packed.lifecycle.PackedBeanLifecycleKind;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
+import internal.app.packed.lifecycle.PackedBeanLifecycleKind;
 
 /**
  * A mirror representing a {@link Stop} operation.
