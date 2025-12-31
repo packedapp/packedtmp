@@ -15,7 +15,6 @@ import app.packed.build.action.BuildActionable;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
-import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.ProvidableBeanConfiguration;
@@ -50,9 +49,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public static final OldContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedLifecycle.class.getSimpleName()).provideExpose(ManagedLifecycle.class)
             .build();
 
-    private final static ContextTemplate SIDEBEAN_CONTEXT = ContextTemplate.of(SidebeanContext.class);
-
-    private final static BeanTemplate SIDEBEAN = BeanTemplate.builder(BeanLifetime.SIDEBEAN).addContext(SIDEBEAN_CONTEXT).build();
+    private final static BeanTemplate SIDEBEAN = BeanTemplate.builder(BeanLifetime.SIDEBEAN).addContext(SidebeanContext.class).build();
 
     /** Creates a new base extension point. */
     public BaseExtensionPoint(ExtensionPointHandle usesite) {

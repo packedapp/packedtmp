@@ -20,7 +20,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Optional;
 
+import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
@@ -42,17 +44,16 @@ final class SidebeanInjectBeanIntrospector extends BaseExtensionBeanIntrospector
 
     @Override
     public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
-        if (bean().handle() instanceof SidebeanHandle<?> sh) {
-            IntrospectorOnVariable iov = (IntrospectorOnVariable) v;
-            // I probably want to use this for Guest as well
-            if (!(iov.operation.handle() instanceof AbstractInitializingOperationHandle)) {
-                throw new RuntimeException("" + iov.operation.bean.bean.beanClass);
-            }
+        @SuppressWarnings("rawtypes")
+        Optional<SidebeanHandle> beanHandle = beanHandle(SidebeanHandle.class);
 
-            sh.onInject((SidebeanBinding) annotation, iov);
+        if (beanHandle.isEmpty()) {
+            throw new BeanInstallationException(SidebeanBinding.class.getSimpleName() + " can only be used on sidebeans");
         } else {
-            // Can only be used on a side bean
-            throw new RuntimeException();
+            if (v.operationHandle(AbstractInitializingOperationHandle.class).isEmpty()) {
+                throw new BeanInstallationException("Can only be used on Factory, Inject, Initialize methods" + beanClass());
+            }
+            beanHandle.get().onInject((SidebeanBinding) annotation, (IntrospectorOnVariable) v);
         }
     }
 }

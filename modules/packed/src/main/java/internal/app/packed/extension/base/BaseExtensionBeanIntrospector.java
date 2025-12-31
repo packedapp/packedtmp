@@ -18,17 +18,12 @@ package internal.app.packed.extension.base;
 import app.packed.bean.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 
 /**
  *
  */
 public abstract class BaseExtensionBeanIntrospector extends BeanIntrospector<BaseExtension> {
-
-    public final BeanSetup bean() {
-        return BeanSetup.crack(this);
-    }
 
     @Override
     public final void onExtensionService(Key<?> key, OnContextService service) {
@@ -38,5 +33,4 @@ public abstract class BaseExtensionBeanIntrospector extends BeanIntrospector<Bas
     public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
         super.onExtensionService(key, service);
     }
-
 }

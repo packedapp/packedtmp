@@ -22,6 +22,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanInstallationException;
@@ -260,5 +261,21 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
     @Override
     public Variable variable() {
         return variable;
+    }
+
+    public boolean isInstallingExtension() {
+        return bindingExtension.extensionType == operation.installedByExtension.extensionType;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <H extends OperationHandle<?>> Optional<H> operationHandle(Class<H> operationHandleType) {
+        if (isInstallingExtension()) {
+            OperationHandle<?> handle = operation.handle();
+            if (operationHandleType.isInstance(handle)) {
+                return Optional.of(operationHandleType.cast(handle));
+            }
+        }
+        return Optional.empty();
     }
 }

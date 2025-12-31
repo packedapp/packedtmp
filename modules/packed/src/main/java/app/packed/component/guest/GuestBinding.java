@@ -20,7 +20,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Optional;
 
+import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
 import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
@@ -43,7 +45,18 @@ final class FromGuestBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
     public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
-        GuestBeanHandle gbh = (GuestBeanHandle) bean().handle();
-        gbh.resolve(this, v);
+        Optional<GuestBeanHandle> beanHandle = beanHandle(GuestBeanHandle.class);
+
+        if (beanHandle.isEmpty()) {
+            throw new BeanInstallationException(GuestBeanHandle.class.getSimpleName() + " can only be used on guest beans");
+        } else {
+            beanHandle.get().resolve(this, v);
+//            IntrospectorOnVariable iov = (IntrospectorOnVariable) v;
+//            // I probably want to use this for Guest as well
+//            if (!(iov.operation.handle() instanceof AbstractInitializingOperationHandle)) {
+//                throw new RuntimeException("" + iov.operation.bean.bean.beanClass);
+//            }
+//            beanHandle.get().onInject((SidebeanBinding) annotation, iov);
+        }
     }
 }

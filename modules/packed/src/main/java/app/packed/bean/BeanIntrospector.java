@@ -42,6 +42,7 @@ import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
@@ -135,7 +136,10 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      */
     public final <H extends BeanHandle<?>> Optional<H> beanHandle(Class<H> beanHandleType) {
         if (isInstallingExtension()) {
-            return Optional.of(beanHandleType.cast(bean().handle()));
+            BeanHandle<?> handle = bean().handle();
+            if (beanHandleType.isInstance(handle)) {
+                return Optional.of(beanHandleType.cast(handle));
+            }
         }
         return Optional.empty();
     }
@@ -748,10 +752,10 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         /** {@return a list of annotations on the element.} */
         AnnotationList annotations();
 
+        <H extends OperationHandle<?>> Optional<H> operationHandle(Class<H> operationHandleType);
+
         /**
          * {@return a set of available contexts}
-
-
          * This method exist only for informational purposes.
          *
          */

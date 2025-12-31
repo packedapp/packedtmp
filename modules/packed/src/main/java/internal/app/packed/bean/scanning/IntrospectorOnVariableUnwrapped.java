@@ -16,6 +16,7 @@
 package internal.app.packed.bean.scanning;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -27,6 +28,7 @@ import app.packed.binding.Variable;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
+import app.packed.operation.OperationHandle;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 
@@ -213,5 +215,11 @@ public record IntrospectorOnVariableUnwrapped(IntrospectorOnVariable var) implem
     @Override
     public Variable variable() {
         return var.variable();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <H extends OperationHandle<?>> Optional<H> operationHandle(Class<H> operationHandleType) {
+        return var.operationHandle(operationHandleType);
     }
 }

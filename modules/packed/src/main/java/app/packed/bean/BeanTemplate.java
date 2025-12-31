@@ -19,6 +19,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
 
+import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanTemplate;
@@ -60,7 +61,7 @@ import sandbox.application.LifetimeTemplate;
 // It al goes well until you get to BeanInstaller. Where we need the <T> of the BeanHandle
 public sealed interface BeanTemplate permits PackedBeanTemplate {
 
-    //InstanceMembersForbiddenException
+    // InstanceMembersForbiddenException
     BeanTemplate FUNCTIONAL = BeanLifetime.FUNCTIONEL.template();
 
     // The bean is created by an operation
@@ -124,6 +125,10 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
         Builder lifetime(LifetimeTemplate lifetime);
 
         Builder addContext(ContextTemplate context);
+
+        default Builder addContext(Class<? extends Context<?>> contextClass) {
+            return addContext(ContextTemplate.of(contextClass));
+        }
 
         <T> Builder setLocal(BeanLocal<T> local, T value);
     }
