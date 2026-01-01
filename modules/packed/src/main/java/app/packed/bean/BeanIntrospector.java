@@ -44,7 +44,6 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
@@ -617,7 +616,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
          *
          * @see Lookup#unreflectSetter(Field)
          */
-        OperationInstaller newSetOperation(OperationTemplate template);
+        OperationInstaller newSetOperation();
 
         /**
          * Attempts to convert field to a {@link Key} or fails by throwing {@link KeyExceptio} if the field does not represent a

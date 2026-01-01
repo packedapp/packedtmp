@@ -147,7 +147,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
 
         public static void install(Inject annotation, BeanIntrospector.OnField field) {
             // TODO we need wrap/unwrap
-            field.newSetOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InjectOperationHandle(i));
+            field.newSetOperation().install(i -> new InjectOperationHandle(i));
 
             // checkNotStatic
             // Det er jo inject service!???

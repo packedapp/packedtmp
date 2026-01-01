@@ -28,7 +28,6 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedFieldCache;
@@ -129,7 +128,8 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
 
     /** {@inheritDoc} */
     @Override
-    public OperationInstaller newSetOperation(OperationTemplate template) {
+    public OperationInstaller newSetOperation() {
+      PackedOperationTemplate    template = PackedOperationTemplate.DEFAULTS;
         requireNonNull(template, "template is null");
         checkConfigurable();
         if (!allowSet) {
@@ -138,7 +138,7 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
         MethodHandle mh = introspector.scanner.unreflectSetter(member);
         AccessMode accessMode = Modifier.isVolatile(member.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
 
-        return newOperation((PackedOperationTemplate) template, mh, accessMode);
+        return newOperation(template, mh, accessMode);
     }
 
     /** {@inheritDoc} */

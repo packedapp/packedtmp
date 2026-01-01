@@ -140,8 +140,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
         return new PackedOperationTemplate(returnKind, returnClass, extensionContextFlag, beanClass, contexts, args);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public PackedOperationTemplate withContext(Class<? extends Context<?>> contextClass) {
         return new PackedBuilder(this).context(contextClass).build();
     }
@@ -149,26 +147,19 @@ public final class PackedOperationTemplate implements OperationTemplate {
     /**
      * @return
      */
-    @Override
     public PackedOperationTemplate withRaw() {
         return new PackedBuilder(this).raw().build();
     }
 
-    @Override
     public PackedOperationTemplate withReturnIgnore() {
         return new PackedBuilder(this).returnIgnore().build();
     }
 
     /** {@inheritDoc} */
-    @Override
     public PackedOperationTemplate withReturnType(Class<?> returnType) {
         return new PackedBuilder(this).returnType(returnType).build();
     }
 
-    /**
-     * @return
-     */
-    @Override
     public PackedOperationTemplate withReturnTypeDynamic() {
         return new PackedBuilder(this).returnTypeDynamic().build();
     }
