@@ -9,7 +9,6 @@ import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
 import extensions.IncubatorExtension;
 import extensions.time.TimeExtension;
 
@@ -127,15 +126,12 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
 
 final class ScheduledJobBeanIntrospector extends BeanIntrospector<ScheduledJobExtension> {
 
-
-    private static final OperationTemplate OT = OperationTemplate.defaults();
-
     @SuppressWarnings("unused")
     @Override
     public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {
         CronJob c = method.annotations().readRequired(CronJob.class);
 
-        OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
+        OperationHandle<?> operation = method.newOperation().install(OperationHandle::new);
 
         // comment in again
 

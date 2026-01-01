@@ -19,7 +19,6 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 
 /**
@@ -38,7 +37,7 @@ public sealed interface DelegatingOperationHandle permits PackedDelegatingOperat
 //     */
 //    boolean isDelegated();
 
-    OperationHandle<?> newOperation(OperationTemplate template, ExtensionPoint.ExtensionPointHandle useSite);
+    OperationHandle<?> newOperation(ExtensionPoint.ExtensionPointHandle useSite);
 
     /** {@return the target of this operation.} */
     OperationTarget target();

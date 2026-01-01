@@ -31,7 +31,6 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
 import tck.AppAppTest;
 import tck.HookTestingExtension;
 import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;
@@ -56,7 +55,7 @@ public class OperationMirrorTest extends AppAppTest {
     @Test
     public void simple() {
         hooks().onAnnotatedField((_, b) -> {
-            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new);
+            OperationHandle<?> h = b.newGetOperation().install(OperationHandle::new);
             add(h);
         });
         installInstance(new FieldPrivateInstanceString());
@@ -112,7 +111,7 @@ public class OperationMirrorTest extends AppAppTest {
         }
 
         hooks().onAnnotatedField((_, b) -> {
-            MyHandle h = b.newGetOperation(OperationTemplate.defaults()).install(MyHandle::new);
+            MyHandle h = b.newGetOperation().install(MyHandle::new);
             add(h);
         });
         installInstance(new FieldPrivateInstanceString());

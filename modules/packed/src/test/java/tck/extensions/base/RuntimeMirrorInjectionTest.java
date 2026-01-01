@@ -36,7 +36,6 @@ import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 import tck.ServiceLocatorAppTest;
 
@@ -84,7 +83,7 @@ public class RuntimeMirrorInjectionTest extends ServiceLocatorAppTest {
         @AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
         record MirrorAlien() {}
 
-        hooks().onAnnotatedField((_, b) -> b.newGetOperation(OperationTemplate.defaults()));
+        hooks().onAnnotatedField((_, b) -> b.newGetOperation());
         record Foo(MirrorAlien alien) {}
 
         assertThrows(BeanInstallationException.class, () -> install(Foo.class));

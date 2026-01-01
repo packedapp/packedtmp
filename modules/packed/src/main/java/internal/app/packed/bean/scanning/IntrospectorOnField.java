@@ -108,8 +108,8 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
     private OperationInstaller newOperation(MethodHandle directMH, AccessMode accessMode) {
         return newOperation(PackedOperationTemplate.builder().build(), directMH, accessMode);
     }
-    private OperationInstaller newOperation(OperationTemplate template, MethodHandle directMH, AccessMode accessMode) {
-        PackedOperationTemplate t = (PackedOperationTemplate) template;
+    private OperationInstaller newOperation(PackedOperationTemplate template, MethodHandle directMH, AccessMode accessMode) {
+        PackedOperationTemplate t = template;
         OperationType ft = OperationType.fromField(member, accessMode);
 
         // We should be able to create the method handle lazily
@@ -138,7 +138,7 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
         MethodHandle mh = introspector.scanner.unreflectSetter(member);
         AccessMode accessMode = Modifier.isVolatile(member.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
 
-        return newOperation(template, mh, accessMode);
+        return newOperation((PackedOperationTemplate) template, mh, accessMode);
     }
 
     /** {@inheritDoc} */

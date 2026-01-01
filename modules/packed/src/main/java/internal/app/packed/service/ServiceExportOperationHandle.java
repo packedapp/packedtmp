@@ -44,7 +44,7 @@ public class ServiceExportOperationHandle extends BaseExtensionOperationHandle<O
         // Checks that it is a valid key
         Key<?> key = method.toKey();
 
-        OperationSetup operation = OperationSetup.crack(method.newOperation(OPERATION_TEMPLATE).install(OperationHandle::new));
+        OperationSetup operation = OperationSetup.crack(method.newOperation().template(OPERATION_TEMPLATE).install(OperationHandle::new));
         operation.bean.serviceNamespace().export(key, operation);
     }
 

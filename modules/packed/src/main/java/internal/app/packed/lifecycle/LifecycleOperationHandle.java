@@ -122,7 +122,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         public static void install(Initialize annotation, BeanIntrospector.OnMethod method) {
             PackedBeanLifecycleKind lk = annotation.naturalOrder() ? PackedBeanLifecycleKind.INITIALIZE_PRE_ORDER
                     : PackedBeanLifecycleKind.INITIALIZE_POST_ORDER;
-            method.newOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InitializeOperationHandle(i, lk));
+            method.newOperation().template(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InitializeOperationHandle(i, lk));
         }
     }
 
@@ -158,7 +158,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         }
 
         public static void install(Inject annotation, BeanIntrospector.OnMethod method) {
-            method.newOperation(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InjectOperationHandle(i));
+            method.newOperation().template(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InjectOperationHandle(i));
         }
     }
 
@@ -195,7 +195,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         }
 
         public static void install(Start annotation, BeanIntrospector.OnMethod method) {
-            method.newOperation(OPERATION_ON_START_TEMPLATE).install(i -> new StartOperationHandle(i, annotation));
+            method.newOperation().template(OPERATION_ON_START_TEMPLATE).install(i -> new StartOperationHandle(i, annotation));
         }
     }
 
@@ -224,7 +224,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         }
 
         public static void install(Stop annotation, BeanIntrospector.OnMethod method) {
-            method.newOperation(OPERATION_ON_STOP_TEMPLATE).install(i -> new StopOperationHandle(i, annotation));
+            method.newOperation().template(OPERATION_ON_STOP_TEMPLATE).install(i -> new StopOperationHandle(i, annotation));
         }
     }
 }

@@ -27,6 +27,7 @@ import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
@@ -34,6 +35,7 @@ import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
+import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
 
 /**
  *
@@ -122,6 +124,18 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
     @Override
     public OperationInstaller addContext(Class<? extends Context<?>> contextClass) {
         template = template.withContext(contextClass);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationInstaller template(OperationTemplate template) {
+        if (((PackedOperationTemplate) template).returnKind == ReturnKind.DYNAMIC) {
+            template = template.withReturnType(operationType.returnRawType());
+        }
+        this.template = (PackedOperationTemplate) requireNonNull(template);
+
+
         return this;
     }
 }

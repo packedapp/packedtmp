@@ -43,7 +43,7 @@ public class ServiceProvideOperationHandle extends BaseExtensionOperationHandle<
         // Checks that it is a valid key
         Key<?> key = method.toKey();
 
-        ServiceProvideOperationHandle oh = method.newOperation(OPERATION_TEMPLATE).install(ServiceProvideOperationHandle::new);
+        ServiceProvideOperationHandle oh = method.newOperation().template(OPERATION_TEMPLATE).install(ServiceProvideOperationHandle::new);
         oh.bean().serviceNamespace().provideService(key, oh, new FromEmbeddedOperation(oh.operation()));
     }
 

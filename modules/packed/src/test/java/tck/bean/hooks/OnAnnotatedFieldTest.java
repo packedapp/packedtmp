@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.extension.ExtensionContext;
+import internal.app.packed.operation.PackedOperationTemplate;
 import tck.AppAppTest;
 import tck.HookTestingExtension;
 import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;
@@ -38,7 +38,7 @@ import tck.HookTestingExtension.FieldHook.FieldPrivateStaticString;
  */
 public class OnAnnotatedFieldTest extends AppAppTest {
 
-    static final OperationTemplate T = OperationTemplate.defaults().withReturnTypeDynamic();
+    static final PackedOperationTemplate T = PackedOperationTemplate.DEFAULTS.withReturnTypeDynamic();
 
     @Test
     public void instanceFieldGet() throws Throwable {

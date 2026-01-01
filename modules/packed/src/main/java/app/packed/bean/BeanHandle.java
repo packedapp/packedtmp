@@ -32,8 +32,6 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
@@ -277,11 +275,6 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
     protected BeanMirror newBeanMirror() {
         return new BeanMirror(this);
-    }
-
-    /** {@inheritDoc} */
-    public final OperationInstaller newFunctionalOperation(OperationTemplate template, Object function) {
-        return null;
     }
 
     // Probably not called on beans owned by extensions

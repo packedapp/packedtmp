@@ -90,8 +90,6 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      */
     Optional<Class<?>> createAsSpecificClass();
 
-    Optional<OperationTemplate> initializationX();
-
     static BeanTemplate.Builder builder(BeanLifetime kind) {
         return PackedBeanTemplate.builder(kind);
     }

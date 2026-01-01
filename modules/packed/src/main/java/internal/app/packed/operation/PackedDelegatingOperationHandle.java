@@ -23,7 +23,6 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanScanner;
@@ -80,9 +79,9 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle<?> newOperation(OperationTemplate template, ExtensionPointHandle context) {
+    public OperationHandle<?> newOperation(ExtensionPointHandle context) {
         PackedExtensionPointHandle c = (PackedExtensionPointHandle) context;
-        return newOperation(c.usedBy(), (PackedOperationTemplate) template);
+        return newOperation(c.usedBy(), PackedOperationTemplate.DEFAULTS);
     }
 
     /** {@inheritDoc} */

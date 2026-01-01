@@ -19,11 +19,11 @@ import app.packed.bean.lifecycle.Initialize;
 import app.packed.concurrent.oldscheduling.ScheduledOperationConfiguration;
 import app.packed.concurrent.oldscheduling.ScheduledOperationMirror;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.concurrent.ScheduleImpl;
 import internal.app.packed.concurrent.ThreadNamespaceHandle;
 import internal.app.packed.concurrent.ThreadedOperationHandle;
+import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
  *
@@ -31,7 +31,7 @@ import internal.app.packed.concurrent.ThreadedOperationHandle;
 public final class ScheduledOperationHandle extends ThreadedOperationHandle<ScheduledOperationConfiguration> {
 
     /** A context template. */
-    public static final OperationTemplate SCHEDULING_OPERATION_TEMPLATE = OperationTemplate.defaults().withReturnIgnore();
+    public static final PackedOperationTemplate SCHEDULING_OPERATION_TEMPLATE = PackedOperationTemplate.DEFAULTS.withReturnIgnore();
 
     @Nullable
     public ScheduleImpl s;

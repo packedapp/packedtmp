@@ -15,8 +15,6 @@
  */
 package internal.app.packed.bean.scanning;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
@@ -25,7 +23,6 @@ import java.util.Optional;
 import app.packed.bean.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedMethodCache;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
@@ -47,8 +44,8 @@ public final class IntrospectorOnMethod extends IntrospectorOnExecutable<Method>
 
     /** {@inheritDoc} */
     @Override
-    public OperationInstaller newOperation(OperationTemplate template) {
-        PackedOperationTemplate t = (PackedOperationTemplate) requireNonNull(template);
+    public OperationInstaller newOperation() {
+        PackedOperationTemplate t =  PackedOperationTemplate.DEFAULTS;
         checkConfigurable();
 
 

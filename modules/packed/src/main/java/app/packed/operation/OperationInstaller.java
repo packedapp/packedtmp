@@ -38,6 +38,8 @@ public interface OperationInstaller /* permits PackedOperationInstaller */ {
     // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);
     OperationInstaller delegateTo(ExtensionPoint.ExtensionPointHandle extension);
 
+    OperationInstaller template(OperationTemplate template);
+
     /**
      * Creates the operation.
      *

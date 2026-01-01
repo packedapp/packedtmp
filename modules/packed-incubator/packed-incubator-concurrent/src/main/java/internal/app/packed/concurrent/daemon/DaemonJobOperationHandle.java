@@ -26,16 +26,16 @@ import app.packed.concurrent.DaemonJobMirror;
 import app.packed.concurrent.ThreadKind;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.concurrent.ThreadNamespaceHandle;
 import internal.app.packed.concurrent.ThreadedOperationHandle;
 import internal.app.packed.concurrent.daemon.DaemonJobSidebean.DaemonOperationInvoker;
+import internal.app.packed.operation.PackedOperationTemplate;
 
 /** An operation handle for a daemon operation. */
 public final class DaemonJobOperationHandle extends ThreadedOperationHandle<DaemonJobConfiguration> {
 
     /** An operation template for a daemon job. */
-    private static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withContext(DaemonJobContext.class)
+    private static final PackedOperationTemplate OPERATION_TEMPLATE = PackedOperationTemplate.DEFAULTS.withContext(DaemonJobContext.class)
             .withReturnIgnore();
 
     public boolean interruptOnStop;
@@ -95,7 +95,7 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
 
         ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(introspector.extensionHandle());
 
-        DaemonJobOperationHandle handle = method.newOperation(OPERATION_TEMPLATE).attachToSidebean(sideBean).install(namespace, DaemonJobOperationHandle::new);
+        DaemonJobOperationHandle handle = method.newOperation().template(OPERATION_TEMPLATE).attachToSidebean(sideBean).install(namespace, DaemonJobOperationHandle::new);
 
 
 //        DaemonJobOperationHandle handle = method.newOperation().addContext(DaemonJobContext.class).attachToSidebean(sideBean).install(namespace, DaemonJobOperationHandle::new);

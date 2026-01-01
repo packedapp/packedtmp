@@ -585,6 +585,10 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
          */
         OperationInstaller newGetOperation(OperationTemplate template);
 
+        default OperationInstaller newGetOperation() {
+            return newGetOperation(PackedOperationTemplate.DEFAULTS);
+        }
+
         /**
          * Creates a new operation that can read or/and write a field as specified by the provided access mode.
          * <p>
@@ -704,10 +708,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
          * @return an operation installer
          */
 
-        default OperationInstaller newOperation() {
-            return newOperation(PackedOperationTemplate.DEFAULTS);
-        }
-        OperationInstaller newOperation(OperationTemplate template);
+        OperationInstaller newOperation();
 
         /** {@return the default type of operation that will be created.} */
         OperationType operationType();

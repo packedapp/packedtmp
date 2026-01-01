@@ -55,8 +55,7 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Optional<OperationTemplate> initializationX() {
+    public Optional<PackedOperationTemplate> initializationX() {
         return Optional.ofNullable(initializationTemplate);
     }
 
