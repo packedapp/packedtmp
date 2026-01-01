@@ -96,6 +96,7 @@ public class ExtensionLookupSupport {
         // Create a MethodHandle for the constructor
         MethodHandle mh;
         try {
+            // Highly unlikely to fails since we have already loaded it
             Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
             mh = l.unreflectConstructor(constructor);
         } catch (IllegalAccessException e) {

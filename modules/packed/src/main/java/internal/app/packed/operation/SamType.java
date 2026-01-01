@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.operation.OperationType;
+import internal.app.packed.invoke.ModuleAccessor;
 
 /**
  *
@@ -46,12 +47,15 @@ public record SamType(Class<?> functionInterface, Method saMethod, MethodHandle 
             throw new IllegalArgumentException(functionInterface + " is not a proper functional interface, because there are no non-default instance methods");
         }
 
-        // For now we require that the Single Abstract Method must be on a public available class
         MethodHandle mh;
         try {
             mh = MethodHandles.publicLookup().unreflect(samMethod);
         } catch (IllegalAccessException e) {
-            throw new Error(samMethod + " must be accessible via MethodHandles.publicLookup()", e);
+            try {
+                mh = ModuleAccessor.getLookup(functionInterface).unreflect(samMethod);
+            } catch (IllegalAccessException ee) {
+                throw new Error(samMethod + " must be accessible via MethodHandles.publicLookup()", ee);
+            }
         }
 
         OperationType ot = OperationType.fromExecutable(samMethod);
