@@ -60,6 +60,8 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
 
     public boolean optionBuildReusableImage;
 
+    public boolean optionAlwaysCodegen;
+
     /** The template of the application. */
     final PackedApplicationTemplate<?> template;
 

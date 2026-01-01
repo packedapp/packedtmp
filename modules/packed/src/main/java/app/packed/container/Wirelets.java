@@ -36,6 +36,17 @@ import internal.app.packed.container.wirelets.InternalBaseWirelet;
 public final class Wirelets {
     private Wirelets() {}
 
+    public static Wirelet codegenAlways() {
+        return new InternalBaseWirelet() {
+
+            @Override
+            public void onBuild(PackedContainerInstaller<?> installer) {
+                checkIsApplication(installer);
+                installer.applicationInstaller.optionAlwaysCodegen = true;
+            }
+        };
+    }
+
     // How does this work with scope?
     public static Wirelet argList(String... args) {
         throw new UnsupportedOperationException();
@@ -97,7 +108,7 @@ public final class Wirelets {
         /** {@inheritDoc} */
         @Override
         public void onBuild(PackedContainerInstaller<?> installer) {
-            checkIsApplication(installer, this); // maybe explicit error msg
+            checkIsApplication(installer); // maybe explicit error msg
             installer.applicationInstaller.optionBuildApplicationLazy = true;
         }
     }
@@ -138,7 +149,7 @@ public final class Wirelets {
         /** {@inheritDoc} */
         @Override
         public void onBuild(PackedContainerInstaller<?> installer) {
-            checkIsApplication(installer, this); // maybe explicit error msg
+            checkIsApplication(installer); // maybe explicit error msg
             installer.applicationInstaller.optionBuildReusableImage = true;
         }
     }

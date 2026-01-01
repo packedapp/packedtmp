@@ -58,14 +58,15 @@ public class ExtensionLookupSupport {
         }
 
         // Create a MethodHandle for the constructor
+        MethodHandle mh;
         try {
             Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
-            MethodHandle mh = l.unreflectConstructor(constructor);
-            // cast from (Concrete BeanIntrospector class) -> (BeanIntrospector)
-            return MethodHandles.explicitCastArguments(mh, MethodType.methodType(BeanIntrospector.class));
+            mh = l.unreflectConstructor(constructor);
         } catch (IllegalAccessException e) {
-            throw new InternalExtensionException(extensionClass + " must be open to '" + BeanIntrospector.class.getModule().getName() + "'", e);
+            throw new InternalExtensionException(illegalAccessExtensionMsg(extensionClass), e);
         }
+        // cast from (Concrete BeanIntrospector class) -> (BeanIntrospector)
+        return MethodHandles.explicitCastArguments(mh, MethodType.methodType(BeanIntrospector.class));
     }
 
     public static ExtensionFactory findExtensionConstructor(Class<? extends Extension<?>> extensionClass) {
@@ -93,30 +94,34 @@ public class ExtensionLookupSupport {
         }
 
         // Create a MethodHandle for the constructor
+        MethodHandle mh;
         try {
             Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
-            MethodHandle mh = l.unreflectConstructor(constructor);
-            // cast from (ExtensionClass) -> (Extension)
-            mh = MethodHandles.explicitCastArguments(mh, MethodType.methodType(Extension.class, ExtensionHandle.class));
-            return new ExtensionFactory(mh);
+            mh = l.unreflectConstructor(constructor);
         } catch (IllegalAccessException e) {
-            throw new InternalExtensionException(extensionClass + " must be open to '" + Framework.class.getModule().getName() + "'", e);
+            throw new InternalExtensionException(illegalAccessExtensionMsg(extensionClass), e);
         }
+        // cast from (ExtensionClass) -> (Extension)
+        mh = MethodHandles.explicitCastArguments(mh, MethodType.methodType(Extension.class, ExtensionHandle.class));
+        return new ExtensionFactory(mh);
     }
 
     public static void forceLoad(Class<? extends Extension<?>> extensionClass) {
         // Ensure that the class initializer of the extension has been run before we progress
         try {
-            ExtensionClassModel.class.getModule().addReads(extensionClass.getModule());
+            // We need to read the module the extension is in
+            if (ExtensionClassModel.class.getModule() != extensionClass.getModule()) {
+                ExtensionClassModel.class.getModule().addReads(extensionClass.getModule());
+            }
             Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
             l.ensureInitialized(extensionClass);
         } catch (IllegalAccessException e) {
-            // TODO this is likely the first place we check that an extension is readable by Packed
-            // Better error message..
-            // Maybe we have other stuff that we need to check here...
-            // We need to be open.. In order to create the extension...
-            // So probably no point in just checking for Readable...
-            throw new InternalExtensionException("Extension is not readable for " + Framework.name(), e);
+            throw new InternalExtensionException(illegalAccessExtensionMsg(extensionClass), e);
         }
+    }
+
+    public static String illegalAccessExtensionMsg(Class<?> clazz) {
+        return clazz + " must be opened to " + Framework.name() + " by adding this line 'opens " + clazz.getPackageName() + " to "
+                + ExtensionLookupSupport.class.getModule() + "' to module-info.java";
     }
 }

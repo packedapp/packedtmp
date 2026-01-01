@@ -266,7 +266,7 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
 
     /** A builder of {@link ExtensionModel}. Public to allow bootstrapping from {@link Extension}. */
     // I think we don't need to be public any more
-    public static final class Builder {
+    private static final class Builder {
 
         /** A set of extension this extension depends on (does not include transitive extensions). */
         private Set<Class<? extends Extension<?>>> dependencies = new HashSet<>();
@@ -317,7 +317,7 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
          * @see Extension#$dependsOn(Class...)
          */
         @SuppressWarnings("unchecked")
-        public void dependsOn(boolean optionally, Class<? extends Extension<?>>... extensions) {
+        private void dependsOn(boolean optionally, Class<? extends Extension<?>>... extensions) {
             requireNonNull(extensions, "extensions is null");
             for (Class<? extends Extension<?>> dependencyType : extensions) {
                 requireNonNull(dependencyType);
@@ -333,8 +333,8 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
             }
         }
 
-        @SuppressWarnings("unchecked")
-        public Optional<Class<? extends Extension<?>>> dependsOnOptionally(String extension) {
+        @SuppressWarnings({ "unchecked", "unused" })
+        private Optional<Class<? extends Extension<?>>> dependsOnOptionally(String extension) {
             ClassLoader cl = extensionClass.getClassLoader();
             Class<?> c = null;
             try {
@@ -475,16 +475,6 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
             } finally {
                 GLOBAL_LOCK.unlock();
             }
-        }
-    }
-
-    static class Wrapper {
-
-        @Nullable
-        ExtensionSetup setup;
-
-        private Wrapper(ExtensionSetup setup) {
-            this.setup = setup;
         }
     }
 }

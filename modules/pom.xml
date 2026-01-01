@@ -16,6 +16,7 @@
   <modules>
     <module>packed</module>
     <module>packed-micro</module>
+    <module>packed-module-tests</module>
   </modules>
   
   <!-- ==================================================================== -->

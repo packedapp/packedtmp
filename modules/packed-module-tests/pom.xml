@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>app.packed</groupId>
+    <artifactId>packed-modules-pom</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <artifactId>packed-module-tests</artifactId>
+  <packaging>jar</packaging>
+  <name>Packed-Module-Tests</name>
+  <description>Tests for Packed Modules</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>app.packed</groupId>
+      <artifactId>packed</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

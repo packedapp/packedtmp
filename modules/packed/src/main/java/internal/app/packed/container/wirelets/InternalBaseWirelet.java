@@ -15,7 +15,6 @@
  */
 package internal.app.packed.container.wirelets;
 
-import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
@@ -43,7 +42,7 @@ public abstract non-sealed class InternalBaseWirelet extends FrameworkWirelet {
         return application;
     }
 
-    protected final void checkIsApplication(PackedContainerInstaller<?> installer, Wirelet wirelet) {
+    protected final void checkIsApplication(PackedContainerInstaller<?> installer) {
         if (installer.parent != null) {
             throw new IllegalArgumentException("This wirelet can only be specified for the root container of an application,  wirelet = " + this);
         }

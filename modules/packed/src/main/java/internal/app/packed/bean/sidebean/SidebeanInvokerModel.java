@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import internal.app.packed.extension.ExtensionContext;
+import internal.app.packed.invoke.ExtensionLookupSupport;
 
 /**
  * Generates implementations of SAM (Single Abstract Method) interfaces using the Class File API. The generated class
@@ -189,13 +190,15 @@ public final class SidebeanInvokerModel {
         });
 
         try {
-            // Using privateLookupIn allows implementation of package-private interfaces
-            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(iface, MethodHandles.lookup()).defineHiddenClass(bytes, true);
+            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(iface, MethodHandles.lookup());
+
+            lookup = lookup.defineHiddenClass(bytes, true);
 
             return lookup.findConstructor(lookup.lookupClass(), MethodType.methodType(void.class, MethodHandle.class, ExtensionContext.class))
                     .asType(MethodType.methodType(iface, MethodHandle.class, ExtensionContext.class));
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Failed to generate invoker for " + iface.getName(), e);
+
+            throw new RuntimeException(ExtensionLookupSupport.illegalAccessExtensionMsg(iface), e);
         }
     }
 

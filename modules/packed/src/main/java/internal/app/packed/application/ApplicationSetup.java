@@ -117,7 +117,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     private ApplicationSetup(PackedApplicationInstaller<?> installer) {
         this.template = installer.template;
         this.deployment = new DeploymentSetup(this, installer);
-        this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
+        this.codegenActions = deployment.goal.isCodeGenerating() || installer.optionAlwaysCodegen ? new ArrayList<>() : null;
         this.goal = installer.buildProcess.goal();
         this.launcher = installer.launcher; // Is null for bootstrap
     }
