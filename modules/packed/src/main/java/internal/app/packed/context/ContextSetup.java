@@ -47,11 +47,11 @@ public final class ContextSetup {
     public final ContextualizedComponentSetup root;
 
     /** The template used when creating the context. */
-    public final PackedContextTemplate template;
+    public final ContextModel template;
 
     public final ServiceMap<ContextServiceProviderSetup> serviceProvides = new ServiceMap<>();
 
-    public ContextSetup(PackedContextTemplate template, ContextualizedComponentSetup root) {
+    public ContextSetup(ContextModel template, ContextualizedComponentSetup root) {
         this.template = template;
         this.root = root;
     }

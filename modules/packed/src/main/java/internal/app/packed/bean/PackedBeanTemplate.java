@@ -24,18 +24,18 @@ import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanTemplate;
 import app.packed.context.Context;
-import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.PackedBuildLocal;
+import internal.app.packed.context.ContextModel;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.PackedOperationTemplate;
 import sandbox.application.LifetimeTemplate;
 
 /** Implementation of {@link BeanTemplate}. */
 public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetime, @Nullable Class<?> createAs, Map<PackedBeanBuildLocal<?>, Object> locals,
-        @Nullable PackedOperationTemplate initializationTemplate, Map<Class<?>, ContextTemplate> contextxs) implements BeanTemplate {
+        @Nullable PackedOperationTemplate initializationTemplate, Map<Class<?>, ContextModel> contextxs) implements BeanTemplate {
 
     public static PackedBuilder builder(BeanLifetime kind) {
         return new PackedBuilder(kind);
@@ -70,7 +70,7 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
         private final BeanLifetime beanKind;
         private LifetimeTemplate lifetime = LifetimeTemplate.APPLICATION;
         private Class<?> createAs = null;
-        private final HashMap<Class<? extends Context<?>>, ContextTemplate> contexts = new HashMap<>();
+        private final HashMap<Class<? extends Context<?>>, ContextModel> contexts = new HashMap<>();
         private Map<PackedBeanBuildLocal<?>, Object> locals = Map.of();
         private PackedOperationTemplate initializationTemplate = (PackedOperationTemplate) OperationTemplate.defaults();
 
@@ -116,7 +116,7 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
         /** {@inheritDoc} */
         @Override
         public Builder addContext(Class<? extends Context<?>> contextClass) {
-            this.contexts.put(contextClass, ContextTemplate.of(contextClass));
+            this.contexts.put(contextClass, ContextModel.of(contextClass));
             return this;
 
         }

@@ -21,7 +21,6 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.context.Context;
-import app.packed.context.ContextTemplate;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
@@ -37,8 +36,6 @@ import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector
 // Wait a bit with transforming this class to a record.
 // We might have some mutable fields such as name
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
-
-    public static final ContextTemplate CONTEXT_TEMPLATE = ContextTemplate.of(ApplicationLaunchContext.class);
 
     /** The configuration of the application we are launching. */
     public final ApplicationSetup application;

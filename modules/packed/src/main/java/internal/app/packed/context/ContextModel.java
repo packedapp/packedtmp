@@ -16,14 +16,13 @@
 package internal.app.packed.context;
 
 import app.packed.context.Context;
-import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
 import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
 /** Implementation of {@link ContextTemplate}. */
-public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass, Class<? extends Context<?>> contextClass,
-        Class<? extends Context<?>> contextImplementationClass, boolean isHidden, boolean bindAsConstant) implements ContextTemplate {
+public record ContextModel(Class<? extends Extension<?>> extensionClass, Class<? extends Context<?>> contextClass,
+        Class<? extends Context<?>> contextImplementationClass, boolean isHidden, boolean bindAsConstant) {
 
     /** A ContextTemplate class to Extension class mapping. */
     private final static ClassValue<Class<? extends Extension<?>>> TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
@@ -39,28 +38,23 @@ public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass
     };
 
     /** {@inheritDoc} */
-    @Override
-    public ContextTemplate withHidden() {
-        return new PackedContextTemplate(extensionClass, contextClass, contextImplementationClass, true, bindAsConstant);
+    public ContextModel withHidden() {
+        return new ContextModel(extensionClass, contextClass, contextImplementationClass, true, bindAsConstant);
     }
 
-    public static ContextTemplate of(Class<? extends Context<?>> contextClass) {
-        Class<? extends Extension<?>> c = PackedContextTemplate.TYPE_VARIABLE_EXTRACTOR.get(contextClass);
-        return new PackedContextTemplate(c, contextClass, contextClass, false, false);
+    public static ContextModel of(Class<? extends Context<?>> contextClass) {
+        Class<? extends Extension<?>> c = ContextModel.TYPE_VARIABLE_EXTRACTOR.get(contextClass);
+        return new ContextModel(c, contextClass, contextClass, false, false);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public ContextTemplate withImplementation(Class<? extends Context<?>> implementationClass) {
+    public ContextModel withImplementation(Class<? extends Context<?>> implementationClass) {
         // TODO check subclass
-        return new PackedContextTemplate(extensionClass, contextClass, implementationClass, isHidden, bindAsConstant);
+        return new ContextModel(extensionClass, contextClass, implementationClass, isHidden, bindAsConstant);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public ContextTemplate withBindAsConstant() {
-        return new PackedContextTemplate(extensionClass, contextClass, contextImplementationClass, isHidden, true);
-
+    public ContextModel withBindAsConstant() {
+        return new ContextModel(extensionClass, contextClass, contextImplementationClass, isHidden, true);
     }
-
 }

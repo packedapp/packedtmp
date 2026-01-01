@@ -46,7 +46,7 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
-import internal.app.packed.context.PackedContextTemplate;
+import internal.app.packed.context.ContextModel;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
 import internal.app.packed.lifecycle.lifetime.BeanLifetimeSetup;
@@ -147,7 +147,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
             scanner = new BeanScanner(this);
         }
 
-        for (PackedContextTemplate t : installer.template.initializationTemplate().contexts) {
+        for (ContextModel t : installer.template.initializationTemplate().contexts) {
             contexts.put(t.contextClass(), new ContextSetup(t, this));
         }
     }

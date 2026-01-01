@@ -16,7 +16,6 @@
 package internal.app.packed.lifecycle.runtime;
 
 import app.packed.bean.BeanTrigger.AutoInject;
-import app.packed.context.ContextTemplate;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.ValueBased;
 import internal.app.packed.extension.ExtensionContext;
@@ -30,9 +29,6 @@ import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 @AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
 @ValueBased
 public final class PackedExtensionContext implements ExtensionContext {
-
-    /** A context template for {@link ExtensionContext}. */
-    public static final ContextTemplate CONTEXT_TEMPLATE = ContextTemplate.of(ExtensionContext.class).withImplementation(PackedExtensionContext.class);
 
     public static final ExtensionContext EMPTY = new PackedExtensionContext(null, 0);
 

@@ -18,7 +18,7 @@ package internal.app.packed.operation;
 import java.util.List;
 
 import app.packed.util.Nullable;
-import internal.app.packed.context.PackedContextTemplate;
+import internal.app.packed.context.ContextModel;
 import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
 
 /**
@@ -29,7 +29,7 @@ public record PackedOperationTemplate2(
         Class<?> returnClass,
         boolean extensionContext,
         @Nullable Class<?> beanClass,
-        List<PackedContextTemplate> contexts,
+        List<ContextModel> contexts,
         List<Class<?>> args
 
         )

@@ -44,7 +44,7 @@ import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
-import internal.app.packed.context.PackedContextTemplate;
+import internal.app.packed.context.ContextModel;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.OperationCodeGenerator;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointSetup;
@@ -135,7 +135,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         } else {
             this.entryPoint = null;
         }
-        for (PackedContextTemplate ct : template.contexts) {
+        for (ContextModel ct : template.contexts) {
             contexts.put(ct.contextClass(), new ContextSetup(ct, this));
         }
         // check is built

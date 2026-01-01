@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import app.packed.context.Context;
-import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
@@ -19,7 +18,7 @@ import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
-import internal.app.packed.context.PackedContextTemplate;
+import internal.app.packed.context.ContextModel;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
@@ -41,7 +40,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     @Nullable
     public final Class<?> beanClass;
 
-    public final List<PackedContextTemplate> contexts;
+    public final List<ContextModel> contexts;
 
     /** Do the operation require an ExtensionContext to work. */
     public final boolean extensionContextFlag;
@@ -54,7 +53,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     public final ReturnKind returnKind;
 
     PackedOperationTemplate(ReturnKind returnKind, Class<?> returnClass, boolean extensionContextFlag, @Nullable Class<?> beanClass,
-            List<PackedContextTemplate> contexts, List<Class<?>> args) {
+            List<ContextModel> contexts, List<Class<?>> args) {
 
         this.contexts = contexts;
         this.extensionContextFlag = extensionContextFlag;
@@ -67,7 +66,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
             newMt.add(ExtensionContext.class);
 
         }
-        for (PackedContextTemplate pct : contexts) {
+        for (ContextModel pct : contexts) {
             if (!pct.bindAsConstant()) {
                 newMt.add(pct.contextImplementationClass());
             }
@@ -99,8 +98,8 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     /** {@inheritDoc} */
-    public Map<Class<?>, ContextTemplate> contexts() {
-        HashMap<Class<?>, ContextTemplate> m = new HashMap<>();
+    public Map<Class<?>, ContextModel> contexts() {
+        HashMap<Class<?>, ContextModel> m = new HashMap<>();
         contexts.forEach(k -> m.put(k.contextClass(), k));
         return Map.copyOf(m);
     }
@@ -200,7 +199,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
         private Class<?> returnClass = Object.class;
         private boolean extensionContextFlag = true;
         private Class<?> beanClass = null;
-        private List<PackedContextTemplate> contexts = List.of();
+        private List<ContextModel> contexts = List.of();
         private List<Class<?>> args = List.of();
         private List<Class<? extends Throwable>> allowedThrowables = List.of(Throwable.class);
 
@@ -219,9 +218,9 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
         @Override
         public PackedBuilder context(Class<? extends Context<?>> contextClass) {
-            PackedContextTemplate c = (PackedContextTemplate) PackedContextTemplate.of(contextClass);
-            ArrayList<PackedContextTemplate> m = new ArrayList<>(contexts);
-            for (PackedContextTemplate pct : m) {
+            ContextModel c = ContextModel.of(contextClass);
+            ArrayList<ContextModel> m = new ArrayList<>(contexts);
+            for (ContextModel pct : m) {
                 if (pct.contextClass() == c.contextClass()) {
                     throw new IllegalArgumentException("This template already contains the context " + c.contextClass());
                 }
