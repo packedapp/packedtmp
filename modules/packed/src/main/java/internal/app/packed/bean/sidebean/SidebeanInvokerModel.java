@@ -37,17 +37,18 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import internal.app.packed.extension.ExtensionContext;
 
 /**
- * Generates implementations of SAM (Single Abstract Method) interfaces using the Class File API.
- * The generated class delegates to a MethodHandle with ExtensionContext as the first argument.
+ * Generates implementations of SAM (Single Abstract Method) interfaces using the Class File API. The generated class
+ * delegates to a MethodHandle with ExtensionContext as the first argument.
  *
- * @implNote the main reason we do not use {@link java.lang.invoke.MethodHandleProxies} is that they
- *           require the interface to be public.
+ * @implNote the main reason we do not use {@link java.lang.invoke.MethodHandleProxies} is that they require the
+ *           interface to be public.
  */
-public class SidebeanInvoker {
+public final class SidebeanInvokerModel {
 
     private static final ClassDesc CD_ExtensionContext = ClassDesc.of(ExtensionContext.class.getName());
     private static final ClassDesc CD_UndeclaredThrowableException = ClassDesc.of(UndeclaredThrowableException.class.getName());
@@ -55,22 +56,45 @@ public class SidebeanInvoker {
     private static final ClassDesc CD_Error = ClassDesc.of(Error.class.getName());
     private static final ClassDesc CD_Throwable = ClassDesc.of(Throwable.class.getName());
 
+    public final Class<?> iface;
+
+    private final Supplier<MethodHandle> constructor;
+
+    private SidebeanInvokerModel(Class<?> iface, Method method) {
+        this.iface = iface;
+        this.constructor = StableValue.supplier(() -> generateInvoker(iface, method));
+    }
+
+    public MethodHandle invokerConstructor() {
+        return constructor.get();
+    }
+
+    public static SidebeanInvokerModel of(Class<?> iface) {
+        Method sam = findSamMethod(iface);
+        SidebeanInvokerModel sim = new SidebeanInvokerModel(iface, sam);
+
+        return sim;
+    }
+
+    static MethodHandle generateInvoker(Class<?> iface) {
+        return generateInvoker(iface, findSamMethod(iface));
+    }
+
     /**
      * Generates a MethodHandle that creates instances implementing the given SAM interface.
      *
-     * @param iface the SAM interface to implement
+     * @param iface
+     *            the SAM interface to implement
      * @return a MethodHandle with signature (MethodHandle, ExtensionContext) -> iface
      */
-    public static MethodHandle generateInvoker(Class<?> iface) {
-        Method sam = findSamMethod(iface);
+    private static MethodHandle generateInvoker(Class<?> iface, Method sam) {
 
         // Define names and descriptors
         // Hidden classes automatically get a unique suffix, so "SidebeanInvokerImpl" is fine as a prefix.
         ClassDesc cd = ClassDesc.of(iface.getPackageName(), "SidebeanInvokerImpl");
         ClassDesc ifaceDesc = ClassDesc.ofDescriptor(iface.descriptorString());
 
-        MethodTypeDesc samDesc = MethodTypeDesc.ofDescriptor(
-                MethodType.methodType(sam.getReturnType(), sam.getParameterTypes()).descriptorString());
+        MethodTypeDesc samDesc = MethodTypeDesc.ofDescriptor(MethodType.methodType(sam.getReturnType(), sam.getParameterTypes()).descriptorString());
         MethodTypeDesc invokeDesc = samDesc.insertParameterTypes(0, CD_ExtensionContext);
 
         byte[] bytes = ClassFile.of().build(cd, clb -> {
@@ -85,8 +109,12 @@ public class SidebeanInvoker {
             clb.withMethod(INIT_NAME, MethodTypeDesc.of(CD_void, CD_MethodHandle, CD_ExtensionContext), ACC_PUBLIC, mb -> mb.withCode(cb -> {
                 cb.aload(0);
                 cb.invokespecial(CD_Object, INIT_NAME, MethodTypeDesc.of(CD_void));
-                cb.aload(0); cb.aload(1); cb.putfield(cd, "mh", CD_MethodHandle);
-                cb.aload(0); cb.aload(2); cb.putfield(cd, "ctx", CD_ExtensionContext);
+                cb.aload(0);
+                cb.aload(1);
+                cb.putfield(cd, "mh", CD_MethodHandle);
+                cb.aload(0);
+                cb.aload(2);
+                cb.putfield(cd, "ctx", CD_ExtensionContext);
                 cb.return_();
             }));
 
@@ -138,7 +166,7 @@ public class SidebeanInvoker {
                 cb.astore(slot); // Save the caught Throwable to a local variable
                 cb.new_(CD_UndeclaredThrowableException);
                 cb.dup();
-                cb.aload(slot);  // Load the cause for the constructor
+                cb.aload(slot); // Load the cause for the constructor
                 cb.invokespecial(CD_UndeclaredThrowableException, INIT_NAME, MethodTypeDesc.of(CD_void, CD_Throwable));
                 cb.athrow();
             }));
@@ -146,34 +174,36 @@ public class SidebeanInvoker {
 
         try {
             // Using privateLookupIn allows implementation of package-private interfaces
-            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(iface, MethodHandles.lookup())
-                                                       .defineHiddenClass(bytes, true);
+            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(iface, MethodHandles.lookup()).defineHiddenClass(bytes, true);
 
             return lookup.findConstructor(lookup.lookupClass(), MethodType.methodType(void.class, MethodHandle.class, ExtensionContext.class))
-                         .asType(MethodType.methodType(iface, MethodHandle.class, ExtensionContext.class));
+                    .asType(MethodType.methodType(iface, MethodHandle.class, ExtensionContext.class));
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to generate invoker for " + iface.getName(), e);
         }
     }
 
     private static Method findSamMethod(Class<?> iface) {
-        if (!iface.isInterface()) throw new IllegalArgumentException(iface + " is not an interface");
+        if (!iface.isInterface())
+            throw new IllegalArgumentException(iface + " is not an interface");
         Method sam = null;
         for (Method m : iface.getMethods()) {
             if (Modifier.isAbstract(m.getModifiers()) && !isObjectMethod(m)) {
-                if (sam != null) throw new IllegalArgumentException(iface + " has multiple abstract methods");
+                if (sam != null)
+                    throw new IllegalArgumentException(iface + " has multiple abstract methods");
                 sam = m;
             }
         }
-        if (sam == null) throw new IllegalArgumentException(iface + " is not a SAM interface");
+        if (sam == null)
+            throw new IllegalArgumentException(iface + " is not a SAM interface");
         return sam;
     }
 
     private static boolean isObjectMethod(Method m) {
         return switch (m.getName()) {
-            case "equals" -> m.getParameterCount() == 1 && m.getParameterTypes()[0] == Object.class;
-            case "hashCode", "toString" -> m.getParameterCount() == 0;
-            default -> false;
+        case "equals" -> m.getParameterCount() == 1 && m.getParameterTypes()[0] == Object.class;
+        case "hashCode", "toString" -> m.getParameterCount() == 0;
+        default -> false;
         };
     }
 }
