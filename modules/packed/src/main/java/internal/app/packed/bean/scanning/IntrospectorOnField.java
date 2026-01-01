@@ -87,8 +87,8 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
 
     /** {@inheritDoc} */
     @Override
-    public OperationInstaller newGetOperation(OperationTemplate template) {
-        PackedOperationTemplate t = (PackedOperationTemplate) requireNonNull(template, "template is null");
+    public OperationInstaller newGetOperation() {
+        PackedOperationTemplate t = PackedOperationTemplate.DEFAULTS;
         checkConfigurable();
         if (!allowGet) {
             throw new IllegalStateException("" + triggeringAnnotations);

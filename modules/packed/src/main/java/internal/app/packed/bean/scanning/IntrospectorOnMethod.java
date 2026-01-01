@@ -26,7 +26,6 @@ import app.packed.operation.OperationInstaller;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedMethodCache;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
-import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** Internal implementation of BeanMethod. Discard after use. */
@@ -45,13 +44,8 @@ public final class IntrospectorOnMethod extends IntrospectorOnExecutable<Method>
     /** {@inheritDoc} */
     @Override
     public OperationInstaller newOperation() {
-        PackedOperationTemplate t =  PackedOperationTemplate.DEFAULTS;
         checkConfigurable();
-
-
-        if (t.returnKind == ReturnKind.DYNAMIC) {
-            t = t.withReturnType(type.returnRawType());
-        }
+        PackedOperationTemplate t =  PackedOperationTemplate.DEFAULTS;
 
         // Attempt to unreflect the method (Create a direct method handle for it)
         MethodHandle directMH = introspector.scanner.unreflectMethod(member);

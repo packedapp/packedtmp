@@ -130,10 +130,11 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
     /** {@inheritDoc} */
     @Override
     public OperationInstaller template(OperationTemplate template) {
-        if (((PackedOperationTemplate) template).returnKind == ReturnKind.DYNAMIC) {
-            template = template.withReturnType(operationType.returnRawType());
+        PackedOperationTemplate t = (PackedOperationTemplate) template;
+        if (t.returnKind == ReturnKind.DYNAMIC) {
+            t = t.withReturnType(operationType.returnRawType());
         }
-        this.template = (PackedOperationTemplate) requireNonNull(template);
+        this.template = t;
 
 
         return this;

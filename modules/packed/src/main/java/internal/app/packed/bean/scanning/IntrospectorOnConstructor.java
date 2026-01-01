@@ -21,7 +21,6 @@ import java.lang.reflect.Constructor;
 import app.packed.bean.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 
 /** Implements {@link app.packed.bean.scanning.BeanIntrospector.OnConstructor}. */
 public final class IntrospectorOnConstructor extends IntrospectorOnExecutable<Constructor<?>> implements BeanIntrospector.OnConstructor {
@@ -43,7 +42,7 @@ public final class IntrospectorOnConstructor extends IntrospectorOnExecutable<Co
 
     /** {@inheritDoc} */
     @Override
-    public OperationInstaller newOperation(OperationTemplate template) {
+    public OperationInstaller newOperation() {
         throw new UnsupportedOperationException();
     }
 

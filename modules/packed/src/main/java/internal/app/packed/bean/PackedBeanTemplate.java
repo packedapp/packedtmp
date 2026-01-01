@@ -24,7 +24,6 @@ import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanTemplate;
 import app.packed.context.Context;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.PackedBuildLocal;
@@ -89,15 +88,13 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
             return this;
         }
 
-        @Override
-        public PackedBuilder initialization(OperationTemplate initialization) {
-            this.initializationTemplate = (PackedOperationTemplate) initialization;
+        public PackedBuilder initialization(PackedOperationTemplate initialization) {
+            this.initializationTemplate = initialization;
             return this;
         }
 
-        @Override
-        public PackedBuilder initialization(Function<OperationTemplate, OperationTemplate> configure) {
-            this.initializationTemplate = (PackedOperationTemplate) configure.apply(this.initializationTemplate);
+        public PackedBuilder initialization(Function<PackedOperationTemplate, PackedOperationTemplate> configure) {
+            this.initializationTemplate = configure.apply(this.initializationTemplate);
             return this;
         }
 

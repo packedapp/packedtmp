@@ -19,7 +19,6 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 import app.packed.context.Context;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanTemplate;
 import sandbox.application.LifetimeTemplate;
 
@@ -111,10 +110,6 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
 
         /** {@return a new bean template} */
         BeanTemplate build();
-
-        Builder initialization(java.util.function.Function<OperationTemplate, OperationTemplate> configure);
-
-        Builder initialization(OperationTemplate initialization);
 
         @SuppressWarnings("exports")
         Builder lifetime(LifetimeTemplate lifetime);

@@ -62,7 +62,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // But right now we only have a single field
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
 
-    static final BeanTemplate DEFAULT_BEAN = BeanTemplate.builder(BeanLifetime.SINGLETON)
+    static final BeanTemplate DEFAULT_BEAN = PackedBeanTemplate.builder(BeanLifetime.SINGLETON)
             .initialization(PackedOperationTemplate.DEFAULTS.withReturnTypeDynamic())
             .build();
 

@@ -58,7 +58,6 @@ import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariableUnwrapped;
 import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.accesshelper.AccessHelper;
 import internal.app.packed.util.accesshelper.BeanScanningAccessHandler;
 
@@ -489,7 +488,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         int modifiers();
 
         // LifetimeTemplate??? Also available for on Method????
-        OperationInstaller newOperation(OperationTemplate template);
+        OperationInstaller newOperation();
 
         /** {@return a factory type for this method.} */
         OperationType operationType();
@@ -583,11 +582,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
          * @return an operation handle
          * @see Lookup#unreflectGetter(Field)
          */
-        OperationInstaller newGetOperation(OperationTemplate template);
-
-        default OperationInstaller newGetOperation() {
-            return newGetOperation(PackedOperationTemplate.DEFAULTS);
-        }
+        OperationInstaller newGetOperation();
 
         /**
          * Creates a new operation that can read or/and write a field as specified by the provided access mode.
@@ -703,11 +698,8 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         /**
          * Creates an operation installer for installing an operation that invokes the underlying method.
          *
-         * @param template
-         *            a template for the operation
          * @return an operation installer
          */
-
         OperationInstaller newOperation();
 
         /** {@return the default type of operation that will be created.} */
@@ -751,8 +743,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         <H extends OperationHandle<?>> Optional<H> operationHandle(Class<H> operationHandleType);
 
         /**
-         * {@return a set of available contexts}
-         * This method exist only for informational purposes.
+         * {@return a set of available contexts} This method exist only for informational purposes.
          *
          */
         default Set<Class<? extends Context<?>>> availableContexts() {
@@ -997,8 +988,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
 
         // Problemet er vi gerne vil smide en god fejlmeddelse
         // Det kan man vel ogsaa...
-        //// isOptional()->bindOptionallTo()
-        //// else provide()
+        //// isOptional()->bindOptionallTo() else provide()
         // Will automatically handle, @Nullable, and Default
 
 //        default void bindOpWithNoneAsNull(Op<?> op) {
