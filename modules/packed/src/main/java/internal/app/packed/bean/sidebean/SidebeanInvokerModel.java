@@ -60,8 +60,11 @@ public final class SidebeanInvokerModel {
 
     private final Supplier<MethodHandle> constructor;
 
+    private final Method method;
+
     private SidebeanInvokerModel(Class<?> iface, Method method) {
         this.iface = iface;
+        this.method = method;
         this.constructor = StableValue.supplier(() -> generateInvoker(iface, method));
     }
 
@@ -69,10 +72,13 @@ public final class SidebeanInvokerModel {
         return constructor.get();
     }
 
+    public Class<?> returnType() {
+        return method.getReturnType();
+    }
+
     public static SidebeanInvokerModel of(Class<?> iface) {
         Method sam = findSamMethod(iface);
         SidebeanInvokerModel sim = new SidebeanInvokerModel(iface, sam);
-
         return sim;
     }
 

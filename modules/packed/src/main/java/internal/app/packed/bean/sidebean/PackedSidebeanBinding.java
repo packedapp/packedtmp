@@ -20,5 +20,5 @@ package internal.app.packed.bean.sidebean;
  */
 public sealed interface PackedSidebeanBinding {
     public record Constant() implements PackedSidebeanBinding {}
-    public record Invoker(Class<?> invokerType) implements PackedSidebeanBinding {}
+    public record Invoker(SidebeanInvokerModel invokerModel) implements PackedSidebeanBinding {}
 }

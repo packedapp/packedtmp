@@ -49,6 +49,8 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
     private ArrayList<PackedSidebeanAttachment> usage = new ArrayList<>();
 
+    public SidebeanInvokerModel sim;
+
     /**
      * @param installer
      */

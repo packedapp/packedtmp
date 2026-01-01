@@ -33,7 +33,6 @@ import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding.Constant;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding.Invoker;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
-import internal.app.packed.bean.sidebean.SidebeanInvokerModel;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromSidebeanAttachment;
 import internal.app.packed.binding.BindingSetup;
@@ -242,7 +241,7 @@ public final class OperationCodeGenerator {
                     } else if (b instanceof Invoker invokerType) {
                         PackedSidebeanAttachment.OfOperation oo = (OfOperation) sidebeanAttachment;
                         MethodHandle methodHandle2 = oo.operation.codeHolder.generate(false);
-                        MethodHandle mhh = SidebeanInvokerModel.of(invokerType.invokerType()).invokerConstructor();
+                        MethodHandle mhh = invokerType.invokerModel().invokerConstructor();
 
                         mhh = mhh.bindTo(methodHandle2);
                         methodHandle = MethodHandles.collectArguments(methodHandle, 1, mhh);

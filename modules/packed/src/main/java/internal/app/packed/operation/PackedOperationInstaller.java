@@ -31,6 +31,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
+import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
@@ -117,6 +118,10 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
             throw new IllegalStateException("A sidebean has already been attached");
         }
         attachToSidebean = BeanSetup.crack(requireNonNull(configuration));
+        SidebeanHandle<?> handle = (SidebeanHandle<?>) attachToSidebean.handle();
+        if (handle.sim.returnType() == void.class) {
+            returnIgnore();
+        }
         return this;
     }
 

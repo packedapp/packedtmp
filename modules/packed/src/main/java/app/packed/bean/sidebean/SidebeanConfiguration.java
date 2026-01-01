@@ -22,6 +22,7 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.binding.Key;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidebean.SidebeanInvokerModel;
 
 /**
  * A configuration object for aside bean.
@@ -40,7 +41,6 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
         // Men den kalder ind i en anden klasse med den som parameter
         // Problemet er lidt af vi aldrig kan afregistrer den. Saa ved ikke om den er brugbar
     }
-
 
 //    /**
 //     * Attaches this side bean to the specified bean (handle).
@@ -93,6 +93,10 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
     // bindAbstractInvoker???
     public void sidebeanBindInvoker(Class<?> invokerClass) {
         Key<?> invokerKey = Key.of(invokerClass);
-        sidebeanBind(invokerKey, new PackedSidebeanBinding.Invoker(invokerClass));
+        if (handle.sim != null) {
+            throw new IllegalStateException();
+        }
+        SidebeanInvokerModel sim = handle.sim = SidebeanInvokerModel.of(invokerClass);
+        sidebeanBind(invokerKey, new PackedSidebeanBinding.Invoker(sim));
     }
 }
