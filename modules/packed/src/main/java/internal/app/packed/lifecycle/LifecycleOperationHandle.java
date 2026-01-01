@@ -39,7 +39,6 @@ import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 import internal.app.packed.invoke.BeanLifecycleSupport;
-import internal.app.packed.operation.PackedOperationTemplate;
 
 /** An operation handle for lifecycle operation on a bean. */
 public abstract sealed class LifecycleOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration>
@@ -99,9 +98,6 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
     /** A handle for initialization lifecycle operation. */
     public static final class InitializeOperationHandle extends AbstractInitializingOperationHandle {
 
-        /** An operation template for {@link Inject} and {@link Initialize}. */
-        private static final PackedOperationTemplate OPERATION_LIFECYCLE_TEMPLATE = PackedOperationTemplate.builder().returnIgnore().build();
-
         /**
          * @param installer
          */
@@ -122,14 +118,11 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         public static void install(Initialize annotation, BeanIntrospector.OnMethod method) {
             PackedBeanLifecycleKind lk = annotation.naturalOrder() ? PackedBeanLifecycleKind.INITIALIZE_PRE_ORDER
                     : PackedBeanLifecycleKind.INITIALIZE_POST_ORDER;
-            method.newOperation().template(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InitializeOperationHandle(i, lk));
+            method.newOperation().returnIgnore().install(i -> new InitializeOperationHandle(i, lk));
         }
     }
 
     public static final class InjectOperationHandle extends AbstractInitializingOperationHandle {
-
-        /** An operation template for {@link Inject} and {@link Initialize}. */
-        private static final PackedOperationTemplate OPERATION_LIFECYCLE_TEMPLATE = PackedOperationTemplate.builder().returnIgnore().build();
 
         private InjectOperationHandle(OperationInstaller installer) {
             super(installer, PackedBeanLifecycleKind.INJECT);
@@ -158,15 +151,11 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         }
 
         public static void install(Inject annotation, BeanIntrospector.OnMethod method) {
-            method.newOperation().template(OPERATION_LIFECYCLE_TEMPLATE).install(i -> new InjectOperationHandle(i));
+            method.newOperation().returnIgnore().install(i -> new InjectOperationHandle(i));
         }
     }
 
     public static final class StartOperationHandle extends LifecycleOperationHandle {
-
-        /** An operation template for {@link Start}. */
-        private static final PackedOperationTemplate OPERATION_ON_START_TEMPLATE = PackedOperationTemplate.builder().returnIgnore().context(StartContext.class)
-                .build();
 
         public boolean fork;
 
@@ -195,16 +184,12 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         }
 
         public static void install(Start annotation, BeanIntrospector.OnMethod method) {
-            method.newOperation().template(OPERATION_ON_START_TEMPLATE).install(i -> new StartOperationHandle(i, annotation));
+            method.newOperation().returnIgnore().addContext(StartContext.class) .install(i -> new StartOperationHandle(i, annotation));
         }
     }
 
     public static final class StopOperationHandle extends LifecycleOperationHandle {
 
-
-        /** An operation template for {@link Stop}. */
-        private static final PackedOperationTemplate OPERATION_ON_STOP_TEMPLATE = PackedOperationTemplate.DEFAULTS.withReturnIgnore()
-                .withContext(StopContext.class);
 
         public boolean fork;
 
@@ -224,7 +209,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         }
 
         public static void install(Stop annotation, BeanIntrospector.OnMethod method) {
-            method.newOperation().template(OPERATION_ON_STOP_TEMPLATE).install(i -> new StopOperationHandle(i, annotation));
+            method.newOperation().returnIgnore().addContext(StopContext.class).install(i -> new StopOperationHandle(i, annotation));
         }
     }
 }

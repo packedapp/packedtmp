@@ -22,6 +22,7 @@ import app.packed.bean.sidebean.SidebeanConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint;
 import app.packed.namespace.NamespaceHandle;
+import internal.app.packed.operation.PackedOperationInstaller;
 
 /**
  * An installer for operations.
@@ -29,7 +30,7 @@ import app.packed.namespace.NamespaceHandle;
  * An installer can only be used once. After an operation has been installed, all methods will throw
  * {@link IllegalStateException}.
  */
-public interface OperationInstaller /* permits PackedOperationInstaller */ {
+public sealed interface OperationInstaller permits PackedOperationInstaller {
 
     OperationInstaller addContext(Class<? extends Context<?>> contextClass);
 
@@ -38,7 +39,11 @@ public interface OperationInstaller /* permits PackedOperationInstaller */ {
     // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);
     OperationInstaller delegateTo(ExtensionPoint.ExtensionPointHandle extension);
 
-    OperationInstaller template(OperationTemplate template);
+    OperationInstaller returnType(Class<?> type);
+
+    OperationInstaller returnIgnore();
+
+    OperationInstaller returnDynamic();
 
     /**
      * Creates the operation.

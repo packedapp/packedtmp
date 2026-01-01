@@ -15,8 +15,6 @@
  */
 package internal.app.packed.bean.scanning;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
@@ -34,7 +32,6 @@ import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedFieldCache;
 import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
-import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** Implementation of {@link BeanIntrospector.OnField}. */
@@ -87,32 +84,20 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
     /** {@inheritDoc} */
     @Override
     public OperationInstaller newGetOperation() {
-        PackedOperationTemplate t = PackedOperationTemplate.DEFAULTS;
         checkConfigurable();
         if (!allowGet) {
             throw new IllegalStateException("" + triggeringAnnotations);
         }
-        // Get A direct method handle to a getter for the field
         AccessMode accessMode = Modifier.isVolatile(modifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-
-        if (t.returnKind == ReturnKind.DYNAMIC) {
-            t = t.withReturnType(member.getType());
-        }
-
-//        template = template.reconfigure(c -> c.returnType(field.getType()));
         MethodHandle directMH = introspector.scanner.unreflectGetter(member);
-        return newOperation(t, directMH, accessMode);
+        return newOperation(directMH, accessMode);
     }
 
     private OperationInstaller newOperation(MethodHandle directMH, AccessMode accessMode) {
-        return newOperation(PackedOperationTemplate.builder().build(), directMH, accessMode);
-    }
-    private OperationInstaller newOperation(PackedOperationTemplate template, MethodHandle directMH, AccessMode accessMode) {
-        PackedOperationTemplate t = template;
         OperationType ft = OperationType.fromField(member, accessMode);
 
         // We should be able to create the method handle lazily
-        return t.newInstaller(introspector, directMH, new OperationFieldTarget(member, accessMode), ft);
+        return PackedOperationTemplate.newInstaller(introspector, directMH, new OperationFieldTarget(member, accessMode), ft);
     }
 
     /** {@inheritDoc} */
@@ -129,16 +114,13 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
     /** {@inheritDoc} */
     @Override
     public OperationInstaller newSetOperation() {
-      PackedOperationTemplate    template = PackedOperationTemplate.DEFAULTS;
-        requireNonNull(template, "template is null");
         checkConfigurable();
         if (!allowSet) {
             throw new IllegalStateException();
         }
         MethodHandle mh = introspector.scanner.unreflectSetter(member);
         AccessMode accessMode = Modifier.isVolatile(member.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-
-        return newOperation(template, mh, accessMode);
+        return newOperation(mh, accessMode);
     }
 
     /** {@inheritDoc} */

@@ -23,14 +23,11 @@ import app.packed.operation.OperationInstaller;
 import app.packed.service.Provide;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;
-import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
  *
  */
 public class ServiceProvideOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration>{
-
-    static final PackedOperationTemplate OPERATION_TEMPLATE = PackedOperationTemplate.DEFAULTS.withReturnTypeDynamic();
 
     /**
      * @param installer
@@ -43,7 +40,7 @@ public class ServiceProvideOperationHandle extends BaseExtensionOperationHandle<
         // Checks that it is a valid key
         Key<?> key = method.toKey();
 
-        ServiceProvideOperationHandle oh = method.newOperation().template(OPERATION_TEMPLATE).install(ServiceProvideOperationHandle::new);
+        ServiceProvideOperationHandle oh = method.newOperation().returnDynamic().install(ServiceProvideOperationHandle::new);
         oh.bean().serviceNamespace().provideService(key, oh, new FromEmbeddedOperation(oh.operation()));
     }
 
@@ -52,7 +49,7 @@ public class ServiceProvideOperationHandle extends BaseExtensionOperationHandle<
         // Checks that it is a valid key
         Key<?> key = onField.toKey();
 
-        ServiceProvideOperationHandle oh = onField.newGetOperation().template(OPERATION_TEMPLATE).install(ServiceProvideOperationHandle::new);
+        ServiceProvideOperationHandle oh = onField.newGetOperation().returnDynamic().install(ServiceProvideOperationHandle::new);
         oh.bean().serviceNamespace().provideService(key, oh, new FromEmbeddedOperation(oh.operation()));
     }
 

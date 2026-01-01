@@ -27,7 +27,6 @@ import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
@@ -112,7 +111,7 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
 
     /** {@inheritDoc} */
     @Override
-    public OperationInstaller attachToSidebean(SidebeanConfiguration<?> configuration) {
+    public PackedOperationInstaller attachToSidebean(SidebeanConfiguration<?> configuration) {
         if (attachToSidebean != null) {
             throw new IllegalStateException("A sidebean has already been attached");
         }
@@ -122,21 +121,36 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
 
     /** {@inheritDoc} */
     @Override
-    public OperationInstaller addContext(Class<? extends Context<?>> contextClass) {
+    public PackedOperationInstaller addContext(Class<? extends Context<?>> contextClass) {
         template = template.withContext(contextClass);
         return this;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public OperationInstaller template(OperationTemplate template) {
-        PackedOperationTemplate t = (PackedOperationTemplate) template;
+    public PackedOperationInstaller template(PackedOperationTemplate template) {
+        PackedOperationTemplate t = template;
         if (t.returnKind == ReturnKind.DYNAMIC) {
             t = t.withReturnType(operationType.returnRawType());
         }
         this.template = t;
-
-
         return this;
+    }
+
+    @Override
+    public PackedOperationInstaller returnDynamic() {
+        return template(template.withReturnTypeDynamic());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedOperationInstaller returnIgnore() {
+        return template(template.withReturnIgnore());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationInstaller returnType(Class<?> type) {
+        return template(template.withReturnType(type));
+
     }
 }

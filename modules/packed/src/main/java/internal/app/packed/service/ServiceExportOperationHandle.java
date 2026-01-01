@@ -23,14 +23,11 @@ import app.packed.operation.OperationInstaller;
 import app.packed.service.Export;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
  *
  */
 public class ServiceExportOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration> {
-
-    static final PackedOperationTemplate OPERATION_TEMPLATE = PackedOperationTemplate.DEFAULTS.withReturnTypeDynamic();
 
     /**
      * @param installer
@@ -44,7 +41,7 @@ public class ServiceExportOperationHandle extends BaseExtensionOperationHandle<O
         // Checks that it is a valid key
         Key<?> key = method.toKey();
 
-        OperationSetup operation = OperationSetup.crack(method.newOperation().template(OPERATION_TEMPLATE).install(OperationHandle::new));
+        OperationSetup operation = OperationSetup.crack(method.newOperation().returnDynamic().install(OperationHandle::new));
         operation.bean.serviceNamespace().export(key, operation);
     }
 

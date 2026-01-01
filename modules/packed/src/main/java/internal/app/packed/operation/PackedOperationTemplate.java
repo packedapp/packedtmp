@@ -13,7 +13,6 @@ import java.util.function.Function;
 import app.packed.context.Context;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -25,7 +24,7 @@ import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 
 /** Implementation of {@link OperationTemplate}. */
-public final class PackedOperationTemplate implements OperationTemplate {
+public final class PackedOperationTemplate {
 
     public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(ReturnKind.CLASS, Object.class, true, null, List.of(), List.of());
 
@@ -105,9 +104,9 @@ public final class PackedOperationTemplate implements OperationTemplate {
         return methodType;
     }
 
-    public PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle directMH, OperationMemberTarget<?> target,
+    public static PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle directMH, OperationMemberTarget<?> target,
             OperationType operationType) {
-        return new PackedOperationInstaller(this, operationType, extension.scanner.bean, extension.extension()) {
+        return new PackedOperationInstaller(PackedOperationTemplate.DEFAULTS, operationType, extension.scanner.bean, extension.extension()) {
 
             @SuppressWarnings("unchecked")
             @Override
@@ -178,7 +177,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     /** Implementation of {@link OperationTemplate.Builder}. */
-    public static final class PackedBuilder  {
+    public static final class PackedBuilder {
         private ReturnKind returnKind = ReturnKind.CLASS;
         private Class<?> returnClass = Object.class;
         private boolean extensionContextFlag = true;

@@ -18,7 +18,6 @@ package tck.context;
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.context.Context;
 import app.packed.operation.OperationHandle;
-import internal.app.packed.operation.PackedOperationTemplate;
 import tck.AbstractBootstrapedAppTest;
 import tck.HookTestingExtension;
 import tck.HookTestingExtensionBeanIntrospector;
@@ -29,11 +28,6 @@ public class ContextsHelpers {
     @AutoInject(introspector = HookTestingExtensionBeanIntrospector.class)
     public record NoImplContext(int i) implements Context<HookTestingExtension> {
 
-        /** A simple operation with the context, that ignores return values. */
-        public static final PackedOperationTemplate OT = PackedOperationTemplate.DEFAULTS.withContext(NoImplContext.class).withReturnIgnore();
-
-        /** A simple operation with the context, that ignores return values. */
-        public static final PackedOperationTemplate OTINT = PackedOperationTemplate.DEFAULTS.withContext(NoImplContext.class).withReturnType(int.class);
     }
 
     public static void bindSimple(AbstractBootstrapedAppTest<?> t) {
@@ -43,7 +37,7 @@ public class ContextsHelpers {
         });
 
         t.hooks().onAnnotatedMethod((_, b) -> {
-            OperationHandle<?> h = b.newOperation().template(ContextsHelpers.NoImplContext.OTINT).install(OperationHandle::new);
+            OperationHandle<?> h = b.newOperation().returnType(int.class).addContext(NoImplContext.class) .install(OperationHandle::new);
             t.add(h);
         });
 

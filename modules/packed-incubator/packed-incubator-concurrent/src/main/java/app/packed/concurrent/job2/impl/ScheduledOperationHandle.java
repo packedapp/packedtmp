@@ -23,15 +23,11 @@ import app.packed.util.Nullable;
 import internal.app.packed.concurrent.ScheduleImpl;
 import internal.app.packed.concurrent.ThreadNamespaceHandle;
 import internal.app.packed.concurrent.ThreadedOperationHandle;
-import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
  *
  */
 public final class ScheduledOperationHandle extends ThreadedOperationHandle<ScheduledOperationConfiguration> {
-
-    /** A context template. */
-    public static final PackedOperationTemplate SCHEDULING_OPERATION_TEMPLATE = PackedOperationTemplate.DEFAULTS.withReturnIgnore();
 
     @Nullable
     public ScheduleImpl s;

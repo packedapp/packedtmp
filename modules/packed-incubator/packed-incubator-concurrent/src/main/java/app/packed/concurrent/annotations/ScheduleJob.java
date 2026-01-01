@@ -78,7 +78,7 @@ final class JobExtensionBeanIntrospector extends BeanIntrospector<JobExtension> 
             ThreadNamespaceHandle namespace = null;// main();
 
             // Install the operation
-            ScheduledOperationHandle h = on.newOperation().template(ScheduledOperationHandle.SCHEDULING_OPERATION_TEMPLATE).install(namespace,
+            ScheduledOperationHandle h = on.newOperation().returnIgnore().install(namespace,
                     ScheduledOperationHandle::new);
 
             // Configure the handle

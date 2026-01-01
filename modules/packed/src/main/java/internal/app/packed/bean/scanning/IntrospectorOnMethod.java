@@ -45,13 +45,12 @@ public final class IntrospectorOnMethod extends IntrospectorOnExecutable<Method>
     @Override
     public OperationInstaller newOperation() {
         checkConfigurable();
-        PackedOperationTemplate t =  PackedOperationTemplate.DEFAULTS;
 
         // Attempt to unreflect the method (Create a direct method handle for it)
         MethodHandle directMH = introspector.scanner.unreflectMethod(member);
 
         // We should be able to create this lazily
-        return t.newInstaller(introspector, directMH, new OperationMethodTarget(member), type);
+        return PackedOperationTemplate.newInstaller(introspector, directMH, new OperationMethodTarget(member), type);
     }
 
     /** {@inheritDoc} */

@@ -26,7 +26,7 @@ public sealed interface Resolution {
 
     sealed interface Service extends Resolution {
         Key<?> key();
-        record Context(Class<? extends Context> contextClass, Key<?> key) implements Service {}
+        record AsContext(Class<? extends AsContext> contextClass, Key<?> key) implements Service {}
     }
 
     record Hook(Annotation annotation) {}

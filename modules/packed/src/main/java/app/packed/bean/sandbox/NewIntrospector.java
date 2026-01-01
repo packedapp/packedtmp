@@ -80,7 +80,7 @@ public interface NewIntrospector<E extends Extension<E>> {
 
     // Smart med at extende OperationInstaller fungere ikke rigtig med fields
     // Da den har 3 metoder
-    interface OnAnnotatedMethod<E extends Extension<E>, T> extends OperationInstaller {
+    interface OnAnnotatedMethod<E extends Extension<E>, T> {
 
         T value();
 
