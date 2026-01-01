@@ -75,7 +75,12 @@ public final class DaemonJobSidebean implements DaemonJobContext {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    invoker.invoke(DaemonJobSidebean.this);
+                    try {
+                        invoker.invoke(DaemonJobSidebean.this);
+                    } catch (Throwable e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -95,6 +100,6 @@ public final class DaemonJobSidebean implements DaemonJobContext {
     }
 
     interface DaemonOperationInvoker {
-        void invoke(DaemonJobContext context);
+        void invoke(DaemonJobContext context) throws Throwable;
     }
 }

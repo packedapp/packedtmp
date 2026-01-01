@@ -15,28 +15,18 @@
  */
 package internal.app.packed.bean.sidebean;
 
-import static java.lang.constant.ConstantDescs.CD_Boolean;
-import static java.lang.constant.ConstantDescs.CD_Byte;
-import static java.lang.constant.ConstantDescs.CD_Character;
-import static java.lang.constant.ConstantDescs.CD_Double;
-import static java.lang.constant.ConstantDescs.CD_Float;
-import static java.lang.constant.ConstantDescs.CD_Integer;
-import static java.lang.constant.ConstantDescs.CD_Long;
+import static java.lang.classfile.ClassFile.ACC_FINAL;
+import static java.lang.classfile.ClassFile.ACC_PRIVATE;
+import static java.lang.classfile.ClassFile.ACC_PUBLIC;
+import static java.lang.classfile.ClassFile.ACC_SYNTHETIC;
 import static java.lang.constant.ConstantDescs.CD_MethodHandle;
 import static java.lang.constant.ConstantDescs.CD_Object;
-import static java.lang.constant.ConstantDescs.CD_Short;
-import static java.lang.constant.ConstantDescs.CD_int;
-import static java.lang.constant.ConstantDescs.CD_long;
-import static java.lang.constant.ConstantDescs.CD_double;
-import static java.lang.constant.ConstantDescs.CD_float;
-import static java.lang.constant.ConstantDescs.CD_boolean;
-import static java.lang.constant.ConstantDescs.CD_byte;
-import static java.lang.constant.ConstantDescs.CD_short;
-import static java.lang.constant.ConstantDescs.CD_char;
 import static java.lang.constant.ConstantDescs.CD_void;
+import static java.lang.constant.ConstantDescs.INIT_NAME;
 
 import java.lang.classfile.ClassFile;
-import java.lang.classfile.CodeBuilder;
+import java.lang.classfile.Label;
+import java.lang.classfile.TypeKind;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.MethodTypeDesc;
 import java.lang.invoke.MethodHandle;
@@ -44,19 +34,26 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.concurrent.atomic.AtomicLong;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.ArrayList;
+import java.util.List;
 
 import internal.app.packed.extension.ExtensionContext;
 
 /**
  * Generates implementations of SAM (Single Abstract Method) interfaces using the Class File API.
  * The generated class delegates to a MethodHandle with ExtensionContext as the first argument.
+ *
+ * @implNote the main reason we do not use {@link java.lang.invoke.MethodHandleProxies} is that they
+ *           require the interface to be public.
  */
 public class SidebeanInvoker {
 
-    private static final AtomicLong COUNTER = new AtomicLong();
-
-    private static final ClassDesc CD_ExtensionContext = ClassDesc.of("internal.app.packed.extension.ExtensionContext");
+    private static final ClassDesc CD_ExtensionContext = ClassDesc.of(ExtensionContext.class.getName());
+    private static final ClassDesc CD_UndeclaredThrowableException = ClassDesc.of(UndeclaredThrowableException.class.getName());
+    private static final ClassDesc CD_RuntimeException = ClassDesc.of(RuntimeException.class.getName());
+    private static final ClassDesc CD_Error = ClassDesc.of(Error.class.getName());
+    private static final ClassDesc CD_Throwable = ClassDesc.of(Throwable.class.getName());
 
     /**
      * Generates a MethodHandle that creates instances implementing the given SAM interface.
@@ -65,227 +62,118 @@ public class SidebeanInvoker {
      * @return a MethodHandle with signature (MethodHandle, ExtensionContext) -> iface
      */
     public static MethodHandle generateInvoker(Class<?> iface) {
-        if (!iface.isInterface()) {
-            throw new IllegalArgumentException(iface + " is not an interface");
-        }
+        Method sam = findSamMethod(iface);
 
-        Method samMethod = findSamMethod(iface);
-        if (samMethod == null) {
-            throw new IllegalArgumentException(iface + " is not a SAM interface");
-        }
-
-        String className = iface.getPackageName() + ".SidebeanInvoker$" + iface.getSimpleName() + "$" + COUNTER.incrementAndGet();
-        ClassDesc classDesc = ClassDesc.of(className);
+        // Define names and descriptors
+        // Hidden classes automatically get a unique suffix, so "SidebeanInvokerImpl" is fine as a prefix.
+        ClassDesc cd = ClassDesc.of(iface.getPackageName(), "SidebeanInvokerImpl");
         ClassDesc ifaceDesc = ClassDesc.ofDescriptor(iface.descriptorString());
 
-        byte[] bytes = ClassFile.of().build(classDesc, clb -> {
-            clb.withFlags(ClassFile.ACC_PUBLIC | ClassFile.ACC_FINAL | ClassFile.ACC_SYNTHETIC);
-            clb.withSuperclass(CD_Object);
+        MethodTypeDesc samDesc = MethodTypeDesc.ofDescriptor(
+                MethodType.methodType(sam.getReturnType(), sam.getParameterTypes()).descriptorString());
+        MethodTypeDesc invokeDesc = samDesc.insertParameterTypes(0, CD_ExtensionContext);
+
+        byte[] bytes = ClassFile.of().build(cd, clb -> {
+            clb.withFlags(ACC_PUBLIC | ACC_FINAL | ACC_SYNTHETIC);
             clb.withInterfaceSymbols(ifaceDesc);
 
-            // Fields
-            clb.withField("methodHandle", CD_MethodHandle, ClassFile.ACC_PRIVATE | ClassFile.ACC_FINAL);
-            clb.withField("extensionContext", CD_ExtensionContext, ClassFile.ACC_PRIVATE | ClassFile.ACC_FINAL);
+            // Fields to hold the state
+            clb.withField("mh", CD_MethodHandle, ACC_PRIVATE | ACC_FINAL);
+            clb.withField("ctx", CD_ExtensionContext, ACC_PRIVATE | ACC_FINAL);
 
             // Constructor: (MethodHandle, ExtensionContext)
-            MethodTypeDesc ctorDesc = MethodTypeDesc.of(CD_void, CD_MethodHandle, CD_ExtensionContext);
-            clb.withMethod("<init>", ctorDesc, ClassFile.ACC_PUBLIC, mb -> {
-                mb.withCode(cb -> {
-                    // super()
-                    cb.aload(0);
-                    cb.invokespecial(CD_Object, "<init>", MethodTypeDesc.of(CD_void));
+            clb.withMethod(INIT_NAME, MethodTypeDesc.of(CD_void, CD_MethodHandle, CD_ExtensionContext), ACC_PUBLIC, mb -> mb.withCode(cb -> {
+                cb.aload(0);
+                cb.invokespecial(CD_Object, INIT_NAME, MethodTypeDesc.of(CD_void));
+                cb.aload(0); cb.aload(1); cb.putfield(cd, "mh", CD_MethodHandle);
+                cb.aload(0); cb.aload(2); cb.putfield(cd, "ctx", CD_ExtensionContext);
+                cb.return_();
+            }));
 
-                    // this.methodHandle = methodHandle
-                    cb.aload(0);
-                    cb.aload(1);
-                    cb.putfield(classDesc, "methodHandle", CD_MethodHandle);
+            // SAM Implementation
+            clb.withMethod(sam.getName(), samDesc, ACC_PUBLIC, mb -> mb.withCode(cb -> {
+                Label start = cb.newLabel();
+                Label end = cb.newLabel();
+                Label handlerRethrow = cb.newLabel();
+                Label handlerWrap = cb.newLabel();
 
-                    // this.extensionContext = extensionContext
-                    cb.aload(0);
-                    cb.aload(2);
-                    cb.putfield(classDesc, "extensionContext", CD_ExtensionContext);
+                // 1. Define Exception Table
+                List<ClassDesc> toPropagate = new ArrayList<>(List.of(CD_RuntimeException, CD_Error));
+                for (Class<?> ex : sam.getExceptionTypes()) {
+                    toPropagate.add(ClassDesc.ofDescriptor(ex.descriptorString()));
+                }
 
-                    cb.return_();
-                });
-            });
+                for (ClassDesc exDesc : toPropagate) {
+                    cb.exceptionCatch(start, end, handlerRethrow, exDesc);
+                }
+                cb.exceptionCatch(start, end, handlerWrap, CD_Throwable);
 
-            // SAM method implementation
-            MethodTypeDesc samDesc = MethodTypeDesc.ofDescriptor(getMethodDescriptor(samMethod));
-            clb.withMethod(samMethod.getName(), samDesc, ClassFile.ACC_PUBLIC, mb -> {
-                mb.withCode(cb -> {
-                    generateSamMethodBody(cb, classDesc, samMethod);
-                });
-            });
+                // 2. Method Body
+                cb.labelBinding(start);
+                cb.aload(0);
+                cb.getfield(cd, "mh", CD_MethodHandle);
+                cb.aload(0);
+                cb.getfield(cd, "ctx", CD_ExtensionContext);
+
+                int slot = 1;
+                for (Class<?> p : sam.getParameterTypes()) {
+                    TypeKind kind = TypeKind.from(p);
+                    cb.loadLocal(kind, slot);
+                    slot += kind.slotSize();
+                }
+
+                // Call MethodHandle.invoke(extensionContext, ...args)
+                cb.invokevirtual(CD_MethodHandle, "invoke", invokeDesc);
+                cb.labelBinding(end);
+                cb.return_(TypeKind.from(sam.getReturnType()));
+
+                // 3. Exception Handlers
+
+                // Rethrow: Just throw the exception that is already on the stack
+                cb.labelBinding(handlerRethrow);
+                cb.athrow();
+
+                // Wrap: Undeclared checked exceptions
+                cb.labelBinding(handlerWrap);
+                cb.astore(slot); // Save the caught Throwable to a local variable
+                cb.new_(CD_UndeclaredThrowableException);
+                cb.dup();
+                cb.aload(slot);  // Load the cause for the constructor
+                cb.invokespecial(CD_UndeclaredThrowableException, INIT_NAME, MethodTypeDesc.of(CD_void, CD_Throwable));
+                cb.athrow();
+            }));
         });
 
-        // Define the class using MethodHandles.Lookup
-        // Use privateLookupIn to get access to the interface's package
-        // This requires the interface's module to open its package to this module
         try {
-            MethodHandles.Lookup ifaceLookup = MethodHandles.privateLookupIn(iface, MethodHandles.lookup());
-            MethodHandles.Lookup definedLookup = ifaceLookup.defineHiddenClass(bytes, true);
-            Class<?> generatedClass = definedLookup.lookupClass();
+            // Using privateLookupIn allows implementation of package-private interfaces
+            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(iface, MethodHandles.lookup())
+                                                       .defineHiddenClass(bytes, true);
 
-            MethodHandle constructor = definedLookup.findConstructor(generatedClass,
-                MethodType.methodType(void.class, MethodHandle.class, ExtensionContext.class));
-
-            // Change return type from generated class to the interface
-            return constructor.asType(MethodType.methodType(iface, MethodHandle.class, ExtensionContext.class));
-        } catch (IllegalAccessException | NoSuchMethodException e) {
-            throw new RuntimeException("Failed to generate invoker for " + iface, e);
-        }
-    }
-
-    private static void generateSamMethodBody(CodeBuilder cb, ClassDesc classDesc, Method samMethod) {
-        Class<?>[] paramTypes = samMethod.getParameterTypes();
-        Class<?> returnType = samMethod.getReturnType();
-        int paramCount = paramTypes.length;
-
-        // Load this.methodHandle
-        cb.aload(0);
-        cb.getfield(classDesc, "methodHandle", CD_MethodHandle);
-
-        // Create Object[] array with size = 1 (extensionContext) + paramCount
-        cb.ldc(1 + paramCount);
-        cb.anewarray(CD_Object);
-
-        // array[0] = this.extensionContext
-        cb.dup();
-        cb.ldc(0);
-        cb.aload(0);
-        cb.getfield(classDesc, "extensionContext", CD_ExtensionContext);
-        cb.aastore();
-
-        // array[1..n] = method parameters (boxed if primitive)
-        int localSlot = 1;
-        for (int i = 0; i < paramCount; i++) {
-            cb.dup();
-            cb.ldc(i + 1);
-            Class<?> paramType = paramTypes[i];
-            localSlot = loadAndBox(cb, paramType, localSlot);
-            cb.aastore();
-        }
-
-        // Invoke methodHandle.invokeWithArguments(array)
-        cb.invokevirtual(CD_MethodHandle, "invokeWithArguments",
-            MethodTypeDesc.of(CD_Object, CD_Object.arrayType()));
-
-        // Handle return value
-        if (returnType == void.class) {
-            cb.pop();
-            cb.return_();
-        } else if (returnType.isPrimitive()) {
-            unboxAndReturn(cb, returnType);
-        } else {
-            cb.checkcast(ClassDesc.ofDescriptor(returnType.descriptorString()));
-            cb.areturn();
-        }
-    }
-
-    private static int loadAndBox(CodeBuilder cb, Class<?> type, int slot) {
-        if (type == int.class) {
-            cb.iload(slot);
-            cb.invokestatic(CD_Integer, "valueOf", MethodTypeDesc.of(CD_Integer, CD_int));
-            return slot + 1;
-        } else if (type == long.class) {
-            cb.lload(slot);
-            cb.invokestatic(CD_Long, "valueOf", MethodTypeDesc.of(CD_Long, CD_long));
-            return slot + 2;
-        } else if (type == double.class) {
-            cb.dload(slot);
-            cb.invokestatic(CD_Double, "valueOf", MethodTypeDesc.of(CD_Double, CD_double));
-            return slot + 2;
-        } else if (type == float.class) {
-            cb.fload(slot);
-            cb.invokestatic(CD_Float, "valueOf", MethodTypeDesc.of(CD_Float, CD_float));
-            return slot + 1;
-        } else if (type == boolean.class) {
-            cb.iload(slot);
-            cb.invokestatic(CD_Boolean, "valueOf", MethodTypeDesc.of(CD_Boolean, CD_boolean));
-            return slot + 1;
-        } else if (type == byte.class) {
-            cb.iload(slot);
-            cb.invokestatic(CD_Byte, "valueOf", MethodTypeDesc.of(CD_Byte, CD_byte));
-            return slot + 1;
-        } else if (type == short.class) {
-            cb.iload(slot);
-            cb.invokestatic(CD_Short, "valueOf", MethodTypeDesc.of(CD_Short, CD_short));
-            return slot + 1;
-        } else if (type == char.class) {
-            cb.iload(slot);
-            cb.invokestatic(CD_Character, "valueOf", MethodTypeDesc.of(CD_Character, CD_char));
-            return slot + 1;
-        } else {
-            cb.aload(slot);
-            return slot + 1;
-        }
-    }
-
-    private static void unboxAndReturn(CodeBuilder cb, Class<?> type) {
-        if (type == int.class) {
-            cb.checkcast(CD_Integer);
-            cb.invokevirtual(CD_Integer, "intValue", MethodTypeDesc.of(CD_int));
-            cb.ireturn();
-        } else if (type == long.class) {
-            cb.checkcast(CD_Long);
-            cb.invokevirtual(CD_Long, "longValue", MethodTypeDesc.of(CD_long));
-            cb.lreturn();
-        } else if (type == double.class) {
-            cb.checkcast(CD_Double);
-            cb.invokevirtual(CD_Double, "doubleValue", MethodTypeDesc.of(CD_double));
-            cb.dreturn();
-        } else if (type == float.class) {
-            cb.checkcast(CD_Float);
-            cb.invokevirtual(CD_Float, "floatValue", MethodTypeDesc.of(CD_float));
-            cb.freturn();
-        } else if (type == boolean.class) {
-            cb.checkcast(CD_Boolean);
-            cb.invokevirtual(CD_Boolean, "booleanValue", MethodTypeDesc.of(CD_boolean));
-            cb.ireturn();
-        } else if (type == byte.class) {
-            cb.checkcast(CD_Byte);
-            cb.invokevirtual(CD_Byte, "byteValue", MethodTypeDesc.of(CD_byte));
-            cb.ireturn();
-        } else if (type == short.class) {
-            cb.checkcast(CD_Short);
-            cb.invokevirtual(CD_Short, "shortValue", MethodTypeDesc.of(CD_short));
-            cb.ireturn();
-        } else if (type == char.class) {
-            cb.checkcast(CD_Character);
-            cb.invokevirtual(CD_Character, "charValue", MethodTypeDesc.of(CD_char));
-            cb.ireturn();
+            return lookup.findConstructor(lookup.lookupClass(), MethodType.methodType(void.class, MethodHandle.class, ExtensionContext.class))
+                         .asType(MethodType.methodType(iface, MethodHandle.class, ExtensionContext.class));
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to generate invoker for " + iface.getName(), e);
         }
     }
 
     private static Method findSamMethod(Class<?> iface) {
-        Method samMethod = null;
+        if (!iface.isInterface()) throw new IllegalArgumentException(iface + " is not an interface");
+        Method sam = null;
         for (Method m : iface.getMethods()) {
             if (Modifier.isAbstract(m.getModifiers()) && !isObjectMethod(m)) {
-                if (samMethod != null) {
-                    return null;
-                }
-                samMethod = m;
+                if (sam != null) throw new IllegalArgumentException(iface + " has multiple abstract methods");
+                sam = m;
             }
         }
-        return samMethod;
+        if (sam == null) throw new IllegalArgumentException(iface + " is not a SAM interface");
+        return sam;
     }
 
     private static boolean isObjectMethod(Method m) {
-        String name = m.getName();
-        Class<?>[] params = m.getParameterTypes();
-        if (name.equals("equals") && params.length == 1 && params[0] == Object.class) return true;
-        if (name.equals("hashCode") && params.length == 0) return true;
-        if (name.equals("toString") && params.length == 0) return true;
-        return false;
-    }
-
-    private static String getMethodDescriptor(Method m) {
-        StringBuilder sb = new StringBuilder("(");
-        for (Class<?> p : m.getParameterTypes()) {
-            sb.append(p.descriptorString());
-        }
-        sb.append(")");
-        sb.append(m.getReturnType().descriptorString());
-        return sb.toString();
+        return switch (m.getName()) {
+            case "equals" -> m.getParameterCount() == 1 && m.getParameterTypes()[0] == Object.class;
+            case "hashCode", "toString" -> m.getParameterCount() == 0;
+            default -> false;
+        };
     }
 }

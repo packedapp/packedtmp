@@ -50,9 +50,9 @@ public class ScTest2 extends BaseAssembly {
     public static class MuB {
 
         @DaemonJob
-        public void dae(DaemonJobContext sc) throws Exception    {
+        public void dae(DaemonJobContext sc) throws Exception {
             IO.println("Daemon");
-            throw new Exception();
+            throw new RuntimeException();
         }
     }
 }
