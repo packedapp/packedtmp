@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
@@ -98,7 +99,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     /** {@inheritDoc} */
-    @Override
     public Map<Class<?>, ContextTemplate> contexts() {
         HashMap<Class<?>, ContextTemplate> m = new HashMap<>();
         contexts.forEach(k -> m.put(k.contextClass(), k));
@@ -149,8 +149,8 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public PackedOperationTemplate withContext(ContextTemplate context) {
-        return new PackedBuilder(this).context(context).build();
+    public PackedOperationTemplate withContext(Class<? extends Context<?>> contextClass) {
+        return new PackedBuilder(this).context(contextClass).build();
     }
 
     /**
@@ -218,12 +218,12 @@ public final class PackedOperationTemplate implements OperationTemplate {
         }
 
         @Override
-        public PackedBuilder context(ContextTemplate context) {
-            PackedContextTemplate c = (PackedContextTemplate) context;
+        public PackedBuilder context(Class<? extends Context<?>> contextClass) {
+            PackedContextTemplate c = (PackedContextTemplate) PackedContextTemplate.of(contextClass);
             ArrayList<PackedContextTemplate> m = new ArrayList<>(contexts);
             for (PackedContextTemplate pct : m) {
                 if (pct.contextClass() == c.contextClass()) {
-                    throw new IllegalArgumentException("This template already contains the context " + context.contextClass());
+                    throw new IllegalArgumentException("This template already contains the context " + c.contextClass());
                 }
             }
             m.add(c);

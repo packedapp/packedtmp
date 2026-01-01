@@ -16,11 +16,9 @@
 package app.packed.bean;
 
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.Optional;
 
 import app.packed.context.Context;
-import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanTemplate;
 import sandbox.application.LifetimeTemplate;
@@ -78,8 +76,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
 //    /** {@return a list of the various lifetime operations for the descriptor's template.} */
 //    List<OperationTemplate> lifecycleOperations();
 
-    /** {@return contexts that the bean are in} */
-    Map<Class<?>, ContextTemplate> contexts();
+  //  Set<Class<? extends Context<?>>> contexts();
 
     /**
      * Normally a bean is constructed as the ben
@@ -124,11 +121,8 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
         @SuppressWarnings("exports")
         Builder lifetime(LifetimeTemplate lifetime);
 
-        Builder addContext(ContextTemplate context);
 
-        default Builder addContext(Class<? extends Context<?>> contextClass) {
-            return addContext(ContextTemplate.of(contextClass));
-        }
+        Builder addContext(Class<? extends Context<?>> contextClass);
 
         <T> Builder setLocal(BeanLocal<T> local, T value);
     }

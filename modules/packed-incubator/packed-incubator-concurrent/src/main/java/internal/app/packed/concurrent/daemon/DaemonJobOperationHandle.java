@@ -24,7 +24,6 @@ import app.packed.concurrent.DaemonJobConfiguration;
 import app.packed.concurrent.DaemonJobContext;
 import app.packed.concurrent.DaemonJobMirror;
 import app.packed.concurrent.ThreadKind;
-import app.packed.context.ContextTemplate;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
@@ -36,7 +35,7 @@ import internal.app.packed.concurrent.daemon.DaemonJobSidebean.DaemonOperationIn
 public final class DaemonJobOperationHandle extends ThreadedOperationHandle<DaemonJobConfiguration> {
 
     /** An operation template for a daemon job. */
-    private static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withContext(ContextTemplate.of(DaemonJobContext.class))
+    private static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withContext(DaemonJobContext.class)
             .withReturnIgnore();
 
     public boolean interruptOnStop;

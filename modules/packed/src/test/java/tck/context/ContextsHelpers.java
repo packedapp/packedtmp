@@ -17,7 +17,6 @@ package tck.context;
 
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.context.Context;
-import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import tck.AbstractBootstrapedAppTest;
@@ -29,14 +28,12 @@ public class ContextsHelpers {
 
     @AutoInject(introspector = HookTestingExtensionBeanIntrospector.class)
     public record NoImplContext(int i) implements Context<HookTestingExtension> {
-        /** A template. */
-        public static final ContextTemplate CT = ContextTemplate.of(NoImplContext.class);
 
         /** A simple operation with the context, that ignores return values. */
-        public static final OperationTemplate OT = OperationTemplate.defaults().withContext(NoImplContext.CT).withReturnIgnore();
+        public static final OperationTemplate OT = OperationTemplate.defaults().withContext(NoImplContext.class).withReturnIgnore();
 
         /** A simple operation with the context, that ignores return values. */
-        public static final OperationTemplate OTINT = OperationTemplate.defaults().withContext(NoImplContext.CT).withReturnType(int.class);
+        public static final OperationTemplate OTINT = OperationTemplate.defaults().withContext(NoImplContext.class).withReturnType(int.class);
     }
 
     public static void bindSimple(AbstractBootstrapedAppTest<?> t) {

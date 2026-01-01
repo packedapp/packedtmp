@@ -35,7 +35,7 @@ import sandbox.application.LifetimeTemplate;
 
 /** Implementation of {@link BeanTemplate}. */
 public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetime, @Nullable Class<?> createAs, Map<PackedBeanBuildLocal<?>, Object> locals,
-        @Nullable PackedOperationTemplate initializationTemplate, Map<Class<?>, ContextTemplate> contexts) implements BeanTemplate {
+        @Nullable PackedOperationTemplate initializationTemplate, Map<Class<?>, ContextTemplate> contextxs) implements BeanTemplate {
 
     public static PackedBuilder builder(BeanLifetime kind) {
         return new PackedBuilder(kind);
@@ -58,12 +58,6 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
     @Override
     public Optional<OperationTemplate> initializationX() {
         return Optional.ofNullable(initializationTemplate);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Map<Class<?>, ContextTemplate> contexts() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -121,9 +115,10 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
 
         /** {@inheritDoc} */
         @Override
-        public Builder addContext(ContextTemplate context) {
-            this.contexts.put(context.contextClass(), context);
+        public Builder addContext(Class<? extends Context<?>> contextClass) {
+            this.contexts.put(contextClass, ContextTemplate.of(contextClass));
             return this;
+
         }
     }
 }

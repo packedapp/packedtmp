@@ -34,7 +34,6 @@ import app.packed.bean.lifecycle.Stop;
 import app.packed.bean.lifecycle.StopContext;
 import app.packed.bean.lifecycle.StopOperationConfiguration;
 import app.packed.bean.lifecycle.StopOperationMirror;
-import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
@@ -165,10 +164,8 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
 
     public static final class StartOperationHandle extends LifecycleOperationHandle {
 
-        /** A context template for {@link StartContext}. */
-        private static final ContextTemplate CONTEXT_ON_START_TEMPLATE = ContextTemplate.of(StartContext.class);
         /** An operation template for {@link Start}. */
-        private static final OperationTemplate OPERATION_ON_START_TEMPLATE = OperationTemplate.builder().returnIgnore().context(CONTEXT_ON_START_TEMPLATE)
+        private static final OperationTemplate OPERATION_ON_START_TEMPLATE = OperationTemplate.builder().returnIgnore().context(StartContext.class)
                 .build();
 
         public boolean fork;
@@ -204,12 +201,10 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
 
     public static final class StopOperationHandle extends LifecycleOperationHandle {
 
-        /** A context template for {@link StopContext}. */
-        private static final ContextTemplate CONTEXT_ON_STOP_TEMPLATE = ContextTemplate.of(StopContext.class);
 
         /** An operation template for {@link Stop}. */
         private static final OperationTemplate OPERATION_ON_STOP_TEMPLATE = OperationTemplate.defaults().withReturnIgnore()
-                .withContext(CONTEXT_ON_STOP_TEMPLATE);
+                .withContext(StopContext.class);
 
         public boolean fork;
 

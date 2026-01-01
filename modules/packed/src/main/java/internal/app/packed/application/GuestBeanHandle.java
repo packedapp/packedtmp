@@ -47,7 +47,7 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
 
     /** A bean template for the guest bean. */
     public static final PackedBeanTemplate APPLICATION_GUEST_BEAN_TEMPLATE = PackedBeanTemplate.builder(BeanLifetime.UNMANAGED).initialization(
-            c -> c.withReturnTypeDynamic().withRaw().withContext(ApplicationLaunchContext.CONTEXT_TEMPLATE).withContext(PackedComponentHostContext.TEMPLATE))
+            c -> c.withReturnTypeDynamic().withRaw().withContext(ApplicationLaunchContext.class))
             .build();
 
     static final Set<Key<?>> KEYS = Set.of(Key.of(ApplicationMirror.class), Key.of(String.class), Key.of(ManagedLifecycle.class), Key.of(ServiceLocator.class));

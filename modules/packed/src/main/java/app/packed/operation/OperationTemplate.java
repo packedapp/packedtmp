@@ -18,9 +18,8 @@ package app.packed.operation;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.List;
-import java.util.Map;
 
-import app.packed.context.ContextTemplate;
+import app.packed.context.Context;
 import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
@@ -46,9 +45,6 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     // InvocationContexts? Or all contexts
     // SessionContext kan f.eks. komme fra en ExtensionContext
     // Men det er ikke et argument noget sted
-
-    // Replace With ContextTemplate.Descriptor
-    Map<Class<?>, ContextTemplate> contexts();
 
     List<Class<? extends Throwable>> allowedThrowables();
 
@@ -87,7 +83,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     OperationTemplate withAppendBeanInstance(Class<?> beanClass);
 
     // Hvad sker der naar den er i andre lifetimes?
-    OperationTemplate withContext(ContextTemplate context);
+    OperationTemplate withContext(Class<? extends Context<?>> context);
 
     OperationTemplate withRaw();
 
@@ -118,7 +114,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         OperationTemplate build();
 
         /** Adds a context to the operation template. */
-        Builder context(ContextTemplate context);
+        Builder context(Class<? extends Context<?>> context);
 
         /** Sets the return type of the operation. */
         Builder returnType(Class<?> type);
