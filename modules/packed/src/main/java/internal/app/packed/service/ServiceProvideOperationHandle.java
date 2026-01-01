@@ -20,17 +20,17 @@ import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.binding.Key;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import app.packed.service.Provide;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;
+import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
  *
  */
 public class ServiceProvideOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration>{
 
-    static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withReturnTypeDynamic();
+    static final PackedOperationTemplate OPERATION_TEMPLATE = PackedOperationTemplate.DEFAULTS.withReturnTypeDynamic();
 
     /**
      * @param installer

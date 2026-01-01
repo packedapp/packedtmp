@@ -72,7 +72,7 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
         private Class<?> createAs = null;
         private final HashMap<Class<? extends Context<?>>, ContextModel> contexts = new HashMap<>();
         private Map<PackedBeanBuildLocal<?>, Object> locals = Map.of();
-        private PackedOperationTemplate initializationTemplate = (PackedOperationTemplate) OperationTemplate.defaults();
+        private PackedOperationTemplate initializationTemplate = PackedOperationTemplate.DEFAULTS;
 
         PackedBuilder(BeanLifetime beanKind) {
             this.beanKind = beanKind;

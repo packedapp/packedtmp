@@ -37,9 +37,9 @@ import app.packed.bean.lifecycle.StopOperationMirror;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 import internal.app.packed.invoke.BeanLifecycleSupport;
+import internal.app.packed.operation.PackedOperationTemplate;
 
 /** An operation handle for lifecycle operation on a bean. */
 public abstract sealed class LifecycleOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration>
@@ -100,7 +100,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
     public static final class InitializeOperationHandle extends AbstractInitializingOperationHandle {
 
         /** An operation template for {@link Inject} and {@link Initialize}. */
-        private static final OperationTemplate OPERATION_LIFECYCLE_TEMPLATE = OperationTemplate.builder().returnIgnore().build();
+        private static final PackedOperationTemplate OPERATION_LIFECYCLE_TEMPLATE = PackedOperationTemplate.builder().returnIgnore().build();
 
         /**
          * @param installer
@@ -129,7 +129,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
     public static final class InjectOperationHandle extends AbstractInitializingOperationHandle {
 
         /** An operation template for {@link Inject} and {@link Initialize}. */
-        private static final OperationTemplate OPERATION_LIFECYCLE_TEMPLATE = OperationTemplate.builder().returnIgnore().build();
+        private static final PackedOperationTemplate OPERATION_LIFECYCLE_TEMPLATE = PackedOperationTemplate.builder().returnIgnore().build();
 
         private InjectOperationHandle(OperationInstaller installer) {
             super(installer, PackedBeanLifecycleKind.INJECT);
@@ -165,7 +165,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
     public static final class StartOperationHandle extends LifecycleOperationHandle {
 
         /** An operation template for {@link Start}. */
-        private static final OperationTemplate OPERATION_ON_START_TEMPLATE = OperationTemplate.builder().returnIgnore().context(StartContext.class)
+        private static final PackedOperationTemplate OPERATION_ON_START_TEMPLATE = PackedOperationTemplate.builder().returnIgnore().context(StartContext.class)
                 .build();
 
         public boolean fork;
@@ -203,7 +203,7 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
 
 
         /** An operation template for {@link Stop}. */
-        private static final OperationTemplate OPERATION_ON_STOP_TEMPLATE = OperationTemplate.defaults().withReturnIgnore()
+        private static final PackedOperationTemplate OPERATION_ON_STOP_TEMPLATE = PackedOperationTemplate.DEFAULTS.withReturnIgnore()
                 .withContext(StopContext.class);
 
         public boolean fork;

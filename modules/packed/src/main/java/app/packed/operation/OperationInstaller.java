@@ -19,6 +19,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint;
 import app.packed.namespace.NamespaceHandle;
 
@@ -29,6 +30,8 @@ import app.packed.namespace.NamespaceHandle;
  * {@link IllegalStateException}.
  */
 public interface OperationInstaller /* permits PackedOperationInstaller */ {
+
+    OperationInstaller addContext(Class<? extends Context<?>> contextClass);
 
     OperationInstaller attachToSidebean(SidebeanConfiguration<?> configuration);
 

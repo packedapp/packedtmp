@@ -15,10 +15,6 @@
  */
 package app.packed.operation;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.util.List;
-
 import app.packed.context.Context;
 import internal.app.packed.operation.PackedOperationTemplate;
 
@@ -37,56 +33,23 @@ import internal.app.packed.operation.PackedOperationTemplate;
 /// Mappers (fx sealed record faetter)... Du kan returner Foo, Void, Eller bla
 /// Sidecar extractor
 
+@Deprecated
 public sealed interface OperationTemplate permits PackedOperationTemplate {
 
-    // Skal hellere vaere BeanPackaging
-    int beanInstanceIndex();
-
-    // InvocationContexts? Or all contexts
-    // SessionContext kan f.eks. komme fra en ExtensionContext
-    // Men det er ikke et argument noget sted
-
-    List<Class<? extends Throwable>> allowedThrowables();
-
-    /**
-     * @return the method type representing the invocation
-     */
-    // Does not really work with dynamic return types();
-    MethodType invocationType();
-
-    default boolean newLifetime() {
-        return false;
-    }
-
     // Tror ikke laengere man kan lave dem direkte paa den her maade...
+    @Deprecated
     static OperationTemplate defaults() {
         return PackedOperationTemplate.DEFAULTS;
     }
 
-    static OperationTemplate of(Class<?> invokerInterface) {
-        return PackedOperationTemplate.DEFAULTS;
-    }
-
-    static OperationTemplate ofFunction(Class<?> functionalInterface, OperationType operationType) {
-        return ofFunction(MethodHandles.publicLookup(), functionalInterface, operationType);
-    }
-
-    static OperationTemplate ofFunction(MethodHandles.Lookup caller, Class<?> functionalInterface, OperationType operationType) {
-        throw new UnsupportedOperationException();
-    }
-
-    // requireBeanInstance() <- always 1 param
-    default OperationTemplate withAppendBeanInstance() {
-        return withAppendBeanInstance(Object.class);
-    }
-
-    OperationTemplate withAppendBeanInstance(Class<?> beanClass);
-
     // Hvad sker der naar den er i andre lifetimes?
+    @Deprecated
     OperationTemplate withContext(Class<? extends Context<?>> context);
 
+    @Deprecated
     OperationTemplate withRaw();
 
+    @Deprecated
     /** {@return an operation template that ignores any return value.} */
     // If you want to fail. Check return type
     // Isn't it just void???
@@ -94,102 +57,13 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     // which requires void return type
     OperationTemplate withReturnIgnore();
 
+    @Deprecated
     OperationTemplate withReturnType(Class<?> type);
 
     // Field type, Method return Type
     // The operation template will be re-adjusted before being used
 
+    @Deprecated
     OperationTemplate withReturnTypeDynamic();
-
-    OperationTemplate withAllowedThrowables(Class<? extends Throwable> allowed);
-
-    static Builder builder() {
-        return PackedOperationTemplate.builder();
-    }
-
-    /** A builder for {@link OperationTemplate}. */
-    sealed interface Builder permits PackedOperationTemplate.PackedBuilder {
-
-        /** {@return a new operation template} */
-        OperationTemplate build();
-
-        /** Adds a context to the operation template. */
-        Builder context(Class<? extends Context<?>> context);
-
-        /** Sets the return type of the operation. */
-        Builder returnType(Class<?> type);
-
-        /** Configures the operation to ignore any return value. */
-        Builder returnIgnore();
-
-        /** Configures the operation with a dynamic return type. */
-        Builder returnTypeDynamic();
-
-        //Builder returnAlternatives(Class<?> sealedClassWithAlternatives);
-
-        /** Configures the operation as raw. */
-        Builder raw();
-
-        /** Appends a bean instance parameter with the default Object class. */
-        default Builder appendBeanInstance() {
-            return appendBeanInstance(Object.class);
-        }
-
-        /** Appends a bean instance parameter with the specified class. */
-        Builder appendBeanInstance(Class<?> beanClass);
-
-        /** Adds allowed throwables to the operation. */
-        Builder allowedThrowables(Class<? extends Throwable> allowed);
-    }
-
-    /**
-    *
-    */
-
-    // Source
-    //// Method/Constructor
-    //// Field -> Get/Set/Invoke
-    //// Function / Op / MethodHandle
-
-    // "Targets"
-
-    // FullOp
-    // ChildOp
-    // DelegateTo
-    // (Bounded) EmbeddedOp (Er aldrig visible...
-
 }
 
-//Reserved arguments: ExtensionContext | Wirelet[] | BeanInstance
-//Free arguments available for hooks with the same extension type
-//Context
-
-////ErrorHandling <- er paa Operationen ikke lifetimen
-
-//InvocationSite, InvocationType, Invocation contexts
-
-//InvocationType
-//Context's
-//Name
-//Codegen Type... (MH I guess)
-
-//Tror invocation orderen er fixed for de forskellige typer...
-//Args er altid til sidst...
-
-//OT.forBeanOperation()
-//OT.forNewApplication()
-//OT.forNewContainer
-
-//IsComposite
-
-//EC? BeanInstance? [Context*] Speciel (fields)
-//
-//// 3 choices?
-//// No ErrorHandling (Exception will propagate directly)
-//// ParentHandling
-//// This errorHandler
-//
-//// All but noErrorHandling will install an outward interceptor
-//default OperationTemplate handleErrors(ErrorHandler errorHandler) {
-//    throw new UnsupportedOperationException();
-//}

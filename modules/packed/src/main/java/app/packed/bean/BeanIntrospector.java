@@ -58,6 +58,7 @@ import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariableUnwrapped;
 import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.accesshelper.AccessHelper;
 import internal.app.packed.util.accesshelper.BeanScanningAccessHandler;
 
@@ -603,7 +604,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
          *          and one for writing a field). You must create an operation per access mode instead. Also, there is currently
          *          no way to obtain a VarHandle for the underlying field
          */
-        OperationInstaller newOperation(OperationTemplate template, VarHandle.AccessMode accessMode);
+        OperationInstaller newOperation(VarHandle.AccessMode accessMode);
 
         /**
          * Creates a new operation that can write to a field.
@@ -702,6 +703,10 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
          *            a template for the operation
          * @return an operation installer
          */
+
+        default OperationInstaller newOperation() {
+            return newOperation(PackedOperationTemplate.DEFAULTS);
+        }
         OperationInstaller newOperation(OperationTemplate template);
 
         /** {@return the default type of operation that will be created.} */

@@ -22,6 +22,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
@@ -59,7 +60,7 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
     final ExtensionSetup operator;
 
     /** The template of the operation. */
-    final PackedOperationTemplate template;
+    PackedOperationTemplate template;
 
     public PackedOperationInstaller(PackedOperationTemplate template, OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
         this.template = template;
@@ -114,6 +115,13 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
             throw new IllegalStateException("A sidebean has already been attached");
         }
         attachToSidebean = BeanSetup.crack(requireNonNull(configuration));
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationInstaller addContext(Class<? extends Context<?>> contextClass) {
+        template = template.withContext(contextClass);
         return this;
     }
 }

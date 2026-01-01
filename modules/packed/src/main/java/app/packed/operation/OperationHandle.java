@@ -84,9 +84,7 @@ import internal.app.packed.util.accesshelper.OperationAccessHandler;
  * @see OperationalField#newOperation(java.lang.invoke.VarHandle.AccessMode)
  */
 //AllInit
-/// FooBean.init()
-/// TooBean.init1()
-/// TooBean.init12()
+/// FooBean.init() TooBean.init1() TooBean.init12()
 
 //Embedded (yes/no)
 //Top (yes/no)
@@ -276,7 +274,11 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     }
 
     public SidebeanAttachment sidebeanAttachment() {
-        return operation.attachment;
+        SidebeanAttachment attachment = operation.attachment;
+        if (attachment == null) {
+            throw new UnsupportedOperationException("Operation has not been attached to a sidebean");
+        }
+        return attachment;
     }
 
     /**
@@ -372,11 +374,12 @@ interface Zandbox {
         throw new UnsupportedOperationException();
     }
 
- // Hvad goer vi med annoteringer paa Field/Update???
- // Putter paa baade Variable og ReturnType???? Det vil jeg mene
+    // Hvad goer vi med annoteringer paa Field/Update???
+    // Putter paa baade Variable og ReturnType???? Det vil jeg mene
 
     // Must not have a classifier
     //// Will have a MH injected at runtime...
+
     // public void generateInto(InstanceBeanConfiguration<?> bean) {
     // generateInto(bean, Key.of(MethodHandle.class));
     // }
@@ -386,8 +389,7 @@ interface Zandbox {
     // throw new UnsupportedOperationException();
     // }
     //
-    //// Must not have a classifier
-    //// Will have a MH injected at runtime...
+    //// Must not have a classifier Will have a MH injected at runtime...
     //
     // public <T> T generateIntoWithAutoClassifier(InstanceBeanConfiguration<?> bean, Class<T> classifierType) {
     // return generateIntoWithAutoClassifier(bean, Key.of(MethodHandle.class), classifierType);
@@ -433,7 +435,7 @@ interface Zandbox {
     // Hmm, kan jo ikke bare tage en tilfaeldig...
     default void invokeFromAncestor(Extension<?> extension) {}
 
- //   default void invokeFromAncestor(ExtensionContext context) {}
+    // default void invokeFromAncestor(ExtensionContext context) {}
 
     // Can be used to optimize invocation...
     // Very advanced though
@@ -531,5 +533,5 @@ interface Zandbox {
 
     // If immutable... IDK
     // Fx fra mirrors. Har composite operations ogsaa templates???
-    //OperationTemplate template();
+    // OperationTemplate template();
 }

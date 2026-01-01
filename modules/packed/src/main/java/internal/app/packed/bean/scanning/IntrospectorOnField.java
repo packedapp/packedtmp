@@ -105,6 +105,9 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
         return newOperation(t, directMH, accessMode);
     }
 
+    private OperationInstaller newOperation(MethodHandle directMH, AccessMode accessMode) {
+        return newOperation(PackedOperationTemplate.builder().build(), directMH, accessMode);
+    }
     private OperationInstaller newOperation(OperationTemplate template, MethodHandle directMH, AccessMode accessMode) {
         PackedOperationTemplate t = (PackedOperationTemplate) template;
         OperationType ft = OperationType.fromField(member, accessMode);
@@ -115,14 +118,13 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
 
     /** {@inheritDoc} */
     @Override
-    public OperationInstaller newOperation(OperationTemplate template, VarHandle.AccessMode accessMode) {
-        requireNonNull(template, "template is null");
+    public OperationInstaller newOperation(VarHandle.AccessMode accessMode) {
         checkConfigurable();
 
         VarHandle varHandle = introspector.scanner.unreflectVarHandle(member);
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
 
-        return newOperation(template, mh, accessMode);
+        return newOperation(mh, accessMode);
     }
 
     /** {@inheritDoc} */

@@ -18,7 +18,6 @@ import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceNamespaceConfiguration;
@@ -27,6 +26,7 @@ import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.util.PackedServiceLocator;
 
 /**
@@ -63,7 +63,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
 
     static final BeanTemplate DEFAULT_BEAN = BeanTemplate.builder(BeanLifetime.SINGLETON)
-            .initialization(OperationTemplate.defaults().withReturnTypeDynamic())
+            .initialization(PackedOperationTemplate.DEFAULTS.withReturnTypeDynamic())
             .build();
 
     /**

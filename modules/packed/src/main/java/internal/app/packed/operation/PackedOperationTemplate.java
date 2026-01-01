@@ -78,8 +78,11 @@ public final class PackedOperationTemplate implements OperationTemplate {
         }
     }
 
+    public boolean newLifetime() {
+        return false;
+    }
+
     /** {@inheritDoc} */
-    @Override
     public List<Class<? extends Throwable>> allowedThrowables() {
         return allowedThrowables;
     }
@@ -91,13 +94,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public int beanInstanceIndex() {
-        throw new UnsupportedOperationException();
-//        return 0 pot.beanInstanceIndex;
-    }
-
-    /** {@inheritDoc} */
     public Map<Class<?>, ContextModel> contexts() {
         HashMap<Class<?>, ContextModel> m = new HashMap<>();
         contexts.forEach(k -> m.put(k.contextClass(), k));
@@ -105,7 +101,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     /** {@inheritDoc} */
-    @Override
     public MethodType invocationType() {
         return methodType;
     }
@@ -136,8 +131,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public OperationTemplate withAppendBeanInstance(Class<?> beanClass) {
+    public PackedOperationTemplate withAppendBeanInstance(Class<?> beanClass) {
         return new PackedBuilder(this).appendBeanInstance(beanClass).build();
     }
 
@@ -184,8 +178,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public OperationTemplate withAllowedThrowables(Class<? extends Throwable> allowed) {
+    public PackedOperationTemplate withAllowedThrowables(Class<? extends Throwable> allowed) {
         return new PackedBuilder(this).allowedThrowables(allowed).build();
     }
 
@@ -194,7 +187,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     /** Implementation of {@link OperationTemplate.Builder}. */
-    public static final class PackedBuilder implements OperationTemplate.Builder {
+    public static final class PackedBuilder  {
         private ReturnKind returnKind = ReturnKind.CLASS;
         private Class<?> returnClass = Object.class;
         private boolean extensionContextFlag = true;
@@ -216,7 +209,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
             this.allowedThrowables = template.allowedThrowables;
         }
 
-        @Override
         public PackedBuilder context(Class<? extends Context<?>> contextClass) {
             ContextModel c = ContextModel.of(contextClass);
             ArrayList<ContextModel> m = new ArrayList<>(contexts);
@@ -230,7 +222,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
             return this;
         }
 
-        @Override
         public PackedBuilder returnType(Class<?> type) {
             requireNonNull(type, "type is null");
             this.returnKind = ReturnKind.CLASS;
@@ -238,34 +229,29 @@ public final class PackedOperationTemplate implements OperationTemplate {
             return this;
         }
 
-        @Override
         public PackedBuilder returnIgnore() {
             this.returnKind = ReturnKind.IGNORE;
             this.returnClass = void.class;
             return this;
         }
 
-        @Override
         public PackedBuilder returnTypeDynamic() {
             this.returnKind = ReturnKind.DYNAMIC;
             this.returnClass = Object.class;
             return this;
         }
 
-        @Override
         public PackedBuilder raw() {
             this.returnKind = ReturnKind.IGNORE;
             this.extensionContextFlag = false;
             return this;
         }
 
-        @Override
         public PackedBuilder appendBeanInstance(Class<?> beanClass) {
             this.beanClass = beanClass;
             return this;
         }
 
-        @Override
         public PackedBuilder allowedThrowables(Class<? extends Throwable> allowed) {
             requireNonNull(allowed, "allowed is null");
             ArrayList<Class<? extends Throwable>> list = new ArrayList<>(allowedThrowables);
@@ -274,7 +260,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
             return this;
         }
 
-        @Override
         public PackedOperationTemplate build() {
             return new PackedOperationTemplate(returnKind, returnClass, extensionContextFlag, beanClass, contexts, args);
         }

@@ -205,7 +205,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
     // Used from export/provide
     private ServiceProvideOperationHandle instanceProvideOperation() {
-        PackedOperationTemplate template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(beanClass());
+        PackedOperationTemplate template = PackedOperationTemplate.DEFAULTS.withReturnType(beanClass());
 
         return template.newInstallerFromBeanAccess(OperationType.of(beanClass()), bean, bean.installedBy).install(ServiceProvideOperationHandle::new);
     }

@@ -96,6 +96,9 @@ public final class DaemonJobOperationHandle extends ThreadedOperationHandle<Daem
         ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(introspector.extensionHandle());
 
         DaemonJobOperationHandle handle = method.newOperation(OPERATION_TEMPLATE).attachToSidebean(sideBean).install(namespace, DaemonJobOperationHandle::new);
+
+
+//        DaemonJobOperationHandle handle = method.newOperation().addContext(DaemonJobContext.class).attachToSidebean(sideBean).install(namespace, DaemonJobOperationHandle::new);
         handle.threadKind = annotation.threadKind();
         handle.interruptOnStop = annotation.interruptOnStop();
     }

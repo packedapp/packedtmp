@@ -26,7 +26,6 @@ import app.packed.component.ComponentRealm;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
-import app.packed.operation.OperationTemplate;
 
 /**
  * A CLI domain is a domain where all CLI commands are unique. Typically there is never more than one per application.
@@ -66,7 +65,7 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
 
         // For each name check that it doesn't exists in commands already
         if (isInApplicationLifetime(extension)) {
-            h = method.newOperation(OperationTemplate.defaults()).install(i -> new CliCommandOperationHandle(i, this));
+            h = method.newOperation().install(i -> new CliCommandOperationHandle(i, this));
 
             // OperationTemplate.
             // h.namespace(this)

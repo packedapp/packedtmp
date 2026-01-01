@@ -20,17 +20,17 @@ import app.packed.binding.Key;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationTemplate;
 import app.packed.service.Export;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
  *
  */
 public class ServiceExportOperationHandle extends BaseExtensionOperationHandle<OperationConfiguration> {
 
-    static final OperationTemplate OPERATION_TEMPLATE = OperationTemplate.defaults().withReturnTypeDynamic();
+    static final PackedOperationTemplate OPERATION_TEMPLATE = PackedOperationTemplate.DEFAULTS.withReturnTypeDynamic();
 
     /**
      * @param installer
