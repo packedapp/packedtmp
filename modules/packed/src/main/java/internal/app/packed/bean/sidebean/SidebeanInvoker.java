@@ -15,6 +15,26 @@
  */
 package internal.app.packed.bean.sidebean;
 
+import static java.lang.constant.ConstantDescs.CD_Boolean;
+import static java.lang.constant.ConstantDescs.CD_Byte;
+import static java.lang.constant.ConstantDescs.CD_Character;
+import static java.lang.constant.ConstantDescs.CD_Double;
+import static java.lang.constant.ConstantDescs.CD_Float;
+import static java.lang.constant.ConstantDescs.CD_Integer;
+import static java.lang.constant.ConstantDescs.CD_Long;
+import static java.lang.constant.ConstantDescs.CD_MethodHandle;
+import static java.lang.constant.ConstantDescs.CD_Object;
+import static java.lang.constant.ConstantDescs.CD_Short;
+import static java.lang.constant.ConstantDescs.CD_int;
+import static java.lang.constant.ConstantDescs.CD_long;
+import static java.lang.constant.ConstantDescs.CD_double;
+import static java.lang.constant.ConstantDescs.CD_float;
+import static java.lang.constant.ConstantDescs.CD_boolean;
+import static java.lang.constant.ConstantDescs.CD_byte;
+import static java.lang.constant.ConstantDescs.CD_short;
+import static java.lang.constant.ConstantDescs.CD_char;
+import static java.lang.constant.ConstantDescs.CD_void;
+
 import java.lang.classfile.ClassFile;
 import java.lang.classfile.CodeBuilder;
 import java.lang.constant.ClassDesc;
@@ -36,9 +56,7 @@ public class SidebeanInvoker {
 
     private static final AtomicLong COUNTER = new AtomicLong();
 
-    private static final ClassDesc CD_MethodHandle = ClassDesc.of("java.lang.invoke.MethodHandle");
     private static final ClassDesc CD_ExtensionContext = ClassDesc.of("internal.app.packed.extension.ExtensionContext");
-    private static final ClassDesc CD_Object = ClassDesc.of("java.lang.Object");
 
     /**
      * Generates a MethodHandle that creates instances implementing the given SAM interface.
@@ -70,12 +88,12 @@ public class SidebeanInvoker {
             clb.withField("extensionContext", CD_ExtensionContext, ClassFile.ACC_PRIVATE | ClassFile.ACC_FINAL);
 
             // Constructor: (MethodHandle, ExtensionContext)
-            MethodTypeDesc ctorDesc = MethodTypeDesc.of(ClassDesc.ofDescriptor("V"), CD_MethodHandle, CD_ExtensionContext);
+            MethodTypeDesc ctorDesc = MethodTypeDesc.of(CD_void, CD_MethodHandle, CD_ExtensionContext);
             clb.withMethod("<init>", ctorDesc, ClassFile.ACC_PUBLIC, mb -> {
                 mb.withCode(cb -> {
                     // super()
                     cb.aload(0);
-                    cb.invokespecial(CD_Object, "<init>", MethodTypeDesc.of(ClassDesc.ofDescriptor("V")));
+                    cb.invokespecial(CD_Object, "<init>", MethodTypeDesc.of(CD_void));
 
                     // this.methodHandle = methodHandle
                     cb.aload(0);
@@ -167,43 +185,35 @@ public class SidebeanInvoker {
     private static int loadAndBox(CodeBuilder cb, Class<?> type, int slot) {
         if (type == int.class) {
             cb.iload(slot);
-            cb.invokestatic(ClassDesc.of("java.lang.Integer"), "valueOf",
-                MethodTypeDesc.of(ClassDesc.of("java.lang.Integer"), ClassDesc.ofDescriptor("I")));
+            cb.invokestatic(CD_Integer, "valueOf", MethodTypeDesc.of(CD_Integer, CD_int));
             return slot + 1;
         } else if (type == long.class) {
             cb.lload(slot);
-            cb.invokestatic(ClassDesc.of("java.lang.Long"), "valueOf",
-                MethodTypeDesc.of(ClassDesc.of("java.lang.Long"), ClassDesc.ofDescriptor("J")));
+            cb.invokestatic(CD_Long, "valueOf", MethodTypeDesc.of(CD_Long, CD_long));
             return slot + 2;
         } else if (type == double.class) {
             cb.dload(slot);
-            cb.invokestatic(ClassDesc.of("java.lang.Double"), "valueOf",
-                MethodTypeDesc.of(ClassDesc.of("java.lang.Double"), ClassDesc.ofDescriptor("D")));
+            cb.invokestatic(CD_Double, "valueOf", MethodTypeDesc.of(CD_Double, CD_double));
             return slot + 2;
         } else if (type == float.class) {
             cb.fload(slot);
-            cb.invokestatic(ClassDesc.of("java.lang.Float"), "valueOf",
-                MethodTypeDesc.of(ClassDesc.of("java.lang.Float"), ClassDesc.ofDescriptor("F")));
+            cb.invokestatic(CD_Float, "valueOf", MethodTypeDesc.of(CD_Float, CD_float));
             return slot + 1;
         } else if (type == boolean.class) {
             cb.iload(slot);
-            cb.invokestatic(ClassDesc.of("java.lang.Boolean"), "valueOf",
-                MethodTypeDesc.of(ClassDesc.of("java.lang.Boolean"), ClassDesc.ofDescriptor("Z")));
+            cb.invokestatic(CD_Boolean, "valueOf", MethodTypeDesc.of(CD_Boolean, CD_boolean));
             return slot + 1;
         } else if (type == byte.class) {
             cb.iload(slot);
-            cb.invokestatic(ClassDesc.of("java.lang.Byte"), "valueOf",
-                MethodTypeDesc.of(ClassDesc.of("java.lang.Byte"), ClassDesc.ofDescriptor("B")));
+            cb.invokestatic(CD_Byte, "valueOf", MethodTypeDesc.of(CD_Byte, CD_byte));
             return slot + 1;
         } else if (type == short.class) {
             cb.iload(slot);
-            cb.invokestatic(ClassDesc.of("java.lang.Short"), "valueOf",
-                MethodTypeDesc.of(ClassDesc.of("java.lang.Short"), ClassDesc.ofDescriptor("S")));
+            cb.invokestatic(CD_Short, "valueOf", MethodTypeDesc.of(CD_Short, CD_short));
             return slot + 1;
         } else if (type == char.class) {
             cb.iload(slot);
-            cb.invokestatic(ClassDesc.of("java.lang.Character"), "valueOf",
-                MethodTypeDesc.of(ClassDesc.of("java.lang.Character"), ClassDesc.ofDescriptor("C")));
+            cb.invokestatic(CD_Character, "valueOf", MethodTypeDesc.of(CD_Character, CD_char));
             return slot + 1;
         } else {
             cb.aload(slot);
@@ -213,44 +223,36 @@ public class SidebeanInvoker {
 
     private static void unboxAndReturn(CodeBuilder cb, Class<?> type) {
         if (type == int.class) {
-            cb.checkcast(ClassDesc.of("java.lang.Integer"));
-            cb.invokevirtual(ClassDesc.of("java.lang.Integer"), "intValue",
-                MethodTypeDesc.of(ClassDesc.ofDescriptor("I")));
+            cb.checkcast(CD_Integer);
+            cb.invokevirtual(CD_Integer, "intValue", MethodTypeDesc.of(CD_int));
             cb.ireturn();
         } else if (type == long.class) {
-            cb.checkcast(ClassDesc.of("java.lang.Long"));
-            cb.invokevirtual(ClassDesc.of("java.lang.Long"), "longValue",
-                MethodTypeDesc.of(ClassDesc.ofDescriptor("J")));
+            cb.checkcast(CD_Long);
+            cb.invokevirtual(CD_Long, "longValue", MethodTypeDesc.of(CD_long));
             cb.lreturn();
         } else if (type == double.class) {
-            cb.checkcast(ClassDesc.of("java.lang.Double"));
-            cb.invokevirtual(ClassDesc.of("java.lang.Double"), "doubleValue",
-                MethodTypeDesc.of(ClassDesc.ofDescriptor("D")));
+            cb.checkcast(CD_Double);
+            cb.invokevirtual(CD_Double, "doubleValue", MethodTypeDesc.of(CD_double));
             cb.dreturn();
         } else if (type == float.class) {
-            cb.checkcast(ClassDesc.of("java.lang.Float"));
-            cb.invokevirtual(ClassDesc.of("java.lang.Float"), "floatValue",
-                MethodTypeDesc.of(ClassDesc.ofDescriptor("F")));
+            cb.checkcast(CD_Float);
+            cb.invokevirtual(CD_Float, "floatValue", MethodTypeDesc.of(CD_float));
             cb.freturn();
         } else if (type == boolean.class) {
-            cb.checkcast(ClassDesc.of("java.lang.Boolean"));
-            cb.invokevirtual(ClassDesc.of("java.lang.Boolean"), "booleanValue",
-                MethodTypeDesc.of(ClassDesc.ofDescriptor("Z")));
+            cb.checkcast(CD_Boolean);
+            cb.invokevirtual(CD_Boolean, "booleanValue", MethodTypeDesc.of(CD_boolean));
             cb.ireturn();
         } else if (type == byte.class) {
-            cb.checkcast(ClassDesc.of("java.lang.Byte"));
-            cb.invokevirtual(ClassDesc.of("java.lang.Byte"), "byteValue",
-                MethodTypeDesc.of(ClassDesc.ofDescriptor("B")));
+            cb.checkcast(CD_Byte);
+            cb.invokevirtual(CD_Byte, "byteValue", MethodTypeDesc.of(CD_byte));
             cb.ireturn();
         } else if (type == short.class) {
-            cb.checkcast(ClassDesc.of("java.lang.Short"));
-            cb.invokevirtual(ClassDesc.of("java.lang.Short"), "shortValue",
-                MethodTypeDesc.of(ClassDesc.ofDescriptor("S")));
+            cb.checkcast(CD_Short);
+            cb.invokevirtual(CD_Short, "shortValue", MethodTypeDesc.of(CD_short));
             cb.ireturn();
         } else if (type == char.class) {
-            cb.checkcast(ClassDesc.of("java.lang.Character"));
-            cb.invokevirtual(ClassDesc.of("java.lang.Character"), "charValue",
-                MethodTypeDesc.of(ClassDesc.ofDescriptor("C")));
+            cb.checkcast(CD_Character);
+            cb.invokevirtual(CD_Character, "charValue", MethodTypeDesc.of(CD_char));
             cb.ireturn();
         }
     }
