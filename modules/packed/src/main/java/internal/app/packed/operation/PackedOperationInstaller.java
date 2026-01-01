@@ -30,6 +30,7 @@ import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
@@ -151,6 +152,19 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
     @Override
     public OperationInstaller returnType(Class<?> type) {
         return template(template.withReturnType(type));
+    }
 
+    public static PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle directMH, OperationMemberTarget<?> target,
+            OperationType operationType) {
+        return new PackedOperationInstaller(PackedOperationTemplate.DEFAULTS, operationType, extension.scanner.bean, extension.extension()) {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public final <H extends OperationHandle<?>> H install(Function<? super OperationInstaller, H> handleFactory) {
+                OperationSetup operation = newOperationFromMember(target, directMH, handleFactory);
+                extension.scanner.unBoundOperations.add(operation);
+                return (H) operation.handle();
+            }
+        };
     }
 }

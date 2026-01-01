@@ -2,21 +2,16 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import app.packed.context.Context;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 import internal.app.packed.context.ContextModel;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.extension.ExtensionSetup;
@@ -102,20 +97,6 @@ public final class PackedOperationTemplate {
     /** {@inheritDoc} */
     public MethodType invocationType() {
         return methodType;
-    }
-
-    public static PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle directMH, OperationMemberTarget<?> target,
-            OperationType operationType) {
-        return new PackedOperationInstaller(PackedOperationTemplate.DEFAULTS, operationType, extension.scanner.bean, extension.extension()) {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public final <H extends OperationHandle<?>> H install(Function<? super OperationInstaller, H> handleFactory) {
-                OperationSetup operation = newOperationFromMember(target, directMH, handleFactory);
-                extension.scanner.unBoundOperations.add(operation);
-                return (H) operation.handle();
-            }
-        };
     }
 
     public PackedOperationInstaller newInstaller(OperationType operationType, BeanSetup bean, ExtensionSetup operator) {

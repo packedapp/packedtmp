@@ -31,7 +31,7 @@ import app.packed.util.AnnotationList;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedFieldCache;
 import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
-import internal.app.packed.operation.PackedOperationTemplate;
+import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** Implementation of {@link BeanIntrospector.OnField}. */
@@ -97,7 +97,7 @@ public final class IntrospectorOnField extends IntrospectorOnMember<Field> imple
         OperationType ft = OperationType.fromField(member, accessMode);
 
         // We should be able to create the method handle lazily
-        return PackedOperationTemplate.newInstaller(introspector, directMH, new OperationFieldTarget(member, accessMode), ft);
+        return PackedOperationInstaller.newInstaller(introspector, directMH, new OperationFieldTarget(member, accessMode), ft);
     }
 
     /** {@inheritDoc} */

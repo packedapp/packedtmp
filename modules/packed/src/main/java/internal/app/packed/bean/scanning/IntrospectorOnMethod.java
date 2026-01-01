@@ -25,7 +25,7 @@ import app.packed.binding.Key;
 import app.packed.operation.OperationInstaller;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedMethodCache;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
-import internal.app.packed.operation.PackedOperationTemplate;
+import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** Internal implementation of BeanMethod. Discard after use. */
@@ -50,7 +50,7 @@ public final class IntrospectorOnMethod extends IntrospectorOnExecutable<Method>
         MethodHandle directMH = introspector.scanner.unreflectMethod(member);
 
         // We should be able to create this lazily
-        return PackedOperationTemplate.newInstaller(introspector, directMH, new OperationMethodTarget(member), type);
+        return PackedOperationInstaller.newInstaller(introspector, directMH, new OperationMethodTarget(member), type);
     }
 
     /** {@inheritDoc} */
