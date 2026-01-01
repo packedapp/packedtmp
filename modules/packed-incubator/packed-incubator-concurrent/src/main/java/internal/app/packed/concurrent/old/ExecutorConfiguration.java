@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.concurrent;
+package internal.app.packed.concurrent.old;
 
-import java.time.Duration;
+import java.util.concurrent.ExecutorService;
 
 /**
  *
  */
+public record ExecutorConfiguration(ExecutorService es, boolean shutdownOnExit) {
 
-public record ScheduleImpl(Duration d) {
-
- }
+}

@@ -34,16 +34,23 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 public sealed interface DaemonJobContext extends Context<BaseExtension> permits DaemonJobSidebean {
 
     /**
-     * @return
-     *
-     * The annotated method should exit when this method returns true.
+     * @return The annotated method should exit when this method returns true.
      */
     boolean isShutdown();
 
-    // Daemons should wait using this method
-    void awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException;
-
-    void awaitShutdown() throws InterruptedException;
+    /**
+     * Blocks until the bean has been shutdown, or the timeout occurs, or the current thread is interrupted, whichever
+     * happens first.
+     *
+     * @param timeout
+     *            the maximum time to wait
+     * @param unit
+     *            the time unit of the timeout argument
+     * @return {@code true} if this bean has terminated and {@code false} if the timeout elapsed before termination
+     * @throws InterruptedException
+     *             if interrupted while waiting
+     */
+    boolean awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException;
 }
 
 final class DaemonJobContextBeanIntrospector extends BaseExtensionBeanIntrospector {

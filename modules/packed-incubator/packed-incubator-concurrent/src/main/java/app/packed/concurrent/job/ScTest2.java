@@ -15,6 +15,8 @@
  */
 package app.packed.concurrent.job;
 
+import java.util.concurrent.TimeUnit;
+
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.concurrent.DaemonJob;
@@ -51,8 +53,9 @@ public class ScTest2 extends BaseAssembly {
 
         @DaemonJob
         public void dae(DaemonJobContext sc) throws Exception {
-            IO.println("Daemon");
-            throw new RuntimeException();
+            while(sc.awaitShutdown(1, TimeUnit.SECONDS)) {
+                IO.println("Daemon");
+            }
         }
     }
 }

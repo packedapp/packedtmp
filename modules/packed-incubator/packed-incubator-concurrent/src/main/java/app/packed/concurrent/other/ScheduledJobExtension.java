@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 
 import app.packed.assembly.Assembly;
 import app.packed.bean.BeanIntrospector;
-import app.packed.concurrent.cron.CronJob;
+import app.packed.concurrent.CronJob;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
 import app.packed.operation.Op;

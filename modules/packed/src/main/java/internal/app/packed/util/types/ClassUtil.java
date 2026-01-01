@@ -7,11 +7,8 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
-import java.util.function.Supplier;
 
-import app.packed.build.Mirror;
 import app.packed.runtime.errorhandling.ErrorProcessor;
-import app.packed.util.Nullable;
 import internal.app.packed.util.StringFormatter;
 
 /** Various utility methods for working {@link Class classes}. */
@@ -154,27 +151,27 @@ public class ClassUtil {
         if (primitiveClass == void.class) return Void.class;
         return primitiveClass;
     }
-
-    public static <T extends Mirror> T newMirror2(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
-        // Create a new BeanMirror
-        if (specializedSupplier == null) {
-            return supplier.get();
-        }
-        T mirror = specializedSupplier.get();
-        if (mirror == null) {
-            throw new NullPointerException(specializedSupplier + " returned a null instead of an " + t.getSimpleName() + " instance");
-        }
-        return t.cast(mirror);
-    }
-    public static <T extends Mirror> T newMirror(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
-        // Create a new BeanMirror
-        if (specializedSupplier == null) {
-            return supplier.get();
-        }
-        T mirror = specializedSupplier.get();
-        if (mirror == null) {
-            throw new NullPointerException(specializedSupplier + " returned a null instead of an " + t.getSimpleName() + " instance");
-        }
-        return t.cast(mirror);
-    }
+//
+//    public static <T extends Mirror> T newMirror2(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
+//        // Create a new BeanMirror
+//        if (specializedSupplier == null) {
+//            return supplier.get();
+//        }
+//        T mirror = specializedSupplier.get();
+//        if (mirror == null) {
+//            throw new NullPointerException(specializedSupplier + " returned a null instead of an " + t.getSimpleName() + " instance");
+//        }
+//        return t.cast(mirror);
+//    }
+//    public static <T extends Mirror> T newMirror(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
+//        // Create a new BeanMirror
+//        if (specializedSupplier == null) {
+//            return supplier.get();
+//        }
+//        T mirror = specializedSupplier.get();
+//        if (mirror == null) {
+//            throw new NullPointerException(specializedSupplier + " returned a null instead of an " + t.getSimpleName() + " instance");
+//        }
+//        return t.cast(mirror);
+//    }
 }

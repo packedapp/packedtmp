@@ -25,7 +25,7 @@ import internal.app.packed.concurrent.daemon.DaemonJobSidebean.DaemonOperationIn
 /**
  *
  */
-public final class DaemonJobSidebeanWithManager {
+public final class DaemonJobSidebeanWithoutManager {
 
     volatile Thread thread;
 
@@ -35,7 +35,8 @@ public final class DaemonJobSidebeanWithManager {
 
     final DaemonOperationInvoker invoker;
 
-    public DaemonJobSidebeanWithManager(DaemonJobRuntimeManager manager, @SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonOperationInvoker invoker) {
+    public DaemonJobSidebeanWithoutManager(@SidebeanBinding ThreadFactory factory,
+            @SidebeanBinding DaemonOperationInvoker invoker) {
         this.factory = requireNonNull(factory);
         this.invoker = requireNonNull(invoker);
     }

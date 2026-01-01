@@ -20,7 +20,6 @@ package app.packed.concurrent.other;
  */
 //@OnExtensionServiceBeanTrigger(in = BaseExtension.class)
 public final class PackedSchedulingContext implements SchedulingContext {
-    SchedulingHistory history;
 
     /** {@inheritDoc} */
     @Override

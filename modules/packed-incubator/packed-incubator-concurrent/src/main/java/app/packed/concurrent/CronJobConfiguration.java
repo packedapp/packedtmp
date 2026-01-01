@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.concurrent;
-
-import java.util.concurrent.ExecutorService;
+package app.packed.concurrent;
 
 /**
  *
  */
-public record ExecutorConfiguration(ExecutorService es, boolean shutdownOnExit) {
+public class CronJobConfiguration {
 
 }

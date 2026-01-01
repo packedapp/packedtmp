@@ -1,101 +1,93 @@
-/*
- * Copyright (c) 2008 Kasper Nielsen.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package internal.app.packed.concurrent.daemon;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import app.packed.bean.lifecycle.Start;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.bean.sidebean.SidebeanBinding;
 import app.packed.concurrent.DaemonJobContext;
 
-/**
- *
- */
 public final class DaemonJobSidebean implements DaemonJobContext {
+
+    /** A latch that is counted down when the daemon is requested to stop. */
+    private final CountDownLatch shutdownLatch = new CountDownLatch(1);
+
+    /** Tracks if the stop lifecycle has been initiated. */
+    private final AtomicBoolean isShutdown = new AtomicBoolean(false);
+
+    private final ThreadFactory factory;
+    private final DaemonOperationInvoker invoker;
+    private final DaemonJobRuntimeManager manager;
+
+    /** Configuration: should we interrupt the thread when stopping? */
+    private final boolean interruptOnShutdown;
 
     private volatile Thread thread;
 
-    private volatile boolean isShutdown;
-
-    private final ThreadFactory factory;
-
-    private final DaemonOperationInvoker invoker;
-
-    public DaemonJobSidebean(@SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonOperationInvoker invoker) {
+    public DaemonJobSidebean(DaemonJobRuntimeManager manager, @SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonOperationInvoker invoker) {
         this.factory = requireNonNull(factory);
         this.invoker = requireNonNull(invoker);
+        this.manager = requireNonNull(manager);
+        // This could be passed in via a configuration object/annotation
+        this.interruptOnShutdown = true;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void awaitShutdown() throws InterruptedException {
-        IO.println("AWAIT");
+    public boolean awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException {
+        if (isShutdown()) {
+            return false;
+        }
+        return !shutdownLatch.await(timeout, unit);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException {
-        IO.println("AWAIT");
-    }
-
-    /** {@inheritDoc} */
     @Override
     public boolean isShutdown() {
-        return false;
+        return isShutdown.get();
     }
 
-    ///////////////// Lifecycle
     @Start
     protected void onStart() {
-        System.out.println("Starting daemon");
-        thread = factory.newThread(new Runnable() {
-            @Override
-            public void run() {
-                while (!isShutdown) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    try {
-                        invoker.invoke(DaemonJobSidebean.this);
-                    } catch (Throwable e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
+        thread = factory.newThread(() -> {
+            manager.deamons.put(Thread.currentThread(), this);
+            try {
+                invoker.invoke(this);
+            } catch (InterruptedException e) {
+                // Expected on shutdown if interruptOnShutdown is true
+                Thread.currentThread().interrupt();
+            } catch (Throwable e) {
+                // Production logging instead of e.printStackTrace()
+                System.err.println("Daemon thread terminated unexpectedly: " + e.getMessage());
+            } finally {
+                // Ensure cleanup always happens
+                isShutdown.set(true);
+                shutdownLatch.countDown();
+                manager.deamons.remove(Thread.currentThread());
             }
         });
 
+        if (thread == null) {
+            throw new IllegalStateException("ThreadFactory returned null");
+        }
         thread.start();
     }
 
     @Stop
     protected void onStop() {
-        System.out.println("Stopping daemon");
+        // Atomic transition to shutdown state
+        if (isShutdown.compareAndSet(false, true)) {
+            // 1. Trigger the latch so awaitShutdown() returns false immediately
+            shutdownLatch.countDown();
 
-        isShutdown = true;
-        Thread t = thread;
-        if (t != null) {
-            // Maybe add T to some application global awaiting queue...
+            // 2. Interrupt the thread if the user wants to break out of blocking I/O
+            Thread t = thread;
+            if (t != null && interruptOnShutdown) {
+                t.interrupt();
+            }
         }
     }
 

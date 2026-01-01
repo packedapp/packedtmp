@@ -15,8 +15,6 @@
  */
 package app.packed.bean.sidebean;
 
-import java.util.function.Supplier;
-
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.binding.Key;
@@ -39,7 +37,9 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
     public void initOnly() {
         // Ideen er egentlig at vi ikke beholder en instans af sidebeanen
         // Men den kalder ind i en anden klasse med den som parameter
-        // Problemet er lidt af vi aldrig kan afregistrer den. Saa ved ikke om den er brugbar
+        // Problemet er lidt af vi aldrig kan afregistrer den.
+
+        // Brugbart fx fra CLI
     }
 
 //    /**
@@ -68,11 +68,11 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
         }
     }
 
-    public <K> void sidebeanBindComputedConstant(Class<K> key, Supplier<? extends K> supplier) {
-        sidebeanBindComputedConstant(Key.of(key), supplier);
+    public <K> void sidebeanBindComputedConstant(Class<K> key) {
+        sidebeanBindComputedConstant(Key.of(key));
     }
 
-    public <K> void sidebeanBindComputedConstant(Key<K> key, Supplier<? extends K> supplier) {
+    public <K> void sidebeanBindComputedConstant(Key<K> key) {
         checkIsConfigurable();
 //        handle.bindCodeGenerator(key, supplier);
     }
@@ -91,7 +91,7 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
     }
 
     // bindAbstractInvoker???
-    public void sidebeanBindInvoker(Class<?> invokerClass) {
+    public void sidebeanInvokeAs(Class<?> invokerClass) {
         Key<?> invokerKey = Key.of(invokerClass);
         if (handle.sim != null) {
             throw new IllegalStateException();

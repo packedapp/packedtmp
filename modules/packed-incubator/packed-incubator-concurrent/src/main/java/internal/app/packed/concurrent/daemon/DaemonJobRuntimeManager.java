@@ -18,22 +18,23 @@ package internal.app.packed.concurrent.daemon;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.bean.lifecycle.Start;
+import app.packed.bean.lifecycle.Stop;
 
 // Vi har jo strengt taget ikke brug for denne laengere
 // Med mindre vi vil se en liste af alle daemons
 // Taenker vi maaske ogsaa kan dele en ConcurrentFaetter klasse nu..
 public final class DaemonJobRuntimeManager {
 
-    // ConcurrentSet
+    /** All active daemon jobs. */
     final ConcurrentHashMap<Thread, DaemonJobSidebean> deamons = new ConcurrentHashMap<>();
 
     @Start
     public void onStart() {
-        IO.println("On Start");
+        IO.println("On Start Daemon Manager");
     }
 
-    @Start
+    @Stop
     public void onStop() {
-        IO.println("Bye");
+        IO.println("On Stop Daemon Manager");
     }
 }

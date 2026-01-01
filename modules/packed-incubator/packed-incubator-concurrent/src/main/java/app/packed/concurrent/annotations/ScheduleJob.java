@@ -27,8 +27,8 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import app.packed.concurrent.JobExtension;
 import app.packed.concurrent.job2.impl.ScheduledOperationHandle;
-import internal.app.packed.concurrent.ScheduleImpl;
 import internal.app.packed.concurrent.ThreadNamespaceHandle;
+import internal.app.packed.concurrent.old.ScheduleImpl;
 
 /**
  * <p>
@@ -78,7 +78,7 @@ final class JobExtensionBeanIntrospector extends BeanIntrospector<JobExtension> 
             ThreadNamespaceHandle namespace = null;// main();
 
             // Install the operation
-            ScheduledOperationHandle h = on.newOperation().returnIgnore().install(namespace,
+            ScheduledOperationHandle h = on.newOperation().install(namespace,
                     ScheduledOperationHandle::new);
 
             // Configure the handle

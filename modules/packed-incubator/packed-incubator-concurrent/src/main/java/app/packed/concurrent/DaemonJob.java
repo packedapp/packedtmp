@@ -20,7 +20,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
@@ -89,11 +88,11 @@ final class DaemonJobBeanIntrospector extends BaseExtensionBeanIntrospector {
 
 //Tror det er noget den annoterede metode kan returnere
 
-interface DaemonJobAction {
-
-    // The one problem here is cleanup...
-    // Do we want a stop method? Probably not
-    static DaemonJobAction sleep(long duration, TimeUnit timeUnit) {
-        throw new UnsupportedOperationException();
-    }
-}
+//interface DaemonJobAction {
+//
+//    // The one problem here is cleanup...
+//    // Do we want a stop method? Probably not
+//    static DaemonJobAction sleep(long duration, TimeUnit timeUnit) {
+//        throw new UnsupportedOperationException();
+//    }
+//}

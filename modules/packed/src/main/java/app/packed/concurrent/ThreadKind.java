@@ -15,6 +15,8 @@
  */
 package app.packed.concurrent;
 
+import java.util.concurrent.ThreadFactory;
+
 /**
  *
  * <p>
@@ -31,5 +33,13 @@ public enum ThreadKind {
     DAEMON_THREAD,
 
     /** A virtual thread */
-    VIRTUAL_THREAD
+    VIRTUAL_THREAD;
+
+    public ThreadFactory threadFactory() {
+        return switch (this) {
+        case DAEMON_THREAD -> Thread.ofPlatform().daemon().factory();
+        case PLATFORM_THREAD -> Thread.ofPlatform().factory();
+        case VIRTUAL_THREAD -> Thread.ofVirtual().factory();
+        };
+    }
 }

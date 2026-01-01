@@ -21,6 +21,7 @@ import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.classfile.ClassFile.ACC_SYNTHETIC;
 import static java.lang.constant.ConstantDescs.CD_MethodHandle;
 import static java.lang.constant.ConstantDescs.CD_Object;
+import static java.lang.constant.ConstantDescs.CD_Throwable;
 import static java.lang.constant.ConstantDescs.CD_void;
 import static java.lang.constant.ConstantDescs.INIT_NAME;
 
@@ -50,15 +51,14 @@ import internal.app.packed.extension.ExtensionContext;
  */
 public final class SidebeanInvokerModel {
 
-    private static final ClassDesc CD_ExtensionContext = ClassDesc.of(ExtensionContext.class.getName());
-    private static final ClassDesc CD_UndeclaredThrowableException = ClassDesc.of(UndeclaredThrowableException.class.getName());
-    private static final ClassDesc CD_RuntimeException = ClassDesc.of(RuntimeException.class.getName());
     private static final ClassDesc CD_Error = ClassDesc.of(Error.class.getName());
-    private static final ClassDesc CD_Throwable = ClassDesc.of(Throwable.class.getName());
-
-    public final Class<?> iface;
+    private static final ClassDesc CD_ExtensionContext = ClassDesc.of(ExtensionContext.class.getName());
+    private static final ClassDesc CD_RuntimeException = ClassDesc.of(RuntimeException.class.getName());
+    private static final ClassDesc CD_UndeclaredThrowableException = ClassDesc.of(UndeclaredThrowableException.class.getName());
 
     private final Supplier<MethodHandle> constructor;
+
+    public final Class<?> iface;
 
     private final Method method;
 
@@ -68,7 +68,7 @@ public final class SidebeanInvokerModel {
         this.constructor = StableValue.supplier(() -> generateInvoker(iface, method));
     }
 
-    public MethodHandle invokerConstructor() {
+    public MethodHandle constructor() {
         return constructor.get();
     }
 
@@ -76,10 +76,20 @@ public final class SidebeanInvokerModel {
         return method.getReturnType();
     }
 
-    public static SidebeanInvokerModel of(Class<?> iface) {
-        Method sam = findSamMethod(iface);
-        SidebeanInvokerModel sim = new SidebeanInvokerModel(iface, sam);
-        return sim;
+    private static Method findSamMethod(Class<?> iface) {
+        if (!iface.isInterface())
+            throw new IllegalArgumentException(iface + " is not an interface");
+        Method sam = null;
+        for (Method m : iface.getMethods()) {
+            if (Modifier.isAbstract(m.getModifiers()) && !isObjectMethod(m)) {
+                if (sam != null)
+                    throw new IllegalArgumentException(iface + " has multiple abstract methods");
+                sam = m;
+            }
+        }
+        if (sam == null)
+            throw new IllegalArgumentException(iface + " is not a SAM interface");
+        return sam;
     }
 
     static MethodHandle generateInvoker(Class<?> iface) {
@@ -189,27 +199,17 @@ public final class SidebeanInvokerModel {
         }
     }
 
-    private static Method findSamMethod(Class<?> iface) {
-        if (!iface.isInterface())
-            throw new IllegalArgumentException(iface + " is not an interface");
-        Method sam = null;
-        for (Method m : iface.getMethods()) {
-            if (Modifier.isAbstract(m.getModifiers()) && !isObjectMethod(m)) {
-                if (sam != null)
-                    throw new IllegalArgumentException(iface + " has multiple abstract methods");
-                sam = m;
-            }
-        }
-        if (sam == null)
-            throw new IllegalArgumentException(iface + " is not a SAM interface");
-        return sam;
-    }
-
     private static boolean isObjectMethod(Method m) {
         return switch (m.getName()) {
         case "equals" -> m.getParameterCount() == 1 && m.getParameterTypes()[0] == Object.class;
         case "hashCode", "toString" -> m.getParameterCount() == 0;
         default -> false;
         };
+    }
+
+    public static SidebeanInvokerModel of(Class<?> iface) {
+        Method sam = findSamMethod(iface);
+        SidebeanInvokerModel sim = new SidebeanInvokerModel(iface, sam);
+        return sim;
     }
 }

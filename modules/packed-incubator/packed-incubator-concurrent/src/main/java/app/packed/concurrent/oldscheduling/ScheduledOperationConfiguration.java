@@ -20,7 +20,7 @@ import java.time.Duration;
 import app.packed.concurrent.job2.impl.ScheduledOperationHandle;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
-import internal.app.packed.concurrent.ScheduleImpl;
+import internal.app.packed.concurrent.old.ScheduleImpl;
 
 /**
  *

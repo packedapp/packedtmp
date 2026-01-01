@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.concurrent;
+package internal.app.packed.concurrent.old;
 
 import app.packed.bean.lifecycle.Start;
 import internal.app.packed.extension.ExtensionContext;

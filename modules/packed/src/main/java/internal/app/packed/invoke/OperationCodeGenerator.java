@@ -241,7 +241,7 @@ public final class OperationCodeGenerator {
                     } else if (b instanceof Invoker invokerType) {
                         PackedSidebeanAttachment.OfOperation oo = (OfOperation) sidebeanAttachment;
                         MethodHandle methodHandle2 = oo.operation.codeHolder.generate(false);
-                        MethodHandle mhh = invokerType.invokerModel().invokerConstructor();
+                        MethodHandle mhh = invokerType.invokerModel().constructor();
 
                         mhh = mhh.bindTo(methodHandle2);
                         methodHandle = MethodHandles.collectArguments(methodHandle, 1, mhh);

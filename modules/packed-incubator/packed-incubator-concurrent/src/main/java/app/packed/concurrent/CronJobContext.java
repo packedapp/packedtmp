@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent.cron;
+package app.packed.concurrent;
 
 /**
  *
- * A seperae
  */
-public @interface CronJob {
-    String expression();
+public interface CronJobContext {
 
-    String zoneid() default ""; // "" simply indicates the default timezone of the computer
 }

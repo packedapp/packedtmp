@@ -13,32 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent.other;
+package app.packed.concurrent;
 
 /**
  *
  */
+public class CronJobMirror {
 
-// Hmm har vi en separat Scheduling extension???
-// Altsaa Clock/Zone skal jo ikke rigtig bruge traade...
-
-public @interface Schedule {
-
-    String fixedRate() default ""; // parsed as duration
-
-    String fixedDelay() default "";
-
-    String initialDelay() default "";
-
-    // Maaske er det bare at configure scheduleren
-    String jitter() default "0"; // Normalt fordelt, eller randomizeret?? Random +-? percentage
-}
-
-class foo {
-
-    @Schedule(fixedRate = "1m")
-    void food() {}
-
-    @Schedule(fixedRate = "${ffooo.sdsd|1m}")
-    void fox() {}
 }
