@@ -40,8 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import app.packed.extension.InternalExtensionException;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.invoke.ExtensionLookupSupport;
+import internal.app.packed.invoke.ModuleAccessor;
 
 /**
  * Generates implementations of SAM (Single Abstract Method) interfaces using the Class File API. The generated class
@@ -108,7 +110,9 @@ public final class SidebeanInvokerModel {
 
         // Define names and descriptors
         // Hidden classes automatically get a unique suffix, so "SidebeanInvokerImpl" is fine as a prefix.
+        // Use our own package so we have ORIGINAL access for defineHiddenClass
         ClassDesc cd = ClassDesc.of(iface.getPackageName(), "SidebeanInvokerImpl");
+//        ClassDesc cd = ClassDesc.of(SidebeanInvokerModel.class.getPackageName(), "SidebeanInvokerImpl");
         ClassDesc ifaceDesc = ClassDesc.ofDescriptor(iface.descriptorString());
 
         MethodTypeDesc samDesc = MethodTypeDesc.ofDescriptor(MethodType.methodType(sam.getReturnType(), sam.getParameterTypes()).descriptorString());
@@ -190,15 +194,14 @@ public final class SidebeanInvokerModel {
         });
 
         try {
-            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(iface, MethodHandles.lookup());
+            MethodHandles.Lookup lookup = ModuleAccessor.getLookup(iface);
 
             lookup = lookup.defineHiddenClass(bytes, true);
 
             return lookup.findConstructor(lookup.lookupClass(), MethodType.methodType(void.class, MethodHandle.class, ExtensionContext.class))
                     .asType(MethodType.methodType(iface, MethodHandle.class, ExtensionContext.class));
-        } catch (ReflectiveOperationException e) {
-
-            throw new RuntimeException(ExtensionLookupSupport.illegalAccessExtensionMsg(iface), e);
+        } catch (ReflectiveOperationException | IllegalAccessError e) {
+            throw new InternalExtensionException(ExtensionLookupSupport.illegalAccessExtensionMsg(iface), e);
         }
     }
 
