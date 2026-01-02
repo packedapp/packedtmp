@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import internal.app.packed.build.AuthoritySetup;
@@ -43,9 +44,6 @@ public final class NamespaceSetup implements ComponentSetup {
 
     // Must search up until root to find local names
     final Map<ContainerSetup, String> localNames = new HashMap<>();
-
-    /** The name of the namespace. */
-    public String name = NamespaceHandle.DEFAULT_NAME;
 
     /** All operations defined in this namespace. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
@@ -87,11 +85,6 @@ public final class NamespaceSetup implements ComponentSetup {
         return handle().mirror();
     }
 
-    /** {@return the name of the namespace} */
-    public String name() {
-        return name;
-    }
-
     public static NamespaceSetup crack(NamespaceHandle<?, ?> handle) {
         return NamespaceAccessHandler.instance().getNamespaceHandleNamespace(handle);
     }
@@ -104,11 +97,11 @@ public final class NamespaceSetup implements ComponentSetup {
         H handle = (H) installer.template.newHandle().apply(installer);
         namespace.handle = handle;
 
-        installer.root.container.application.namespaces.put(new NamespaceKey(installer.template.handleClass(), installer.name), handle);
+        installer.root.container.application.namespaces.put(installer.nk, handle);
         installer.handle = handle;
         installer.root.tree.namespacesToClose.add(namespace);
         return handle;
     }
 
-    public record NamespaceKey(Class<? extends NamespaceHandle<?, ?>> handleClass, String name) {}
+    public record NamespaceKey(Class<? extends NamespaceHandle<?, ?>> handleClass, ComponentRealm realm) {}
 }

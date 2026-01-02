@@ -322,7 +322,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         MainServiceNamespaceHandle s = sm;
         if (s == null) {
             ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(baseExtension());
-            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, "main");
+            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE);
             s.init(null, this);
         }
         return s;

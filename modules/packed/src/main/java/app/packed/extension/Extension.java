@@ -30,6 +30,7 @@ import app.packed.BaseModuleNames;
 import app.packed.build.BuildCodeSource;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerHandle;
 import app.packed.extension.Extension.ExtensionProperty;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
@@ -235,8 +236,12 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         return (E) s.instance();
     }
 
-    protected final <H extends NamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, String name) {
-        return handle.namespaceLazy(template, name);
+    protected final <H extends NamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template) {
+        return handle.namespaceLazy(template, ComponentRealm.userland());
+    }
+
+    protected final <H extends NamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, ComponentRealm realm) {
+        return handle.namespaceLazy(template, realm);
     }
 
     /**

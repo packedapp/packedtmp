@@ -90,25 +90,6 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * {@return the local name of this namespace for the specified container.}
-     * <p>
-     * Domain instance may be available with different names in different containers.
-     *
-     * @param container
-     *            the container to return a local name for
-     * @throws IllegalArgumentException
-     *             if this namespace instance is not available in the specified container
-     */
-    public final String namespaceLocalName(ContainerMirror container) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return the name of this name.} */
-    public final String namespaceName() {
-        return handle.namespace.name;
-    }
-
     /** {@return the root container of the namespace.} */
     public final ContainerMirror namespaceRoot() {
         return handle.namespace.root.container.mirror();

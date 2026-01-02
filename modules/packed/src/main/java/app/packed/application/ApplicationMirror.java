@@ -184,21 +184,11 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     // Application owned namespace...
     // Optional???
     public <N extends NamespaceMirror<?>> Optional<N> namespace(Class<N> type) {
-        return namespace(type, "main");
-    }
-
-    // Alternatively all keysspaces not owned by the application must be prefixed with $
-    // $FooExtension$main I think I like this better
-    // NamespaceKey <Type, Owner?, ContainerPath, Name>
-
-    public <N extends NamespaceMirror<?>> Optional<N> namespace(Class<N> type, String name) {
         for (NamespaceHandle<?, ?> n : handle.application.namespaces.values()) {
-            if (n.name().equals(name)) {
                 NamespaceMirror<?> m = n.mirror();
                 if (m.getClass() == type) {
                     return Optional.of(type.cast(m));
                 }
-            }
         }
         return Optional.empty();
     }

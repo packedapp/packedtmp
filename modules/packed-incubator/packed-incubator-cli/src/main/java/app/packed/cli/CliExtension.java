@@ -63,7 +63,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
     }
 
     CliNamespaceHandle namespaceHandle() {
-        return applicationRoot().namespaceLazy(CliNamespaceHandle.TEMPLATE, "main");
+        return applicationRoot().namespaceLazy(CliNamespaceHandle.TEMPLATE);
     }
 
     public CliNamespaceConfiguration namespace() {

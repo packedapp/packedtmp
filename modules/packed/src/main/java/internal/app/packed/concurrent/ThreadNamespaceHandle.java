@@ -55,6 +55,6 @@ public final class ThreadNamespaceHandle extends NamespaceHandle<BaseExtension, 
     }
 
     public static ThreadNamespaceHandle mainHandle(ExtensionHandle<BaseExtension> handle) {
-        return handle.namespaceLazy(ThreadNamespaceHandle.TEMPLATE, "main");
+        return handle.namespaceLazy(ThreadNamespaceHandle.TEMPLATE);
     }
 }

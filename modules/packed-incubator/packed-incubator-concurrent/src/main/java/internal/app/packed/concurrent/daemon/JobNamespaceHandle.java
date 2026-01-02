@@ -55,7 +55,7 @@ public final class JobNamespaceHandle extends NamespaceHandle<BaseExtension, Thr
     }
 
     public static JobNamespaceHandle mainHandle(ExtensionHandle<BaseExtension> handle) {
-        return handle.namespaceLazy(JobNamespaceHandle.TEMPLATE, "main");
+        return handle.namespaceLazy(JobNamespaceHandle.TEMPLATE);
     }
 
     /** {@inheritDoc} */

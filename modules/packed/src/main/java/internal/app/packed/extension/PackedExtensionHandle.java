@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
@@ -119,8 +120,8 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
 
     @Override
     @SuppressWarnings("unchecked")
-    public <H extends NamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, String name) {
-        NamespaceKey nk = new NamespaceKey(template.handleClass(), name);
+    public <H extends NamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, ComponentRealm realm) {
+        NamespaceKey nk = new NamespaceKey(template.handleClass(), realm);
 
         Map<NamespaceKey, NamespaceHandle<?, ?>> m = extension.container.application.namespaces;
 
@@ -128,7 +129,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         // cannot use computeIfAbsent, as we want to store the handle before the install method returns
         NamespaceHandle<?, ?> namespaceHandle = m.get(nk);
         if (namespaceHandle == null) {
-            PackedNamespaceInstaller<H> installer = new PackedNamespaceInstaller<>((PackedNamespaceTemplate<H>) template, extension, extension, name);
+            PackedNamespaceInstaller<H> installer = new PackedNamespaceInstaller<>((PackedNamespaceTemplate<H>) template, extension, extension, nk);
 
             installer.install();
 

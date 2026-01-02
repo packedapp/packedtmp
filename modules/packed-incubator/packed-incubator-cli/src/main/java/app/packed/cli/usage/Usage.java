@@ -41,7 +41,7 @@ public class Usage extends BaseAssembly {
 
     public static void main(String[] args) {
         ApplicationMirror m = App.mirrorOf(new Usage());
-        m.namespace(CliNamespaceMirror.class, "export");
+        m.namespace(CliNamespaceMirror.class);
     }
 
 }

@@ -21,13 +21,14 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 
 /** Implementation of {@link NamespaceTemplate.Installer} */
 public final class PackedNamespaceInstaller<H extends NamespaceHandle<?, ?>> extends AbstractComponentInstaller<NamespaceSetup, PackedNamespaceInstaller<H>>
         implements NamespaceInstaller<H> {
 
     public NamespaceHandle<?, ?> handle;
-    final String name;
+    final NamespaceKey nk;
 
     final AuthoritySetup<?> owner;
 
@@ -36,11 +37,11 @@ public final class PackedNamespaceInstaller<H extends NamespaceHandle<?, ?>> ext
     /** The template for the new namespace. */
     final PackedNamespaceTemplate<?> template;
 
-    public PackedNamespaceInstaller(PackedNamespaceTemplate<?> template, ExtensionSetup root, AuthoritySetup<?> owner, String name) {
+    public PackedNamespaceInstaller(PackedNamespaceTemplate<?> template, ExtensionSetup root, AuthoritySetup<?> owner, NamespaceKey nk) {
         this.template = template;
         this.root = root;
         this.owner = owner;
-        this.name = name;
+        this.nk = nk;
     }
 
     /** {@inheritDoc} */

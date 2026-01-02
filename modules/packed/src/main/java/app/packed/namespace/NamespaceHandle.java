@@ -39,9 +39,6 @@ import internal.app.packed.util.accesshelper.NamespaceAccessHandler;
  */
 public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C extends NamespaceConfiguration<E>> extends ComponentHandle {
 
-    /** The default name of a namespace. */
-    public static final String DEFAULT_NAME = "main";
-
     /** A cache of all namespace configurations, currently do not support namespaces uses by extensions. */
     private HashMap<E, C> configurations = new HashMap<>();
 
@@ -119,10 +116,6 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     @Override
     public final NamespaceMirror<E> mirror() {
         return mirror.get();
-    }
-
-    public final String name() {
-        return namespace.name();
     }
 
     /** {@inheritDoc} */

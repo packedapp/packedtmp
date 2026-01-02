@@ -85,11 +85,6 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
         return handle;
     }
 
-    /** {@return the name of the namespace} */
-    public final String name() {
-        return handle.namespace.name();
-    }
-
     public NamespaceConfiguration<E> noPropagation() {
         return propagate(ContainerPropagator.LOCAL);
     }
