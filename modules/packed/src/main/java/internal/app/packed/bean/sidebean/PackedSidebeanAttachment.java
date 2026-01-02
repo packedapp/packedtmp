@@ -18,7 +18,7 @@ package internal.app.packed.bean.sidebean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanHandle;
-import app.packed.bean.sidebean.SidebeanAttachment;
+import app.packed.bean.SidebeanAttachment;
 import app.packed.binding.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;

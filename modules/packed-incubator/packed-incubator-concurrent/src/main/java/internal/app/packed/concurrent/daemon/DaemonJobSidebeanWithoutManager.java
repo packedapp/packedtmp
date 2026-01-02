@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.ThreadFactory;
 
-import app.packed.bean.sidebean.SidebeanBinding;
+import app.packed.bean.SidebeanBinding;
 import internal.app.packed.concurrent.daemon.DaemonJobSidebean.DaemonOperationInvoker;
 
 /**

@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sidebean;
+package app.packed.bean;
 
-import app.packed.bean.BeanHandle;
-import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.binding.Key;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
 import internal.app.packed.bean.sidebean.SidebeanHandle;

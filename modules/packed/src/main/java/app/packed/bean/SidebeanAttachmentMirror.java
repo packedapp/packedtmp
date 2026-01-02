@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sidebean;
+package app.packed.bean;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import app.packed.bean.BeanMirror;
 import app.packed.service.Provide;
 
 /**

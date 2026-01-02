@@ -13,15 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sidebean;
+package app.packed.bean;
 
-import app.packed.bean.BeanTrigger.AutoInject;
-import app.packed.context.Context;
-import app.packed.extension.BaseExtension;
-import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
+import app.packed.binding.Key;
 
 /**
  *
  */
-@AutoInject(requiresContext = SidebeanContext.class, introspector = BaseExtensionBeanIntrospector.class)
-public interface SidebeanContext extends Context<BaseExtension> {}
+// Was SidebeanInstance
+public interface SidebeanAttachment {
+
+    // I should probably be able to get the configuration???
+    /**
+     * @param <T>
+     * @param key
+     * @param object
+     *
+     * @see SidebeanConfiguration#sidebeanBindConstant(Class)
+     */
+    default <T> void bindConstant(Class<T> key, T object) {
+        bindConstant(Key.of(key), object);
+    }
+
+    <T> void bindConstant(Key<T> key, T object);
+}

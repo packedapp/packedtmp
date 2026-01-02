@@ -22,7 +22,7 @@ import java.lang.invoke.MethodType;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.sidebean.SidebeanAttachment;
+import app.packed.bean.SidebeanAttachment;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;

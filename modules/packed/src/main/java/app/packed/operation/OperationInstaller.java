@@ -18,7 +18,7 @@ package app.packed.operation;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.bean.SidebeanConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint;
 import app.packed.namespace.NamespaceHandle;

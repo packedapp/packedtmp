@@ -15,7 +15,7 @@
  */
 package app.packed.moduletests.isopen;
 
-import app.packed.bean.sidebean.SidebeanBinding;
+import app.packed.bean.SidebeanBinding;
 import app.packed.moduletests.notopen.NotOpenInvokerInterface;
 
 /**

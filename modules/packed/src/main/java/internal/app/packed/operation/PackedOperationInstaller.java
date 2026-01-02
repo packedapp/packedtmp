@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.bean.SidebeanConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.namespace.NamespaceHandle;

@@ -18,7 +18,7 @@ package internal.app.packed.concurrent.daemon;
 import java.util.concurrent.ThreadFactory;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.sidebean.SidebeanConfiguration;
+import app.packed.bean.SidebeanConfiguration;
 import app.packed.concurrent.DaemonJob;
 import app.packed.concurrent.DaemonJobConfiguration;
 import app.packed.concurrent.DaemonJobContext;
