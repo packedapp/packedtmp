@@ -73,7 +73,7 @@ public class ApplicationMirrorTest extends AppAppTest {
     @Disabled
     public void specializeApplicationMirror() {
         // Test default application mirror type
-        BootstrapApp<Void> ba = BootstrapApp.of(ApplicationTemplate.ofManaged(Void.class));
+        BootstrapApp<Void> ba = BootstrapApp.of(ApplicationTemplate.builder(Void.class).build());
         assertThat(ba.mirrorOf(new HelloWorldAssembly())).isExactlyInstanceOf(ApplicationMirror.class);
 
         // Specialize application mirror type
@@ -83,7 +83,7 @@ public class ApplicationMirrorTest extends AppAppTest {
             }
         }
         // specializeMirror(MyAppMirror::new).
-        ba = BootstrapApp.of(ApplicationTemplate.ofManaged(Void.class));
+        ba = BootstrapApp.of(ApplicationTemplate.builder(Void.class).build());
         assertThat(ba.mirrorOf(new HelloWorldAssembly())).isExactlyInstanceOf(MyAppMirror.class);
     }
 }

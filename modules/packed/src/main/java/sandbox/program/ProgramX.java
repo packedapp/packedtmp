@@ -162,7 +162,7 @@ record ProgramImplementationX(@GuestBinding String name, @GuestBinding ServiceLo
 
     /** An driver for creating App instances. */
 
-    static final BootstrapApp<ProgramImplementationX> DRIVER = BootstrapApp.of(ApplicationTemplate.ofManaged(ProgramImplementationX.class));
+    static final BootstrapApp<ProgramImplementationX> DRIVER = BootstrapApp.of(ApplicationTemplate.builder(ProgramImplementationX.class).build());
 
     /** {@inheritDoc} */
     @Override

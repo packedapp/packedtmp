@@ -39,10 +39,10 @@ public record SimpleManagedApplication(@GuestBinding ManagedLifecycle lifecycle,
     // Problemet er vi skal definere en Handle Class... Der har <I> = ManagedLifecycle
     // Men syntes ogsaa det er fint at folk skal lave en guest bean
     public static final ApplicationTemplate<GuestApplicationHandle2> MANAGED = ApplicationTemplate
-            .ofManaged(new Op1<@GuestBinding ManagedLifecycle, ManagedLifecycle>(e -> e) {}, GuestApplicationHandle2.class, GuestApplicationHandle2::new);
+            .builder(new Op1<@GuestBinding ManagedLifecycle, ManagedLifecycle>(e -> e) {}).build(GuestApplicationHandle2.class, GuestApplicationHandle2::new);
 
-    public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.ofManaged(SimpleManagedApplication.class,
-            GuestApplicationHandle.class, GuestApplicationHandle::new);
+    public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.builder(SimpleManagedApplication.class)
+            .build(GuestApplicationHandle.class, GuestApplicationHandle::new);
 
     @Factory
     public SimpleManagedApplication(@GuestBinding ManagedLifecycle lifecyle) {

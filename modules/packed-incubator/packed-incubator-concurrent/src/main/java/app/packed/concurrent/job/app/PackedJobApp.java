@@ -35,7 +35,7 @@ import internal.app.packed.ValueBased;
 final class PackedJobApp implements JobApp {
 
     /** The bootstrap app for this application. */
-    public static final BootstrapApp<PackedJobApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.ofManaged(PackedJobApp.class));
+    public static final BootstrapApp<PackedJobApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.builder(PackedJobApp.class).build());
 
     /** Manages the lifecycle of the app. */
     private final ManagedLifecycle lifecycle;

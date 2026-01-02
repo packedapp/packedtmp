@@ -167,7 +167,7 @@ record ProgramImplementation(@GuestBinding String name, @GuestBinding ServiceLoc
     static OldContainerTemplateLink EL = OldContainerTemplateLink.of(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ApplicationTemplate.ofManaged(ProgramImplementation.class));
+    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ApplicationTemplate.builder(ProgramImplementation.class).build());
 //
 //            BootstrapApp.of(ProgramImplementation.class, c -> {
 //        c.managedLifetime();

@@ -40,7 +40,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     // TODO we need to restrict the extensions that can be used to BaseExtension
     // So beans do not uses hooks from various extensions
     private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE = (PackedApplicationTemplate<?>) ApplicationTemplate
-            .ofManaged(PackedBootstrapApp.class).withComponentTags("bootstrap");
+            .builder(PackedBootstrapApp.class).withComponentTags("bootstrap").build();
 
     /** The application launcher. */
     private final ApplicationBaseLauncher launcher;

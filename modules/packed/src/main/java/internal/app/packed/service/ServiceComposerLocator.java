@@ -41,7 +41,7 @@ public class ServiceComposerLocator {
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
             private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-                    .of(ApplicationTemplate.ofUnmanaged(new Op1<@GuestBinding ServiceLocator, ServiceLocator>(e -> e) {}));
+                    .of(ApplicationTemplate.builder(new Op1<@GuestBinding ServiceLocator, ServiceLocator>(e -> e) {}).unmanaged().build());
         }
         return ServiceLocatorBootstrap.APP;
     }

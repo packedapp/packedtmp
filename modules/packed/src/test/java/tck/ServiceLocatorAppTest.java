@@ -27,7 +27,7 @@ import app.packed.service.ServiceLocator;
 public class ServiceLocatorAppTest extends AbstractBootstrapedAppTest<ServiceLocator> {
 
     private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-            .of(ApplicationTemplate.ofUnmanaged(new Op1<@GuestBinding ServiceLocator, ServiceLocator>(e -> e) {}));
+            .of(ApplicationTemplate.builder(new Op1<@GuestBinding ServiceLocator, ServiceLocator>(e -> e) {}).unmanaged().build());
 
     public ServiceLocatorAppTest() {
         super(APP);

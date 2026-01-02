@@ -52,7 +52,7 @@ import app.packed.component.guest.GuestBinding;
 public final class Te {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.ofManaged(Holder.class));
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.builder(Holder.class).build());
 
     public static void main(String[] args) {
         BOOTSTRAP.getClass();

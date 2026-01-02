@@ -42,11 +42,6 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
         this(guestClass, op, handleClass, handleFactory, null, Set.of());
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public PackedApplicationTemplate<H> withComponentTags(String... tags) {
-        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, rootContainer, ComponentTagHolder.copyAndAdd(componentTags, tags));
-    }
 
     /** {@inheritDoc} */
     public PackedApplicationTemplate<H> withRootContainer(PackedContainerTemplate<?> template) {

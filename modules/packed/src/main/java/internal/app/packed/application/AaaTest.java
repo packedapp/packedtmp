@@ -74,7 +74,7 @@ public class AaaTest extends BaseAssembly {
     static final class AApp implements App {
 
         /** The bootstrap app for this application. */
-        public static final BootstrapApp<AApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.ofManaged(AApp.class));
+        public static final BootstrapApp<AApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.builder(AApp.class).build());
 
         /** Manages the lifecycle of the app. */
         private final ManagedLifecycle lifecycle;
