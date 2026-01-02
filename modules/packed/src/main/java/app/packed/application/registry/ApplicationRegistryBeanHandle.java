@@ -19,7 +19,6 @@ import app.packed.application.ApplicationHandle;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLifetime;
-import app.packed.bean.BeanTemplate;
 import app.packed.binding.Key;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.repository.BuildApplicationRepository;
@@ -30,7 +29,7 @@ import internal.app.packed.bean.PackedBeanTemplate;
 final class ApplicationRegistryBeanHandle<I, H extends ApplicationHandle<I, ?>> extends BeanHandle<ApplicationRegistryConfiguration<I, H>> {
 
     /** A bean template for a {@link ApplicationRepository} bean. */
-    static final BeanTemplate REPOSITORY_BEAN_TEMPLATE = PackedBeanTemplate.builder(BeanLifetime.SINGLETON).build();
+    static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = PackedBeanTemplate.builder(BeanLifetime.SINGLETON).build();
 
     final BuildApplicationRepository repository;
 

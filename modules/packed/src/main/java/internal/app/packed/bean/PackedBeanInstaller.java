@@ -143,6 +143,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     /** {@inheritDoc} */
     @Override
     public BeanInstaller addContext(Class<? extends Context<?>> contextClass) {
-        return null;
+        template = template.builder().addContext(contextClass).build();
+        return this;
     }
 }

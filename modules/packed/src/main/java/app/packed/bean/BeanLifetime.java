@@ -111,17 +111,6 @@ public enum BeanLifetime {
     public boolean isMultiInstance() {
         return this == MANANGED || this == UNMANAGED || this == FOREIGN;
     }
-
-    /**
-     * {@return a bean template that can be used by extensions to install new beans}
-     * <p>
-     * This method is only relevant for extension developers.
-     *
-     * @return
-     */
-    public BeanTemplate template() {
-        return BeanTemplate.builder(this).build();
-    }
 }
 //
 ///** @return whether or not the bean will have 1 or more instance. */

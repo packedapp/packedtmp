@@ -15,8 +15,6 @@
  */
 package internal.app.packed.concurrent.daemon;
 
-import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanTemplate;
 import app.packed.component.ComponentRealm;
 import app.packed.concurrent.ThreadNamespaceConfiguration;
 import app.packed.concurrent.ThreadNamespaceMirror;
@@ -25,8 +23,6 @@ import app.packed.extension.ExtensionHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
-import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.extension.ExtensionSetup;
 
 /**
  * A namespace for the thread management in Packed.
@@ -85,9 +81,9 @@ public final class JobNamespaceHandle extends NamespaceHandle<BaseExtension, Thr
 //            b.bindServiceInstance(DaemonRuntimeOperationConfiguration[].class, daemons);
 //        }
     }
-
-    BeanInstaller newBeanBuilderSelf(BeanTemplate template) {
-        ExtensionSetup es = ExtensionSetup.crack(rootExtension());
-        return ((PackedBeanTemplate) template).newInstaller(es, es);
-    }
+//
+//    BeanInstaller newBeanBuilderSelf(BeanTemplate template) {
+//        ExtensionSetup es = ExtensionSetup.crack(rootExtension());
+//        return ((PackedBeanTemplate) template).newInstaller(es, es);
+//    }
 }

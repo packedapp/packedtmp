@@ -8,13 +8,11 @@ import java.util.function.Consumer;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLifetime;
-import app.packed.bean.BeanTemplate;
 import app.packed.bean.sidebean.SidebeanConfiguration;
 import app.packed.bean.sidebean.SidebeanContext;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
-import app.packed.container.ContainerTemplate;
 import app.packed.operation.Op;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.ProvidableBeanConfiguration;
@@ -31,7 +29,7 @@ import internal.app.packed.extension.PackedExtensionPointHandle;
 public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     /** Application scoped extension beans can have ExtensionContext injected. */
-    private final static BeanTemplate CONTAINER = BaseExtension.DEFAULT_BEAN;
+    private final static PackedBeanTemplate CONTAINER = BaseExtension.DEFAULT_BEAN;
 //    .withInitialization(null)
 //
 //            .configure(c -> c.initialization(o -> {}  /*o.inContext(PackedExtensionContext.CONTEXT_TEMPLATE)*/));
@@ -49,7 +47,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public static final OldContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedLifecycle.class.getSimpleName()).provideExpose(ManagedLifecycle.class)
             .build();
 
-    private final static BeanTemplate SIDEBEAN = BeanTemplate.builder(BeanLifetime.SIDEBEAN).addContext(SidebeanContext.class).build();
+    private final static PackedBeanTemplate SIDEBEAN = PackedBeanTemplate.builder(BeanLifetime.SIDEBEAN).build();
 
     /** Creates a new base extension point. */
     public BaseExtensionPoint(ExtensionPointHandle usesite) {
@@ -113,10 +111,14 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     @BuildActionable("bean.install")
     public <T> SidebeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, Consumer<? super SidebeanConfiguration<T>> installationAction) {
-        BeanInstaller installer = newBean(SIDEBEAN, handle());
+        BeanInstaller installer = newBean(SIDEBEAN, handle()).addContext(SidebeanContext.class);
         SidebeanHandle<T> h = installer.installIfAbsent(implementation, SidebeanHandle.class, SidebeanHandle<T>::new,
                 ha -> installationAction.accept(ha.configuration()));
         return h.configuration();
+    }
+
+    public BeanInstaller newBean(BeanLifetime bl) {
+        return newBean(PackedBeanTemplate.builder(bl).build());
     }
 
     /**
@@ -126,10 +128,14 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a bean template representing the behaviour of the new bean
      * @return the installer
      */
-    public BeanInstaller newBean(BeanTemplate template) {
-        PackedBeanTemplate t = (PackedBeanTemplate) template;
+    private BeanInstaller newBean(PackedBeanTemplate template) {
+        PackedBeanTemplate t = template;
         ExtensionSetup e = handle.usedBy();
         return t.newInstaller(e, e.container.assembly);
+    }
+
+    public BeanInstaller newBean(BeanLifetime bl, ExtensionPointHandle forExtension) {
+        return newBean(PackedBeanTemplate.builder(bl).build(), forExtension);
     }
 
     /**
@@ -139,9 +145,9 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a bean template representing the behaviour of the new bean
      * @return the installer
      */
-    public BeanInstaller newBean(BeanTemplate template, ExtensionPointHandle forExtension) {
+    private BeanInstaller newBean(PackedBeanTemplate template, ExtensionPointHandle forExtension) {
         requireNonNull(forExtension, "forExtension is null");
-        PackedBeanTemplate t = (PackedBeanTemplate) template;
+        PackedBeanTemplate t = template;
         return t.newInstaller(extension().extension, ((PackedExtensionPointHandle) forExtension).usedBy());
     }
 
@@ -153,10 +159,10 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
 
-    public ContainerInstaller<?> newContainer(ContainerTemplate<?> template) {
+    ContainerInstaller<?> newContainer(PackedContainerTemplate<?> template) {
         // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup es = handle.usedBy();
-        return PackedContainerInstaller.of((PackedContainerTemplate<?>) template, es.extensionType, es.container.application, es.container);
+        return PackedContainerInstaller.of(template, es.extensionType, es.container.application, es.container);
     }
 
     public int registerEntryPoint(Class<?> hook) {

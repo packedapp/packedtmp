@@ -28,8 +28,6 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import app.packed.bean.lifecycle.Initialize;
-import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerTemplate;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
@@ -71,14 +69,14 @@ public class Ddd extends BaseAssembly {
         MyEntityExtension child;
 
         public void addEntityBean(Class<?> entityBean) {
-            child().base().newBean(BeanLifetime.MANANGED.template()).install(Bean.of(entityBean), BeanHandle::new);
+            child().base().newBean(BeanLifetime.MANANGED).install(Bean.of(entityBean), BeanHandle::new);
         }
 
         MyEntityExtension child() {
             MyEntityExtension c = child;
             if (c == null) {
-                ContainerHandle<?> h = base().newContainer(ContainerTemplate.DEFAULT).named("EntityBeans").installAndUseThisExtension();
-                c = child = fromContainerHandle(h).get();
+//                ContainerHandle<?> h = base().newContainer(ContainerTemplate.DEFAULT).named("EntityBeans").installAndUseThisExtension();
+//                c = child = fromContainerHandle(h).get();
             }
             return c;
         }

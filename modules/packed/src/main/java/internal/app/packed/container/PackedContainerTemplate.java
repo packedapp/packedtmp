@@ -16,23 +16,60 @@
 package internal.app.packed.container;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.SequencedSet;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.binding.Key;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
-import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
+import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.component.ComponentTagHolder;
 
 /** Implementation of {@link ContainerTemplate}. */
 public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links,
-        Class<?> resultType, Set<String> componentTags, boolean isManaged) implements ContainerTemplate<H> {
+        Class<?> resultType, Set<String> componentTags, boolean isManaged) {
+
+    /**
+     * A base template for a container that has the same lifetime as its parent container.
+     * <p>
+     * This template does supports any {@link #lifetimeOperations() lifetime operations} as the container is automatically
+     * created when the parent container is created.
+     * <p>
+     * This template does not support carrier objects. (or do we??)
+     */
+    public static final PackedContainerTemplate<?> DEFAULT = new PackedContainerTemplate<>(PackedContainerKind.FROM_CONTAINER);
+
+    /**
+     * A container template representing a container that exists solely within a single entry point operation.
+     * <p>
+     * The container is created. The method is executed. And the container is shutdown again
+     * <p>
+     * A container lifetime created using this template must have registered at least one entry point. Otherwise an
+     * {@link app.packed.extension.InternalExtensionException} is thrown.
+     * <p>
+     * TODO we need a method where we can set a supplier that is executed. It is typically a user error. The specified
+     * assembly must hava at least one method that schedules shit
+     *
+     * @see app.packed.extension.BeanElement.BeanMethod#newLifetimeOperation(ContainerHandle)
+     * @see app.packed.extension.bean.BeanTemplate#Z_FROM_OPERATION
+     **/
+    public static final PackedContainerTemplate<?> GATEWAY = new PackedContainerTemplate<>(PackedContainerKind.GATEWAY);
+
+    // Cannot have managed on unmanaged
+    public static final PackedContainerTemplate<?> MANAGED = new PackedContainerTemplate<>(PackedContainerKind.MANAGED);
+
+    // Carefull with Unmanaged on Managed
+    public static final PackedContainerTemplate<?> UNMANAGED = new PackedContainerTemplate<>(PackedContainerKind.UNMANAGED);
 
     public PackedContainerTemplate(PackedContainerKind kind) {
         this(kind, void.class);
@@ -86,7 +123,6 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
     }
 
     /** {@inheritDoc} */
-    @Override
     public PackedContainerTemplate<H> withLifetimeOperationAddContext(int index, Class<? extends Context<?>> template) {
         throw new UnsupportedOperationException();
     }
@@ -99,8 +135,6 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
         return new PackedContainerTemplate<>(kind, holderClass, links, resultType, componentTags, isManaged);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public PackedContainerTemplate<H> withPack(OldContainerTemplateLink channel) {
         PackedContainerTemplatePackList tunnels = links.add((PackedContainerLink) channel);
         return new PackedContainerTemplate<>(kind, holderClass, tunnels, resultType, componentTags, isManaged);
@@ -111,7 +145,6 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
     }
 
     /** {@inheritDoc} */
-    @Override
     public PackedContainerTemplate<H> withComponentTag(String... tags) {
         return new PackedContainerTemplate<>(kind, holderClass, links, resultType, ComponentTagHolder.copyAndAdd(componentTags, tags), isManaged);
 
@@ -131,3 +164,31 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
 //        List<OperationTemplate> lifetimeOperations();
 
 }
+ interface ContainerTemplate2 {
+
+    Optional<OperationType> adaptorFactory(); // Behoever faktisk ikke guestAdaptor() saa. Return type er jo det
+
+    Optional<Class<?>> guestAdaptor(); // What if Op? Maybe just target class
+
+    Map<Key<?>, Link> links();
+
+    boolean isManaged();
+
+    // Har vi en special MaybeLoader? Altsaa hvis vi har banned extensions.. Er der ingen grund til at loaded den
+    SequencedSet<Class<? extends Extension<?>>> requiredExtensions();
+
+    // Nydus Canal
+    // Extension
+    interface Link {
+
+        static Link of(Consumer<? super Configurator> configure) {
+            throw new UnsupportedOperationException();
+        }
+
+        // Or maybe Just LinkConfigurator on the class
+        interface Configurator {
+
+        }
+    }
+}
+

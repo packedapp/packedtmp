@@ -7,14 +7,12 @@ import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLifetime;
-import app.packed.bean.BeanTemplate;
 import app.packed.bean.sandbox.BeanSynthesizer;
 import app.packed.build.action.BuildActionable;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
-import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.operation.Op;
@@ -25,6 +23,7 @@ import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.util.PackedServiceLocator;
@@ -51,10 +50,7 @@ import internal.app.packed.service.util.PackedServiceLocator;
 //// link
 
 // Service
-//// export
-//// require
-//// provide
-//// transform/rewrite??? depends on 1 or two interfaces
+//// export require provide transform/rewrite??? depends on 1 or two interfaces
 
 public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
@@ -62,9 +58,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // But right now we only have a single field
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
 
-    static final BeanTemplate DEFAULT_BEAN = PackedBeanTemplate.builder(BeanLifetime.SINGLETON)
-            .initialization(PackedOperationTemplate.DEFAULTS.withReturnTypeDynamic())
-            .build();
+    static final PackedBeanTemplate DEFAULT_BEAN = PackedBeanTemplate.builder(BeanLifetime.SINGLETON)
+            .initialization(PackedOperationTemplate.DEFAULTS.withReturnTypeDynamic()).build();
 
     /**
      * All your base are belong to us.
@@ -119,7 +114,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // Ignores other exports
     // interacts with other exports in some way
 
-
     public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
         BeanHandle<ProvidableBeanConfiguration<T>> h = install0(DEFAULT_BEAN).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
@@ -151,8 +145,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         return install(Bean.of(op));
     }
 
-    private PackedBeanInstaller install0(BeanTemplate template) {
-        return ((PackedBeanTemplate) template).newInstaller(extension, extension.container.assembly);
+    private PackedBeanInstaller install0(PackedBeanTemplate template) {
+        return template.newInstaller(extension, extension.container.assembly);
     }
 
     /**
@@ -171,7 +165,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> installPrototype(Bean<T> bean) {
-        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(BeanLifetime.UNMANAGED.template()).install(bean, ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(PackedBeanTemplate.builder(BeanLifetime.UNMANAGED).build()).install(bean,
+                ProvidableBeanHandle::new);
         return handle.configuration();
     }
 
@@ -255,8 +250,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** {@return a new container builder used for linking.} */
     private ContainerInstaller<?> link0() {
-        return PackedContainerInstaller.of((PackedContainerTemplate<?>) ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application,
-                extension.container);
+        return PackedContainerInstaller.of(new PackedContainerTemplate<>(PackedContainerKind.FROM_CONTAINER), BaseExtension.class,
+                extension.container.application, extension.container);
     }
 
     void linkPostfix(Wirelet... wirelets) {
@@ -275,8 +270,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            a template for the bean
      * @return a bean installer
      */
-    private BeanInstaller newBeanBuilderSelf(BeanTemplate template) {
-        return ((PackedBeanTemplate) template).newInstaller(extension, extension);
+    private BeanInstaller newBeanBuilderSelf(PackedBeanTemplate template) {
+        return template.newInstaller(extension, extension);
     }
 
     /** {@return a mirror for this extension.} */

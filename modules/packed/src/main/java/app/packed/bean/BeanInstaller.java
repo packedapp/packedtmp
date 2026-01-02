@@ -15,6 +15,7 @@
  */
 package app.packed.bean;
 
+import java.util.EnumSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -71,4 +72,85 @@ public sealed interface BeanInstaller permits PackedBeanInstaller {
      * @return this builder
      */
     <T> BeanInstaller setLocal(BeanLocal<T> local, T value);
+}
+
+
+
+interface Sandbox {
+    void ignoreAnnotations(Class<?> annot);
+
+    void noScan();
+
+    // The bean can never
+    void proxyForbidden();
+
+    // Ahh alt er raw
+    default Object raw() {
+        return null;
+    }
+
+    /** {@return the allowed bean source kinds for.} */
+    // Allowed source kinds
+    default EnumSet<BeanSourceKind> sourceKinds() {
+        return EnumSet.allOf(BeanSourceKind.class);
+    }
+
+    /**
+     * Marks the bean as synthetic.
+     *
+     * @return this installer
+     */
+    BeanInstaller synthetic(); // Maybe on template?
+
+    /**
+     * Specifies the return type signature of the factory operation(s) that create the bean.
+     * <p>
+     * The return type of the lifetime operation that creates the bean is {@code Object.class} per default. In order to
+     * better support {@link java.lang.invoke.MethodHandle#invokeExact(Object...)}. This method can be used to specify a
+     * less generic type if needed.
+     * <p>
+     * If this template is used to install bean whose bean class is not assignable to the specified class. The framework
+     * will throw a {@link app.packed.bean.BeanInstallationException}.
+     * <p>
+     * The method handle of the factory operation of the new template will always have the specified class as its
+     * {@link java.lang.invoke.MethodType#returnType()}.
+     *
+     * @param clazz
+     *            the return type of the method handle that creates the bean lifetime
+     * @return a new template
+     * @throws IllegalArgumentException
+     *             if specifying a primitive type or {@code Void}
+     * @throws UnsupportedOperationException
+     *             if this template is not based on {@link #MANAGED} or {@link #UNMANAGED}
+     * @see java.lang.invoke.MethodHandle#invokeExact(Object...)
+     * @see java.lang.invoke.MethodType#changeReturnType(Class)
+     */
+    default Object withInitializeAs(Class<?> clazz) {
+//      if (template.createAs.isPrimitive() || BeanSetup.ILLEGAL_BEAN_CLASSES.contains(template.createAs)) {
+//      throw new IllegalArgumentException(template.createAs + " is not valid argument");
+//  }
+        // return withInitialization(OperationTemplate.defaults().withReturnType(clazz));
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * The creation MethodHandle will have the actual bean type as its return type.
+     * <p>
+     * Normally the return type is {@code Object.class} to allow for better interoperability with
+     * {@link java.lang.invoke.MethodHandle#invokeExact(Object...)}.
+     *
+     * @return the new template
+     *
+     * @throws UnsupportedOperationException
+     *             if bean kind is not {@link BeanKind#MANANGED} or {@link BeanKind#UNMANAGED}
+     */
+    default Object withInitializeAsBeanClass() {
+        // return withInitialization(OperationTemplate.defaults().withReturnTypeDynamic());
+        throw new UnsupportedOperationException();
+    }
+
+//    // No seperet MH for starting, part of init
+//    // Tror maaske det her er en seperat template
+//    Builder autoStart();
+
 }

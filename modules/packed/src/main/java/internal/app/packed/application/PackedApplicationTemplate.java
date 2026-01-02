@@ -24,7 +24,6 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
 import app.packed.build.BuildGoal;
-import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
@@ -49,10 +48,9 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
     }
 
     /** {@inheritDoc} */
-    @Override
-    public PackedApplicationTemplate<H> withRootContainer(ContainerTemplate<?> template) {
+    public PackedApplicationTemplate<H> withRootContainer(PackedContainerTemplate<?> template) {
         requireNonNull(template);
-        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, (PackedContainerTemplate<?>) template, componentTags);
+        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, template, componentTags);
     }
 
     /**
@@ -72,4 +70,10 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
     }
 
     public interface ApplicationInstallingSource {}
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isManaged() {
+        return rootContainer().isManaged();
+    }
 }

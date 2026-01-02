@@ -18,9 +18,9 @@ package app.packed.application;
 import java.util.Set;
 import java.util.function.Function;
 
-import app.packed.container.ContainerTemplate;
 import app.packed.operation.Op;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.container.PackedContainerTemplate;
 
 /**
  * A template for creating new applications.
@@ -39,12 +39,7 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
     Class<? super H> handleClass();
 
     /** {@return whether this template represents a managed or unmanaged application} */
-    default boolean isManaged() {
-        return rootContainer().isManaged();
-    }
-
-    /** {@return the container template for the root container of the application} */
-    ContainerTemplate<?> rootContainer();
+    boolean isManaged();
 
     /**
      * Creates a new application template, Adding the specified tag(s) to the template.
@@ -57,16 +52,6 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
      * @see ApplicationConfiguration#componentTag(String...)
      */
     ApplicationTemplate<H> withComponentTags(String... tags);
-
-    /**
-     * Configures the container template that should be used for the root container of the application.
-     *
-     * @param template
-     *            a template for the root container of the application
-     * @return this configurator
-     * @see #rootContainer(Consumer)
-     */
-    ApplicationTemplate<H> withRootContainer(ContainerTemplate<?> template);
 
     static <I> Builder<I> builder(Class<I> hostClass) {
         throw new UnsupportedOperationException();
@@ -109,7 +94,7 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
 
     static <I, H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> ofManaged(Class<I> hostClass, Class<? super H> handleClass,
             Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
-        return new PackedApplicationTemplate<H>(hostClass, null, handleClass, handleFactory).withRootContainer(ContainerTemplate.MANAGED);
+        return new PackedApplicationTemplate<H>(hostClass, null, handleClass, handleFactory).withRootContainer(PackedContainerTemplate.MANAGED);
     }
 
     static <I> ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> ofManaged(Op<I> hostOp) {
@@ -119,7 +104,7 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
     static <I, H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> ofManaged(Op<I> hostOp, Class<? super H> handleClass,
             Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
         Class<?> type = hostOp.type().returnRawType();
-        return new PackedApplicationTemplate<>(type, hostOp, handleClass, handleFactory).withRootContainer(ContainerTemplate.MANAGED);
+        return new PackedApplicationTemplate<>(type, hostOp, handleClass, handleFactory).withRootContainer(PackedContainerTemplate.MANAGED);
     }
 
     static <I> ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> ofUnmanaged(Class<I> hostClass) {
@@ -128,7 +113,7 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
 
     static <I, H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> ofUnmanaged(Class<I> hostClass, Class<? super H> handleClass,
             Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
-        return new PackedApplicationTemplate<H>(hostClass, null, handleClass, handleFactory).withRootContainer(ContainerTemplate.UNMANAGED);
+        return new PackedApplicationTemplate<H>(hostClass, null, handleClass, handleFactory).withRootContainer(PackedContainerTemplate.UNMANAGED);
     }
 
     static <I> ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> ofUnmanaged(Op<I> hostOp) {
@@ -138,7 +123,7 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
     static <I, H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> ofUnmanaged(Op<I> hostOp, Class<? super H> handleClass,
             Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
         Class<?> type = hostOp.type().returnRawType();
-        return new PackedApplicationTemplate<>(type, hostOp, handleClass, handleFactory).withRootContainer(ContainerTemplate.UNMANAGED);
+        return new PackedApplicationTemplate<>(type, hostOp, handleClass, handleFactory).withRootContainer(PackedContainerTemplate.UNMANAGED);
     }
 
     // <T> Configurator setLocal(ApplicationBuildLocal<T> local, T value);

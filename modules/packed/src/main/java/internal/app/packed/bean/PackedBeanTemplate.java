@@ -22,7 +22,6 @@ import java.util.function.Function;
 
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal;
-import app.packed.bean.BeanTemplate;
 import app.packed.context.Context;
 import app.packed.util.Nullable;
 import internal.app.packed.build.AuthoritySetup;
@@ -34,10 +33,15 @@ import sandbox.application.LifetimeTemplate;
 
 /** Implementation of {@link BeanTemplate}. */
 public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetime, @Nullable Class<?> createAs, Map<PackedBeanBuildLocal<?>, Object> locals,
-        @Nullable PackedOperationTemplate initializationTemplate, Map<Class<?>, ContextModel> contextxs) implements BeanTemplate {
+        @Nullable PackedOperationTemplate initializationTemplate, Map<Class<?>, ContextModel> contextxs) {
 
     public static PackedBuilder builder(BeanLifetime kind) {
         return new PackedBuilder(kind);
+    }
+
+    /** Returns a new builder initialized with this template's values. */
+    public PackedBuilder builder() {
+        return new PackedBuilder(this);
     }
 
     /**
@@ -72,7 +76,7 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
         return Optional.ofNullable(createAs);
     }
 
-    public static final class PackedBuilder implements BeanTemplate.Builder {
+    public static final class PackedBuilder {
         private final BeanLifetime beanKind;
         private LifetimeTemplate lifetime = LifetimeTemplate.APPLICATION;
         private Class<?> createAs = null;
@@ -82,6 +86,16 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
 
         PackedBuilder(BeanLifetime beanKind) {
             this.beanKind = beanKind;
+        }
+
+        @SuppressWarnings("unchecked")
+        PackedBuilder(PackedBeanTemplate template) {
+            this.beanKind = template.beanKind();
+            this.lifetime = template.lifetime();
+            this.createAs = template.createAs();
+            this.locals = template.locals().isEmpty() ? Map.of() : new HashMap<>(template.locals());
+            this.initializationTemplate = template.initializationTemplate();
+            template.contextxs().forEach((k, v) -> this.contexts.put((Class<? extends Context<?>>) k, v));
         }
 
         public PackedBuilder initialization(PackedOperationTemplate initialization) {
@@ -99,14 +113,12 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
             return this;
         }
 
-        @Override
         public PackedBeanTemplate build() {
             return new PackedBeanTemplate(beanKind, lifetime, createAs, locals, initializationTemplate, Map.copyOf(contexts));
         }
 
         /** {@inheritDoc} */
-        @Override
-        public Builder addContext(Class<? extends Context<?>> contextClass) {
+        public PackedBuilder addContext(Class<? extends Context<?>> contextClass) {
             this.contexts.put(contextClass, ContextModel.of(contextClass));
             return this;
 

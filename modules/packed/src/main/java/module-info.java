@@ -25,7 +25,6 @@ module app.packed {
     exports app.packed.bean.sidebean;
     exports app.packed.build.hook;
     exports app.packed.component.guest;
-    exports sandbox.extension.container;
     exports internal.app.packed.context.publish;
     exports app.packed.service.mirror;
 

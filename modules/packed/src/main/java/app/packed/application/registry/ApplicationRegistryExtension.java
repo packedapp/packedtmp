@@ -21,6 +21,7 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
 import app.packed.bean.Bean;
+import app.packed.bean.BeanLifetime;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.FrameworkExtension;
 import app.packed.service.ProvidableBeanConfiguration;
@@ -66,7 +67,7 @@ public final class ApplicationRegistryExtension extends FrameworkExtension<Appli
         }
 
         // Create a new repository bean
-        ApplicationRegistryBeanHandle<A, H> h = base().newBean(ApplicationRegistryBeanHandle.REPOSITORY_BEAN_TEMPLATE)
+        ApplicationRegistryBeanHandle<A, H> h = base().newBean(BeanLifetime.SINGLETON)
                 .install(Bean.of(AbstractApplicationRepository.repositoryClassFor(template)), i -> new ApplicationRegistryBeanHandle<>(i, t));
 
         // Create a new installer for the guest bean
