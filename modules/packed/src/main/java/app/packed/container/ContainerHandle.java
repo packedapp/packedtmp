@@ -16,6 +16,7 @@
 package app.packed.container;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
@@ -32,7 +33,7 @@ import internal.app.packed.util.accesshelper.ContainerAccessHandler;
 public non-sealed class ContainerHandle<C extends ContainerConfiguration> extends ComponentHandle implements ContainerBuildLocal.Accessor {
 
     /** The lazy generated container configuration. */
-    private C configuration;
+    private final Supplier<C> configuration = StableValue.supplier(() -> newContainerConfiguration());
 
     /** The handle's container */
     final ContainerSetup container;
@@ -41,7 +42,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     private boolean isConfigurable = true;
 
     /** The lazy generated container mirror. */
-    private ContainerMirror mirror;
+    private final Supplier<ContainerMirror> mirror = StableValue.supplier(() -> newContainerMirror());
 
     /**
      * Creates a new container handle.
@@ -69,11 +70,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
 
     /** { @return the user exposed configuration of the bean} */
     public final C configuration() {
-        C c = configuration;
-        if (c == null) {
-            c = configuration = newContainerConfiguration();
-        }
-        return c;
+        return configuration.get();
     }
 
     final void doClose() {
@@ -140,11 +137,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
      */
     @Override
     public final ContainerMirror mirror() {
-        ContainerMirror m = mirror;
-        if (m == null) {
-            m = mirror = newContainerMirror();
-        }
-        return m;
+        return mirror.get();
     }
 
     public final String name() {

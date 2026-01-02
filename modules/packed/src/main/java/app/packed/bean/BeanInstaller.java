@@ -18,6 +18,7 @@ package app.packed.bean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.context.Context;
 import internal.app.packed.bean.PackedBeanInstaller;
 
 /**
@@ -32,6 +33,8 @@ import internal.app.packed.bean.PackedBeanInstaller;
 public sealed interface BeanInstaller permits PackedBeanInstaller {
 
     BeanInstaller componentTag(String... tags);
+
+    BeanInstaller addContext(Class<? extends Context<?>> contextClass);
 
     /**
      * Installs the bean using the specified class as the bean source.

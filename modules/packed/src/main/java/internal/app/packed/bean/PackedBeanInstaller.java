@@ -25,6 +25,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanSourceKind;
+import app.packed.context.Context;
 import app.packed.extension.InternalExtensionException;
 import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
@@ -46,7 +47,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
 
     /** The bean's template. */
     // Maybe we can override it??? If we want to delegate
-    public final PackedBeanTemplate template;
+    public PackedBeanTemplate template;
 
     /**
      * Create a new bean installer.
@@ -137,5 +138,11 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
             throw new InternalExtensionException("Only static beans can be source less");
         }
         return BeanSetup.newBean(this, (PackedBean<?>) bean, factory);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanInstaller addContext(Class<? extends Context<?>> contextClass) {
+        return null;
     }
 }

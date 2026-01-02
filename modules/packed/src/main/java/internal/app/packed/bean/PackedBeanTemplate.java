@@ -58,8 +58,16 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
         return Optional.ofNullable(initializationTemplate);
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Normally a bean is constructed as the ben
+     * <p>
+     * Empty means create as bean class
+     *
+     * @return
+     *
+     * @see BeanTemplate#createAs(Class)
+     * @see BeanTemplate#createAsBeanClass()
+     */
     public Optional<Class<?>> createAsSpecificClass() {
         return Optional.ofNullable(createAs);
     }
@@ -86,7 +94,6 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
             return this;
         }
 
-        @Override
         public <T> PackedBuilder setLocal(BeanLocal<T> beanLocal, T value) {
             this.locals = PackedBuildLocal.initMap(this.locals, (PackedBeanBuildLocal<?>) beanLocal, value);
             return this;

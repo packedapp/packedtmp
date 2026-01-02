@@ -18,6 +18,7 @@ package app.packed.namespace;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentHandle;
@@ -45,7 +46,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     private HashMap<E, C> configurations = new HashMap<>();
 
     /** The lazy generated namespace mirror. */
-    private NamespaceMirror<E> mirror;
+    private final Supplier<NamespaceMirror<E>> mirror = StableValue.supplier(() -> newNamespaceMirror());
 
     /** The namespace configuration. */
     final NamespaceSetup namespace;
@@ -117,11 +118,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     /** {@inheritDoc} */
     @Override
     public final NamespaceMirror<E> mirror() {
-        NamespaceMirror<E> m = mirror;
-        if (m == null) {
-            m = mirror = newNamespaceMirror();
-        }
-        return m;
+        return mirror.get();
     }
 
     public final String name() {

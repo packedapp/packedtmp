@@ -15,6 +15,8 @@
  */
 package app.packed.application;
 
+import java.util.function.Supplier;
+
 import app.packed.application.BootstrapApp.Image;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
@@ -36,16 +38,14 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
     final ApplicationSetup application;
 
     /** The lazy generated application configuration. */
-    @Nullable
-    private C configuration;
+    private final Supplier<C> configuration = StableValue.supplier(() -> newApplicationConfiguration());
 
     /** An image if the application has been constructed using {@link BuildGoal#IMAGE}. */
     @Nullable
     private final Image<A> image;
 
     /** The lazy generated application mirror. */
-    @Nullable
-    private ApplicationMirror mirror;
+    private final Supplier<ApplicationMirror> mirror = StableValue.supplier(() -> newApplicationMirror());
 
     /**
      * Creates a new application handle.
@@ -114,11 +114,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
      * then cache the instance for future usage.
      */
     public final C configuration() {
-        C c = configuration;
-        if (c == null) {
-            c = configuration = newApplicationConfiguration();
-        }
-        return c;
+        return configuration.get();
     }
 
     /**
@@ -152,11 +148,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
     /** {@return a mirror for the application} */
     @Override
     public final ApplicationMirror mirror() {
-        ApplicationMirror m = mirror;
-        if (m == null) {
-            m = mirror = newApplicationMirror();
-        }
-        return m;
+        return mirror.get();
     }
 
     /** {@return the name of the application} */

@@ -16,7 +16,6 @@
 package app.packed.bean;
 
 import java.util.EnumSet;
-import java.util.Optional;
 
 import app.packed.context.Context;
 import internal.app.packed.bean.PackedBeanTemplate;
@@ -68,26 +67,6 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // Fx @Provide paa en prototypeBean (giver vel ikke mening)
     BeanTemplate GATEWAY = BeanTemplate.builder(BeanLifetime.UNMANAGED).build();
 
-    /** {@return the kind of bean the descriptor's template creates} */
-    BeanLifetime beanKind();
-
-//    /** {@return a list of the various lifetime operations for the descriptor's template.} */
-//    List<OperationTemplate> lifecycleOperations();
-
-  //  Set<Class<? extends Context<?>>> contexts();
-
-    /**
-     * Normally a bean is constructed as the ben
-     * <p>
-     * Empty means create as bean class
-     *
-     * @return
-     *
-     * @see BeanTemplate#createAs(Class)
-     * @see BeanTemplate#createAsBeanClass()
-     */
-    Optional<Class<?>> createAsSpecificClass();
-
     static BeanTemplate.Builder builder(BeanLifetime kind) {
         return PackedBeanTemplate.builder(kind);
     }
@@ -96,15 +75,10 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // Add component tags
     sealed interface Builder permits PackedBeanTemplate.PackedBuilder {
 
-        // requireManaged() <-- attempting to install
-
         /** {@return a new bean template} */
         BeanTemplate build();
 
-
         Builder addContext(Class<? extends Context<?>> contextClass);
-
-        <T> Builder setLocal(BeanLocal<T> local, T value);
     }
 }
 

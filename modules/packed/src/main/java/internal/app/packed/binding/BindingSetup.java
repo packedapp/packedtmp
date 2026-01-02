@@ -41,7 +41,8 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
     /** The index of this binding into {@link OperationSetup#bindings}. */
     public final int index;
 
-    private BindingMirror mirror;
+    /** The lazy generated binding mirror. */
+    private final Supplier<BindingMirror> mirror = StableValue.supplier(() -> new BindingMirror(new PackedBindingHandle(this)));
 
     /** Supplies a mirror for the binding */
     public Supplier<? extends BindingMirror> mirrorSupplier;
@@ -67,11 +68,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
-        BindingMirror m = mirror;
-        if (m == null) {
-            m = mirror = new BindingMirror(new PackedBindingHandle(this));
-        }
-        return m;
+        return mirror.get();
     }
 
     public abstract BindingProvider provider();
