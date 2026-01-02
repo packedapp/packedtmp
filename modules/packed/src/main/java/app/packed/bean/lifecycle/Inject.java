@@ -54,7 +54,7 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.InjectOperationHan
  * Injection of services into static fields or method are not supported. There is no general support for injecting into
  * static fields or methods. If you absolutely need it, it is fairly easy to support yourself
  */
-@Target({  ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceOperation

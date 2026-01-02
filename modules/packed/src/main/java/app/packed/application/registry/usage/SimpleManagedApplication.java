@@ -22,7 +22,7 @@ import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
-import app.packed.bean.lifecycle.Factory;
+import app.packed.bean.lifecycle.Inject;
 import app.packed.component.guest.GuestBinding;
 import app.packed.operation.Op1;
 import app.packed.runtime.ManagedLifecycle;
@@ -44,7 +44,7 @@ public record SimpleManagedApplication(@GuestBinding ManagedLifecycle lifecycle,
     public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.builder(SimpleManagedApplication.class)
             .build(GuestApplicationHandle.class, GuestApplicationHandle::new);
 
-    @Factory
+    @Inject
     public SimpleManagedApplication(@GuestBinding ManagedLifecycle lifecyle) {
         this(lifecyle, System.nanoTime());
     }

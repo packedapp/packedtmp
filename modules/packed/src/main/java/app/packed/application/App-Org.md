@@ -7,7 +7,6 @@ Vi har reelt set 3 ting.
 
 ApplicationConfiguration
 ApplicationHandle
-ApplicationTemplate
 ApplicationInstaller
 
 ApplicationInterface
@@ -30,7 +29,6 @@ OperationTemplate
       OperationConfiguration  
 
 
-BeanTemplate      -> Extension
  BeanInstaller     -> Extension
   BeanHandle        -> Extension
    InvokerFactory    -> [Creates an Image, Launcher is args]

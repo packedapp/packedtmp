@@ -129,6 +129,5 @@ final class PackedApp implements App {
         public App start() {
             return launcher.launch(RunState.RUNNING);
         }
-
     }
 }
