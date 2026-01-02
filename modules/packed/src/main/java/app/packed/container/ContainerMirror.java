@@ -107,7 +107,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
      * need to include those.
      */
     public final Stream<BeanMirror> beans() {
-        return allBeans().filter(m -> m.owner() == ComponentRealm.application());
+        return allBeans().filter(m -> m.owner() == ComponentRealm.userland());
     }
 
     /** {@inheritDoc} */

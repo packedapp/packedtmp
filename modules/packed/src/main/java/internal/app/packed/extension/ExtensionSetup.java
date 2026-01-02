@@ -70,7 +70,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
 
     /** {@inheritDoc} */
     @Override
-    public ComponentRealm authority() {
+    public ComponentRealm owner() {
         return tree.model.realm();
     }
 

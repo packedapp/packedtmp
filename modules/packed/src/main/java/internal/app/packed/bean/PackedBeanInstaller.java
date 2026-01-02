@@ -79,7 +79,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     public <H extends BeanHandle<?>> H installIfAbsent(Class<?> beanClass, Class<? super H> handleClass,
             Function<? super BeanInstaller, H> handleFactory, Consumer<? super H> onNew) {
         requireNonNull(beanClass, "beanClass is null");
-        BeanClassKey e = new BeanClassKey(owner.authority(), beanClass);
+        BeanClassKey e = new BeanClassKey(owner.owner(), beanClass);
         BeanSetup existingBean = installledByExtension.container.beans.beanClasses.get(e);
         if (existingBean != null) {
             BeanHandle<?> existingHandle = existingBean.handle();

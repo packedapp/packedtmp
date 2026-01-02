@@ -148,7 +148,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         }
 
         public BeanMirror findSingleBean(ContainerMirror c) {
-            List<BeanMirror> beans = c.beans().filter(b -> b.owner() == ComponentRealm.application()).toList();
+            List<BeanMirror> beans = c.beans().filter(b -> b.owner() == ComponentRealm.userland()).toList();
             assertThat(beans).hasSize(1);
             return beans.get(0);
         }

@@ -21,13 +21,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.sidebean.SidebeanAttachment;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
-import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.component.ComponentBuildState;
 import internal.app.packed.operation.OperationSetup;
@@ -99,12 +99,10 @@ import internal.app.packed.util.accesshelper.OperationAccessHandler;
 public non-sealed class OperationHandle<C extends OperationConfiguration> extends ComponentHandle {
 
     /** The lazy generated operation configuration. */
-    @Nullable
-    private C configuration;
+    private final Supplier<C> configuration = StableValue.supplier(() -> newOperationConfiguration());
 
     /** The lazy generated operation mirror. */
-    @Nullable
-    private OperationMirror mirror;
+    private final Supplier<OperationMirror> mirror = StableValue.supplier(() -> newOperationMirror());
 
     /** The internal operation configuration. */
     final OperationSetup operation;
@@ -192,11 +190,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
     /** {@return the user exposed configuration of this operation} */
     public final C configuration() {
-        C c = configuration;
-        if (c == null) {
-            c = configuration = newOperationConfiguration();
-        }
-        return c;
+        return configuration.get();
     }
 
     /** {@return the operator of the operation.} */
@@ -235,11 +229,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** {@inheritDoc} */
     @Override
     public final OperationMirror mirror() {
-        OperationMirror m = mirror;
-        if (m == null) {
-            m = mirror = newOperationMirror();
-        }
-        return m;
+        return mirror.get();
     }
 
     // Ogsaa en template ting taenker jeg? IDK

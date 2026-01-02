@@ -251,7 +251,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 
     /** {@return the owner of the bean} */
     public ComponentRealm owner() {
-        return owner.authority();
+        return owner.owner();
     }
 
     public MainServiceNamespaceHandle serviceNamespace() {

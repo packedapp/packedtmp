@@ -52,7 +52,7 @@ public final class ServiceBindingSetup extends BindingSetup {
      * @param index
      */
     public ServiceBindingSetup(Key<?> key, OperationSetup operation, int index, boolean isRequired, ServiceResolver resolver) {
-        super(operation, index, operation.installedByExtension.authority());
+        super(operation, index, operation.installedByExtension.owner());
         this.key = key;
         this.isRequired = isRequired;
         this.resolver = requireNonNull(resolver);

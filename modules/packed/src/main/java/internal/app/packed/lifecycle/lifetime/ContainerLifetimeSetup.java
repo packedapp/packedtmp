@@ -133,13 +133,13 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         // And application is last.
         ArrayList<BeanSetup> sorted = new ArrayList<>(beans);
         Collections.sort(sorted, (a, b) -> {
-            if (a.owner.authority() == b.owner.authority()) {
+            if (a.owner.owner() == b.owner.owner()) {
                 return 0;
             }
-            if (a.owner.authority().equals(ComponentRealm.application())) {
+            if (a.owner.owner().equals(ComponentRealm.userland())) {
                 return 1;
             }
-            if (b.owner.authority().equals(ComponentRealm.application())) {
+            if (b.owner.owner().equals(ComponentRealm.userland())) {
                 return -1;
             }
             ExtensionSetup es1 = (ExtensionSetup) a.owner;

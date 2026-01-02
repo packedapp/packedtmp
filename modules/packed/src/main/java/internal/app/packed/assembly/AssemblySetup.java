@@ -98,8 +98,8 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
 
     /** {@inheritDoc} */
     @Override
-    public ComponentRealm authority() {
-        return ComponentRealm.application();
+    public ComponentRealm owner() {
+        return ComponentRealm.userland();
     }
 
     /**

@@ -121,7 +121,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
 
     private void bind(BindingProvider accessor) {
         assert (operation.bindings[index] == null);
-        operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.authority(), accessor);
+        operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.owner(), accessor);
     }
 
     /** {@inheritDoc} */

@@ -38,7 +38,7 @@ public final class BaseExtensionHostGuestBeanintrospector extends BeanIntrospect
             binding.bindContext(ApplicationLaunchContext.class);
         } else if (hook == ExtensionContext.class) {
             // We probably should have failed already, so no need to check. Only beans that are in the context
-            if (beanOwner().isApplication()) {
+            if (beanOwner().isUserland()) {
                 binding.failWith(hook.getSimpleName() + " can only be injected into bean that owned by an extension");
             }
             binding.bindContext(ExtensionContext.class);

@@ -46,7 +46,7 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
     }
 
     public final ComponentRealm authority() {
-        return handle.namespace.owner.authority();
+        return handle.namespace.owner.owner();
     }
 
     // But how the fuck do you update these???

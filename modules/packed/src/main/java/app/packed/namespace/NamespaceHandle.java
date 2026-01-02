@@ -85,7 +85,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
      * @return
      */
     public final C configuration(E e) {
-        return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k, ComponentRealm.application()));
+        return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k, ComponentRealm.userland()));
     }
 
     public final C configuration(E e, ExtensionPointHandle handle) {

@@ -60,7 +60,7 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         n = prefixExtension(bean, n);
 
         if (bean.bean.beanClass != void.class) {
-            BeanClassKey key = new BeanClassKey(bean.owner.authority(), bean.bean.beanClass);
+            BeanClassKey key = new BeanClassKey(bean.owner.owner(), bean.bean.beanClass);
 
             BeanSetup existingBean = beanClasses.get(key);
             int counter = 0;

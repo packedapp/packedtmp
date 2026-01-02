@@ -64,10 +64,10 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     final BeanSetup bean;
 
     /** The lazy generated bean configuration. */
-    private C configuration;
+    private final Supplier<C> configuration = StableValue.supplier(() -> newBeanConfiguration());
 
     /** The lazy generated bean mirror. */
-    private BeanMirror mirror;
+    private final Supplier<BeanMirror> mirror = StableValue.supplier(() -> newBeanMirror());
 
     /** The state of the bean. */
     private ComponentBuildState state = ComponentBuildState.CONFIGURABLE_AND_OPEN;
@@ -152,11 +152,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
     /** { @return the user exposed configuration of the bean} */
     public final C configuration() {
-        C c = configuration;
-        if (c == null) {
-            c = configuration = newBeanConfiguration();
-        }
-        return c;
+        return configuration.get();
     }
 
     /**
@@ -246,11 +242,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     /** {@inheritDoc} */
     @Override
     public final BeanMirror mirror() {
-        BeanMirror m = mirror;
-        if (m == null) {
-            m = mirror = newBeanMirror();
-        }
-        return m;
+        return mirror.get();
     }
 
     /**
@@ -317,7 +309,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle, boolean)
      */
     /* package private */ final void onStateChange(boolean isClose) {
-        if (  state == ComponentBuildState.CONFIGURABLE_AND_OPEN) {
+        if (state == ComponentBuildState.CONFIGURABLE_AND_OPEN) {
             state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
             onConfigured();
         }
@@ -437,8 +429,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
 //Operations
 //Call an operation at some point in the lifecycle
-////Take other (extension) bean instance
-////Take
+//// Take other (extension) bean instance Take
 //Replace instance after creation
 
 interface Zandbox<T> {
@@ -446,8 +437,8 @@ interface Zandbox<T> {
 
     // onClientInitialize
     default <B> void afterInitialize(InstanceBeanConfiguration<B> extensionBean, BiConsumer<? super B, ? super T> consumer) {
-        //// Ideen er at man fx kan have en BeanHandle<Driver>.onInitialize(MyEBC, (b,p)->b.drivers[i]=p);
-        //// Skal godt nok passe paa med capturing her... Ellers faar man hele application setup med i lambdaen
+        //// Ideen er at man fx kan have en BeanHandle<Driver>.onInitialize(MyEBC, (b,p)->b.drivers[i]=p); Skal godt nok passe
+        /// paa med capturing her... Ellers faar man hele application setup med i lambdaen
 
         // Alternativt kan man have noget foo(@SPIInject MyInterface[] mi)..
         // Og saa have registreret interfacet inde

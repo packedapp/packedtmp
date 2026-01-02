@@ -37,7 +37,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      */
     // We install using base(), but have beans here...
     public final Stream<? extends BeanConfiguration> beans() {
-        return handle.container.beans.stream().filter(b -> b.owner().isApplication()).map(b -> b.handle().configuration()).filter(c -> c != null);
+        return handle.container.beans.stream().filter(b -> b.owner().isUserland()).map(b -> b.handle().configuration()).filter(c -> c != null);
     }
 
     @SuppressWarnings("unchecked")

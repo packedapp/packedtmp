@@ -174,7 +174,7 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
 
             @Override
             public ServiceNamespaceConfiguration newServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension) {
-                return new ServiceNamespaceConfiguration(handle, extension, ComponentRealm.application());
+                return new ServiceNamespaceConfiguration(handle, extension, ComponentRealm.userland());
             }
 
             @Override

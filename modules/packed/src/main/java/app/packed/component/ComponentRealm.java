@@ -44,6 +44,11 @@ import internal.app.packed.util.types.ClassUtil;
 // So we can use it at runtime
 // But I think Often we also need an ExtensionRef
 
+
+// ?????
+// Application->UserLand?
+
+
 // ComponentRealm????
 @ValueBased
 public /* value */ final class ComponentRealm {
@@ -51,7 +56,7 @@ public /* value */ final class ComponentRealm {
     /** An application author. */
     // Was Application, Developer
     // Actor -> [Application, Extension]
-    private static final ComponentRealm APPLICATION = new ComponentRealm(Extension.class);
+    private static final ComponentRealm USERLAND = new ComponentRealm(Extension.class);
 
     /** Interned realm. */
     // Until we get values in which case we is always interned
@@ -102,14 +107,14 @@ public /* value */ final class ComponentRealm {
     }
 
     /** {@return true if this author represents author or the application, otherwise false.} */
-    public boolean isApplication() {
+    public boolean isUserland() {
         return extensionClass == Extension.class;
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return isApplication() ? "Application" : extensionClass.getSimpleName();
+        return isUserland() ? "Userland" : extensionClass.getSimpleName();
     }
 
     /**
@@ -127,7 +132,7 @@ public /* value */ final class ComponentRealm {
     }
 
     /** {@return the application author.} */
-    public static ComponentRealm application() {
-        return APPLICATION;
+    public static ComponentRealm userland() {
+        return USERLAND;
     }
 }

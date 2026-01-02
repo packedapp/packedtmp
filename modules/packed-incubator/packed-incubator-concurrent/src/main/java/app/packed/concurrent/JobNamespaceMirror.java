@@ -58,6 +58,6 @@ public class JobNamespaceMirror extends NamespaceMirror<BaseExtension> {
 
     /** {@return the owner of the namespace} */
     public ComponentRealm owner() {
-        return ComponentRealm.application();
+        return ComponentRealm.userland();
     }
 }

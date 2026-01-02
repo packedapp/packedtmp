@@ -64,7 +64,7 @@ public sealed abstract class AuthoritySetup<T extends AbstractTreeNode<T>> exten
     }
 
     /** {@return a realm representing the owner.} */
-    public abstract ComponentRealm authority();
+    public abstract ComponentRealm owner();
 
     /** {@return whether or not the authority entity is still configurable.} */
     public abstract boolean isConfigurable();

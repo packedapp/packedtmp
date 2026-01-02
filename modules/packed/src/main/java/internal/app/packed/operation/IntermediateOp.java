@@ -73,7 +73,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
             for (int i = 0; i < indexes.length; i++) {
                 int index = indexes[i];
                 Object argument = arguments[i];
-                os.bindings[index] = new ManualBindingSetup(os, index, ComponentRealm.application(), new FromConstant(argument.getClass(), argument));
+                os.bindings[index] = new ManualBindingSetup(os, index, ComponentRealm.userland(), new FromConstant(argument.getClass(), argument));
             }
             return os;
         }

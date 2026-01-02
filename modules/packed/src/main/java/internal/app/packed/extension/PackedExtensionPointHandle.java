@@ -26,6 +26,6 @@ public record PackedExtensionPointHandle(ExtensionSetup extension, ExtensionSetu
     /** {@inheritDoc} */
     @Override
     public ComponentRealm author() {
-        return extension.authority();
+        return extension.owner();
     }
 }
