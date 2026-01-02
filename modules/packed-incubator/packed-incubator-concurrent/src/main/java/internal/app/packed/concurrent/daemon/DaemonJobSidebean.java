@@ -29,7 +29,7 @@ public final class DaemonJobSidebean implements DaemonJobContext {
 
     private volatile Thread thread;
 
-    public DaemonJobSidebean(DaemonJobRuntimeManager manager, @SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonOperationInvoker invoker) {
+    public DaemonJobSidebean(@SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonOperationInvoker invoker, DaemonJobRuntimeManager manager) {
         this.factory = requireNonNull(factory);
         this.invoker = requireNonNull(invoker);
         this.manager = requireNonNull(manager);

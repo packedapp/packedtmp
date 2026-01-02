@@ -72,10 +72,9 @@ public final class OperationCodeGenerator {
 
     boolean isDebug() {
         return false;
-//        if (false) {
-//            return operation.bean.bean.beanClass == HowDoesThisWork.class || operation.bean.bean.beanClass == HowDoesThisWorkWithParam.class;
-//        }
-//        return (operation.bean.bean.beanClass == DaemonJobSidebean.class || operation.bean.bean.beanClass == DaemonJobSidebeanWithManager.class)
+//        /// return operation.bean.bean.beanClass == HowDoesThisWork.class || operation.bean.bean.beanClass
+//        /// == HowDoesThisWorkWithParam.class;
+//        return (operation.bean.bean.beanClass == DaemonJobSidebean.class || operation.bean.bean.beanClass == DaemonJobSidebeanWithoutManager.class)
 //
 //                && operation.handle() instanceof FactoryOperationHandle;
     }
@@ -181,11 +180,6 @@ public final class OperationCodeGenerator {
             result[i] = permuters.get(i);
         }
 
-        if (Arrays.equals(result, new int[] { 0, 2, 3 })) {
-            System.out.println("MODIFYIN®†");
-            result = new int[] { 0, 1, 2 };
-        }
-
         if (isDebug()) {
             System.out.println("Invoked as: " + invocationType);
             System.out.println("Target    : " + mh.type());
@@ -271,7 +265,6 @@ public final class OperationCodeGenerator {
     }
 
     private MethodHandle provide(MethodHandle mh, int bindingIndex, BindingProvider p, ArrayList<Integer> permuters) {
-        int extensionIndex = 0;
         int pos = permuters.size();
         return switch (p) {
         // A constant has been supplied by the user
@@ -290,7 +283,7 @@ public final class OperationCodeGenerator {
 
         // The value is taken directly from an argument provided by the invoking extension
         case BindingProvider.FromInvocationArgument(int argumentIndex) -> {
-            permuters.add(extensionIndex + argumentIndex);
+            permuters.add(argumentIndex);
             yield mh;
         }
 
@@ -305,21 +298,29 @@ public final class OperationCodeGenerator {
 
         case BindingProvider.FromLifetimeArena(_, LifetimeStoreIndex index, Class<?> type) -> {
             // read from constant pool via extIdx
-            permuters.add(extensionIndex);
+            permuters.add(0);
             MethodHandle beanFetcher = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, index.index);
             assert beanFetcher.type().returnType() == Object.class;
             beanFetcher = beanFetcher.asType(beanFetcher.type().changeReturnType(type));
-            yield MethodHandles.collectArguments(mh, extensionIndex, beanFetcher);
+            yield MethodHandles.collectArguments(mh, pos, beanFetcher);
         }
 
         case BindingProvider.FromSidebeanAttachment(Key<?> _, SidebeanHandle<?> _) -> {
-            extensionIndex = 1;
-            // Shared constant can be bound immediately, otherwise we need to bind the actual for the attachment
-            // at a later timer
-            Class<?> clazz = mh.type().parameterType(extensionIndex + pos - 1);
-            invocationType = invocationType.appendParameterTypes(clazz);
-            // System.out.println("Addingp permuter" + (bindingIndex + 1));
-            permuters.add(pos + 1);
+            // 1. Identify what type the internal method actually wants at this position
+            Class<?> requiredType = mh.type().parameterType(pos);
+
+            // 2. Add this type as a new requirement to our external 'invocationType'
+            int newIndexInInvocationType = invocationType.parameterCount();
+            invocationType = invocationType.appendParameterTypes(requiredType);
+
+            // 3. Tell the permuter: "Map target parameter [pos] to external argument [newIndexInInvocationType]"
+            permuters.add(newIndexInInvocationType);
+
+            if (isDebug()) {
+                System.out.println("Binding " + bindingIndex + " (Sidebean): Mapping MH param " + pos +
+                                   " to Invocation arg " + newIndexInInvocationType + " (" + requiredType.getSimpleName() + ")");
+            }
+
             yield mh;
         }
         };
