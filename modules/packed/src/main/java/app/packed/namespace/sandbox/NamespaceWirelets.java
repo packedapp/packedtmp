@@ -15,10 +15,21 @@
  */
 package app.packed.namespace.sandbox;
 
+import app.packed.container.Wirelet;
+import app.packed.namespace.NamespaceConfiguration;
+
 /**
  *
  */
 public class NamespaceWirelets {
 
+    public static Wirelet newNamespaces() {
+        throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Wirelet newNamespaces(Class<? extends NamespaceConfiguration<?>>... namespaces) {
+        throw new UnsupportedOperationException();
+    }
     // rename
 }

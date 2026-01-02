@@ -30,6 +30,7 @@ import app.packed.runtime.RunState;
 
 // I think also the things the actual guest have
 // Do we need a ComponentGuestLifecycleContext? Hmmm...
+// Vil nok ogsaa gerne bruge den paa sidebeans
 public @interface OnComponentGuestLifecycle {
 
     // if non empty, only for transitions from the specified
