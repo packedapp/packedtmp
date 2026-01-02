@@ -54,16 +54,18 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
     ApplicationTemplate<H> withComponentTags(String... tags);
 
     static <I> Builder<I> builder(Class<I> hostClass) {
-        throw new UnsupportedOperationException();
+        return new PackedApplicationTemplate.Builder<>(hostClass);
     }
 
     static <I> Builder<I> builder(Op<I> hostOp) {
-        throw new UnsupportedOperationException();
+        return new PackedApplicationTemplate.Builder<>(hostOp);
     }
 
     interface Builder<I> {
 
        Builder<I> unmanaged();
+
+       Builder<I> withComponentTags(String... tags);
 
        ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build();
 

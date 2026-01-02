@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
@@ -75,5 +76,56 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
     @Override
     public boolean isManaged() {
         return rootContainer().isManaged();
+    }
+
+    /** Implementation of {@link ApplicationTemplate.Builder}. */
+    public static final class Builder<I> implements ApplicationTemplate.Builder<I> {
+
+        private final Class<?> guestClass;
+
+        private final @Nullable Op<?> op;
+
+        private boolean managed = true;
+
+        private Set<String> componentTags = Set.of();
+
+        public Builder(Class<I> guestClass) {
+            this.guestClass = guestClass;
+            this.op = null;
+        }
+
+        public Builder(Op<I> op) {
+            this.guestClass = op.type().returnRawType();
+            this.op = op;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Builder<I> unmanaged() {
+            this.managed = false;
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Builder<I> withComponentTags(String... tags) {
+            this.componentTags = ComponentTagHolder.copyAndAdd(componentTags, tags);
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build() {
+            return build(ApplicationHandle.class, ApplicationHandle::new);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
+                Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
+            PackedContainerTemplate<?> container = managed ? PackedContainerTemplate.MANAGED : PackedContainerTemplate.UNMANAGED;
+            return new PackedApplicationTemplate<>(guestClass, op, handleClass,
+                    handleFactory, container, componentTags);
+        }
     }
 }
