@@ -24,7 +24,6 @@ module app.packed {
     // temporary sandbox thingies
     exports app.packed.build.hook;
     exports app.packed.component.guest;
-    exports internal.app.packed.context.publish;
     exports app.packed.service.mirror;
 
     /* Special support for packed-devtools */
