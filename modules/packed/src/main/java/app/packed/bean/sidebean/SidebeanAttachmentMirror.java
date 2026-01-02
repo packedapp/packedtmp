@@ -15,7 +15,10 @@
  */
 package app.packed.bean.sidebean;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import app.packed.bean.BeanMirror;
+import app.packed.service.Provide;
 
 /**
  *
@@ -26,4 +29,24 @@ public interface SidebeanAttachmentMirror {
     BeanMirror primaryBean();
 
     SidebeanMirror sidebean();
+
+    //
+}
+
+class Foo extends AtomicLong {
+
+    private static final long serialVersionUID = 1L;
+
+    // Alternativt implements Supplier?
+    // Men hvis de andre skal implementere nogle provides kan vi jo ligesaa godt bruge dem.
+    // Det eneste problemer med @Provide og lad os sige operation sidebeans. Er at det jo ikke
+    // er noget vi kan provide paa request scope. Eftersom invoker er det eneste der har noget med request at goere
+    // Maaske supportere vi det bare ikke
+
+    // Men altsaa Variable provide er bare ikke super brugbart, Andet end til at gemme noget info
+    // Jeg ser faktisk ikke at vi kan bruge den til noget rigtigt
+    @Provide
+    public long getIt() {
+        return super.get();
+    }
 }

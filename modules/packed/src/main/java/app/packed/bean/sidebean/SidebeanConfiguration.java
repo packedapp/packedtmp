@@ -97,6 +97,9 @@ public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T>
             throw new IllegalStateException();
         }
         SidebeanInvokerModel sim = handle.sim = SidebeanInvokerModel.of(invokerClass);
+
+        // Right now we always generate it, because we have a test in module-tests that needs to fail.
+        // However, right now it does not use the sidebean, so code is never generated.
         sim.constructor();
         sidebeanBind(invokerKey, new PackedSidebeanBinding.Invoker(sim));
     }

@@ -18,9 +18,11 @@ package app.packed.concurrent.job;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.concurrent.DaemonJob;
 import app.packed.concurrent.DaemonJobContext;
+import app.packed.container.Wirelets;
 
 /**
  *
@@ -28,16 +30,16 @@ import app.packed.concurrent.DaemonJobContext;
 public class ScTest2 extends BaseAssembly {
 
     public static void main(String[] args) throws Exception {
-//        ApplicationMirror m = App.mirrorOf(new ScTest2());
+        ApplicationMirror m = App.mirrorOf(new ScTest2(), Wirelets.codegenAlways());
 //        Optional<ThreadNamespaceMirror> o = m.namespace(ThreadNamespaceMirror.class);
 
 //        o.get().daemons().forEach(c -> {
 //            IO.println(c.name() + ":" + c.isInteruptAtStop());
 //        });
 
-        App.run(new ScTest2());
+//        App.run(new ScTest2());
 
-        Thread.sleep(10000);
+//        Thread.sleep(10000);
     }
 
     /** {@inheritDoc} */

@@ -76,18 +76,6 @@ public record PackedBeanTemplate(BeanLifetime beanKind, LifetimeTemplate lifetim
             this.beanKind = beanKind;
         }
 
-        @Override
-        public PackedBuilder beanClass(Class<?> beanClass) {
-            this.createAs = beanClass;
-            return this;
-        }
-
-        @Override
-        public PackedBuilder lifetime(LifetimeTemplate lifetime) {
-            this.lifetime = lifetime;
-            return this;
-        }
-
         public PackedBuilder initialization(PackedOperationTemplate initialization) {
             this.initializationTemplate = initialization;
             return this;

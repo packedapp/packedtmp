@@ -36,6 +36,11 @@ import internal.app.packed.container.wirelets.InternalBaseWirelet;
 public final class Wirelets {
     private Wirelets() {}
 
+    /**
+     * Always codegen even if mirrors or verify.
+     * Primarily used doing the development of Packed.
+     * @return
+     */
     public static Wirelet codegenAlways() {
         return new InternalBaseWirelet() {
 

@@ -131,6 +131,7 @@ public @interface AssemblySecurity {
 @Inherited
 
 // Replace by AssemblySecurityModel
+@Deprecated
 @interface AllowBuildHooksFromParentAssembly {
 
     WhatIsAllowed policy() default WhatIsAllowed.STRICT;

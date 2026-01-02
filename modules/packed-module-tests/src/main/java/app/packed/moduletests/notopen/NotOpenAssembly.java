@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import app.packed.application.App;
 import app.packed.assembly.AssemblyConfiguration;
 import app.packed.assembly.BaseAssembly;
+import app.packed.container.Wirelets;
 
 /**
  *
@@ -41,6 +42,6 @@ public class NotOpenAssembly extends BaseAssembly {
     }
 
     public static void build(Consumer<? super AssemblyConfiguration> consumer) {
-        App.verify(new NotOpenAssembly(consumer));
+        App.verify(new NotOpenAssembly(consumer), Wirelets.codegenAlways());
     }
 }

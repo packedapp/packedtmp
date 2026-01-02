@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import app.packed.context.Context;
 import internal.app.packed.bean.PackedBeanTemplate;
-import sandbox.application.LifetimeTemplate;
 
 /**
  * A bean template is an immutable, reusable configuration object that defines the behaviour of a bean. A template is
@@ -97,22 +96,10 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // Add component tags
     sealed interface Builder permits PackedBeanTemplate.PackedBuilder {
 
-        default Builder requiredManagedContainer() {
-            // If attempting to install into an unmanaged container
-            // it will fail
-            // IDK about this. Should fail no matter anyway if we use @OnStop
-            throw new UnsupportedOperationException();
-        }
         // requireManaged() <-- attempting to install
-
-        // Specific class right???
-        Builder beanClass(Class<?> beanClass);
 
         /** {@return a new bean template} */
         BeanTemplate build();
-
-        @SuppressWarnings("exports")
-        Builder lifetime(LifetimeTemplate lifetime);
 
 
         Builder addContext(Class<? extends Context<?>> contextClass);

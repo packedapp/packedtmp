@@ -55,7 +55,7 @@ public class ModuleAccessor {
         try {
             return MethodHandles.privateLookupIn(targetClass, masterLookup);
         } catch (IllegalAccessException e) {
-            // This happens if access was revoked dynamically
+            // This is highly unlikely
             throw new RuntimeException("Access revoked for " + targetClass.getName(), e);
         }
     }
