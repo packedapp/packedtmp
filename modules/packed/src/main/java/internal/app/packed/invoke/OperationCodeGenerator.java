@@ -47,8 +47,7 @@ import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget
  */
 public final class OperationCodeGenerator {
 
-    @Nullable
-    public LazyResolvable cachedLazyMethodHandle;
+    private final Supplier<LazyResolvable> cachedLazyMethodHandle;
 
     /** The invocation type of the method handle being generated. */
     private MethodType invocationType;
@@ -68,6 +67,7 @@ public final class OperationCodeGenerator {
         this.operation = operation;
         this.sidebeanAttachment = sidebean;
         this.invocationType = operation.template.invocationType();
+        this.cachedLazyMethodHandle = StableValue.supplier(() -> MethodHandleUtil.lazyF(operation.template.methodType, cachedMH));
     }
 
     boolean isDebug() {
@@ -90,11 +90,7 @@ public final class OperationCodeGenerator {
 
     MethodHandle generate(boolean lazy) {
         if (lazy) {
-            LazyResolvable lazyMH = cachedLazyMethodHandle;
-            if (lazyMH == null) {
-                lazyMH = cachedLazyMethodHandle = MethodHandleUtil.lazyF(operation.template.methodType, cachedMH);
-            }
-            return lazyMH.handle();
+            return cachedLazyMethodHandle.get().handle();
         } else {
             return generateMethodHandle();
         }
@@ -317,8 +313,8 @@ public final class OperationCodeGenerator {
             permuters.add(newIndexInInvocationType);
 
             if (isDebug()) {
-                System.out.println("Binding " + bindingIndex + " (Sidebean): Mapping MH param " + pos +
-                                   " to Invocation arg " + newIndexInInvocationType + " (" + requiredType.getSimpleName() + ")");
+                System.out.println("Binding " + bindingIndex + " (Sidebean): Mapping MH param " + pos + " to Invocation arg " + newIndexInInvocationType + " ("
+                        + requiredType.getSimpleName() + ")");
             }
 
             yield mh;

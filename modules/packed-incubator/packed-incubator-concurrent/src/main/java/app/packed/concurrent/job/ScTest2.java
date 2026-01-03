@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
+import app.packed.bean.lifecycle.Stop;
 import app.packed.concurrent.DaemonJob;
 import app.packed.concurrent.DaemonJobContext;
 
@@ -35,9 +36,11 @@ public class ScTest2 extends BaseAssembly {
 //            IO.println(c.name() + ":" + c.isInteruptAtStop());
 //        });
 
-        App.run(new ScTest2());
-
-        Thread.sleep(10000);
+        App app = App.start(new ScTest2());
+        Thread.sleep(3000);
+        app.stop();
+        Thread.sleep(1000);
+        System.out.println(app.state());
     }
 
     /** {@inheritDoc} */
@@ -56,6 +59,11 @@ public class ScTest2 extends BaseAssembly {
             while(sc.awaitShutdown(1, TimeUnit.SECONDS)) {
                 IO.println("Daemon");
             }
+        }
+
+        @Stop
+        public void g() {
+            System.out.println("Goodnight");
         }
     }
 }

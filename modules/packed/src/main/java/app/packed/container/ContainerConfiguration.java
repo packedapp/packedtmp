@@ -10,7 +10,6 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
-import app.packed.util.Nullable;
 import internal.app.packed.extension.ExtensionSetup;
 
 /**
@@ -21,7 +20,6 @@ import internal.app.packed.extension.ExtensionSetup;
 public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ContainerBuildLocal.Accessor {
 
     /** The container we are configuring. */
-    @Nullable
     final ContainerHandle<?> handle;
 
     public ContainerConfiguration(ContainerHandle<?> handle) {

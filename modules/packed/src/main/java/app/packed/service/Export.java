@@ -24,10 +24,7 @@ import internal.app.packed.service.ServiceExportOperationHandle;
 @Documented
 @OnAnnotatedMethod(introspector = ExportBeanIntrospector.class, allowInvoke = true)
 @BeanTrigger.OnAnnotatedField(introspector = ExportBeanIntrospector.class, allowGet = true)
-public @interface Export {
-    // Make Provide into meta annotation??
-    String namespace() default "exports";
-}
+public @interface Export {}
 
 final class ExportBeanIntrospector extends BaseExtensionBeanIntrospector {
 

@@ -66,11 +66,7 @@ import internal.app.packed.service.ServiceProvideOperationHandle;
 @OnAnnotatedField(introspector = ProvideBeanIntrospector.class, allowGet = true)
 // Hvis vi laver meta annoteringen, skal vi jo naesten lave den om til en repeatable..
 // Syntes godt man maa smide flere pa
-public @interface Provide {
-    // What about extensions? There name is FooExtension#main
-    // Maybe just have it empty? and then ->Main | FooExtension#Main
-    String namespace() default NamespaceMetaAnnotation.DEFAULT_NAMESPACE;
-}
+public @interface Provide {}
 
 final class ProvideBeanIntrospector extends BaseExtensionBeanIntrospector {
 

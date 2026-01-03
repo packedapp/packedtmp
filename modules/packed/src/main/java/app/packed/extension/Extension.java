@@ -98,9 +98,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      *
      * @param handle
      *            the extension's handle
-     *
-     * @throws IllegalStateException
-     *             if attempting to construct the extension manually
      */
     protected Extension(ExtensionHandle<E> handle) {
         this.handle = (PackedExtensionHandle<E>) requireNonNull(handle);

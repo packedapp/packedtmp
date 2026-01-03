@@ -32,7 +32,10 @@ import app.packed.extension.FrameworkExtension;
 public class CliExtension extends FrameworkExtension<CliExtension> {
 
     /**
+     * Creates a new CLI extension.
+     *
      * @param handle
+     *            the extension's handle
      */
     CliExtension(ExtensionHandle<CliExtension> handle) {
         super(handle);
@@ -56,6 +59,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     public <T> InstanceBeanConfiguration<T> newBean(Class<T> beanClass) {
         // Hvad goer den praecis??? Laver bean'en og exiter???
+        // Returne en InstanceBeanConfiguration
 
 //        BeanHandle<T> h = base().beanBuilder(BeanTemplate).install(beanClass);
 //        return new InstanceBeanConfiguration<>(h);

@@ -186,12 +186,10 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     }
 
     public static ExtensionSetup crack(Extension<?> extension) {
-        requireNonNull(extension, "extension is null");
         return ExtensionAccessHandler.instance().get_Extension_ExtensionSetup(extension);
     }
 
     public static PackedExtensionPointHandle crack(ExtensionPoint<?> extensionPoint) {
-        requireNonNull(extensionPoint, "extensionPoint is null");
         return ExtensionAccessHandler.instance().get_ExtensionPoint_PackedExtensionPointHandle(extensionPoint);
     }
 

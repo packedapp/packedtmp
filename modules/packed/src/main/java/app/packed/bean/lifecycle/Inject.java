@@ -60,16 +60,7 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.InjectOperationHan
 @NamespaceOperation
 @BeanTrigger.OnAnnotatedField(introspector = InjectBeanIntrospector.class, allowSet = true)
 @BeanTrigger.OnAnnotatedMethod(introspector = InjectBeanIntrospector.class, allowInvoke = true)
-public @interface Inject {
-    // Altsaa med mindre vi laver en inject annotatering for alle namespace kinds,
-    // Kan vi kun styre det her, men hvordan styre vi det paa parameter niveau???
-    ///// Ahhhh, bliver maaske noedt til at have en Namespace annotering
-    // Ihvertfald hvis man skal mikse og matches.
-    // Min store "frygt" er man smider den paa alt
-    //
-    String namespace() default "main";
-
-}
+public @interface Inject {}
 
 final class InjectBeanIntrospector extends BaseExtensionBeanIntrospector {
     @Override

@@ -5,7 +5,6 @@
 
 ------
 Namespace
-  String name
   Set<ResourceKey> keys();
   Set<ResourcePath> resourcePaths();
 

@@ -43,17 +43,17 @@ import app.packed.extension.FrameworkExtension;
 
 // Maybe it is built-in..
 // Can't fanthom many applications not threads
-public class JobExtension extends FrameworkExtension<JobExtension> {
+public final class JobExtension extends FrameworkExtension<JobExtension> {
 
     /**
+     * Creates a new job extension.
+     *
      * @param handle
+     *            the extension's handle
      */
     JobExtension(ExtensionHandle<JobExtension> handle) {
         super(handle);
     }
-
-    /** Creates a new thread extension. */
-
 
     /**
      * Schedules an operation.

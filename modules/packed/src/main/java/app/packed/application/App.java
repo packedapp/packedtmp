@@ -83,7 +83,6 @@ public interface App extends AutoCloseable, ApplicationInterface {
 
     /**
      * Initiates an orderly shutdown of the application.
-     *
      * <p>
      * The exact behavior of the shutdown process can be customized using the provided stop options.
      *
