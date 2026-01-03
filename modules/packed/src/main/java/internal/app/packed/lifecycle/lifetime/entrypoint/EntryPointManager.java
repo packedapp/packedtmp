@@ -36,7 +36,7 @@ public class EntryPointManager {
     @Nullable
     public Class<? extends Extension<?>> dispatcher;
 
-    public BeanConfiguration ebc;
+    public BeanConfiguration<?> ebc;
 
     /** Any entry point of the lifetime, null if there are none. */
     @Nullable

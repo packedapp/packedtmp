@@ -277,7 +277,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     public static BeanSetup crack(Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return switch (accessor) {
-        case BeanConfiguration b -> crack(b);
+        case BeanConfiguration<?> b -> crack(b);
         case BeanHandle<?> b -> crack(b);
         case BeanIntrospector<?> b -> crack(b);
         case BeanMirror b -> crack(b);
@@ -291,7 +291,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
      *            the configuration to extract from
      * @return the bean setup
      */
-    public static BeanSetup crack(BeanConfiguration configuration) {
+    public static BeanSetup crack(BeanConfiguration<?> configuration) {
         return crack(BeanAccessHandler.instance().getBeanConfigurationHandle(configuration));
     }
 

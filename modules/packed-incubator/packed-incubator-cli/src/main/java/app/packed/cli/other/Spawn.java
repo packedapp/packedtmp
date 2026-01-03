@@ -19,7 +19,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
-import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.BeanConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
@@ -43,8 +43,8 @@ interface Spawn {
     /// Scheduling har vel ikke et domain?
     ScheduleOperationConfiguration schedule(Runnable runnable);
     ScheduleOperationConfiguration schedule(Callable<?> callable);
-    <T> InstanceBeanConfiguration<T> schedule(Class<T> beanClass);
-    <T> InstanceBeanConfiguration<T> schedule(Op<T> beanClass);
+    <T> BeanConfiguration<T> schedule(Class<T> beanClass);
+    <T> BeanConfiguration<T> schedule(Op<T> beanClass);
     void scheduleContainer(Assembly assembly, Wirelet... wirelets);
     ContainerConfiguration scheduleContainer(Wirelet... wirelets);
 
@@ -54,8 +54,8 @@ interface Spawn {
     WebRequestOperation get(Consumer<WebRequest> request);
     WebRequestOperation post(Consumer<WebRequest> request);
 
-    <T> InstanceBeanConfiguration<T> webOp(Class<T> beanClass);
-    <T> InstanceBeanConfiguration<T> webOp(Op<T> beanClass);
+    <T> BeanConfiguration<T> webOp(Class<T> beanClass);
+    <T> BeanConfiguration<T> webOp(Op<T> beanClass);
     void webOpContainer(Assembly assembly, Wirelet... wirelets);
     ContainerConfiguration webOpContainer(Wirelet... wirelets);
     ApplicationConfiguration webOpApplication(Wirelet... wirelets);

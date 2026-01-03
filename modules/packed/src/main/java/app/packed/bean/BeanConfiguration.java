@@ -23,7 +23,7 @@ import app.packed.operation.OperationConfiguration;
  * {@link app.packed.extension.BaseExtension#install(Class)}. It can also, for example, be obtained via
  * {@link app.packed.container.ContainerConfiguration#beans()}.
  */
-public non-sealed class BeanConfiguration extends ComponentConfiguration implements BeanLocal.Accessor {
+public non-sealed class BeanConfiguration<T> extends ComponentConfiguration implements BeanLocal.Accessor {
 
     /** The bean handle. */
     private final BeanHandle<?> handle;
@@ -48,7 +48,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      *             if called on a bean with void bean class
      */
     @BuildActionable("bean.allowMultiClass")
-    public BeanConfiguration allowMultiClass() {
+    public BeanConfiguration<T> allowMultiClass() {
         checkIsConfigurable();
         handle.allowMultiClass();
         return this;
@@ -149,7 +149,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         handle.bindComputedConstant(key, supplier);
     }
 
-    public <K> BeanConfiguration bindServiceInstance(Class<K> key, K instance) {
+    public <K> BeanConfiguration<T> bindServiceInstance(Class<K> key, K instance) {
         // Future Functionality:
 
         // overrideService(key, Op) ->
@@ -180,7 +180,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      *            the instance to bind the service to
      * @return this configuration
      */
-    public <K> BeanConfiguration bindServiceInstance(Key<K> key, K instance) {
+    public <K> BeanConfiguration<T> bindServiceInstance(Key<K> key, K instance) {
         checkIsConfigurable();
         handle.bindConstant(key, instance);
         return this;
@@ -211,7 +211,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     }
 
     // Outside of the framework I think we can only test on ComponentPath, that may be fine
-    public final boolean isInSameContainer(BeanConfiguration other) {
+    public final boolean isInSameContainer(BeanConfiguration<?> other) {
         return handle.bean.container == other.handle.bean.container;
     }
 
@@ -236,7 +236,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      *             with the same name.
      */
     @BuildActionable("bean.named")
-    public BeanConfiguration named(String name) {
+    public BeanConfiguration<?> named(String name) {
         checkIsConfigurable();
         handle.named(name);
         return this;
@@ -257,8 +257,8 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      * @throws IllegalStateException
      *             if the number of configurations found is not exactly 1
      */
-    final <T extends OperationConfiguration> T operation(Class<T> operationType) {
-        List<T> list = operations(operationType).toList();
+    final <S extends OperationConfiguration> S operation(Class<S> operationType) {
+        List<S> list = operations(operationType).toList();
         if (list.size() != 1) {
             throw new IllegalStateException("Expected exactly 1 configuration for operation type: " + operationType.getName() + ", but found: " + list.size());
         }
@@ -274,7 +274,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
 
     // Named instead //operation(ScheduledOperationConfiguration, "foo");
-    final <T extends OperationConfiguration> T operation(Class<T> operationType, String operationName) {
+    final <S extends OperationConfiguration> S operation(Class<S> operationType, String operationName) {
         return operation(operationType);
     }
 
@@ -292,8 +292,8 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      *            the type of operations configurations the stream should include
      */
     @SuppressWarnings("unchecked")
-    public final <T extends OperationConfiguration> Stream<T> operations(Class<T> operationType) {
-        return (Stream<T>) operations().filter(e -> operationType.isInstance(e));
+    public final <S extends OperationConfiguration> Stream<S> operations(Class<S> operationType) {
+        return (Stream<S>) operations().filter(e -> operationType.isInstance(e));
     }
 
 
@@ -311,7 +311,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     /** {@inheritDoc} */
     @Override
     @BuildActionable("component.addTags") // Hmm or bean.addTags
-    public BeanConfiguration tag(String... tags) {
+    public BeanConfiguration<T> tag(String... tags) {
         checkIsConfigurable();
         handle.componentTag(tags);
         return this;

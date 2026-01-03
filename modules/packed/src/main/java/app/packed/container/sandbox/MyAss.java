@@ -58,7 +58,7 @@ public class MyAss extends BaseAssembly {
 
     }
 
-    static class MyBeanHandle extends BeanHandle<BeanConfiguration> {
+    static class MyBeanHandle extends BeanHandle<BeanConfiguration<?>> {
 
         /**
          * @param installer

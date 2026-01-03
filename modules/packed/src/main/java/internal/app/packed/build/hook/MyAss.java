@@ -62,7 +62,7 @@ public class MyAss extends BaseAssembly {
     static class MyBe extends BeanHook {
 
         @Override
-        public void onNew(BeanConfiguration configuration) {
+        public void onNew(BeanConfiguration<?> configuration) {
             IO.println("Bean Added of type " + configuration.beanClass());
         }
 

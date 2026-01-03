@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.application.ApplicationTemplate;
-import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.BeanConfiguration;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtensionPoint;
 import internal.app.packed.application.GuestBeanHandle;
@@ -34,7 +34,7 @@ import internal.app.packed.container.PackedContainerLink;
 // Hvor de kommer fra, ect
 
 // De enkelt required service links maa addes her
-public class ComponentHostConfiguration<T> extends InstanceBeanConfiguration<T> {
+public class ComponentHostConfiguration<T> extends BeanConfiguration<T> {
 
     Map<Key<?>, PackedContainerLink> links = new HashMap<>();
 

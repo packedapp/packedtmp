@@ -18,7 +18,7 @@ package app.packed.cli;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.BeanConfiguration;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.FrameworkExtension;
@@ -53,11 +53,11 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     // Must be application scoped (or same lifetime as the namespace, or prototype, idk)
     // Probably need some BiConsumerThrow
-    public <T> CliCommandConfiguration addCliCommand(InstanceBeanConfiguration<T> bean, BiConsumer<T, CliCommandContext> action) {
+    public <T> CliCommandConfiguration addCliCommand(BeanConfiguration<T> bean, BiConsumer<T, CliCommandContext> action) {
         throw new UnsupportedOperationException();
     }
 
-    public <T> InstanceBeanConfiguration<T> newBean(Class<T> beanClass) {
+    public <T> BeanConfiguration<T> newBean(Class<T> beanClass) {
         // Hvad goer den praecis??? Laver bean'en og exiter???
         // Returne en InstanceBeanConfiguration
 

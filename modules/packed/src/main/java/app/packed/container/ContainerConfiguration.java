@@ -34,12 +34,12 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * @see ContainerMirror#beans()
      */
     // We install using base(), but have beans here...
-    public final Stream<? extends BeanConfiguration> beans() {
+    public final Stream<? extends BeanConfiguration<?>> beans() {
         return handle.container.beans.stream().filter(b -> b.owner().isUserland()).map(b -> b.handle().configuration()).filter(c -> c != null);
     }
 
     @SuppressWarnings("unchecked")
-    public final <T extends BeanConfiguration> Stream<T> beans(Class<? extends BeanConfiguration> beanClass) {
+    public final <T extends BeanConfiguration<?>> Stream<T> beans(Class<? extends BeanConfiguration<?>> beanClass) {
         return (Stream<T>) beans().filter(beanClass::isInstance);
     }
 

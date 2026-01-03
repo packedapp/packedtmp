@@ -15,8 +15,8 @@
  */
 package app.packed.lifetime;
 
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.InstanceBeanConfiguration;
 
 /**
  *
@@ -26,7 +26,7 @@ import app.packed.bean.InstanceBeanConfiguration;
 // Altsaa vi skal jo have et @OnStop callback. Kan ligesaa vaere en bean... Som en runnable
 
 // I only think extensions can install it
-public final class LifetimeBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
+public final class LifetimeBeanConfiguration<T> extends BeanConfiguration<T> {
 
     /**
      * @param handle

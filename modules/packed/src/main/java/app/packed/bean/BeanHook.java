@@ -29,9 +29,9 @@ public non-sealed abstract class BeanHook extends BuildHook {
      * @param configuration
      *            the configuration of the new bean
      */
-    public void onNew(BeanConfiguration configuration) {}
+    public void onNew(BeanConfiguration<?> configuration) {}
 
-    public void onNew(@SuppressWarnings("exports") TransformerChain tc, BeanConfiguration bean) {}
+    public void onNew(@SuppressWarnings("exports") TransformerChain tc, BeanConfiguration<?> bean) {}
 
     // Could add preSynthesize and postSynthsize if we want to support
     // Maybe just transform? Sometimes it is just replace

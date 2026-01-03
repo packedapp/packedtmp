@@ -39,7 +39,7 @@ public abstract class BeanAccessHandler extends AccessHelper {
      * @param configuration the configuration
      * @return the bean handle
      */
-    public abstract BeanHandle<?> getBeanConfigurationHandle(BeanConfiguration configuration);
+    public abstract BeanHandle<?> getBeanConfigurationHandle(BeanConfiguration<?> configuration);
 
     /**
      * Gets the BeanSetup from a BeanHandle.

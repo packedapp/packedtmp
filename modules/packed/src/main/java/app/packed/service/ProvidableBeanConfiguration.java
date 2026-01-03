@@ -17,8 +17,8 @@ package app.packed.service;
 
 import java.util.function.Function;
 
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.binding.BindingHandle;
 import app.packed.binding.Key;
 import app.packed.service.mirror.ServiceBindingMirror;
@@ -27,7 +27,7 @@ import app.packed.service.mirror.ServiceBindingMirror;
  * A configuration of a bean that can be provided as a service.
  */
 // Was ServiceableBeanConfiguration?
-public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
+public class ProvidableBeanConfiguration<T> extends BeanConfiguration<T> {
 
     /**
      * Create a new configuration.

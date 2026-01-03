@@ -58,7 +58,7 @@ import internal.app.packed.util.accesshelper.OperationAccessHandler;
  * @see BeanInstaller
  * @see BeanConfiguration
  */
-public non-sealed class BeanHandle<C extends BeanConfiguration> extends ComponentHandle implements ContextualizedElement, Accessor {
+public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends ComponentHandle implements ContextualizedElement, Accessor {
 
     /** The internal configuration of the bean. */
     final BeanSetup bean;
@@ -260,7 +260,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
     @SuppressWarnings("unchecked")
     protected C newBeanConfiguration() {
-        return (C) new BeanConfiguration(this);
+        return (C) new BeanConfiguration<>(this);
     }
 
     // add overrideServiceIfPresent? Or have a Set<Key<?>> BeanConfiguration.services()
@@ -405,7 +405,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
         AccessHelper.initHandler(BeanAccessHandler.class, new BeanAccessHandler() {
 
             @Override
-            public BeanHandle<?> getBeanConfigurationHandle(BeanConfiguration configuration) {
+            public BeanHandle<?> getBeanConfigurationHandle(BeanConfiguration<?> configuration) {
                 return configuration.handle();
             }
 
@@ -433,10 +433,10 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 //Replace instance after creation
 
 interface Zandbox<T> {
-    OperationHandle<?> addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation);
+    OperationHandle<?> addOperation(BeanConfiguration<?> operator, Op<?> operation);
 
     // onClientInitialize
-    default <B> void afterInitialize(InstanceBeanConfiguration<B> extensionBean, BiConsumer<? super B, ? super T> consumer) {
+    default <B> void afterInitialize(BeanConfiguration<B> extensionBean, BiConsumer<? super B, ? super T> consumer) {
         //// Ideen er at man fx kan have en BeanHandle<Driver>.onInitialize(MyEBC, (b,p)->b.drivers[i]=p); Skal godt nok passe
         /// paa med capturing her... Ellers faar man hele application setup med i lambdaen
 

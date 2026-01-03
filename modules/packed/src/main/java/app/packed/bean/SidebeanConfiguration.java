@@ -23,7 +23,7 @@ import internal.app.packed.bean.sidebean.SidebeanInvokerModel;
 /**
  * A configuration object for aside bean.
  */
-public final class SidebeanConfiguration<T> extends InstanceBeanConfiguration<T> {
+public final class SidebeanConfiguration<T> extends BeanConfiguration<T> {
 
     private final SidebeanHandle<?> handle;
 
