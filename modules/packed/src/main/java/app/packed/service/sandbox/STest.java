@@ -28,7 +28,7 @@ public class STest extends BaseAssembly {
     @Override
     protected void build() {
         provide(A.class);
-        provide(Foo.class).bindServiceInstance(A.class, new A("BNEA"));
+        provide(Foo.class).bindConstant(A.class, new A("BNEA"));
     }
 
     public static void main(String[] args) {

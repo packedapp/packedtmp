@@ -40,8 +40,8 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
         this.handle = requireNonNull(handle);
     }
 
-    public <K> OperationConfiguration bindServiceInstance(Class<K> key, K instance) {
-        return bindServiceInstance(Key.of(key), instance);
+    public <K> OperationConfiguration bindConstant(Class<K> key, K instance) {
+        return bindConstant(Key.of(key), instance);
     }
 
     /**
@@ -58,7 +58,7 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
      *             if the bean does not have binding that are resolved as a service with the specified key. What if it wants
      *             to use at runtime using service locator?
      */
-    public <K> OperationConfiguration bindServiceInstance(Key<K> key, K instance) {
+    public <K> OperationConfiguration bindConstant(Key<K> key, K instance) {
         checkIsConfigurable();
         return this;
     }

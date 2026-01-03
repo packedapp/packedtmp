@@ -72,7 +72,6 @@ public final class SidebeanConfiguration<T> extends BeanConfiguration<T> {
 
     public <K> void sidebeanBindComputedConstant(Key<K> key) {
         checkIsConfigurable();
-//        handle.bindCodeGenerator(key, supplier);
     }
 
     /**

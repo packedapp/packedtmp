@@ -147,9 +147,6 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
     public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
         checkIsConfigurable();
         handle.bindComputedConstant(key, supplier);
-    }
-
-    public <K> BeanConfiguration<T> bindServiceInstance(Class<K> key, K instance) {
         // Future Functionality:
 
         // overrideService(key, Op) ->
@@ -157,7 +154,10 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
         // Maybe Op includes a service that have already been overridden.
         // Not saying its impossible. But currently we do not support
         // Adding operations dynamically after the bean has been scanned.
-        return bindServiceInstance(Key.of(key), instance);
+    }
+
+    public <K> BeanConfiguration<T> bindConstant(Class<K> key, K instance) {
+        return bindConstant(Key.of(key), instance);
     }
 
     // provideTo??
@@ -180,7 +180,7 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
      *            the instance to bind the service to
      * @return this configuration
      */
-    public <K> BeanConfiguration<T> bindServiceInstance(Key<K> key, K instance) {
+    public <K> BeanConfiguration<T> bindConstant(Key<K> key, K instance) {
         checkIsConfigurable();
         handle.bindConstant(key, instance);
         return this;
