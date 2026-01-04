@@ -15,10 +15,12 @@
  */
 package app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.binding.Key;
 
 /**
- *
+ * Launches an application.
  */
 public interface ApplicationLauncher {
 
@@ -31,14 +33,19 @@ public interface ApplicationLauncher {
         throw new UnsupportedOperationException();
     }
 
-    default <T> ApplicationLauncher provide(Class<? super T> key, T value) {
-        return provide(Key.of(key), value);
+    default <T> ApplicationLauncher provide(Class<? super T> key, T instance) {
+        return provide(Key.of(key), instance);
     }
 
-    <T> ApplicationLauncher provide(Key<? super T> key, T value);
+    <T> ApplicationLauncher provide(Key<? super T> key, T instance);
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    default ApplicationLauncher provide(Object object) {
-        return provide((Class) object.getClass(), object);
+    default ApplicationLauncher provide(Object instance) {
+        requireNonNull(instance, "object cannot be null");
+        return provideCaptured(this, instance.getClass(), instance);
+    }
+
+    private static <T> ApplicationLauncher provideCaptured(
+            ApplicationLauncher self, Class<T> type, Object instance) {
+        return self.provide(type, type.cast(instance));
     }
 }

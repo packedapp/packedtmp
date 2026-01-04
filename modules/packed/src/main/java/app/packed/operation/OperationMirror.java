@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanTrigger.AutoInjectInheritable;
+import app.packed.bean.SidebeanTargetMirror;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.component.ComponentMirror;
@@ -63,7 +64,8 @@ import sandbox.operation.mirror.DependenciesMirror;
  * </ul>
  */
 @AutoInjectInheritable(introspector = OperationMirrorBeanIntrospector.class)
-public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror {
+public non-sealed class OperationMirror
+        implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror, SidebeanTargetMirror {
 
     /** The handle of the operation we are mirroring. */
     private final OperationHandle<?> handle;
@@ -484,7 +486,7 @@ class ZandboxOM {
 //    }
 //
 //    public static void main(String[] args) {
-    ////        SandboxOp.findAll(null, BeanLifecycleMirror.class).filter(m -> m.state() == RunState.INITIALIZED).count();
+    //// SandboxOp.findAll(null, BeanLifecycleMirror.class).filter(m -> m.state() == RunState.INITIALIZED).count();
 //
 //    }
 
@@ -510,8 +512,7 @@ class ZandboxOM {
 //* {@return the lifetime of the the operation.}
 //*/
 
-/// En operation har ikke en lifetime.
-/// Den spawner _masske_ en ny lifetime
+/// En operation har ikke en lifetime. Den spawner _masske_ en ny lifetime
 
 //public final LifetimeMirror lifetime() {
 //  return bean().lifetime().get();
@@ -528,10 +529,10 @@ class ZandboxOM {
 //  throw new UnsupportedOperationException();
 //}
 
-////Paa en eller anden maade maa den bindes til noget...
+//// Paa en eller anden maade maa den bindes til noget...
 //Object boundTo();
 //
-///** {@return the component behind the action.} */
+/// ** {@return the component behind the action.} * /
 //ComponentMirror component();
 //
 //InterruptPolicy interruptPolicy();
@@ -539,7 +540,6 @@ class ZandboxOM {
 //boolean isAsync();
 //
 //public boolean isFactory() {
-//// isInitializer
-//// Ideen er at constructuren ser anderledes ud
+//// isInitializer Ideen er at constructuren ser anderledes ud
 //return false;
 //}

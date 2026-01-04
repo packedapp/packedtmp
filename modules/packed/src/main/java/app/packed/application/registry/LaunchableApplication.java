@@ -61,7 +61,7 @@ public sealed interface LaunchableApplication<I> permits PackedInstalledApplicat
      * @throws UnsupportedOperationException
      *             if this application is not a {@link #isManaged() managed} application.
      */
-    Optional<ManagedInstance<I>> managedInstance(String name);
+    Optional<ManagedInstance<I>> instance(String name);
 
     /**
      * {@return a stream of all managed instances for this application}
@@ -69,7 +69,7 @@ public sealed interface LaunchableApplication<I> permits PackedInstalledApplicat
      * @throws UnsupportedOperationException
      *             if this application is not a {@link #isManaged() managed} application.
      */
-    Stream<ManagedInstance<I>> managedInstances();
+    Stream<ManagedInstance<I>> instances();
 
     /** {@return the name of the application} */
     default String name() {

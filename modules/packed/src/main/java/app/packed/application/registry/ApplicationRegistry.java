@@ -40,9 +40,13 @@ public sealed interface ApplicationRegistry<I, H extends ApplicationHandle<I, ?>
 
     /**
      * {@return a concatenated stream of all application instances managed by every managed application in this repository}
+     *
+     * @throws UnsupportedOperationException
+     *             if this registry is configured for unmanaged applications.
+     * @see ApplicationTemplate.Builder#unmanaged()
      */
     default Stream<ManagedInstance<I>> allManagedInstances() {
-        return applications().filter(LaunchableApplication::isManaged).flatMap(l -> l.managedInstances());
+        return applications().filter(LaunchableApplication::isManaged).flatMap(l -> l.instances());
     }
 
     /**

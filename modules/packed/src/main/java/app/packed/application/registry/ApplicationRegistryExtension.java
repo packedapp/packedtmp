@@ -60,7 +60,7 @@ public final class ApplicationRegistryExtension extends FrameworkExtension<Appli
      * @throws IllegalArgumentException
      *             if the specified template has void.class guest type.
      */
-    public <A, H extends ApplicationHandle<A, ?>> ApplicationRegistryConfiguration<A, H> installRegistry(ApplicationTemplate<H> template) {
+    public <A, H extends ApplicationHandle<A, ?>> ApplicationRegistryBeanConfiguration<A, H> installRegistry(ApplicationTemplate<H> template) {
         PackedApplicationTemplate<H> t = (PackedApplicationTemplate<H>) template;
         if (t.guestClass() == Void.class) {
             throw new IllegalArgumentException("Application templates for Void.class guest type are not supported");
@@ -83,10 +83,17 @@ public final class ApplicationRegistryExtension extends FrameworkExtension<Appli
         // installRepository(template).installApplication(installer);
     }
 
-    public <A, H extends ApplicationHandle<A, ?>> ApplicationRegistryConfiguration<A, H> provideRegistry(ApplicationTemplate<H> template) {
+    public <A, H extends ApplicationHandle<A, ?>> ApplicationRegistryBeanConfiguration<A, H> provideRegistry(ApplicationTemplate<H> template) {
         return installRegistry(template).provide();
     }
 }
+
+// Samme type
+
+// ApplicationBeanConfiguration App.installChild(registry, Assembly assembly, Wirelet... wirelets);
+// ApplicationBeanConfiguration<App>  basApp = App.install(registry, new BasAppAssembly);
+// ApplicationBeanConfiguration<App>  validationApp = App.install(registry, new ValidationAppAssembly()).dependsOn(basApp);
+// ApplicationBeanConfiguration<App>  agreementApp = App.install(registry, new AgreementAppAssembly()).dependsOn(basApp);
 
 // Dough, skal jo installeres after vi selv er blevet bygget... Saa bliver noedt til en consumer
 

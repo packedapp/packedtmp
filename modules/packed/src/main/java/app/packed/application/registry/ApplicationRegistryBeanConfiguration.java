@@ -43,7 +43,7 @@ import app.packed.service.ProvidableBeanConfiguration;
 
 // Maybe it does not extend ProvidableBeanConfiguration but wraps it instead
 // Maybe
-public final class ApplicationRegistryConfiguration<I, H extends ApplicationHandle<I, ?>> extends ProvidableBeanConfiguration<ApplicationRegistry<I, H>> {
+public final class ApplicationRegistryBeanConfiguration<I, H extends ApplicationHandle<I, ?>> extends ProvidableBeanConfiguration<ApplicationRegistry<I, H>> {
 
     /** The application repository bean handle. */
     final ApplicationRegistryBeanHandle<I, H> handle;
@@ -52,7 +52,7 @@ public final class ApplicationRegistryConfiguration<I, H extends ApplicationHand
      * @param handle
      *            the bean's handle
      */
-    ApplicationRegistryConfiguration(ApplicationRegistryBeanHandle<I, H> handle) {
+    ApplicationRegistryBeanConfiguration(ApplicationRegistryBeanHandle<I, H> handle) {
         this.handle = handle;
         super(handle);
     }
@@ -72,12 +72,12 @@ public final class ApplicationRegistryConfiguration<I, H extends ApplicationHand
 //    }
 
     @Override
-    public ApplicationRegistryConfiguration<I, H> provide() {
+    public ApplicationRegistryBeanConfiguration<I, H> provide() {
         super.provide();
         return this;
     }
 
-    /** {@return the templates that are available in the repository) */
+    /** {@return the template this repository uses) */
     @SuppressWarnings("unchecked")
     public ApplicationTemplate<H> template() {
         return (ApplicationTemplate<H>) handle.repository.template;

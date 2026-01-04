@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.registry.ApplicationRegistryConfiguration;
+import app.packed.application.registry.ApplicationRegistryBeanConfiguration;
 import app.packed.application.registry.LaunchableApplication.Launcher;
 import app.packed.extension.BaseExtension;
 import app.packed.service.ProvidableBeanConfiguration;
@@ -55,7 +55,7 @@ public interface ContainerRegistry<I> {
         throw new UnsupportedOperationException();
     }
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRegistryConfiguration<A, H> install(Class<H> handleKind, ApplicationTemplate<H> template,
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRegistryBeanConfiguration<A, H> install(Class<H> handleKind, ApplicationTemplate<H> template,
             BaseExtension extension) {
         throw new UnsupportedOperationException();
     }

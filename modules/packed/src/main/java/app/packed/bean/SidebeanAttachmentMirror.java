@@ -25,11 +25,9 @@ import app.packed.service.Provide;
 // Was SidebeanUseSiteMirror
 public interface SidebeanAttachmentMirror {
 
-    BeanMirror primaryBean();
+    SidebeanTargetMirror target();
 
-    SidebeanMirror sidebean();
-
-    //
+    SidebeanBeanMirror sidebean();
 }
 
 class Foo extends AtomicLong {

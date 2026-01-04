@@ -55,7 +55,7 @@ public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, 
 
     /** {@inheritDoc} */
     @Override
-    public Optional<ManagedInstance<I>> managedInstance(String name) {
+    public Optional<ManagedInstance<I>> instance(String name) {
         if (!isManaged) {
             throw new UnsupportedOperationException(
                     "This application is an unmanaged application, once it is initialized the framework no longer keeps track of the application instance.");
@@ -65,7 +65,7 @@ public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, 
 
     /** {@inheritDoc} */
     @Override
-    public Stream<ManagedInstance<I>> managedInstances() {
+    public Stream<ManagedInstance<I>> instances() {
         if (!isManaged) {
             throw new UnsupportedOperationException(
                     "This application is an unmanaged application, once it is initialized the framework no longer keeps track of the application instance.");

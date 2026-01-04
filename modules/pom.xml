@@ -113,7 +113,6 @@
         <configuration>
           <excludePackageNames>packed.*:*.internals.*:*.test.*:*.examples.*:</excludePackageNames>
           <additionalOptions>-tag "apiNote:a:API Note:" -tag "implSpec:a:Implementation Requirements:" -tag "implNote:a:Implementation Note:"</additionalOptions>
-          <additionalparam>-Xdoclint:none</additionalparam>
          <additionalOptions>-Xdoclint:none</additionalOptions>
          <additionalJOption>-Xdoclint:none</additionalJOption>
         </configuration>

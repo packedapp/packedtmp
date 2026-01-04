@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.application.App;
 import app.packed.application.registry.ApplicationRegistry;
-import app.packed.application.registry.ApplicationRegistryConfiguration;
+import app.packed.application.registry.ApplicationRegistryBeanConfiguration;
 import app.packed.application.registry.ApplicationRegistryExtension;
 import app.packed.application.registry.usage.SimpleManagedApplication.GuestApplicationHandle;
 import app.packed.assembly.BaseAssembly;
@@ -33,7 +33,7 @@ public class AaaaDoo extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        ApplicationRegistryConfiguration<SimpleManagedApplication, GuestApplicationHandle> repo = use(ApplicationRegistryExtension.class)
+        ApplicationRegistryBeanConfiguration<SimpleManagedApplication, GuestApplicationHandle> repo = use(ApplicationRegistryExtension.class)
                 .provideRegistry(SimpleManagedApplication.MANAGED_SUB_APPLICATION);
 
         repo.installApplication(i -> i.named("foo").install(new SubApplication()));

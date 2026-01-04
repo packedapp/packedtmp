@@ -26,7 +26,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanTemplate;
 
 /** A handle for an application repository bean. */
-final class ApplicationRegistryBeanHandle<I, H extends ApplicationHandle<I, ?>> extends BeanHandle<ApplicationRegistryConfiguration<I, H>> {
+final class ApplicationRegistryBeanHandle<I, H extends ApplicationHandle<I, ?>> extends BeanHandle<ApplicationRegistryBeanConfiguration<I, H>> {
 
     /** A bean template for a {@link ApplicationRepository} bean. */
     static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = PackedBeanTemplate.builder(BeanLifetime.SINGLETON).build();
@@ -46,8 +46,8 @@ final class ApplicationRegistryBeanHandle<I, H extends ApplicationHandle<I, ?>> 
 
     /** {@inheritDoc} */
     @Override
-    protected ApplicationRegistryConfiguration<I, H> newBeanConfiguration() {
-        return new ApplicationRegistryConfiguration<>(this);
+    protected ApplicationRegistryBeanConfiguration<I, H> newBeanConfiguration() {
+        return new ApplicationRegistryBeanConfiguration<>(this);
     }
 
     /** {@inheritDoc} */

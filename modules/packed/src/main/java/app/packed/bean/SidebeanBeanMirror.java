@@ -24,12 +24,12 @@ import internal.app.packed.bean.sidebean.SidebeanHandle;
 /**
  * A mirror of a side bean.
  */
-public final class SidebeanMirror extends BeanMirror {
+public final class SidebeanBeanMirror extends BeanMirror {
 
     /** The handle of the sidebean. */
     final SidebeanHandle<?> handle;
 
-    public SidebeanMirror(BeanHandle<?> handle) {
+    public SidebeanBeanMirror(BeanHandle<?> handle) {
         this.handle = (SidebeanHandle<?>) requireNonNull(handle);
         super(handle);
     }
