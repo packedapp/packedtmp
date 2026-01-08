@@ -18,6 +18,7 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 
 import app.packed.component.ComponentRealm;
 import app.packed.operation.OperationType;
@@ -28,11 +29,12 @@ import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
     /** The next op in the chain. */
-    private final PackedOp<?> nextOp;
+    final PackedOp<?> nextOp;
 
     /**
-     * @param type
-     * @param operation
+     * @param nextOp the next op in the chain
+     * @param type the operation type
+     * @param operation the method handle (may be unused for intermediate ops)
      */
     private IntermediateOp(PackedOp<?> nextOp, OperationType type, MethodHandle operation) {
         super(type, operation);
@@ -76,11 +78,22 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
         }
     }
 
-    /** An implementation of the {@link Op#peek(Consumer)}} method. */
+    /** An implementation of the {@link Op#peek(Consumer)} method. */
     static final class PeekingOp<R> extends IntermediateOp<R> {
 
-        PeekingOp(PackedOp<R> delegate, MethodHandle methodHandle) {
-            super(delegate, delegate.type, methodHandle);
+        /** The filter to apply to the return value. Signature: (ReturnType) -> ReturnType */
+        private final MethodHandle peekFilter;
+
+        PeekingOp(PackedOp<R> delegate, MethodHandle peekFilter) {
+            super(delegate, delegate.type, delegate.mhOperation);
+            this.peekFilter = peekFilter;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle getComposedMethodHandle() {
+            // Compose: first execute the delegate's composed handle, then apply our peek filter
+            return MethodHandles.filterReturnValue(nextOp.getComposedMethodHandle(), peekFilter);
         }
     }
 }

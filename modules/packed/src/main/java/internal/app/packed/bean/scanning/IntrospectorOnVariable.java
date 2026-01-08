@@ -197,7 +197,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
 
         // Create the nested operation
         OperationSetup os = pop
-                .newOperationSetup(new NewOperation(operation.bean, bindingExtension, template, OperationHandle::new, new EmbeddedIntoOperation(operation, index)));
+                .newOperationSetup(new NewOperation(operation.bean, bindingExtension, template, OperationHandle::new, new EmbeddedIntoOperation(operation, index), pop.getComposedMethodHandle()));
         bind(new FromEmbeddedOperation(os));
 
         // Resolve the new operation immediately

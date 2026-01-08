@@ -375,7 +375,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 //            ot = bean.template.initializationTemplate()
 
             // What if no scanning and OP?????
-            op.newOperationSetup(new NewOperation(bean, bean.installedBy, ot, i -> new FactoryOperationHandle(i), null));
+            op.newOperationSetup(new NewOperation(bean, bean.installedBy, ot, i -> new FactoryOperationHandle(i), null, op.getComposedMethodHandle()));
         }
 
     }
