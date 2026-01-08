@@ -18,10 +18,61 @@ import java.util.WeakHashMap;
 import app.packed.extension.Extension; // The class we verify against
 
 /**
- * Support class for generating hidden classes and accessing internal logic in foreign modules.
+ * A privileged accessor that acquires a {@link java.lang.invoke.MethodHandles.Lookup} with
+ * {@link java.lang.invoke.MethodHandles.Lookup#MODULE MODULE} access for foreign modules.
+ *
  * <p>
- * This mechanism uses a "Handshake Spy". It injects a named class into the target module that demands proof of identity
- * (a Lookup from THIS framework) before surrendering a Lookup with MODULE access.
+ * This class enables the framework to perform deep reflection, modify final fields, and generate hidden classes within
+ * client modules that have {@code open} packages to the framework.
+ *
+ * <h2>The "Hidden Class" Catch-22</h2>
+ * <p>
+ * Standard approaches to acquiring {@code MODULE} access typically involve injecting a <em>Hidden Class</em> into the
+ * target module. However, this creates a circular dependency validation failure:
+ * <ol>
+ * <li>To inject code into a foreign module, we must first obtain a {@code Lookup} via
+ * {@link java.lang.invoke.MethodHandles#privateLookupIn(Class, java.lang.invoke.MethodHandles.Lookup)}.</li>
+ * <li>By design, {@code privateLookupIn} <strong>drops</strong> the {@code MODULE} access bit, granting only
+ * {@code PRIVATE} and {@code PACKAGE} access (even if the package is open).</li>
+ * <li>The method
+ * {@link java.lang.invoke.MethodHandles.Lookup#defineHiddenClass(byte[], boolean, java.lang.invoke.MethodHandles.Lookup.ClassOption...)}
+ * <strong>requires</strong> {@code MODULE} access (specifically "Full Privilege Access").</li>
+ * </ol>
+ * <p>
+ * Thus, we cannot define a hidden class to get module access because we lack the module access required to define a
+ * hidden class.
+ *
+ * <h2>The Solution: The "Handshake Spy"</h2>
+ * <p>
+ * To bypass this limitation, this class utilizes {@link java.lang.invoke.MethodHandles.Lookup#defineClass(byte[])},
+ * which requires only {@code PACKAGE} access (which we possess). This creates a standard, named class within the target
+ * module.
+ *
+ * <p>
+ * Because named classes are discoverable via {@link Class#forName(String)} (unlike hidden classes), simply exposing a
+ * {@code public static Lookup get()} method would be a critical security vulnerability; any malicious actor in the
+ * module could find the class and escalate their privileges.
+ *
+ * <h2>Security Model</h2>
+ * <p>
+ * To secure the generated named class, we implement a <strong> Handshake</strong> pattern directly in the generated
+ * bytecode:
+ *
+ * <ul>
+ * <li><strong>Identity Verification:</strong> The generated class exposes a method:
+ * {@code public static Lookup get(Lookup token)}.</li>
+ * <li><strong>Caller Validation:</strong> The bytecode inspects the provided {@code lookup token}. It extracts the
+ * module of the token's lookup class and compares it against the immutable identity of this framework's module
+ * (anchored to {@value #FRAMEWORK_ANCHOR}</li>
+ * <li><strong>Reference Equality:</strong> The check uses {@code if_acmpne} (reference equality) to ensure the module
+ * identity cannot be spoofed by string names.</li>
+ * <li><strong>Unforgeable Token:</strong> Only code residing strictly within the {@code app.packed} module can produce
+ * a {@code Lookup} object that satisfies this check.</li>
+ * </ul>
+ *
+ * <p>
+ * If an attacker discovers the class name and calls the method, they cannot produce a valid token, and the method
+ * throws a {@link SecurityException}.
  */
 final class ModuleAccessor {
 
