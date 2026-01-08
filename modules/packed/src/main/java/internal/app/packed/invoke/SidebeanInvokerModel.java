@@ -193,7 +193,7 @@ public final class SidebeanInvokerModel {
         });
 
         try {
-            MethodHandles.Lookup lookup = ModuleAccessor.loookupFor(iface);
+            MethodHandles.Lookup lookup = ModuleAccessor.lookupFor(iface);
 
             lookup = lookup.defineHiddenClass(bytes, true);
 

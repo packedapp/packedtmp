@@ -51,7 +51,7 @@ public record SamType(Class<?> functionInterface, Method saMethod, MethodHandle 
             mh = MethodHandles.publicLookup().unreflect(samMethod);
         } catch (IllegalAccessException e) {
             try {
-                mh = ModuleAccessor.loookupFor(functionInterface).unreflect(samMethod);
+                mh = ModuleAccessor.lookupFor(functionInterface).unreflect(samMethod);
             } catch (IllegalAccessException ee) {
                 throw new Error(samMethod + " must be accessible via MethodHandles.publicLookup()", ee);
             }
