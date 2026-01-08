@@ -150,7 +150,18 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         return bind(0, argument);
     }
 
-    public abstract OperationSetup newOperationSetup(NewOperation newos);
+    /**
+     * Returns the composed method handle for this operation.
+     * Intermediate ops override this to compose their transformations.
+     */
+    public MethodHandle getComposedMethodHandle() {
+        return mhOperation;
+    }
+
+    /**
+     * Creates the operation setup.
+     */
+    public abstract OperationSetup newOperationSetup(NewOperation newOs);
 
     /** {@inheritDoc} */
     @Override
@@ -163,19 +174,16 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         }
 
         // Create a MethodHandle for the Consumer's accept method, bound to the provided (Consumer) action
-        // (Consumer, Object)Object -> (Object)Object
-        MethodHandle mh = OpSupport.ACCEPT_CONSUMER_OBJECT.bindTo(action);
+        // ACCEPT_CONSUMER_OBJECT signature: (Consumer, Object) -> Object
+        // After binding: (Object) -> Object - calls consumer.accept(obj) and returns obj
+        MethodHandle peekFilter = OpSupport.ACCEPT_CONSUMER_OBJECT.bindTo(action);
 
-        // Create a new MethodHandle that explicitly casts the arguments and return type
-        // to match the original operation's return type
-        MethodHandle consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnRawType(), type().returnRawType()));
+        // Cast to the actual return type for proper type safety
+        Class<?> returnType = type.returnRawType();
+        peekFilter = MethodHandles.explicitCastArguments(peekFilter,
+                MethodType.methodType(returnType, returnType));
 
-        mh = MethodHandles.filterReturnValue(mh, consumer);
-
-        // Ensure the final MethodHandle has the correct return type
-        mh = mh.asType(mh.type().changeReturnType(type().returnRawType()));
-
-        return new PeekingOp<>(this, mh);
+        return new PeekingOp<>(this, peekFilter);
     }
 
     /** {@inheritDoc} */
@@ -193,6 +201,8 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         }
     }
 
+    /** Record containing all the information needed to create an operation setup. */
     public record NewOperation(BeanSetup bean, ExtensionSetup operator, PackedOperationTemplate template,
-            Function<? super OperationInstaller, OperationHandle<?>> newHandle, @Nullable EmbeddedIntoOperation embeddedIn) {}
+            Function<? super OperationInstaller, OperationHandle<?>> newHandle, @Nullable EmbeddedIntoOperation embeddedIn,
+            MethodHandle composedMH) {}
 }
