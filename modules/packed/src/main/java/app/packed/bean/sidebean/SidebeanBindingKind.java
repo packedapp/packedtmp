@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.concurrent.daemon;
+package app.packed.bean.sidebean;
 
 /**
  *
  */
-public class HowDoesThisWork {
-    public HowDoesThisWork() {
+public enum SidebeanBindingKind {
+    CONSTANT,
 
-    }
+    COMPUTED_CONSTANT,
+
+    INVOKER;
 }

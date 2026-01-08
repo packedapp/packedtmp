@@ -17,6 +17,7 @@ package app.packed.component.hostguest;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanMirror;
+import app.packed.component.guest.GuestKind;
 
 /**
  *

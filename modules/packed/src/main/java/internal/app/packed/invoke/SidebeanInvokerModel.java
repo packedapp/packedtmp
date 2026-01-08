@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.sidebean;
+package internal.app.packed.invoke;
 
 import static java.lang.classfile.ClassFile.ACC_FINAL;
 import static java.lang.classfile.ClassFile.ACC_PRIVATE;
@@ -42,8 +42,6 @@ import java.util.function.Supplier;
 
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.extension.ExtensionContext;
-import internal.app.packed.invoke.ExtensionLookupSupport;
-import internal.app.packed.invoke.ModuleAccessor;
 
 /**
  * Generates implementations of SAM (Single Abstract Method) interfaces using the Class File API. The generated class
@@ -71,6 +69,7 @@ public final class SidebeanInvokerModel {
         this.constructor = StableValue.supplier(() -> generateInvoker(iface, method));
     }
 
+    /** {@return a constructor for generating the invoker} */
     public MethodHandle constructor() {
         return constructor.get();
     }
@@ -194,14 +193,14 @@ public final class SidebeanInvokerModel {
         });
 
         try {
-            MethodHandles.Lookup lookup = ModuleAccessor.getLookup(iface);
+            MethodHandles.Lookup lookup = ModuleAccessor.loookupFor(iface);
 
             lookup = lookup.defineHiddenClass(bytes, true);
 
             return lookup.findConstructor(lookup.lookupClass(), MethodType.methodType(void.class, MethodHandle.class, ExtensionContext.class))
                     .asType(MethodType.methodType(iface, MethodHandle.class, ExtensionContext.class));
         } catch (ReflectiveOperationException | IllegalAccessError e) {
-            throw new InternalExtensionException(ExtensionLookupSupport.illegalAccessExtensionMsg(iface), e);
+            throw new InternalExtensionException(ExtensionInvokeSupport.illegalAccessExtensionMsg(iface), e);
         }
     }
 

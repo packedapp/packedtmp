@@ -13,13 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.concurrent.daemon;
+package sandbox.typeconverter;
+
+import java.lang.reflect.Type;
 
 /**
  *
  */
-public class HowDoesThisWorkWithParam {
-    public HowDoesThisWorkWithParam(DaemonJobRuntimeManager r) {
+// Replaced by converter project...
+public abstract class OldTypeConverter<T> {
 
-    }
+    public static final OldTypeConverter<Type> IDENTITY = new OldTypeConverter<>() {
+
+        @Override
+        public Type convert(Type t) {
+            return t;
+        }
+    };
+
+    public static final OldTypeConverter<Class<?>> RAW = null;
+
+    public abstract T convert(Type t);
 }

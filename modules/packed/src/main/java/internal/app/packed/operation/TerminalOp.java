@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 import app.packed.operation.OperationType;
+import internal.app.packed.invoke.SamType;
 import internal.app.packed.operation.PackedOperationTarget.FunctionOperationTarget;
 import internal.app.packed.operation.PackedOperationTarget.MethodHandleOperationTarget;
 
@@ -80,18 +81,18 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
             return installer.newOperation(newOs.newHandle() );
         }
     }
-
-    static final class LazyGeneratedClass<R> extends TerminalOp<R> {
-
-        LazyGeneratedClass(MethodHandle methodHandle) {
-            super(OperationType.fromMethodType(methodHandle.type()), methodHandle);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public OperationSetup newOperationSetup(NewOperation newos) {
-            return null;
-        }
-
-    }
+//
+//    static final class LazyGeneratedClass<R> extends TerminalOp<R> {
+//
+//        LazyGeneratedClass(MethodHandle methodHandle) {
+//            super(OperationType.fromMethodType(methodHandle.type()), methodHandle);
+//        }
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        public OperationSetup newOperationSetup(NewOperation newos) {
+//            return null;
+//        }
+//
+//    }
 }

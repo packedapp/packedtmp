@@ -22,10 +22,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+
+// Formaalet er vel primaert build hooks, og hvad man maa skulle kunne
+
+//
+
 /**
  *
  */
-
 // AssemblyTransformer
 
 @Target(ElementType.TYPE)
@@ -34,10 +38,16 @@ import java.lang.annotation.Target;
 @Inherited
 //@NotHookable <-- You cannot change this in build hooks. Its fixed
 // Maybe you can change it with a Lookup object
-public @interface AssemblySecurity {
+public @interface AssemblySecurityPolicy {
+
+    /**
+     * @return Whether or not the policy can be overridden by subclasses.
+     * Attempting to override an
+     */
+    boolean overridable() default true;
 
     // The class must be open to the framework and have
-    Class<? extends AssemblySecurity.Model> value();
+    Class<? extends AssemblySecurityPolicy.Model> value();
 
     public interface Descriptor {
 

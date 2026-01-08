@@ -198,7 +198,7 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
     }
 
     /** {@return the security model for the assembly} */
-    public AssemblySecurity securityModel() {
+    public AssemblySecurityPolicy securityPolicy() {
         throw new UnsupportedOperationException();
     }
 

@@ -1,4 +1,5 @@
 package internal.app.packed.invoke;
+
 import java.lang.classfile.ClassFile;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.MethodTypeDesc;
@@ -9,14 +10,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class ModuleAccessor {
+final class ModuleAccessor {
 
+    /** This module. */
     private static final Module THIS_MODULE = ModuleAccessor.class.getModule();
 
     // Level 2 Cache: Module -> Master Lookup (the one with the MODULE bit)
     // WeakHashMap allows the Module to be GC'd when its ClassLoader is unloaded.
-    private static final Map<Module, Lookup> PER_MODULE_CACHE =
-        Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<Module, Lookup> PER_MODULE_CACHE = Collections.synchronizedMap(new WeakHashMap<>());
 
     // Level 1 Cache: Class -> Specific Full Privilege Lookup
     private static final ClassValue<Lookup> PER_CLASS_CACHE = new ClassValue<>() {
@@ -27,10 +28,9 @@ public class ModuleAccessor {
     };
 
     /**
-     * Entry Point: Gets the full privilege lookup for any class.
-     * Only works if the package is open to this library.
+     * Entry Point: Gets the full privilege lookup for any class. Only works if the package is open to this library.
      */
-    public static Lookup getLookup(Class<?> targetClass) {
+    static Lookup loookupFor(Class<?> targetClass) {
         return PER_CLASS_CACHE.get(targetClass);
     }
 
@@ -40,8 +40,7 @@ public class ModuleAccessor {
 
         // 1. Security Check: Is the specific package open to us?
         if (!targetModule.isOpen(packageName, THIS_MODULE)) {
-            throw new IllegalAccessError("Package " + packageName + " in module " +
-                targetModule.getName() + " is not open to " + THIS_MODULE.getName());
+            throw new IllegalAccessError("Package " + packageName + " in module " + targetModule.getName() + " is not open to " + THIS_MODULE.getName());
         }
 
         // 2. Get the Master Lookup for the module
@@ -67,7 +66,7 @@ public class ModuleAccessor {
 
             // Generate the spy bytecode
             String spyName = anchorClass.getPackageName() + ".PackedLookupHelper";
-            byte[] bytes = generateSpyBytes(spyName);
+            byte[] bytes = generateClass(spyName);
 
             // Define into the user module
             Class<?> spyClass;
@@ -85,20 +84,17 @@ public class ModuleAccessor {
         }
     }
 
-    private static byte[] generateSpyBytes(String fullClassName) {
+    private static byte[] generateClass(String fullClassName) {
         ClassFile cf = ClassFile.of();
         ClassDesc spyDesc = ClassDesc.ofInternalName(fullClassName.replace('.', '/'));
         ClassDesc lookupDesc = ClassDesc.ofDescriptor("Ljava/lang/invoke/MethodHandles$Lookup;");
 
         return cf.build(spyDesc, cb -> {
             cb.withFlags(AccessFlag.PUBLIC, AccessFlag.FINAL);
-            cb.withMethod("get", MethodTypeDesc.of(lookupDesc),
-                AccessFlag.PUBLIC.mask() | AccessFlag.STATIC.mask(),
-                mb -> mb.withCode(code -> {
-                    code.invokestatic(ClassDesc.of("java.lang.invoke.MethodHandles"),
-                                     "lookup", MethodTypeDesc.of(lookupDesc));
-                    code.areturn();
-                }));
+            cb.withMethod("get", MethodTypeDesc.of(lookupDesc), AccessFlag.PUBLIC.mask() | AccessFlag.STATIC.mask(), mb -> mb.withCode(code -> {
+                code.invokestatic(ClassDesc.of("java.lang.invoke.MethodHandles"), "lookup", MethodTypeDesc.of(lookupDesc));
+                code.areturn();
+            }));
         });
     }
 }

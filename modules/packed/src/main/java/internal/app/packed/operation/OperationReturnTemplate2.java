@@ -36,67 +36,67 @@ import java.lang.reflect.Type;
 
 public interface OperationReturnTemplate2 {
 
-    // We now actually have a list of return type
-    // And a list of Assignment CompatibleTypes
-    interface Adaptors {
-
-        // [[RawType1, RawType2], [Type1, Type2]]
-        OperationReturnTemplate2 returnClass(Type... assingableToAnyOf);
-
-        // baseClass must be a common class of specified types
-        // (Object, String) -> Only strings are allowed but we adaptTo specified class
-        // adaptTo must be assignable to all specified types
-        // [CommonType, [Type1, Type2]]
-        OperationReturnTemplate2 returnCommonClass(Class<?> commonType, Type... assingableToAnyOf);
-
-        // Returns an object. Will fail if void method // Methods annotated with @Provide/@Get cannot have void return type
-        // [Object, Object]
-        default OperationReturnTemplate2 returnObject() {
-            return returnClass(Object.class, Object.class);
-        }
-
-        /**
-         * Checks that that the operation (typically method) returns void. Or maybe it is a check, we do not adaption
-         */
-        // Er det her ikke bare checksReturn, jo det vil jeg mene
-        // [void, void]
-        default OperationReturnTemplate2 returnVoid() {
-            return returnClass(void.class, void.class);
-        }
-
-        // Will ignore any return type
-        // [void, Object]
-        default OperationReturnTemplate2 returnVoidIgnoreActual() {
-            return returnClass(void.class, Object.class);
-        }
-
-        // It can A be a sealed interface with records, b be a record () which you can then add methods to
-        /**
-         * The specified class can be either
-         *
-         * B: a record class with one parameter
-         *
-         * @param sealedRecords
-         * @return
-         */
-        // Extract, ValidateOnly
-        OperationReturnTemplate2 returnRecordWrapper(Class<?> sealedRecords);
-
-        /**
-         *
-         * A sealed interface where all permitted classes are records with a zero or a single parameter. 0 parameters indicates
-         * that void may be returned. 1 parameters indicates one valid return value.
-         *
-         * @param sealedRecords
-         * @return
-         * @throws IllegalArgumentException not sealed, not interface, not record, not 1 0, more than 1,
-         * mutable assignableType
-         */
-        OperationReturnTemplate2 returnSealedRecordWrapper(Class<?> sealedRecords);
-    }
-    // Each record can have 0 or 1 parameters (Only 1 with 0 thorugh)
-    // Will checkReturnAnyOf.
-    // Will MT OneType->SealedType
+//    // We now actually have a list of return type
+//    // And a list of Assignment CompatibleTypes
+//    interface Adaptors {
+//
+//        // [[RawType1, RawType2], [Type1, Type2]]
+//        OperationReturnTemplate2 returnClass(Type... assingableToAnyOf);
+//
+//        // baseClass must be a common class of specified types
+//        // (Object, String) -> Only strings are allowed but we adaptTo specified class
+//        // adaptTo must be assignable to all specified types
+//        // [CommonType, [Type1, Type2]]
+//        OperationReturnTemplate2 returnCommonClass(Class<?> commonType, Type... assingableToAnyOf);
+//
+//        // Returns an object. Will fail if void method // Methods annotated with @Provide/@Get cannot have void return type
+//        // [Object, Object]
+//        default OperationReturnTemplate2 returnObject() {
+//            return returnClass(Object.class, Object.class);
+//        }
+//
+//        /**
+//         * Checks that that the operation (typically method) returns void. Or maybe it is a check, we do not adaption
+//         */
+//        // Er det her ikke bare checksReturn, jo det vil jeg mene
+//        // [void, void]
+//        default OperationReturnTemplate2 returnVoid() {
+//            return returnClass(void.class, void.class);
+//        }
+//
+//        // Will ignore any return type
+//        // [void, Object]
+//        default OperationReturnTemplate2 returnVoidIgnoreActual() {
+//            return returnClass(void.class, Object.class);
+//        }
+//
+//        // It can A be a sealed interface with records, b be a record () which you can then add methods to
+//        /**
+//         * The specified class can be either
+//         *
+//         * B: a record class with one parameter
+//         *
+//         * @param sealedRecords
+//         * @return
+//         */
+//        // Extract, ValidateOnly
+//        OperationReturnTemplate2 returnRecordWrapper(Class<?> sealedRecords);
+//
+//        /**
+//         *
+//         * A sealed interface where all permitted classes are records with a zero or a single parameter. 0 parameters indicates
+//         * that void may be returned. 1 parameters indicates one valid return value.
+//         *
+//         * @param sealedRecords
+//         * @return
+//         * @throws IllegalArgumentException not sealed, not interface, not record, not 1 0, more than 1,
+//         * mutable assignableType
+//         */
+//        OperationReturnTemplate2 returnSealedRecordWrapper(Class<?> sealedRecords);
+//    }
+//    // Each record can have 0 or 1 parameters (Only 1 with 0 thorugh)
+//    // Will checkReturnAnyOf.
+//    // Will MT OneType->SealedType
 
     interface Checks {
         // TypeVariables cannot be specified

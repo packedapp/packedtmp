@@ -119,7 +119,7 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
         }
         attachToSidebean = BeanSetup.crack(requireNonNull(configuration));
         SidebeanHandle<?> handle = (SidebeanHandle<?>) attachToSidebean.handle();
-        if (handle.sim.returnType() == void.class) {
+        if (handle.invokerModel.returnType() == void.class) {
             returnIgnore();
         }
         return this;

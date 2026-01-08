@@ -13,34 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.bean.sidebean;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.stream.Stream;
-
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import app.packed.bean.SidebeanTargetKind;
 
 /**
- * A mirror of a side bean.
+ *
  */
-public final class SidebeanBeanMirror extends BeanMirror {
+// Istedet for at configuration SidebeanConfiguration
+// Kunne vaere et pattern fremadrettet for beans
 
-    /** The handle of the sidebean. */
-    final SidebeanHandle<?> handle;
+// Alternativ nogen annoteringer
 
-    public SidebeanBeanMirror(BeanHandle<?> handle) {
-        this.handle = (SidebeanHandle<?>) requireNonNull(handle);
-        super(handle);
-    }
+public interface SidebeanInstallationConfig {
 
-    /** {@return a stream of all places where this sidebean has been attached} */
-    public Stream<SidebeanAttachmentMirror> attachments() {
-     //   handle.attachments().
+    SidebeanTargetKind targetKind();
+
+    static OfOperation operation() {
         throw new UnsupportedOperationException();
     }
 
-    public SidebeanTargetKind targetKind() {
+    static OfBean bean() {
         throw new UnsupportedOperationException();
+    }
+
+    public interface OfOperation {
+        OfOperation withInvoker(Class<?> invokerClass);
+        OfOperation withBindConstant(Class<?> invokerClass);
+        OfOperation withBindComputedConstant(Class<?> invokerClass);
+    }
+
+    public interface OfBean {
+        OfBean lifecycleManaged();
     }
 }

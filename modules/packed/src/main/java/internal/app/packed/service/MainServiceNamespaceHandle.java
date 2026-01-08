@@ -29,7 +29,7 @@ import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.invoke.MethodHandleInvoker.ExportedServiceWrapper;
-import internal.app.packed.invoke.ServiceHelper;
+import internal.app.packed.invoke.ServiceSupport;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.util.PackedServiceLocator;
@@ -81,7 +81,7 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
     }
 
     public Map<Key<?>, ExportedServiceWrapper> exportedServices() {
-        return exports.toUnmodifiableMap(n -> ServiceHelper.toExportedService(n.operation));
+        return exports.toUnmodifiableMap(n -> ServiceSupport.toExportedService(n.operation));
     }
 
     public ServiceContract newContract() {

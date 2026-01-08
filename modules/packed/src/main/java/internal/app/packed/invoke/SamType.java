@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation;
+package internal.app.packed.invoke;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.operation.OperationType;
-import internal.app.packed.invoke.ModuleAccessor;
 
 /**
  *
@@ -52,7 +51,7 @@ public record SamType(Class<?> functionInterface, Method saMethod, MethodHandle 
             mh = MethodHandles.publicLookup().unreflect(samMethod);
         } catch (IllegalAccessException e) {
             try {
-                mh = ModuleAccessor.getLookup(functionInterface).unreflect(samMethod);
+                mh = ModuleAccessor.loookupFor(functionInterface).unreflect(samMethod);
             } catch (IllegalAccessException ee) {
                 throw new Error(samMethod + " must be accessible via MethodHandles.publicLookup()", ee);
             }

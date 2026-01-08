@@ -43,7 +43,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import internal.app.packed.extension.ExtensionContext;
-import internal.app.packed.invoke.ServiceHelper;
+import internal.app.packed.invoke.ServiceSupport;
 import tck.AbstractAppTest.TestStore;
 import testutil.MemberFinder;
 
@@ -75,7 +75,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         requireNonNull(name);
         ink.putIfAbsent(name, oh);
 
-        base().installIfAbsent(HookBean.class, b -> b.bindConstant(KEY, ServiceHelper.forTestingMap(ink)));
+        base().installIfAbsent(HookBean.class, b -> b.bindConstant(KEY, ServiceSupport.forTestingMap(ink)));
     }
 
     public HookTestingExtension onAnnotatedField(BiConsumer<? super AnnotationList, ? super OnField> consumer) {

@@ -218,7 +218,7 @@ public final class OperationCodeGenerator {
         boolean isFactory = operation.handle() instanceof FactoryOperationHandle;
 
         // Get the incomplete MethodHandle that each sidebean attachment needs to adjust
-        MethodHandle methodHandle = operation.codeHolder.generateMethodHandle();
+        MethodHandle methodHandle = operation.codeGenerator.generateMethodHandle();
         if (isFactory) {
             // System.out.println(" .... " + isFactory + " " + methodHandle.type());
             for (BindingSetup binding : operation.bindings) {
@@ -230,7 +230,7 @@ public final class OperationCodeGenerator {
                         methodHandle = MethodHandles.insertArguments(methodHandle, 1, instance);
                     } else if (b instanceof Invoker invokerType) {
                         PackedSidebeanAttachment.OfOperation oo = (OfOperation) sidebeanAttachment;
-                        MethodHandle methodHandle2 = oo.operation.codeHolder.generate(false);
+                        MethodHandle methodHandle2 = oo.operation.codeGenerator.generate(false);
                         MethodHandle mhh = invokerType.invokerModel().constructor();
 
                         mhh = mhh.bindTo(methodHandle2);
@@ -252,7 +252,7 @@ public final class OperationCodeGenerator {
             methodHandle = BeanLifecycleSupport.MH_INVOKE_INITIALIZER_SIDEBEAN.bindTo(sidebeanAttachment).bindTo(methodHandle);
             return methodHandle;
         }
-        MethodHandle tmp = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, sidebeanAttachment.lifetimeStoreIndex.index);
+        MethodHandle tmp = MethodHandles.insertArguments(ServiceSupport.MH_CONSTANT_POOL_READER, 1, sidebeanAttachment.lifetimeStoreIndex.index);
         assert tmp.type().returnType() == Object.class;
         // We need to convert it from Object to the expected type
         tmp = tmp.asType(tmp.type().changeReturnType(sidebeanAttachment.sidebean.bean.beanClass));
@@ -285,7 +285,7 @@ public final class OperationCodeGenerator {
 
         // The value is the result of calling an embedded operation
         case BindingProvider.FromEmbeddedOperation(OperationSetup operation) -> {
-            MethodHandle embeddedOperation = operation.codeHolder.generateMethodHandle();
+            MethodHandle embeddedOperation = operation.codeGenerator.generateMethodHandle();
             for (int j = 0; j < embeddedOperation.type().parameterCount(); j++) {
                 permuters.add(j);
             }
@@ -295,21 +295,18 @@ public final class OperationCodeGenerator {
         case BindingProvider.FromLifetimeArena(_, LifetimeStoreIndex index, Class<?> type) -> {
             // read from constant pool via extIdx
             permuters.add(0);
-            MethodHandle beanFetcher = MethodHandles.insertArguments(ServiceHelper.MH_CONSTANT_POOL_READER, 1, index.index);
+            MethodHandle beanFetcher = MethodHandles.insertArguments(ServiceSupport.MH_CONSTANT_POOL_READER, 1, index.index);
             assert beanFetcher.type().returnType() == Object.class;
             beanFetcher = beanFetcher.asType(beanFetcher.type().changeReturnType(type));
             yield MethodHandles.collectArguments(mh, pos, beanFetcher);
         }
 
         case BindingProvider.FromSidebeanAttachment(Key<?> _, SidebeanHandle<?> _) -> {
-            // 1. Identify what type the internal method actually wants at this position
             Class<?> requiredType = mh.type().parameterType(pos);
 
-            // 2. Add this type as a new requirement to our external 'invocationType'
             int newIndexInInvocationType = invocationType.parameterCount();
             invocationType = invocationType.appendParameterTypes(requiredType);
 
-            // 3. Tell the permuter: "Map target parameter [pos] to external argument [newIndexInInvocationType]"
             permuters.add(newIndexInInvocationType);
 
             if (isDebug()) {

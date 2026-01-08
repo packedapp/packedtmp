@@ -27,8 +27,8 @@ import java.util.function.Consumer;
 import app.packed.binding.Variable;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.PackedDependency;
+import internal.app.packed.invoke.SamType;
 import internal.app.packed.operation.PackedOp;
-import internal.app.packed.operation.SamType;
 import internal.app.packed.operation.TerminalOp.FunctionInvocationOp;
 import internal.app.packed.util.types.TypeVariableExtractor;
 

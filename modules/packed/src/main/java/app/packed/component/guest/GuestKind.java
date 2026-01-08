@@ -17,7 +17,13 @@ package app.packed.component.guest;
 
 /**
  *
+ * @see app.packed.bean.SidebeanTargetKind
  */
-public interface BeanGuestLink {
+public enum GuestKind {
+    APPLICATION,
 
+    LIFETIME, // Specifically not an Application
+
+    BEAN;
 }
+// Hvad med Operation?? Det er vel med inde for en operation invoker???

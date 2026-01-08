@@ -56,7 +56,7 @@ import internal.app.packed.util.accesshelper.AssemblyAccessHandler;
  * <p>
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
-@AssemblySecurity(AssemblySecurity.Default.class)
+@AssemblySecurityPolicy(AssemblySecurityPolicy.Default.class)
 public sealed abstract class Assembly implements BuildCodeSource, ApplicationBuildLocal.Accessor
         permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 

@@ -13,17 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util.types;
+package internal.app.packed.operation;
 
-import java.lang.reflect.Type;
-
-import app.packed.runtime.errorhandling.ErrorProcessor;
+import app.packed.application.App;
+import app.packed.assembly.BaseAssembly;
+import app.packed.operation.Op;
+import app.packed.operation.Op0;
 
 /**
  *
  */
-@FunctionalInterface
-public interface TypeConverter<R> {
+public class PeekAssemblyTest extends BaseAssembly {
 
-    <T extends Throwable> R convert(Type type, ErrorProcessor<T> processor);
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        Op<String> op = new Op0<>(() -> "hello") {};
+
+        op = op.peek(result -> {
+            System.out.println("Peeked " + result);
+        });
+        provide(op);
+    }
+
+    public static void main(String[] args) {
+        App.run(new PeekAssemblyTest());
+    }
+
 }

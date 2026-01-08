@@ -20,6 +20,4 @@ import app.packed.operation.OperationMirror;
 /**
  *
  */
-public sealed interface SidebeanTargetMirror permits OperationMirror {
-
-}
+public sealed interface SidebeanTargetMirror permits OperationMirror {}

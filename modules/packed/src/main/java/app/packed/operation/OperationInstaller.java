@@ -34,6 +34,14 @@ public sealed interface OperationInstaller permits PackedOperationInstaller {
 
     OperationInstaller addContext(Class<? extends Context<?>> contextClass);
 
+    /**
+     * @param configuration
+     *            the sidebean to attach this operation to
+     * @return
+     *
+     * @throws UnsupportedOperationException
+     *             if the target kind of the sidebean is not {@link app.packed.bean.SidebeanTargetKind#OPERATION}.
+     */
     OperationInstaller attachToSidebean(SidebeanConfiguration<?> configuration);
 
     // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);

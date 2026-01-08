@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -79,13 +78,11 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     @Nullable
     private OperationHandle<?> handle;
 
-    public final OperationCodeGenerator codeHolder;
+    /** A code generator for the operation */
+    public final OperationCodeGenerator codeGenerator;
 
     /** The operator of the operation. */
     public final ExtensionSetup installedByExtension;
-
-    static final AtomicInteger ID = new AtomicInteger();
-    public final int id = ID.incrementAndGet();
 
     /**
      * The name prefix of the operation.
@@ -113,7 +110,9 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     /** The type of this operation. */
     public final OperationType type;
 
-    public SidebeanAttachment attachment;
+    /** Any sidebean attached to the operation. */
+    @Nullable
+    public final SidebeanAttachment attachment;
 
     /**
      * Create a new operation.
@@ -139,7 +138,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
             contexts.put(ct.contextClass(), new ContextSetup(ct, this));
         }
         // check is built
-        this.codeHolder = new OperationCodeGenerator(this, null);
+        this.codeGenerator = new OperationCodeGenerator(this, null);
         if (installer.attachToSidebean != null) {
             SidebeanHandle<?> handle2 = (SidebeanHandle<?>) installer.attachToSidebean.handle();
             this.attachment = handle2.attachTo(new PackedSidebeanAttachment.OfOperation(installer.attachToSidebean, this));

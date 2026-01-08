@@ -36,7 +36,7 @@ import internal.app.packed.util.types.ClassUtil;
 /**
  *
  */
-public class ExtensionLookupSupport {
+public class ExtensionInvokeSupport {
 
     public static MethodHandle findBeanIntrospector(Class<? extends BeanIntrospector<?>> extensionClass) {
         if (Modifier.isAbstract(extensionClass.getModifiers())) {
@@ -69,6 +69,16 @@ public class ExtensionLookupSupport {
         return MethodHandles.explicitCastArguments(mh, MethodType.methodType(BeanIntrospector.class));
     }
 
+    /**
+     * Finds a constructor on an extension.
+     *
+     * @param extensionClass
+     *            the extension class to find the constructor on.
+     * @return an extension factory for creating extension instances of the specified extension class type
+     *
+     * @throws InternalExtensionException
+     *             if a valid constructor could not be found
+     */
     public static ExtensionFactory findExtensionConstructor(Class<? extends Extension<?>> extensionClass) {
         if (Modifier.isAbstract(extensionClass.getModifiers())) {
             throw new InternalExtensionException("Extension " + StringFormatter.format(extensionClass) + " cannot be an abstract class");
@@ -123,6 +133,6 @@ public class ExtensionLookupSupport {
 
     public static String illegalAccessExtensionMsg(Class<?> clazz) {
         return clazz + " must be opened to " + Framework.name() + " by adding this line 'opens " + clazz.getPackageName() + " to "
-                + ExtensionLookupSupport.class.getModule() + "' to module-info.java";
+                + ExtensionInvokeSupport.class.getModule() + "' to module-info.java";
     }
 }

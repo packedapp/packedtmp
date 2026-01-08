@@ -29,7 +29,7 @@ import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
-import internal.app.packed.invoke.ServiceHelper;
+import internal.app.packed.invoke.ServiceSupport;
 import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link BootstrapApp}. */
@@ -135,7 +135,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
 
         ApplicationBaseLauncher launcher = ApplicationBaseLauncher.EMPTY;
         if (assembly.gbh != null) {
-            launcher = ServiceHelper.newApplicationBaseLauncher(assembly.gbh);
+            launcher = ServiceSupport.newApplicationBaseLauncher(assembly.gbh);
         }
         // Returned the bootstrap implementation (represented by a construcing method handle) wrapped in this class.
         return new PackedBootstrapApp<A, H>(template, launcher);

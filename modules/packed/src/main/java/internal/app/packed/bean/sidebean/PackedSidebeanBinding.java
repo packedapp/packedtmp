@@ -15,6 +15,8 @@
  */
 package internal.app.packed.bean.sidebean;
 
+import internal.app.packed.invoke.SidebeanInvokerModel;
+
 /**
  *
  */

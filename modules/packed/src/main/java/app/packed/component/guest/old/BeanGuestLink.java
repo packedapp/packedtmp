@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.hostguest;
+package app.packed.component.guest.old;
 
 /**
  *
  */
-public enum GuestKind {
-    APPLICATION,
+public interface BeanGuestLink {
 
-    POD, // Specifically not an Application
-
-    BEAN;
 }

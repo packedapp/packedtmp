@@ -24,7 +24,7 @@ import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
 import internal.app.packed.extension.ExtensionClassModel;
-import internal.app.packed.invoke.ExtensionLookupSupport;
+import internal.app.packed.invoke.ExtensionInvokeSupport;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
@@ -41,19 +41,8 @@ final class BeanIntrospectorClassModel {
         @SuppressWarnings({ "unchecked" })
         @Override
         protected BeanIntrospectorClassModel computeValue(Class<?> beanInspectorClass) {
-            // new Exception().printStackTrace();
-//            ClassUtil.checkProperSubclass(Extension.class, extensionClass, s -> new InternalExtensionException(s));
-//            // Check that framework extensions are in a framework module
-//            if (FrameworkExtension.class.isAssignableFrom(extensionClass)) {
-//                Module m = extensionClass.getModule();
-//                if (m.isNamed() && !Framework.moduleNames().contains(m.getName())) {
-//                    throw new InternalExtensionException("Extension " + extensionClass + " extends " + FrameworkExtension.class
-//                            + " but is not located in module(s) " + Framework.moduleNames() + " or the unnamed module");
-//                }
-//            }
-
             Class<? extends Extension<?>> e = ExtensionClassModel.extractE(EXTRACTOR, beanInspectorClass);
-            MethodHandle mh = ExtensionLookupSupport.findBeanIntrospector((Class<? extends BeanIntrospector<?>>) beanInspectorClass);
+            MethodHandle mh = ExtensionInvokeSupport.findBeanIntrospector((Class<? extends BeanIntrospector<?>>) beanInspectorClass);
             return new BeanIntrospectorClassModel(e, mh);
         }
     };
@@ -73,11 +62,6 @@ final class BeanIntrospectorClassModel {
         this.mhConstructor = mhConstructor;
         this.extensionClass = extensionClass;
     }
-
-//    @SuppressWarnings("unchecked")
-//    public Class<? extends BeanIntrospector<?>> beanIntrospectorClass() {
-//        return (Class<? extends BeanIntrospector<?>>) mhConstructor.type().returnType();
-//    }
 
     /**
      * Returns any value of nest annotation.

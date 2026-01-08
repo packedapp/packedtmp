@@ -22,7 +22,7 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 
 /** Various {@link Lookup} utility methods. */
-public final class LookupUtil {
+final class LookupUtil {
 
     private static final int DEFAULT_LOOKUP_MODES = MethodHandles.lookup().lookupModes();
 

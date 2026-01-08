@@ -19,6 +19,8 @@ import java.util.concurrent.ThreadFactory;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.SidebeanConfiguration;
+import app.packed.bean.SidebeanTargetKind;
+import app.packed.bean.sidebean.SidebeanInstallationConfig;
 import app.packed.concurrent.DaemonJob;
 import app.packed.concurrent.DaemonJobConfiguration;
 import app.packed.concurrent.DaemonJobContext;
@@ -51,20 +53,13 @@ public final class DaemonJobOperationHandle extends AbstractJobOperationHandle<D
     }
 
     public static void onDaemonJobAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, DaemonJob annotation) {
-        // Lazy install the sidebean
-        SidebeanConfiguration<DaemonJobSidebean> sideBean = introspector.base().installSidebeanIfAbsent(DaemonJobSidebean.class, c -> {
-            c.sidebeanInvokeAs(DaemonOperationInvoker.class);
+        // Lazy install the sidebean and runtime manager
+        SidebeanInstallationConfig.operation().withBindConstant(ThreadFactory.class).withInvoker(DaemonOperationInvoker.class);
+        SidebeanConfiguration<DaemonJobSidebean> sideBean = introspector.applicationBase().installSidebeanIfAbsent(DaemonJobSidebean.class, SidebeanTargetKind.OPERATION, c -> {
+            c.sidebeanOperationInvoker(DaemonOperationInvoker.class);
             c.sidebeanBindConstant(ThreadFactory.class);
+            introspector.applicationBase().install(DaemonJobRuntimeManager.class).provide();
         });
-
-        introspector.base().installSidebeanIfAbsent(DaemonJobSidebeanWithoutManager.class, c -> {
-            c.sidebeanInvokeAs(DaemonOperationInvoker.class);
-            c.sidebeanBindConstant(ThreadFactory.class);
-        });
-
-        introspector.base().install(DaemonJobRuntimeManager.class).provide();
-        introspector.base().install(HowDoesThisWork.class).provide();
-        introspector.base().install(HowDoesThisWorkWithParam.class).provide();
 
         ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(introspector.extensionHandle());
 

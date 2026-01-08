@@ -18,7 +18,6 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -100,6 +99,10 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         throw new UnsupportedOperationException();
     }
 
+    /** {@return the base extension point} */
+    public final BaseExtensionPoint applicationBase() {
+        return new PackedExtensionHandle<>(introspector().extension().root()).use(BaseExtensionPoint.class);
+    }
     /** {@return the base extension point} */
     public final BaseExtensionPoint base() {
         return new PackedExtensionHandle<>(introspector().extension()).use(BaseExtensionPoint.class);
@@ -1001,7 +1004,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         // Wrapper er klassen som op returnere. Skal matche med Op
         // isEmpty (boolean, Op.returnValue) -> ifTrue -> none, otherwise uses valueExtractor
         // ValueExtractor(T, Op.returnValue)
-        default void bindNoneableOp(Op<?> op, MethodHandle isEmptyTest, MethodHandle valueExtractor) {}
+        //default void bindNoneableOp(Op<?> op, MethodHandle isEmptyTest, MethodHandle valueExtractor) {}
 
         // Op must have Optional, OptionalLong, OptionalInt or OptionalDouble as result
         default void bindNoneableOpWithOptional(Op<?> op) {}
@@ -1112,7 +1115,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         void bindCompositeRecord(); // bindComposite?
         // Har saa mange metoder i forvejen
 
-        OnVariable bindInvocationArgument(int index, MethodHandle transformer);
+//        OnVariable bindInvocationArgument(int index, MethodHandle transformer);
 
         default boolean isAssignableTo(Class<?>... classes) {
             if (classes.length == 0) {

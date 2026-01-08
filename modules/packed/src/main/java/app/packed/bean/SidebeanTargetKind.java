@@ -24,8 +24,13 @@ package app.packed.bean;
 public enum SidebeanTargetKind {
     APPLICATION,
     CONTAINER,
+
+    // Altsaa den er jo en del anderledes. Eftersom jeg taenker vi kun laver den en gang.
+    // Eller hmm, Naar vi laver et request er del invoker.invoke(Req, Res)
     LIFETIME,
     NAMESPACE,
     BEAN,
+
+    /** The target for a sidebean is an operation. */
     OPERATION;
 }

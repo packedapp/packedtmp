@@ -22,6 +22,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 
 import app.packed.operation.OperationTarget;
+import internal.app.packed.invoke.SamType;
 
 /**
  *

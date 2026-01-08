@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util.types;
+package sandbox.typeconverter;
 
 import java.lang.reflect.Type;
+
+import app.packed.runtime.errorhandling.ErrorProcessor;
 
 /**
  *
  */
-// Replaced by converter project...
-public abstract class OldTypeConverter<T> {
+@FunctionalInterface
+public interface TypeConverter<R> {
 
-    public static final OldTypeConverter<Type> IDENTITY = new OldTypeConverter<>() {
-
-        @Override
-        public Type convert(Type t) {
-            return t;
-        }
-    };
-
-    public static final OldTypeConverter<Class<?>> RAW = null;
-
-    public abstract T convert(Type t);
+    <T extends Throwable> R convert(Type type, ErrorProcessor<T> processor);
 }

@@ -30,6 +30,8 @@ import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector
  * @see OnComponentGuestLifecycle
  */
 @AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class, requiresContext = ComponentHostContext.class)
+// Alternativt er ogsaa at have en per type.
+// A.ka GuestApplicationContext
 public interface ComponentHostContext extends Context<BaseExtension> {
 
     // Hvis vi teanker paa at faa injected selve bean instancen. Kan vi sagtens have Object, eller Entity som key

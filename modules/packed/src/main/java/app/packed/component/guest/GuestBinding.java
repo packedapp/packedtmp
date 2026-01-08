@@ -36,10 +36,7 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
 @OnAnnotatedVariable(introspector = FromGuestBeanIntrospector.class, requiresContext = ComponentHostContext.class)
-// Den bliver ikke resolvet som context service. Saa der er ingen problemer med fx ApplicationMirror
-public @interface GuestBinding {
-
-}
+public @interface GuestBinding {}
 
 final class FromGuestBeanIntrospector extends BaseExtensionBeanIntrospector {
 
@@ -51,12 +48,6 @@ final class FromGuestBeanIntrospector extends BaseExtensionBeanIntrospector {
             throw new BeanInstallationException(GuestBeanHandle.class.getSimpleName() + " can only be used on guest beans");
         } else {
             beanHandle.get().resolve(this, v);
-//            IntrospectorOnVariable iov = (IntrospectorOnVariable) v;
-//            // I probably want to use this for Guest as well
-//            if (!(iov.operation.handle() instanceof AbstractInitializingOperationHandle)) {
-//                throw new RuntimeException("" + iov.operation.bean.bean.beanClass);
-//            }
-//            beanHandle.get().onInject((SidebeanBinding) annotation, iov);
         }
     }
 }

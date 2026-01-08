@@ -33,6 +33,7 @@ import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.invoke.OpSupport;
 import internal.app.packed.operation.IntermediateOp.BoundOp;
 import internal.app.packed.operation.IntermediateOp.PeekingOp;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
@@ -163,7 +164,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
 
         // Create a MethodHandle for the Consumer's accept method, bound to the provided (Consumer) action
         // (Consumer, Object)Object -> (Object)Object
-        MethodHandle mh = PeekingOp.ACCEPT.bindTo(action);
+        MethodHandle mh = OpSupport.ACCEPT_CONSUMER_OBJECT.bindTo(action);
 
         // Create a new MethodHandle that explicitly casts the arguments and return type
         // to match the original operation's return type

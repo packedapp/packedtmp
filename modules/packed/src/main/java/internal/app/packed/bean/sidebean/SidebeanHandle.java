@@ -33,6 +33,7 @@ import app.packed.bean.SidebeanConfiguration;
 import app.packed.binding.Key;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.invoke.BeanLifecycleSupport;
+import internal.app.packed.invoke.SidebeanInvokerModel;
 import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.service.util.ServiceMap;
@@ -47,9 +48,9 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
     public final Set<Key<?>> injectionSites = new HashSet<>();
 
-    private ArrayList<PackedSidebeanAttachment> usage = new ArrayList<>();
+    private ArrayList<PackedSidebeanAttachment> attachments = new ArrayList<>();
 
-    public SidebeanInvokerModel sim;
+    public SidebeanInvokerModel invokerModel;
 
     /**
      * @param installer
@@ -59,7 +60,7 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
     }
 
     public Stream<PackedSidebeanAttachment> attachments() {
-        return usage.stream();
+        return attachments.stream();
     }
 
     public SidebeanAttachment attachTo(PackedSidebeanAttachment usage) {
@@ -77,8 +78,8 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
 
 
     private void attachTolifecycle(PackedSidebeanAttachment susage) {
-        usage.add(susage);
         requireNonNull(susage);
+        attachments.add(susage);
         for (List<InvokableLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
             for (InvokableLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
                 InvokableLifecycleOperationHandle<LifecycleOperationHandle> newh = new InvokableLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);
@@ -89,7 +90,7 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
     }
 
     public void checkUnusued() {
-        if (!usage.isEmpty()) {
+        if (!attachments.isEmpty()) {
             throw new IllegalStateException();
         }
     }

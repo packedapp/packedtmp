@@ -55,7 +55,7 @@ public class ComponentHostConfiguration<T> extends BeanConfiguration<T> {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> ComponentHostConfiguration<T> installContainerHost(BaseExtensionPoint extensionPoint, Class<T> beanClass) {
+    public static <T> ComponentHostConfiguration<T> installLifetimeHost(BaseExtensionPoint extensionPoint, Class<T> beanClass) {
         throw new UnsupportedOperationException();
     }
 }

@@ -18,14 +18,11 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.util.function.Consumer;
 
 import app.packed.component.ComponentRealm;
 import app.packed.operation.OperationType;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
-import internal.app.packed.invoke.LookupUtil;
 
 /** An intermediate (non-terminal) op. */
 abstract sealed class IntermediateOp<R> extends PackedOp<R> {
@@ -82,17 +79,8 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
     /** An implementation of the {@link Op#peek(Consumer)}} method. */
     static final class PeekingOp<R> extends IntermediateOp<R> {
 
-        /** A method handle for {@link #accept(Consumer, Object)}. */
-        static final MethodHandle ACCEPT = LookupUtil.findStaticSelf(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
-
         PeekingOp(PackedOp<R> delegate, MethodHandle methodHandle) {
             super(delegate, delegate.type, methodHandle);
-        }
-
-        @SuppressWarnings({ "unused", "unchecked", "rawtypes" })
-        private static Object accept(Consumer consumer, Object object) {
-            consumer.accept(object);
-            return object;
         }
     }
 }

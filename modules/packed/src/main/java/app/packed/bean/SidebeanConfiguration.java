@@ -18,7 +18,7 @@ package app.packed.bean;
 import app.packed.binding.Key;
 import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
-import internal.app.packed.bean.sidebean.SidebeanInvokerModel;
+import internal.app.packed.invoke.SidebeanInvokerModel;
 
 /**
  * A configuration object for aside bean.
@@ -88,16 +88,22 @@ public final class SidebeanConfiguration<T> extends BeanConfiguration<T> {
     }
 
     // bindAbstractInvoker???
-    public void sidebeanInvokeAs(Class<?> invokerClass) {
+    // Hmm Maybe we need this for lifetimes as well
+    public void sidebeanOperationInvoker(Class<?> invokerClass) {
         Key<?> invokerKey = Key.of(invokerClass);
-        if (handle.sim != null) {
+        if (handle.invokerModel != null) {
             throw new IllegalStateException();
         }
-        SidebeanInvokerModel sim = handle.sim = SidebeanInvokerModel.of(invokerClass);
+        SidebeanInvokerModel sim = handle.invokerModel = SidebeanInvokerModel.of(invokerClass);
 
         // Right now we always generate it, because we have a test in module-tests that needs to fail.
         // However, right now it does not use the sidebean, so code is never generated.
         sim.constructor();
         sidebeanBind(invokerKey, new PackedSidebeanBinding.Invoker(sim));
+    }
+
+    // Cannot use it from the constructor, use @Inject
+    protected void sidebeanBeanInstance(Class<?> beanClass) {
+
     }
 }

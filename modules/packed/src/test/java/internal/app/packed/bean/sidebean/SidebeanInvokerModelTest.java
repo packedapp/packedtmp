@@ -28,6 +28,7 @@ import java.util.concurrent.BrokenBarrierException;
 import org.junit.jupiter.api.Test;
 
 import internal.app.packed.extension.ExtensionContext;
+import internal.app.packed.invoke.SidebeanInvokerModel;
 
 class SidebeanInvokerModelTest {
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.guest;
+package app.packed.component.guest.old;
 
 import static java.util.Objects.requireNonNull;
 
