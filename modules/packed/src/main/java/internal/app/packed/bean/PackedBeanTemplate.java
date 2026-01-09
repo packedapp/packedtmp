@@ -50,11 +50,6 @@ public record PackedBeanTemplate(BeanLifetime beanKind, PackedOperationTemplate 
             this.beanKind = beanKind;
         }
 
-        public PackedBuilder initialization(PackedOperationTemplate initialization) {
-            this.initializationTemplate = initialization;
-            return this;
-        }
-
         public PackedBuilder initialization(Function<PackedOperationTemplate, PackedOperationTemplate> configure) {
             this.initializationTemplate = configure.apply(this.initializationTemplate);
             return this;

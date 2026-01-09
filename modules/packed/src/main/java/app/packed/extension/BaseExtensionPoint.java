@@ -20,7 +20,6 @@ import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
-import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
@@ -125,20 +124,8 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public BeanInstaller newBean(BeanLifetime bl, ExtensionPointHandle forExtension) {
-        return newBean(PackedBeanTemplate.builder(bl).build(), forExtension);
-    }
-
-    /**
-     * Creates a new bean installer to be able to install a new bean on behalf of a another extension.
-     *
-     * @param template
-     *            a bean template representing the behaviour of the new bean
-     * @return the installer
-     */
-    private BeanInstaller newBean(PackedBeanTemplate template, ExtensionPointHandle forExtension) {
         requireNonNull(forExtension, "forExtension is null");
-        PackedBeanTemplate t = template;
-        return t.newInstaller(extension().extension, ((PackedExtensionPointHandle) forExtension).usedBy());
+        return PackedBeanInstaller.newInstaller(bl, extension().extension, ((PackedExtensionPointHandle) forExtension).usedBy());
     }
 
     /**
