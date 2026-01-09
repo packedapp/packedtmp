@@ -79,10 +79,6 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
         return new PackedBeanInstaller(PackedBeanTemplate.builder(lifetime).build(), installingExtension, owner);
     }
 
-    public static PackedBeanInstaller newInstaller(PackedBeanTemplate template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
-        return new PackedBeanInstaller(template, installingExtension, owner);
-    }
-
     /** {@inheritDoc} */
     @Override
     public BeanInstaller addContext(Class<? extends Context<?>> contextClass) {
