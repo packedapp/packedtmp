@@ -166,7 +166,7 @@ public abstract class Key<T> {
 
     private static Type validateAndProcessType(Type type, KeySource source) {
         if (type instanceof Class<?> cl && cl.isPrimitive()) {
-            type = ClassUtil.wrap(cl);
+            type = ClassUtil.box(cl);
         }
 
         Class<?> rawType = TypeUtil.rawTypeOf(type);

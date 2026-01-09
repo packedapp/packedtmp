@@ -565,7 +565,7 @@ public abstract class Key<T> {
     private static Type convertType(Type t, int conversionType, Object source) {
         if (t instanceof Class<?> cl) {
             if (cl.isPrimitive()) {
-                t = ClassUtil.wrap(cl);
+                t = ClassUtil.box(cl);
             }
         }
         Class<?> rawType = TypeUtil.rawTypeOf(t);

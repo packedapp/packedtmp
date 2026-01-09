@@ -68,33 +68,33 @@ public class ClassUtilTest {
         assertThat(ClassUtil.isOptionalType(OptionalDouble.class)).isTrue();
     }
 
-    /** Tests {@link ClassUtil#unwrap(Class)}. */
+    /** Tests {@link ClassUtil#unbox(Class)}. */
     @Test
-    public void unwrap() {
-        assertThat(ClassUtil.unwrap(String.class)).isSameAs(String.class);
-        assertThat(ClassUtil.unwrap(Boolean.class)).isSameAs(boolean.class);
-        assertThat(ClassUtil.unwrap(Byte.class)).isSameAs(byte.class);
-        assertThat(ClassUtil.unwrap(Character.class)).isSameAs(char.class);
-        assertThat(ClassUtil.unwrap(Double.class)).isSameAs(double.class);
-        assertThat(ClassUtil.unwrap(Float.class)).isSameAs(float.class);
-        assertThat(ClassUtil.unwrap(Integer.class)).isSameAs(int.class);
-        assertThat(ClassUtil.unwrap(Long.class)).isSameAs(long.class);
-        assertThat(ClassUtil.unwrap(Short.class)).isSameAs(short.class);
-        assertThat(ClassUtil.unwrap(Void.class)).isSameAs(void.class);
+    public void unbox() {
+        assertThat(ClassUtil.unbox(String.class)).isSameAs(String.class);
+        assertThat(ClassUtil.unbox(Boolean.class)).isSameAs(boolean.class);
+        assertThat(ClassUtil.unbox(Byte.class)).isSameAs(byte.class);
+        assertThat(ClassUtil.unbox(Character.class)).isSameAs(char.class);
+        assertThat(ClassUtil.unbox(Double.class)).isSameAs(double.class);
+        assertThat(ClassUtil.unbox(Float.class)).isSameAs(float.class);
+        assertThat(ClassUtil.unbox(Integer.class)).isSameAs(int.class);
+        assertThat(ClassUtil.unbox(Long.class)).isSameAs(long.class);
+        assertThat(ClassUtil.unbox(Short.class)).isSameAs(short.class);
+        assertThat(ClassUtil.unbox(Void.class)).isSameAs(void.class);
     }
 
-    /** Tests {@link ClassUtil#wrap(Class)}. */
+    /** Tests {@link ClassUtil#box(Class)}. */
     @Test
-    public void wrap() {
-        assertThat(ClassUtil.wrap(String.class)).isSameAs(String.class);
-        assertThat(ClassUtil.wrap(boolean.class)).isSameAs(Boolean.class);
-        assertThat(ClassUtil.wrap(byte.class)).isSameAs(Byte.class);
-        assertThat(ClassUtil.wrap(char.class)).isSameAs(Character.class);
-        assertThat(ClassUtil.wrap(double.class)).isSameAs(Double.class);
-        assertThat(ClassUtil.wrap(float.class)).isSameAs(Float.class);
-        assertThat(ClassUtil.wrap(int.class)).isSameAs(Integer.class);
-        assertThat(ClassUtil.wrap(long.class)).isSameAs(Long.class);
-        assertThat(ClassUtil.wrap(short.class)).isSameAs(Short.class);
-        assertThat(ClassUtil.wrap(void.class)).isSameAs(Void.class);
+    public void box() {
+        assertThat(ClassUtil.box(String.class)).isSameAs(String.class);
+        assertThat(ClassUtil.box(boolean.class)).isSameAs(Boolean.class);
+        assertThat(ClassUtil.box(byte.class)).isSameAs(Byte.class);
+        assertThat(ClassUtil.box(char.class)).isSameAs(Character.class);
+        assertThat(ClassUtil.box(double.class)).isSameAs(Double.class);
+        assertThat(ClassUtil.box(float.class)).isSameAs(Float.class);
+        assertThat(ClassUtil.box(int.class)).isSameAs(Integer.class);
+        assertThat(ClassUtil.box(long.class)).isSameAs(Long.class);
+        assertThat(ClassUtil.box(short.class)).isSameAs(Short.class);
+        assertThat(ClassUtil.box(void.class)).isSameAs(Void.class);
     }
 }

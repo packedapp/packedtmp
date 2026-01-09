@@ -129,7 +129,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
 
         // Handle primitive types
         if (parameterType.isPrimitive()) {
-            Class<?> boxedType = ClassUtil.wrap(parameterType);
+            Class<?> boxedType = ClassUtil.box(parameterType);
             if (!boxedType.isInstance(argument)) {
                 throw new IllegalArgumentException(String.format("Type mismatch at position %d: expected %s, but got %s", position,
                         parameterType.getSimpleName(), argument.getClass().getSimpleName()));

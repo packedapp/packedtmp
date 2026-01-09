@@ -139,12 +139,12 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
         }
 
         public static void install(Inject annotation, BeanIntrospector.OnField field) {
-            // TODO we need wrap/unwrap
+            // TODO we need box/unbox
             field.newSetOperation().install(i -> new InjectOperationHandle(i));
 
             // checkNotStatic
             // Det er jo inject service!???
-            // field.newBindableVariable().unwrap();
+            // field.newBindableVariable().unbox();
             // OperationHandle handle = field.newSetOperation(null) .newOperation(temp);
             // bean.lifecycle.addInitialize(handle, null);
             throw new UnsupportedOperationException();

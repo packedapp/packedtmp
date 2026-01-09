@@ -154,5 +154,4 @@ public record PackedAnnotationList(Annotation... annotations) implements Annotat
     public String toString() {
         return Arrays.toString(annotations);
     }
-
 }

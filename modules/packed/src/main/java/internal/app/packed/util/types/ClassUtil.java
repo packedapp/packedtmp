@@ -48,7 +48,7 @@ public class ClassUtil {
      * @return the converted class
      */
     @SuppressWarnings("unchecked")
-    public static <T> Class<T> unwrap(Class<T> type) {
+    public static <T> Class<T> unbox(Class<T> type) {
         if (type == Boolean.class) {
             return (Class<T>) boolean.class;
         } else if (type == Byte.class) {
@@ -108,7 +108,7 @@ public class ClassUtil {
      * @return the converted class
      */
     @SuppressWarnings("unchecked")
-    public static <T> Class<T> wrap(Class<T> type) {
+    public static <T> Class<T> box(Class<T> type) {
         if (type.isPrimitive()) {
             if (type == boolean.class) {
                 return (Class<T>) Boolean.class;
