@@ -17,12 +17,15 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
+import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanSourceKind;
 import app.packed.context.Context;
@@ -32,10 +35,13 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.AbstractComponentInstaller;
+import internal.app.packed.context.ContextModel;
 import internal.app.packed.extension.ExtensionSetup;
 
 /** Implementation of {@link BeanTemplate.Installer}. */
 public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSetup, PackedBeanInstaller> implements BeanInstaller {
+
+    private final HashMap<Class<? extends Context<?>>, ContextModel> contexts = new HashMap<>();
 
     /** The extension that is installing the bean. */
     final ExtensionSetup installledByExtension;
@@ -46,7 +52,6 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     final AuthoritySetup<?> owner;
 
     /** The bean's template. */
-    // Maybe we can override it??? If we want to delegate
     public PackedBeanTemplate template;
 
     /**
@@ -62,16 +67,40 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
      *            the owner of the new bean
      */
     PackedBeanInstaller(PackedBeanTemplate template, ExtensionSetup installledByExtension, AuthoritySetup<?> owner) {
-        super(template.locals());
+        super(Map.of());
         this.template = requireNonNull(template, "template is null");
         this.installledByExtension = requireNonNull(installledByExtension);
         this.owner = requireNonNull(owner);
+    }
+
+    public static PackedBeanInstaller newInstaller(BeanLifetime lifetime, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
+        return new PackedBeanInstaller(PackedBeanTemplate.builder(lifetime).build(), installingExtension, owner);
+    }
+
+    public static PackedBeanInstaller newInstaller(PackedBeanTemplate template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
+        return new PackedBeanInstaller(template, installingExtension, owner);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanInstaller addContext(Class<? extends Context<?>> contextClass) {
+        this.contexts.put(contextClass, ContextModel.of(contextClass));
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
     protected ApplicationSetup application(BeanSetup setup) {
         return setup.container.application;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <H extends BeanHandle<?>> H install(Bean<?> bean, Function<? super BeanInstaller, H> factory) {
+        if (bean.beanSourceKind() == BeanSourceKind.SOURCELESS) {
+            throw new InternalExtensionException("Only static beans can be source less");
+        }
+        return BeanSetup.newBean(this, (PackedBean<?>) bean, factory);
     }
 
     /** {@inheritDoc} */
@@ -129,21 +158,5 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
             return new ProvidableBeanConfiguration<>(this);
         }
 
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <H extends BeanHandle<?>> H install(Bean<?> bean, Function<? super BeanInstaller, H> factory) {
-        if (bean.beanSourceKind() == BeanSourceKind.SOURCELESS) {
-            throw new InternalExtensionException("Only static beans can be source less");
-        }
-        return BeanSetup.newBean(this, (PackedBean<?>) bean, factory);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanInstaller addContext(Class<? extends Context<?>> contextClass) {
-        template = template.builder().addContext(contextClass).build();
-        return this;
     }
 }

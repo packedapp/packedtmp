@@ -145,6 +145,10 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         return install(Bean.of(op));
     }
 
+    private PackedBeanInstaller install0(BeanLifetime kind) {
+        return PackedBeanInstaller.newInstaller(kind, extension, extension.container.assembly);
+    }
+
     private PackedBeanInstaller install0(PackedBeanTemplate template) {
         return template.newInstaller(extension, extension.container.assembly);
     }
@@ -165,8 +169,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> installPrototype(Bean<T> bean) {
-        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(PackedBeanTemplate.builder(BeanLifetime.UNMANAGED).build()).install(bean,
-                ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(BeanLifetime.UNMANAGED).install(bean, ProvidableBeanHandle::new);
         return handle.configuration();
     }
 

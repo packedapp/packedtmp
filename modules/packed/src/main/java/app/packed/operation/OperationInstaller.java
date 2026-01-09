@@ -29,6 +29,7 @@ import internal.app.packed.operation.PackedOperationInstaller;
  * <p>
  * An installer can only be used once. After an operation has been installed, all methods will throw
  * {@link IllegalStateException}.
+ *
  */
 public sealed interface OperationInstaller permits PackedOperationInstaller {
 
@@ -54,7 +55,7 @@ public sealed interface OperationInstaller permits PackedOperationInstaller {
     OperationInstaller returnDynamic();
 
     /**
-     * Creates the operation.
+     * Installs the operation.
      *
      * @param <H>
      *            the type of operation handle to represent the operation
@@ -64,18 +65,10 @@ public sealed interface OperationInstaller permits PackedOperationInstaller {
      *
      * @throws IllegalStateException
      *             if the installer has already been used
-     *
-     *
      * @throws InaccessibleBeanMemberException
      *             if the framework does not have access to invoke the method
      * @throws InternalExtensionException
      *             if the extension does not have access to invoke the method
-     *
-     * @see OperationTarget.OfMethodHandle
-     * @see Lookup#unreflect(Method)
-     * @see BeanMethodHook#allowInvoke()
-     * @see BeanClassHook#allowFullPrivilegeAccess()
-     *
      */
     <H extends OperationHandle<?>> H install(Function<? super OperationInstaller, H> factory);
 

@@ -18,18 +18,13 @@ package app.packed.application.registry;
 import app.packed.application.ApplicationHandle;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanLifetime;
 import app.packed.binding.Key;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanTemplate;
 
 /** A handle for an application repository bean. */
 final class ApplicationRegistryBeanHandle<I, H extends ApplicationHandle<I, ?>> extends BeanHandle<ApplicationRegistryBeanConfiguration<I, H>> {
-
-    /** A bean template for a {@link ApplicationRepository} bean. */
-    static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = PackedBeanTemplate.builder(BeanLifetime.SINGLETON).build();
 
     final BuildApplicationRepository repository;
 

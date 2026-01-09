@@ -18,6 +18,7 @@ import app.packed.operation.Op;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
+import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.bean.sidebean.SidebeanHandle;
@@ -29,8 +30,6 @@ import internal.app.packed.extension.PackedExtensionPointHandle;
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
-    /** Application scoped extension beans can have ExtensionContext injected. */
-    private final static PackedBeanTemplate CONTAINER = BaseExtension.DEFAULT_BEAN;
 //    .withInitialization(null)
 //
 //            .configure(c -> c.initialization(o -> {}  /*o.inContext(PackedExtensionContext.CONTEXT_TEMPLATE)*/));
@@ -48,15 +47,13 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public static final OldContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedLifecycle.class.getSimpleName()).provideExpose(ManagedLifecycle.class)
             .build();
 
-    private final static PackedBeanTemplate SIDEBEAN = PackedBeanTemplate.builder(BeanLifetime.SIDEBEAN).build();
-
     /** Creates a new base extension point. */
     public BaseExtensionPoint(ExtensionPointHandle usesite) {
         super(usesite);
     }
 
     public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
-        ProvidableBeanHandle<T> h = newBean(CONTAINER, handle()).install(bean, ProvidableBeanHandle::new);
+        ProvidableBeanHandle<T> h = newBean(BaseExtension.DEFAULT_BEAN, handle()).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -93,7 +90,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public <T> ProvidableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ProvidableBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        return newBean(CONTAINER, handle())
+        return newBean(BaseExtension.DEFAULT_BEAN, handle())
                 .installIfAbsent(clazz, ProvidableBeanHandle.class, ProvidableBeanHandle<T>::new, h -> action.accept(h.configuration())).configuration();
     }
 
@@ -112,15 +109,12 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     @BuildActionable("bean.install")
     public <T> SidebeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, SidebeanTargetKind targetKind, Consumer<? super SidebeanConfiguration<T>> installationAction) {
-        BeanInstaller installer = newBean(SIDEBEAN, handle()).addContext(SidebeanContext.class);
+        BeanInstaller installer = newBean(BeanLifetime.SIDEBEAN, handle()).addContext(SidebeanContext.class);
         SidebeanHandle<T> h = installer.installIfAbsent(implementation, SidebeanHandle.class, SidebeanHandle<T>::new,
                 ha -> installationAction.accept(ha.configuration()));
         return h.configuration();
     }
 
-    public BeanInstaller newBean(BeanLifetime bl) {
-        return newBean(PackedBeanTemplate.builder(bl).build());
-    }
 
     /**
      * Creates a new bean installer to be able to install a new bean on behalf of the user.
@@ -129,14 +123,13 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a bean template representing the behaviour of the new bean
      * @return the installer
      */
-    private BeanInstaller newBean(PackedBeanTemplate template) {
-        PackedBeanTemplate t = template;
+    public BeanInstaller newBean(BeanLifetime bl) {
         ExtensionSetup e = handle.usedBy();
-        return t.newInstaller(e, e.container.assembly);
+        return PackedBeanInstaller.newInstaller(bl, e, e.container.assembly);
     }
 
     public BeanInstaller newBean(BeanLifetime bl, ExtensionPointHandle forExtension) {
-        return newBean(PackedBeanTemplate.builder(bl).build(), forExtension);
+        return newBean(new PackedBeanTemplate(bl, null), forExtension);
     }
 
     /**

@@ -15,7 +15,6 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.context.ContextModel;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 
 /** Implementation of {@link OperationTemplate}. */
@@ -48,7 +47,6 @@ public final class PackedOperationTemplate {
 
     PackedOperationTemplate(ReturnKind returnKind, Class<?> returnClass, boolean extensionContextFlag, @Nullable Class<?> beanClass,
             List<ContextModel> contexts, List<Class<?>> args) {
-
         this.contexts = contexts;
         this.extensionContextFlag = extensionContextFlag;
         this.args = args;
@@ -67,9 +65,6 @@ public final class PackedOperationTemplate {
         }
         newMt.addAll(args);
         methodType = MethodType.methodType(returnClass, newMt);
-        if (methodType == MethodType.methodType(Object.class, ExtensionContext.class, PackedExtensionContext.class)) {
-            throw new Error();
-        }
     }
 
     public boolean newLifetime() {
@@ -148,14 +143,6 @@ public final class PackedOperationTemplate {
         CLASS, DYNAMIC, IGNORE;
     }
 
-    /** {@inheritDoc} */
-    public PackedOperationTemplate withAllowedThrowables(Class<? extends Throwable> allowed) {
-        return new PackedBuilder(this).allowedThrowables(allowed).build();
-    }
-
-    public static PackedBuilder builder() {
-        return new PackedBuilder();
-    }
 
     /** Implementation of {@link OperationTemplate.Builder}. */
     public static final class PackedBuilder {

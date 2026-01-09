@@ -115,7 +115,7 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
     @Override
     public PackedOperationInstaller attachToSidebean(SidebeanConfiguration<?> configuration) {
         if (attachToSidebean != null) {
-            throw new IllegalStateException("A sidebean has already been attached");
+            throw new IllegalStateException("this method has already been called once");
         }
         attachToSidebean = BeanSetup.crack(requireNonNull(configuration));
         SidebeanHandle<?> handle = (SidebeanHandle<?>) attachToSidebean.handle();
