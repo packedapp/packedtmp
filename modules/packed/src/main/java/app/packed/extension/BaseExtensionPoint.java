@@ -30,10 +30,6 @@ import internal.app.packed.extension.PackedExtensionPointHandle;
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
-//    .withInitialization(null)
-//
-//            .configure(c -> c.initialization(o -> {}  /*o.inContext(PackedExtensionContext.CONTEXT_TEMPLATE)*/));
-
     public static OldContainerTemplateLink CONTAINER_MIRROR = OldContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror")
             .build();
 
@@ -53,7 +49,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
-        ProvidableBeanHandle<T> h = newBean(BaseExtension.DEFAULT_BEAN, handle()).install(bean, ProvidableBeanHandle::new);
+        ProvidableBeanHandle<T> h = newBean(BeanLifetime.SINGLETON, handle()).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -90,7 +86,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public <T> ProvidableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ProvidableBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        return newBean(BaseExtension.DEFAULT_BEAN, handle())
+        return newBean(BeanLifetime.SINGLETON, handle())
                 .installIfAbsent(clazz, ProvidableBeanHandle.class, ProvidableBeanHandle<T>::new, h -> action.accept(h.configuration())).configuration();
     }
 

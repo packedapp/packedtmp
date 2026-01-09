@@ -21,11 +21,9 @@ import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceNamespaceConfiguration;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
-import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.util.PackedServiceLocator;
 
 /**
@@ -57,9 +55,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // We use an initial value for now, because we share FromLinks and the boolean fields
     // But right now we only have a single field
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
-
-    static final PackedBeanTemplate DEFAULT_BEAN = PackedBeanTemplate.builder(BeanLifetime.SINGLETON)
-            .initialization(PackedOperationTemplate.DEFAULTS.withReturnTypeDynamic()).build();
 
     /**
      * All your base are belong to us.
@@ -115,7 +110,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // interacts with other exports in some way
 
     public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(DEFAULT_BEAN).install(bean, ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(BeanLifetime.SINGLETON).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -147,10 +142,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     private PackedBeanInstaller install0(BeanLifetime kind) {
         return PackedBeanInstaller.newInstaller(kind, extension, extension.container.assembly);
-    }
-
-    private PackedBeanInstaller install0(PackedBeanTemplate template) {
-        return PackedBeanInstaller.newInstaller(template, extension, extension.container.assembly);
     }
 
     /**
@@ -210,7 +201,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         // Create a new bean that holds the ServiceLocator to export
         // will fail if installed multiple times
 
-        BeanHandle<ProvidableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(DEFAULT_BEAN).install(Bean.of(PackedServiceLocator.class),
+        BeanHandle<ProvidableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(BeanLifetime.SINGLETON).install(Bean.of(PackedServiceLocator.class),
                 ProvidableBeanHandle::new);
         ha.configuration().exportAs(ServiceLocator.class);
 
@@ -218,7 +209,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         ha.bindComputedConstant(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
 
         // Alternative, If we do not use it for anything else
-        newBeanBuilderSelf(DEFAULT_BEAN).installIfAbsent(PackedServiceLocator.class, BeanHandle.class, BeanHandle::new, bh -> {
+        newBeanBuilderSelf(BeanLifetime.SINGLETON).installIfAbsent(PackedServiceLocator.class, BeanHandle.class, BeanHandle::new, bh -> {
             bh.exportAs(ServiceLocator.class);
             bh.bindComputedConstant(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
         });
@@ -273,8 +264,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            a template for the bean
      * @return a bean installer
      */
-    private BeanInstaller newBeanBuilderSelf(PackedBeanTemplate template) {
-        return template.newInstaller(extension, extension);
+    private BeanInstaller newBeanBuilderSelf(BeanLifetime lifetime) {
+        return PackedBeanInstaller.newInstaller(lifetime, extension, extension);
     }
 
     /** {@return a mirror for this extension.} */
