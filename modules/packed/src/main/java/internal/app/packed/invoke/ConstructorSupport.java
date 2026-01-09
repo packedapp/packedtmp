@@ -15,6 +15,8 @@
  */
 package internal.app.packed.invoke;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -25,18 +27,53 @@ import java.util.Arrays;
 
 import app.packed.Framework;
 import app.packed.bean.BeanIntrospector;
+import app.packed.build.BuildException;
+import app.packed.build.hook.ApplyBuildHook;
+import app.packed.build.hook.BuildHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.InternalExtensionException;
+import internal.app.packed.assembly.AssemblyClassModel;
 import internal.app.packed.extension.ExtensionClassModel;
-import internal.app.packed.invoke.MethodHandleInvoker.ExtensionFactory;
+import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.util.StringFormatter;
+import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
 /**
  *
  */
-public class ExtensionInvokeSupport {
+public class ConstructorSupport {
+
+    public static BuildHookFactory newBuildHookFactory(Class<?> assemblyClass, ApplyBuildHook applyHook, Class<? extends BuildHook> type) {
+        MethodHandle constructor;
+
+        if (!AssemblyClassModel.class.getModule().canRead(type.getModule())) {
+            AssemblyClassModel.class.getModule().addReads(type.getModule());
+        }
+
+        Lookup privateLookup;
+        try {
+            privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /* lookup */);
+        } catch (IllegalAccessException e1) {
+            throw new RuntimeException(e1);
+        }
+        // TODO fix visibility
+        // Maybe common findConstructorMethod
+        try {
+            constructor = privateLookup.findConstructor(type, MethodType.methodType(void.class));
+        } catch (NoSuchMethodException e) {
+            throw new BuildException("A container hook must provide an empty constructor, hook = " + applyHook, e);
+        } catch (IllegalAccessException e) {
+            throw new BuildException("Can't see it sorry, hook = " + applyHook, e);
+        }
+
+        // For consistency reasons we always tries to use invokeExact() even if not strictly needed
+        constructor = constructor.asType(MethodType.methodType(BuildHook.class));
+
+        return new BuildHookFactory(constructor);
+    }
 
     public static MethodHandle findBeanIntrospector(Class<? extends BeanIntrospector<?>> extensionClass) {
         if (Modifier.isAbstract(extensionClass.getModifiers())) {
@@ -133,6 +170,41 @@ public class ExtensionInvokeSupport {
 
     public static String illegalAccessExtensionMsg(Class<?> clazz) {
         return clazz + " must be opened to " + Framework.name() + " by adding this line 'opens " + clazz.getPackageName() + " to "
-                + ExtensionInvokeSupport.class.getModule() + "' to module-info.java";
+                + ConstructorSupport.class.getModule() + "' to module-info.java";
     }
+
+    /** A factory class for creating instances of {@link Extension} */
+    public static final class ExtensionFactory {
+        private final MethodHandle mh; // (ExtensionHandle)Extension
+
+        public ExtensionFactory(MethodHandle mh) {
+            this.mh = requireNonNull(mh);
+        }
+
+        public Extension<?> create(ExtensionSetup extension) {
+            ExtensionHandle<?> handle = new PackedExtensionHandle<>(extension);
+            try {
+                return (Extension<?>) mh.invokeExact(handle);
+            } catch (Throwable e) {
+                throw new InternalExtensionException("An instance of the extension " + extension.model.fullName() + " could not be created.", e);
+            }
+        }
+    }
+
+    public static final class BuildHookFactory {
+        private final MethodHandle mh;
+
+        public BuildHookFactory(MethodHandle mh) {
+            this.mh = requireNonNull(mh);
+        }
+
+        public BuildHook create() {
+            try {
+                return (BuildHook) mh.invokeExact();
+            } catch (Throwable t) {
+                throw ThrowableUtil.orUndeclared(t);
+            }
+        }
+    }
+
 }

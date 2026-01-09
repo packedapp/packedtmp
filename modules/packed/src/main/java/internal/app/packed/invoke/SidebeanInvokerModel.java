@@ -200,7 +200,7 @@ public final class SidebeanInvokerModel {
             return lookup.findConstructor(lookup.lookupClass(), MethodType.methodType(void.class, MethodHandle.class, ExtensionContext.class))
                     .asType(MethodType.methodType(iface, MethodHandle.class, ExtensionContext.class));
         } catch (ReflectiveOperationException | IllegalAccessError e) {
-            throw new InternalExtensionException(ExtensionInvokeSupport.illegalAccessExtensionMsg(iface), e);
+            throw new InternalExtensionException(ConstructorSupport.illegalAccessExtensionMsg(iface), e);
         }
     }
 

@@ -21,13 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-import app.packed.build.hook.BuildHook;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionHandle;
-import app.packed.extension.InternalExtensionException;
 import internal.app.packed.extension.ExtensionContext;
-import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -52,40 +46,6 @@ public abstract class MethodHandleInvoker {
                 return mh.invokeExact(launchContext);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
-            }
-        }
-    }
-
-    /** A factory class for creating instances of {@link Extension} */
-    public static final class ExtensionFactory extends MethodHandleInvoker {
-        private final MethodHandle mh; // (ExtensionHandle)Extension
-
-        public ExtensionFactory(MethodHandle mh) {
-            this.mh = requireNonNull(mh);
-        }
-
-        public Extension<?> create(ExtensionSetup extension) {
-            ExtensionHandle<?> handle = new PackedExtensionHandle<>(extension);
-            try {
-                return (Extension<?>) mh.invokeExact(handle);
-            } catch (Throwable e) {
-                throw new InternalExtensionException("An instance of the extension " + extension.model.fullName() + " could not be created.", e);
-            }
-        }
-    }
-
-    public static final class BuildHookFactory extends MethodHandleInvoker {
-        private final MethodHandle mh;
-
-        public BuildHookFactory(MethodHandle mh) {
-            this.mh = requireNonNull(mh);
-        }
-
-        public BuildHook create() {
-            try {
-                return (BuildHook) mh.invokeExact();
-            } catch (Throwable t) {
-                throw ThrowableUtil.orUndeclared(t);
             }
         }
     }

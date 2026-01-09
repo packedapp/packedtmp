@@ -24,7 +24,7 @@ import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
 import internal.app.packed.extension.ExtensionClassModel;
-import internal.app.packed.invoke.ExtensionInvokeSupport;
+import internal.app.packed.invoke.ConstructorSupport;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
@@ -42,7 +42,7 @@ final class BeanIntrospectorClassModel {
         @Override
         protected BeanIntrospectorClassModel computeValue(Class<?> beanInspectorClass) {
             Class<? extends Extension<?>> e = ExtensionClassModel.extractE(EXTRACTOR, beanInspectorClass);
-            MethodHandle mh = ExtensionInvokeSupport.findBeanIntrospector((Class<? extends BeanIntrospector<?>>) beanInspectorClass);
+            MethodHandle mh = ConstructorSupport.findBeanIntrospector((Class<? extends BeanIntrospector<?>>) beanInspectorClass);
             return new BeanIntrospectorClassModel(e, mh);
         }
     };

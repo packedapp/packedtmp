@@ -15,8 +15,8 @@ import app.packed.build.hook.BuildHook;
 import internal.app.packed.bean.scanning.BeanTriggerModelCustom;
 import internal.app.packed.build.hook.BuildHookMap;
 import internal.app.packed.build.hook.StaticBuildHookMap;
-import internal.app.packed.invoke.MethodHandleInvoker.BuildHookFactory;
-import internal.app.packed.invoke.UserLookupSupport;
+import internal.app.packed.invoke.ConstructorSupport;
+import internal.app.packed.invoke.ConstructorSupport.BuildHookFactory;
 
 /** A model of an {@link Assembly} class. */
 public final /* primitive */ class AssemblyClassModel {
@@ -31,7 +31,7 @@ public final /* primitive */ class AssemblyClassModel {
                 if (a instanceof ApplyBuildHook h) {
                     for (Class<? extends BuildHook> b : h.hooks()) {
                         Class<? extends BuildHook> hookType = BuildHookMap.classOf(b);
-                        BuildHookFactory factory = UserLookupSupport.newBuildHookFactory(type, h, b);
+                        BuildHookFactory factory = ConstructorSupport.newBuildHookFactory(type, h, b);
                         // Would be great with some caching. But it is tricky, we need to take into account
                         // if the assembly can both see the constructor of the buildhook
                         BuildHook instance = factory.create();

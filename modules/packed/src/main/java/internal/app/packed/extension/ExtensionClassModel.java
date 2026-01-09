@@ -36,8 +36,8 @@ import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.FrameworkExtension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
-import internal.app.packed.invoke.ExtensionInvokeSupport;
-import internal.app.packed.invoke.MethodHandleInvoker.ExtensionFactory;
+import internal.app.packed.invoke.ConstructorSupport;
+import internal.app.packed.invoke.ConstructorSupport.ExtensionFactory;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
@@ -101,7 +101,7 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
     private ExtensionClassModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
         this.realm = ComponentRealm.extension(extensionClass);
-        this.factory = ExtensionInvokeSupport.findExtensionConstructor(extensionClass);
+        this.factory = ConstructorSupport.findExtensionConstructor(extensionClass);
         this.orderingDepth = builder.depth;
         this.dependencies = Set.copyOf(builder.dependencies);
 
@@ -391,7 +391,7 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
 
             ExtensionClassModel model;
             try {
-                ExtensionInvokeSupport.forceLoad(extensionClass);
+                ConstructorSupport.forceLoad(extensionClass);
 
                 // Get any bootstrap data that was create as part of the class initialization
 
