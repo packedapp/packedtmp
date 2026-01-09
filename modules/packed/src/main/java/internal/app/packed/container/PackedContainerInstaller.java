@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
@@ -76,7 +77,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
     public PackedContainerInstaller(PackedContainerTemplate<H> template, @Nullable PackedApplicationInstaller<?> application, @Nullable ContainerSetup parent,
             Class<? extends Extension<?>> installedBy) {
-        super(template.componentTags(), new HashMap<>());
+        super(Set.of(), new HashMap<>());
         this.applicationInstaller = application;
         this.template = requireNonNull(template, "template is null");
         this.parent = parent;
@@ -177,11 +178,11 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
             @Nullable ContainerSetup parent) {
         PackedContainerInstaller<?> pcb = new PackedContainerInstaller<>(template, null, parent, installedBy);
 
-        for (PackedContainerLink b : pcb.template.links().packs) {
-            if (b.onUse() != null) {
-                b.onUse().accept(pcb);
-            }
-        }
+//        for (PackedContainerLink b : pcb.template.links().packs) {
+//            if (b.onUse() != null) {
+//                b.onUse().accept(pcb);
+//            }
+//        }
         return pcb;
     }
 
