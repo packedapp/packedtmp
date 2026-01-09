@@ -37,6 +37,7 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.context.ContextModel;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.operation.PackedOperationTemplate;
 
 /** Implementation of {@link BeanTemplate.Installer}. */
 public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSetup, PackedBeanInstaller> implements BeanInstaller {
@@ -76,7 +77,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     }
 
     public static PackedBeanInstaller newInstaller(BeanLifetime lifetime, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
-        return new PackedBeanInstaller(PackedBeanTemplate.builder(lifetime).build(), installingExtension, owner);
+        return new PackedBeanInstaller(new PackedBeanTemplate(lifetime, PackedOperationTemplate.DEFAULTS), installingExtension, owner);
     }
 
     /** {@inheritDoc} */

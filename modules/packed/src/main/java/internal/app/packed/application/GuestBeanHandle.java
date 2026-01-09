@@ -39,6 +39,7 @@ import internal.app.packed.context.PackedComponentHostContext;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
 import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
+import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
  *
@@ -46,9 +47,8 @@ import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration<?>> {
 
     /** A bean template for the guest bean. */
-    public static final PackedBeanTemplate APPLICATION_GUEST_BEAN_TEMPLATE = PackedBeanTemplate.builder(BeanLifetime.UNMANAGED).initialization(
-            c -> c.withRaw().withContext(ApplicationLaunchContext.class))
-            .build();
+    public static final PackedBeanTemplate APPLICATION_GUEST_BEAN_TEMPLATE =
+            new PackedBeanTemplate(BeanLifetime.UNMANAGED, PackedOperationTemplate.DEFAULTS.withRaw().withContext(ApplicationLaunchContext.class));
 
     static final Set<Key<?>> KEYS = Set.of(Key.of(ApplicationMirror.class), Key.of(String.class), Key.of(ManagedLifecycle.class), Key.of(ServiceLocator.class));
 
