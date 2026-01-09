@@ -8,7 +8,8 @@
       "Bash(done)",
       "Bash(javac:*)",
       "Bash(find:*)",
-      "Bash(find-skills builder pattern)"
+      "Bash(find-skills builder pattern)",
+      "Bash(mvn test:*)"
     ],
     "deny": [],
     "ask": []

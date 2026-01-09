@@ -32,6 +32,9 @@ public final class TypeUtil {
     /** Cannot instantiate. */
     private TypeUtil() {}
 
+    /** Mode for the shared isFreeFrom helper method. */
+    private enum CheckMode { TYPE_VARIABLES, WILDCARDS }
+
     /**
      * Returns true if the specified {@code type} is free from type variables, otherwise false. For example,
      * {@code List<Map<String, ? extends Integer>} is free from type variables. {@code List<Map<String, ? extends T>} is
@@ -42,67 +45,55 @@ public final class TypeUtil {
      * @return true is the specified type is free from type variable, otherwise false
      */
     public static boolean isFreeFromTypeVariables(Type type) {
-        requireNonNull(type, "type is null");
-        if (type instanceof Class<?>) {
-            return true;
-        } else if (type instanceof ParameterizedType pt) {
-            if (pt.getOwnerType() != null && !isFreeFromTypeVariables(pt.getOwnerType())) {
-                return false;
-            }
-            for (Type t : pt.getActualTypeArguments()) {
-                if (!isFreeFromTypeVariables(t)) {
-                    return false;
-                }
-            }
-            // To be safe we check the raw type as well, I expect it should always be a class, but the method signature says
-            // something else
-            return isFreeFromTypeVariables(pt.getRawType());
-        } else if (type instanceof GenericArrayType gat) {
-            return isFreeFromTypeVariables(gat.getGenericComponentType());
-        } else if (type instanceof TypeVariable) {
-            return false;
-        } else if (type instanceof WildcardType wt) {
-            for (Type t : wt.getLowerBounds()) {
-                if (!isFreeFromTypeVariables(t)) {
-                    return false;
-                }
-            }
-            for (Type t : wt.getUpperBounds()) {
-                if (!isFreeFromTypeVariables(t)) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            throw new IllegalArgumentException("Unknown type: " + type);
-        }
+        return isFreeFrom(type, CheckMode.TYPE_VARIABLES);
     }
 
-    public static boolean isFreeFromWildcarVariables(Type type) {
+    public static boolean isFreeFromWildcardVariables(Type type) {
+        return isFreeFrom(type, CheckMode.WILDCARDS);
+    }
+
+    private static boolean isFreeFrom(Type type, CheckMode mode) {
         requireNonNull(type, "type is null");
-        if (type instanceof Class<?>) {
-            return true;
-        } else if (type instanceof ParameterizedType pt) {
-            if (pt.getOwnerType() != null && !isFreeFromWildcarVariables(pt.getOwnerType())) {
-                return false;
-            }
-            for (Type t : pt.getActualTypeArguments()) {
-                if (!isFreeFromWildcarVariables(t)) {
-                    return false;
+        return switch (type) {
+            case Class<?> _ -> true;
+            case ParameterizedType pt -> {
+                if (pt.getOwnerType() != null && !isFreeFrom(pt.getOwnerType(), mode)) {
+                    yield false;
                 }
+                for (Type t : pt.getActualTypeArguments()) {
+                    if (!isFreeFrom(t, mode)) {
+                        yield false;
+                    }
+                }
+                // To be safe we check the raw type as well, I expect it should always be a class, but the method signature says
+                // something else
+                yield isFreeFrom(pt.getRawType(), mode);
             }
-            // To be safe we check the raw type as well, I expect it should always be a class, but the method signature says
-            // something else
-            return isFreeFromWildcarVariables(pt.getRawType());
-        } else if (type instanceof GenericArrayType gat) {
-            return isFreeFromTypeVariables(gat.getGenericComponentType());
-        } else if (type instanceof TypeVariable) {
-            throw new UnsupportedOperationException();
-        } else if (type instanceof WildcardType) {
-            return false;
-        } else {
-            throw new IllegalArgumentException("Unknown type: " + type);
-        }
+            case GenericArrayType gat -> isFreeFrom(gat.getGenericComponentType(), mode);
+            case TypeVariable<?> _ -> {
+                if (mode == CheckMode.WILDCARDS) {
+                    throw new UnsupportedOperationException();
+                }
+                yield false;
+            }
+            case WildcardType wt -> {
+                if (mode == CheckMode.WILDCARDS) {
+                    yield false;
+                }
+                for (Type t : wt.getLowerBounds()) {
+                    if (!isFreeFrom(t, mode)) {
+                        yield false;
+                    }
+                }
+                for (Type t : wt.getUpperBounds()) {
+                    if (!isFreeFrom(t, mode)) {
+                        yield false;
+                    }
+                }
+                yield true;
+            }
+            default -> throw new IllegalArgumentException("Unknown type: " + type);
+        };
     }
 
     /**
@@ -116,24 +107,15 @@ public final class TypeUtil {
      */
     public static Class<?> rawTypeOf(Type type) {
         requireNonNull(type, "type is null");
-//        if (true) {
-//            return switch(type) {
-//            case Class<?> cl -> cl;
-//            default -> null;
-//            }
-//        }
-
-        if (type instanceof Class<?> cl) {
-            return cl;
-        } else if (type instanceof ParameterizedType pt) {
-            return (Class<?>) pt.getRawType();
-        } else if (type instanceof GenericArrayType gat) {
-            return Array.newInstance(rawTypeOf(gat.getGenericComponentType()), 0).getClass();
-        } else if (type instanceof TypeVariable || type instanceof WildcardType) {
-            return Object.class;
-        } else {
-            throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of unknown type: " + type.getClass().getName());
-        }
+        return switch (type) {
+            case Class<?> cl -> cl;
+            case ParameterizedType pt -> (Class<?>) pt.getRawType();
+            case GenericArrayType gat -> Array.newInstance(rawTypeOf(gat.getGenericComponentType()), 0).getClass();
+            case TypeVariable<?> _ -> Object.class;
+            case WildcardType _ -> Object.class;
+            default -> throw new IllegalArgumentException(
+                    "Cannot extract raw type from '" + type + "' of unknown type: " + type.getClass().getName());
+        };
     }
 
     /**
@@ -160,21 +142,29 @@ public final class TypeUtil {
      *            the type to analyse
      */
     private static void typeVariableNamesOf0(LinkedHashSet<String> addTo, Type type) {
-        if (type instanceof ParameterizedType pt) {
-            typeVariableNamesOf0(addTo, pt.getOwnerType());
-            for (Type t : pt.getActualTypeArguments()) {
-                typeVariableNamesOf0(addTo, t);
+        if (type == null) {
+            return;
+        }
+        switch (type) {
+            case Class<?> _ -> {}
+            case ParameterizedType pt -> {
+                typeVariableNamesOf0(addTo, pt.getOwnerType());
+                for (Type t : pt.getActualTypeArguments()) {
+                    typeVariableNamesOf0(addTo, t);
+                }
+                typeVariableNamesOf0(addTo, pt.getRawType());
             }
-            typeVariableNamesOf0(addTo, pt.getRawType());
-        } else if (type instanceof GenericArrayType gat) {
-            typeVariableNamesOf0(addTo, gat.getGenericComponentType());
-        } else if (type instanceof TypeVariable<?> tv) {
-            addTo.add(tv.getName());
-        } else if (type instanceof WildcardType wt) {
-            if (wt.getLowerBounds().length > 0) {
-                typeVariableNamesOf0(addTo, wt.getLowerBounds()[0]);
+            case GenericArrayType gat -> typeVariableNamesOf0(addTo, gat.getGenericComponentType());
+            case TypeVariable<?> tv -> addTo.add(tv.getName());
+            case WildcardType wt -> {
+                for (Type t : wt.getLowerBounds()) {
+                    typeVariableNamesOf0(addTo, t);
+                }
+                for (Type t : wt.getUpperBounds()) {
+                    typeVariableNamesOf0(addTo, t);
+                }
             }
-            typeVariableNamesOf0(addTo, wt.getUpperBounds()[0]);
+            default -> {}
         }
     }
 

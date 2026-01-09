@@ -132,46 +132,4 @@ public class ClassUtil {
         }
         return type;
     }
-
-    /**
-     * Returns the boxed class for a primitive type.
-     *
-     * @param primitiveClass the primitive class
-     * @return the boxed class
-     */
-    public static Class<?> boxPrimitiveClass(Class<?> primitiveClass) {
-        if (primitiveClass == int.class) return Integer.class;
-        if (primitiveClass == long.class) return Long.class;
-        if (primitiveClass == double.class) return Double.class;
-        if (primitiveClass == float.class) return Float.class;
-        if (primitiveClass == boolean.class) return Boolean.class;
-        if (primitiveClass == byte.class) return Byte.class;
-        if (primitiveClass == char.class) return Character.class;
-        if (primitiveClass == short.class) return Short.class;
-        if (primitiveClass == void.class) return Void.class;
-        return primitiveClass;
-    }
-//
-//    public static <T extends Mirror> T newMirror2(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
-//        // Create a new BeanMirror
-//        if (specializedSupplier == null) {
-//            return supplier.get();
-//        }
-//        T mirror = specializedSupplier.get();
-//        if (mirror == null) {
-//            throw new NullPointerException(specializedSupplier + " returned a null instead of an " + t.getSimpleName() + " instance");
-//        }
-//        return t.cast(mirror);
-//    }
-//    public static <T extends Mirror> T newMirror(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
-//        // Create a new BeanMirror
-//        if (specializedSupplier == null) {
-//            return supplier.get();
-//        }
-//        T mirror = specializedSupplier.get();
-//        if (mirror == null) {
-//            throw new NullPointerException(specializedSupplier + " returned a null instead of an " + t.getSimpleName() + " instance");
-//        }
-//        return t.cast(mirror);
-//    }
 }
