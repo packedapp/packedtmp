@@ -124,6 +124,13 @@ final class ModuleAccessor {
             }
         }
 
+        // MethodHandles.privateLookupIn requires that the caller (THIS_MODULE)
+        // reads the target module. Since the target might be a dynamic plugin
+        // or a layer not known at compile time, we must ensure readability now.
+        if (!THIS_MODULE.canRead(targetModule)) {
+            THIS_MODULE.addReads(targetModule);
+        }
+
         // Make sure the package is actually open to us
         if (!targetModule.isOpen(packageName, THIS_MODULE)) {
             throw new IllegalAccessError("Package " + packageName + " in module " + targetModule.getName() + " is not open to " + THIS_MODULE.getName());
