@@ -54,6 +54,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     /** The bean's template. */
     public PackedBeanTemplate template;
 
+    public final BeanLifetime beanlifetime;
     /**
      * Create a new bean installer.
      * <p>
@@ -71,6 +72,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
         this.template = requireNonNull(template, "template is null");
         this.installledByExtension = requireNonNull(installledByExtension);
         this.owner = requireNonNull(owner);
+        this.beanlifetime = template.beanKind();
     }
 
     public static PackedBeanInstaller newInstaller(BeanLifetime lifetime, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {

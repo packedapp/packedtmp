@@ -28,4 +28,35 @@ public non-sealed abstract class WrappingWirelet extends FrameworkWirelet {
     protected WrappingWirelet(Wirelet wirelet) {
         this.wirelet = requireNonNull(wirelet);
     }
+    
+    static Wirelet ignoreUnconsumed(Wirelet wirelet) {
+
+        class IgnoreUnconsumedWirelet extends WrappingWirelet {
+
+            /**
+             * @param wirelet
+             */
+            protected IgnoreUnconsumedWirelet(Wirelet wirelet) {
+                super(wirelet);
+            }
+        }
+        if (wirelet instanceof IgnoreUnconsumedWirelet) {
+            return wirelet;
+        } else if (wirelet instanceof CompositeWirelet cw) {
+            throw new UnsupportedOperationException("" + cw);
+            // If composite wirelet.. Unwrap all. Call ignoreComposite. Create new Composite
+        }
+
+        // There are some issues about flags...
+        // Maybe we can do something specific for wrapping wirelets
+        return new IgnoreUnconsumedWirelet(wirelet);
+
+        // Easier said then done I think. If composite wirelet.
+        // We much apply to each
+
+        // But other than that it is a kind of flag we need to carry around.
+        // When apply the wirelet, not trivial. We can't just change flags
+        // on the wirelet instance
+        // throw new UnsupportedOperationException();
+    }
 }

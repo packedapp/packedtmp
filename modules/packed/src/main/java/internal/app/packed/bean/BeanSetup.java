@@ -128,6 +128,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         this.bean = requireNonNull(bean);
 
         this.template = installer.template;
+
         this.container = requireNonNull(installer.installledByExtension.container);
         this.installedBy = requireNonNull(installer.installledByExtension);
         this.owner = requireNonNull(installer.owner);

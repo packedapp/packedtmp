@@ -18,13 +18,12 @@ package internal.app.packed.bean;
 import java.util.function.Function;
 
 import app.packed.bean.BeanLifetime;
-import app.packed.util.Nullable;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.PackedOperationTemplate;
 
 /** Implementation of {@link BeanTemplate}. */
-public record PackedBeanTemplate(BeanLifetime beanKind, @Nullable PackedOperationTemplate initializationTemplate) {
+public record PackedBeanTemplate(BeanLifetime beanKind, PackedOperationTemplate initializationTemplate) {
 
     public static PackedBuilder builder(BeanLifetime kind) {
         return new PackedBuilder(kind);

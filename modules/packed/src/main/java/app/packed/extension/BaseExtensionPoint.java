@@ -129,7 +129,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public BeanInstaller newBean(BeanLifetime bl, ExtensionPointHandle forExtension) {
-        return newBean(new PackedBeanTemplate(bl, null), forExtension);
+        return newBean(PackedBeanTemplate.builder(bl).build(), forExtension);
     }
 
     /**

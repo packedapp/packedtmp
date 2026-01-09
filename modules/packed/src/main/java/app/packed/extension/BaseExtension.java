@@ -150,7 +150,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     private PackedBeanInstaller install0(PackedBeanTemplate template) {
-        return template.newInstaller(extension, extension.container.assembly);
+        return PackedBeanInstaller.newInstaller(template, extension, extension.container.assembly);
     }
 
     /**

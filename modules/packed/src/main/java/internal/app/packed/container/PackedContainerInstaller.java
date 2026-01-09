@@ -168,10 +168,6 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
             switch (wirelet) {
             case CompositeWirelet w -> processWirelets(w.wirelets);
             case InternalBaseWirelet w -> w.onBuild(this);
-
-            // Too map or not to map...
-
-            // A non-build wirelet that will be processed at a later point
             default -> unconsumedWirelets.add(wirelet);
             }
         }

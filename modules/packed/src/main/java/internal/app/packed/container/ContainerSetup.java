@@ -45,7 +45,6 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.container.wirelets.WireletWrapper;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
@@ -97,7 +96,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
 
     public ContainerWireletSpecs wireletSpecs = new ContainerWireletSpecs();
 
-    WireletWrapper wireletWrapper;
     /**
      * Create a new container.
      *
@@ -120,7 +118,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = installer.nameFromWirelet != null || installer.isFromAssembly;
         this.wirelets = installer.unconsumedWirelets;
-        this.wireletWrapper = new WireletWrapper(wirelets.toArray(i -> new Wirelet[i]));
     }
 
     /**
