@@ -29,6 +29,7 @@ import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanSourceKind;
 import app.packed.context.Context;
+import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
@@ -91,6 +92,16 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     @Override
     protected ApplicationSetup application(BeanSetup setup) {
         return setup.container.application;
+    }
+
+    // Ideen er at en extension kan styre alle invokationer paa en bean.
+    // De eneste annoteringer der er tilladt er dem for de specificeret extensions. Den extension der definere
+    // beanen er med som default
+
+    // Extension styrer saa alt Som man saa selv implementere.
+    // Man faar fat i MethodHandle ved at koere operationHandle.methodHandle (Throws UOE, requires bean.raw)
+    public void rawInject(@SuppressWarnings("unchecked") Class<? extends Extension<?>>... allowedExtensions) {
+        // Maaske er det kun den extension selv der kan
     }
 
     /** {@inheritDoc} */
