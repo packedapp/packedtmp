@@ -15,7 +15,6 @@
  */
 package internal.app.packed.bean.scanning;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Type;
 
 import app.packed.bean.BeanIntrospector;
@@ -25,6 +24,7 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
 import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.invoke.ConstructorSupport;
+import internal.app.packed.invoke.ConstructorSupport.BeanIntrospectorFactory;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
@@ -42,13 +42,13 @@ final class BeanIntrospectorClassModel {
         @Override
         protected BeanIntrospectorClassModel computeValue(Class<?> beanInspectorClass) {
             Class<? extends Extension<?>> e = ExtensionClassModel.extractE(EXTRACTOR, beanInspectorClass);
-            MethodHandle mh = ConstructorSupport.findBeanIntrospector((Class<? extends BeanIntrospector<?>>) beanInspectorClass);
-            return new BeanIntrospectorClassModel(e, mh);
+            BeanIntrospectorFactory factory = ConstructorSupport.findBeanIntrospector((Class<? extends BeanIntrospector<?>>) beanInspectorClass);
+            return new BeanIntrospectorClassModel(e, factory);
         }
     };
 
-    /** A method handle for creating new instances of extensionClass. */
-    private final MethodHandle mhConstructor; // (ExtensionSetup)Extension
+    /** A factory for creating new instances of the BeanIntrospector. */
+    private final BeanIntrospectorFactory factory;
 
     final Class<? extends Extension<?>> extensionClass;
 
@@ -58,8 +58,8 @@ final class BeanIntrospectorClassModel {
      * @param builder
      *            the builder of the model
      */
-    private BeanIntrospectorClassModel(Class<? extends Extension<?>> extensionClass, MethodHandle mhConstructor) {
-        this.mhConstructor = mhConstructor;
+    private BeanIntrospectorClassModel(Class<? extends Extension<?>> extensionClass, BeanIntrospectorFactory factory) {
+        this.factory = factory;
         this.extensionClass = extensionClass;
     }
 
@@ -103,18 +103,12 @@ final class BeanIntrospectorClassModel {
     }
 
     /**
-     * Creates a new instance of the extension.
+     * Creates a new instance of the BeanIntrospector.
      *
-     * @param extension
-     *            the setup of the extension
-     * @return a new extension instance
+     * @return a new BeanIntrospector instance
      */
     public BeanIntrospector<?> newInstance() {
-        try {
-            return (BeanIntrospector<?>) mhConstructor.invokeExact();
-        } catch (Throwable e) {
-            throw new InternalExtensionException("An instance of " + mhConstructor.type().returnType() + " could not be created.", e);
-        }
+        return factory.create();
     }
 
     /**

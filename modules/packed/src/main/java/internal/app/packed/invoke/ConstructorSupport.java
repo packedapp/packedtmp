@@ -75,7 +75,7 @@ public class ConstructorSupport {
         return new BuildHookFactory(constructor);
     }
 
-    public static MethodHandle findBeanIntrospector(Class<? extends BeanIntrospector<?>> extensionClass) {
+    public static BeanIntrospectorFactory findBeanIntrospector(Class<? extends BeanIntrospector<?>> extensionClass) {
         if (Modifier.isAbstract(extensionClass.getModifiers())) {
             throw new InternalExtensionException("Extension " + StringFormatter.format(extensionClass) + " cannot be an abstract class");
         } else if (ClassUtil.isInnerOrLocal(extensionClass)) {
@@ -103,7 +103,8 @@ public class ConstructorSupport {
             throw new InternalExtensionException(illegalAccessExtensionMsg(extensionClass), e);
         }
         // cast from (Concrete BeanIntrospector class) -> (BeanIntrospector)
-        return MethodHandles.explicitCastArguments(mh, MethodType.methodType(BeanIntrospector.class));
+        mh = MethodHandles.explicitCastArguments(mh, MethodType.methodType(BeanIntrospector.class));
+        return new BeanIntrospectorFactory(mh);
     }
 
     /**
@@ -203,6 +204,23 @@ public class ConstructorSupport {
                 return (BuildHook) mh.invokeExact();
             } catch (Throwable t) {
                 throw ThrowableUtil.orUndeclared(t);
+            }
+        }
+    }
+
+    /** A factory class for creating instances of {@link BeanIntrospector} */
+    public static final class BeanIntrospectorFactory {
+        private final MethodHandle mh; // ()BeanIntrospector
+
+        public BeanIntrospectorFactory(MethodHandle mh) {
+            this.mh = requireNonNull(mh);
+        }
+
+        public BeanIntrospector<?> create() {
+            try {
+                return (BeanIntrospector<?>) mh.invokeExact();
+            } catch (Throwable e) {
+                throw new InternalExtensionException("An instance of " + mh.type().returnType() + " could not be created.", e);
             }
         }
     }
