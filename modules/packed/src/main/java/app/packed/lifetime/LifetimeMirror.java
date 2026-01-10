@@ -186,7 +186,7 @@ interface LifetimeSandbox {
 //  */
     default Optional<BeanMirror> managedBy() {
         List<OperationMirror> operations = List.of();// operations();
-        return operations.isEmpty() ? Optional.empty() : Optional.of(operations.get(0).bean());
+        return operations.isEmpty() ? Optional.empty() : Optional.of(operations.getFirst().bean());
     }
 
     public enum LifetimeOriginKind {

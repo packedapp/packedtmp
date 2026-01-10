@@ -89,7 +89,7 @@ public final class PackedAssemblyFinder implements AssemblyFinder {
             throw new IllegalStateException("Add least one path must be set using #addPath(Path)");
         }
 
-        ModuleLayer parent = moduleLayers.get(0);
+        ModuleLayer parent = moduleLayers.getFirst();
 
         Configuration cf = parent.configuration().resolve(mf, ModuleFinder.of(), Set.of(moduleName));
 

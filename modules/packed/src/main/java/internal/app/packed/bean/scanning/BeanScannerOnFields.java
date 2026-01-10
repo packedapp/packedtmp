@@ -119,10 +119,10 @@ class BeanScannerOnFields {
         if (size == 0) {
             // ignore
         } else if (size == 1) {
-            Pair p = l.get(0);
+            Pair p = l.getFirst();
             p.af.handleOne(scanner, field, new PackedAnnotationList(annotations), new PackedAnnotationList(p.a));
         } else if (size == 2) {
-            Pair p0 = l.get(0);
+            Pair p0 = l.getFirst();
             Pair p1 = l.get(1);
             fieldIntrospect2(scanner, field, annotations, p0.a, p0.af, p1.a, p1.af);
         } else {

@@ -52,7 +52,7 @@ public class LazyNamer {
 
         for (String s : collisions) {
             ArrayList<K> list = (ArrayList<K>) tmp.get(s);
-            tmp.put(s, list.get(0));
+            tmp.put(s, list.getFirst());
             int counter = 1;
             for (int i = 1; i < list.size(); i++) {
                 K k = list.get(i);

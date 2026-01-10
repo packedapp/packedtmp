@@ -64,7 +64,7 @@ public class OperationMirrorTest extends AppAppTest {
         List<OperationMirror> l = bm.operations().toList();
         assertEquals(1, l.size());
 
-        OperationMirror m = l.get(0);
+        OperationMirror m = l.getFirst();
         assertEquals(bm, m.bean());
         assertEquals(HookTestingExtension.class, m.installedByExtension());
         assertTrue(m.nestedIn().isEmpty());

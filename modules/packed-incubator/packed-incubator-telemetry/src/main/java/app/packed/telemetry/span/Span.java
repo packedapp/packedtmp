@@ -53,7 +53,7 @@ public interface Span {
 
     /** {@return the current active span if one is present} */
     static Optional<Span> currentOptional() {
-        return Optional.ofNullable(PackedTracer.SPAN.orElse(null));
+        return PackedTracer.SPAN.isBound() ? Optional.of(PackedTracer.SPAN.get()) : Optional.empty();
     }
 
     static Span noop() {

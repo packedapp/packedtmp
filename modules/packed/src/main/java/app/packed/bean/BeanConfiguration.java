@@ -262,7 +262,7 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
         if (list.size() != 1) {
             throw new IllegalStateException("Expected exactly 1 configuration for operation type: " + operationType.getName() + ", but found: " + list.size());
         }
-        return list.get(0);
+        return list.getFirst();
     }
 
     // Called if bean is renamed

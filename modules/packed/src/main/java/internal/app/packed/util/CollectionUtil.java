@@ -45,11 +45,11 @@ public class CollectionUtil {
             case 0:
                 return List.of(elementToAdd);
             case 1:
-                return List.of(coll.get(0), elementToAdd);
+                return List.of(coll.getFirst(), elementToAdd);
             case 2:
-                return List.of(coll.get(0), coll.get(1), elementToAdd);
+                return List.of(coll.getFirst(), coll.get(1), elementToAdd);
             case 3:
-                return List.of(coll.get(0), coll.get(1), coll.get(2), elementToAdd);
+                return List.of(coll.getFirst(), coll.get(1), coll.get(2), elementToAdd);
             default:
                 // For larger lists, use an array to create an immutable list
                 Object[] newArray = new Object[coll.size() + 1];

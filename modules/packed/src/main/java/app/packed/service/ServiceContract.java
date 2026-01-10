@@ -199,13 +199,13 @@ public final class ServiceContract {
         }
         sb.append("ServiceContract {");
         if (!requires.isEmpty()) {
-            sb.append("\n  requires : " + requires.stream().map(e -> e.toString()).collect(Collectors.joining(", ")));
+            sb.append("\n  requires : " + requires.stream().map(Object::toString).collect(Collectors.joining(", ")));
         }
         if (!optional.isEmpty()) {
-            sb.append("\n  requires optional: " + optional.stream().map(e -> e.toString()).collect(Collectors.joining(", ")));
+            sb.append("\n  requires optional: " + optional.stream().map(Object::toString).collect(Collectors.joining(", ")));
         }
         if (!provides.isEmpty()) {
-            sb.append("\n  provides : " + provides.stream().map(e -> e.toString()).collect(Collectors.joining(", ")));
+            sb.append("\n  provides : " + provides.stream().map(Object::toString).collect(Collectors.joining(", ")));
         }
         sb.append("\n}");
         return sb.toString();

@@ -86,7 +86,7 @@ public final class BeanOperationsSetup implements Iterable<OperationSetup> {
     }
 
     public OperationSetup first() {
-        return all.get(0);
+        return all.getFirst();
     }
 
     /** {@inheritDoc} */

@@ -166,7 +166,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
     // --- Methods from GuestBeanHandle ---
 
     public FactoryOperationHandle factory() {
-       return (FactoryOperationHandle) lifecycleInvokers().get(0);
+       return (FactoryOperationHandle) lifecycleInvokers().getFirst();
     }
 
     public void resolve(BeanIntrospector<?> i, OnVariable v) {

@@ -61,11 +61,11 @@ public class StackWalkerPerf {
 
     @Benchmark
     public int lineNumberWithoutClassRef() {
-        return sw2.walk(e->e.limit(1).toList().get(0)).getLineNumber();
+        return sw2.walk(e->e.limit(1).toList().getFirst()).getLineNumber();
     }
 
     @Benchmark
     public int lineNumberWithClassRef() {
-        return sw.walk(e->e.limit(1).toList().get(0)).getLineNumber();
+        return sw.walk(e->e.limit(1).toList().getFirst()).getLineNumber();
     }
 }
