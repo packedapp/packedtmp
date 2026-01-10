@@ -69,7 +69,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
      * @param owner
      *            the owner of the new bean
      */
-    PackedBeanInstaller(PackedBeanTemplate template, ExtensionSetup installledByExtension, AuthoritySetup<?> owner) {
+    public PackedBeanInstaller(PackedBeanTemplate template, ExtensionSetup installledByExtension, AuthoritySetup<?> owner) {
         super(Map.of());
         this.template = requireNonNull(template, "template is null");
         this.installledByExtension = requireNonNull(installledByExtension);

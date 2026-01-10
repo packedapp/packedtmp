@@ -40,6 +40,7 @@ import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.build.AuthoritySetup;
@@ -195,12 +196,11 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
         // Create a new installer for the bean
         PackedBeanTemplate beanTemplate =
                 new PackedBeanTemplate(BeanKind.UNMANAGED, PackedOperationTemplate.DEFAULTS.withRaw().withContext(ApplicationLaunchContext.class));
-        BeanInstaller installer =  beanTemplate.newInstaller(installingExtension, owner);
+        BeanInstaller installer =  new PackedBeanInstaller(beanTemplate, installingExtension, owner);
 
         // Create the bean
         Bean<?> bean = template.op() == null ? Bean.of(template.guestClass()) : Bean.of(template.op());
 
-        SidehandleBeanHandle<?> h = installer.install(bean, SidehandleBeanHandle::new);
-        return h;
+        return installer.install(bean, SidehandleBeanHandle::new);
     }
 }
