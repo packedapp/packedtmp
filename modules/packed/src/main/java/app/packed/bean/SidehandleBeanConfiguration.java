@@ -16,8 +16,8 @@
 package app.packed.bean;
 
 import app.packed.binding.Key;
-import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidehandle.PackedSidehandleBinding;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.invoke.SidebeanInvokerModel;
 
 /**
@@ -25,11 +25,11 @@ import internal.app.packed.invoke.SidebeanInvokerModel;
  */
 public final class SidehandleBeanConfiguration<T> extends BeanConfiguration<T> {
 
-    private final SidebeanHandle<?> handle;
+    private final SidehandleBeanHandle<?> handle;
 
     public SidehandleBeanConfiguration(BeanHandle<?> handle) {
         super(handle);
-        this.handle = (SidebeanHandle<?>) handle;
+        this.handle = (SidehandleBeanHandle<?>) handle;
     }
 
     public void initOnly() {
@@ -59,7 +59,7 @@ public final class SidehandleBeanConfiguration<T> extends BeanConfiguration<T> {
 //        throw new UnsupportedOperationException();
 //    }
 
-    private void sidebeanBind(Key<?> key, PackedSidebeanBinding binding) {
+    private void sidebeanBind(Key<?> key, PackedSidehandleBinding binding) {
         checkIsConfigurable();
         if (handle.bindings.putIfAbsent(key, binding) != null) {
             throw new IllegalArgumentException(key + " has already been registered");
@@ -84,7 +84,7 @@ public final class SidehandleBeanConfiguration<T> extends BeanConfiguration<T> {
     }
 
     public <K> void sidebeanBindConstant(Key<K> key) {
-        sidebeanBind(key, new PackedSidebeanBinding.Constant());
+        sidebeanBind(key, new PackedSidehandleBinding.Constant());
     }
 
     // bindAbstractInvoker???
@@ -99,7 +99,7 @@ public final class SidehandleBeanConfiguration<T> extends BeanConfiguration<T> {
         // Right now we always generate it, because we have a test in module-tests that needs to fail.
         // However, right now it does not use the sidebean, so code is never generated.
         sim.constructor();
-        sidebeanBind(invokerKey, new PackedSidebeanBinding.Invoker(sim));
+        sidebeanBind(invokerKey, new PackedSidehandleBinding.Invoker(sim));
     }
 
     // Cannot use it from the constructor, use @Inject

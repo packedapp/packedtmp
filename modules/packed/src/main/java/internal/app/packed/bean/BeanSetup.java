@@ -31,7 +31,7 @@ import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
-import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
+import internal.app.packed.bean.sidehandle.PackedSidehandle;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromComputedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
@@ -120,7 +120,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     public final PackedBeanTemplate template;
 
     // TODO tror vi har noget a.la. BOS -> SidebeanStore
-    public final ArrayList<PackedSidebeanAttachment> sideBeanAttachments = new ArrayList<>();
+    public final ArrayList<PackedSidehandle> sideBeanAttachments = new ArrayList<>();
 
     /** Create a new bean. */
     private BeanSetup(PackedBeanInstaller installer, PackedBean<?> bean) {

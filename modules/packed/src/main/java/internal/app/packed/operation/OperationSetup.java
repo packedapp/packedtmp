@@ -35,8 +35,8 @@ import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidehandle.PackedSidehandle;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.component.ComponentSetup;
@@ -140,8 +140,8 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         // check is built
         this.codeGenerator = new OperationCodeGenerator(this, null);
         if (installer.attachToSidebean != null) {
-            SidebeanHandle<?> handle2 = (SidebeanHandle<?>) installer.attachToSidebean.handle();
-            this.attachment = handle2.attachTo(new PackedSidebeanAttachment.OfOperation(installer.attachToSidebean, this));
+            SidehandleBeanHandle<?> handle2 = (SidehandleBeanHandle<?>) installer.attachToSidebean.handle();
+            this.attachment = handle2.attachTo(new PackedSidehandle.OfOperation(installer.attachToSidebean, this));
         } else {
             this.attachment = null;
         }

@@ -27,12 +27,12 @@ import app.packed.bean.BeanLifetime;
 import app.packed.binding.Key;
 import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
-import internal.app.packed.bean.sidebean.PackedSidebeanAttachment.OfOperation;
-import internal.app.packed.bean.sidebean.PackedSidebeanBinding;
-import internal.app.packed.bean.sidebean.PackedSidebeanBinding.Constant;
-import internal.app.packed.bean.sidebean.PackedSidebeanBinding.Invoker;
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidehandle.PackedSidehandle;
+import internal.app.packed.bean.sidehandle.PackedSidehandleBinding;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
+import internal.app.packed.bean.sidehandle.PackedSidehandle.OfOperation;
+import internal.app.packed.bean.sidehandle.PackedSidehandleBinding.Constant;
+import internal.app.packed.bean.sidehandle.PackedSidehandleBinding.Invoker;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromSidebeanAttachment;
 import internal.app.packed.binding.BindingSetup;
@@ -56,14 +56,14 @@ public final class OperationCodeGenerator {
     private final OperationSetup operation;
 
     @Nullable
-    public final PackedSidebeanAttachment sidebeanAttachment;
+    public final PackedSidehandle sidebeanAttachment;
 
     private final Supplier<MethodHandle> cachedMH = StableValue.supplier(() -> newMethodHandle());
 
     /**
      * @param packedSideBeanUsage
      */
-    public OperationCodeGenerator(OperationSetup operation, @Nullable PackedSidebeanAttachment sidebean) {
+    public OperationCodeGenerator(OperationSetup operation, @Nullable PackedSidehandle sidebean) {
         this.operation = operation;
         this.sidebeanAttachment = sidebean;
         this.invocationType = operation.template.invocationType();
@@ -129,7 +129,7 @@ public final class OperationCodeGenerator {
 
         boolean isFactory = operation.handle() instanceof FactoryOperationHandle;
         boolean requiresBeanInstance = !isFactory && operation.target instanceof MemberOperationTarget mot && !Modifier.isStatic(mot.target.modifiers());
-        boolean isSideBeanClass = operation.bean.handle() instanceof SidebeanHandle;
+        boolean isSideBeanClass = operation.bean.handle() instanceof SidehandleBeanHandle;
 
         ArrayList<Integer> permuters = new ArrayList<>();
 
@@ -224,12 +224,12 @@ public final class OperationCodeGenerator {
             for (BindingSetup binding : operation.bindings) {
                 if (binding.provider() instanceof FromSidebeanAttachment a) {
                     Key<?> key = a.key();
-                    PackedSidebeanBinding b = a.handle().bindings.get(key); // Existance has been checked
+                    PackedSidehandleBinding b = a.handle().bindings.get(key); // Existance has been checked
                     if (b instanceof Constant _) {
                         Object instance = sidebeanAttachment.constants.get(key);
                         methodHandle = MethodHandles.insertArguments(methodHandle, 1, instance);
                     } else if (b instanceof Invoker invokerType) {
-                        PackedSidebeanAttachment.OfOperation oo = (OfOperation) sidebeanAttachment;
+                        PackedSidehandle.OfOperation oo = (OfOperation) sidebeanAttachment;
                         MethodHandle methodHandle2 = oo.operation.codeGenerator.generate(false);
                         MethodHandle mhh = invokerType.invokerModel().constructor();
 
@@ -301,7 +301,7 @@ public final class OperationCodeGenerator {
             yield MethodHandles.collectArguments(mh, pos, beanFetcher);
         }
 
-        case BindingProvider.FromSidebeanAttachment(Key<?> _, SidebeanHandle<?> _) -> {
+        case BindingProvider.FromSidebeanAttachment(Key<?> _, SidehandleBeanHandle<?> _) -> {
             Class<?> requiredType = mh.type().parameterType(pos);
 
             int newIndexInInvocationType = invocationType.parameterCount();

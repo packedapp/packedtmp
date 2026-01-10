@@ -20,7 +20,7 @@ import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.ExtensionSetup;
@@ -105,7 +105,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @BuildActionable("bean.install")
     public <T> SidehandleBeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, SidehandleTargetKind targetKind, Consumer<? super SidehandleBeanConfiguration<T>> installationAction) {
         BeanInstaller installer = newBean(BeanLifetime.SIDEBEAN, handle()).addContext(SidehandleContext.class);
-        SidebeanHandle<T> h = installer.installIfAbsent(implementation, SidebeanHandle.class, SidebeanHandle<T>::new,
+        SidehandleBeanHandle<T> h = installer.installIfAbsent(implementation, SidehandleBeanHandle.class, SidehandleBeanHandle<T>::new,
                 ha -> installationAction.accept(ha.configuration()));
         return h.configuration();
     }

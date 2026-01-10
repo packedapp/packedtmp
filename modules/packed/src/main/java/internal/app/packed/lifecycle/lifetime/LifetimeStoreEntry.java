@@ -16,13 +16,13 @@
 package internal.app.packed.lifecycle.lifetime;
 
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
+import internal.app.packed.bean.sidehandle.PackedSidehandle;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreEntry.InternalStoreEntry;
 
 /**
  *
  */
-public sealed interface LifetimeStoreEntry permits BeanSetup, PackedSidebeanAttachment, InternalStoreEntry {
+public sealed interface LifetimeStoreEntry permits BeanSetup, PackedSidehandle, InternalStoreEntry {
 
     record InternalStoreEntry(Class<?> type) implements LifetimeStoreEntry {}
 }

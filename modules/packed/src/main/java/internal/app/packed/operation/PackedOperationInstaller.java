@@ -31,7 +31,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
@@ -118,7 +118,7 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
             throw new IllegalStateException("this method has already been called once");
         }
         attachToSidebean = BeanSetup.crack(requireNonNull(configuration));
-        SidebeanHandle<?> handle = (SidebeanHandle<?>) attachToSidebean.handle();
+        SidehandleBeanHandle<?> handle = (SidehandleBeanHandle<?>) attachToSidebean.handle();
         if (handle.invokerModel.returnType() == void.class) {
             returnIgnore();
         }

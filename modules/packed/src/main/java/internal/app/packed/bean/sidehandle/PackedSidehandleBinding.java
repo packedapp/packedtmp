@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.sidebean;
+package internal.app.packed.bean.sidehandle;
 
 import internal.app.packed.invoke.SidebeanInvokerModel;
 
 /**
  *
  */
-public sealed interface PackedSidebeanBinding {
-    public record Constant() implements PackedSidebeanBinding {}
-    public record Invoker(SidebeanInvokerModel invokerModel) implements PackedSidebeanBinding {}
+public sealed interface PackedSidehandleBinding {
+    public record Constant() implements PackedSidehandleBinding {}
+    public record Invoker(SidebeanInvokerModel invokerModel) implements PackedSidehandleBinding {}
 }

@@ -24,7 +24,7 @@ import java.util.Optional;
 
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.AbstractInitializingOperationHandle;
 
@@ -37,14 +37,21 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.AbstractInitializi
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
 @OnAnnotatedVariable(introspector = SidebeanInjectBeanIntrospector.class, requiresContext = SidehandleContext.class)
-public @interface SidehandleBinding {}
+public @interface SidehandleBinding {
+
+    Kind value();
+
+    public enum Kind {
+        HANDLE_CONSTANT, HANDLE_COMPUTED_CONSTANT, OPERATION_INVOKER;
+    }
+}
 
 final class SidebeanInjectBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
     public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
         @SuppressWarnings("rawtypes")
-        Optional<SidebeanHandle> beanHandle = beanHandle(SidebeanHandle.class);
+        Optional<SidehandleBeanHandle> beanHandle = beanHandle(SidehandleBeanHandle.class);
 
         if (beanHandle.isEmpty()) {
             throw new BeanInstallationException(SidehandleBinding.class.getSimpleName() + " can only be used on sidebeans");

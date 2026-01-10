@@ -1,12 +1,12 @@
 Der er 3 levels af inject
-Sidebeanen
+SidehandleBean
   .bindConstant()  <----- 
 
-Attachement   <----- binder i virkeligheden en vaerdi til en Handle
+Sidehandle   <----- binder i virkeligheden en vaerdi til en Handle
   .bindConstant();
 
 
-SidebeanBinding
+SidebeanInstance
   Services provided by Packed
   Services provided on a per attachment basis
   

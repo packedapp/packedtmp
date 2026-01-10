@@ -39,7 +39,7 @@ import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedVariableCache;
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromComputedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
@@ -206,7 +206,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
     }
 
     // not on interface
-    public IntrospectorOnVariable bindSidebeanBinding(Key<?> key, SidebeanHandle<?> sidebean) {
+    public IntrospectorOnVariable bindSidebeanBinding(Key<?> key, SidehandleBeanHandle<?> sidebean) {
         checkBeforeBind();
         bind(new FromSidebeanAttachment(key, sidebean));
         return this;

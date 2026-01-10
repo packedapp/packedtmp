@@ -16,13 +16,14 @@
 package app.packed.moduletests.isopen;
 
 import app.packed.bean.SidehandleBinding;
+import app.packed.bean.SidehandleBinding.Kind;
 
 /**
  *
  */
 public class IsOpenSidebean {
 
-    public IsOpenSidebean(@SidehandleBinding IsOpenInvokerInterface iface) {
+    public IsOpenSidebean(@SidehandleBinding(Kind.HANDLE_CONSTANT) IsOpenInvokerInterface iface) {
 
     }
 }

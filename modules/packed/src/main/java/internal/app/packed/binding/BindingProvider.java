@@ -18,7 +18,7 @@ package internal.app.packed.binding;
 import java.util.function.Supplier;
 
 import app.packed.binding.Key;
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 import internal.app.packed.operation.OperationSetup;
@@ -72,7 +72,7 @@ public sealed interface BindingProvider {
         }
     }
 
-    public record FromSidebeanAttachment(Key<?> key, SidebeanHandle<?> handle) implements BindingProvider {
+    public record FromSidebeanAttachment(Key<?> key, SidehandleBeanHandle<?> handle) implements BindingProvider {
 
         /** {@inheritDoc} */
         @Override

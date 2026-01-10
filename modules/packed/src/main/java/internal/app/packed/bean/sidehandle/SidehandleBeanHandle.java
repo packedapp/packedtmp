@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.sidebean;
+package internal.app.packed.bean.sidehandle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -42,28 +42,28 @@ import internal.app.packed.service.util.ServiceMap;
  *
  */
 // SideBeanHandle -has many> SideBeanInstance
-public class SidebeanHandle<T> extends BeanHandle<SidehandleBeanConfiguration<T>> {
+public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfiguration<T>> {
 
-    public final ServiceMap<PackedSidebeanBinding> bindings = new ServiceMap<>();
+    public final ServiceMap<PackedSidehandleBinding> bindings = new ServiceMap<>();
 
     public final Set<Key<?>> injectionSites = new HashSet<>();
 
-    private ArrayList<PackedSidebeanAttachment> attachments = new ArrayList<>();
+    private ArrayList<PackedSidehandle> attachments = new ArrayList<>();
 
     public SidebeanInvokerModel invokerModel;
 
     /**
      * @param installer
      */
-    public SidebeanHandle(BeanInstaller installer) {
+    public SidehandleBeanHandle(BeanInstaller installer) {
         super(installer);
     }
 
-    public Stream<PackedSidebeanAttachment> attachments() {
+    public Stream<PackedSidehandle> attachments() {
         return attachments.stream();
     }
 
-    public Sidehandle attachTo(PackedSidebeanAttachment usage) {
+    public Sidehandle attachTo(PackedSidehandle usage) {
         // For example, for a cron
         usage.bean.sideBeanAttachments.add(usage);
 
@@ -77,7 +77,7 @@ public class SidebeanHandle<T> extends BeanHandle<SidehandleBeanConfiguration<T>
     }
 
 
-    private void attachTolifecycle(PackedSidebeanAttachment susage) {
+    private void attachTolifecycle(PackedSidehandle susage) {
         requireNonNull(susage);
         attachments.add(susage);
         for (List<InvokableLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {

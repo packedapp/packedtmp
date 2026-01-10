@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.sidebean;
+package internal.app.packed.bean.sidehandle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,7 +30,7 @@ import internal.app.packed.service.util.ServiceMap;
 /**
  *
  */
-public sealed abstract class PackedSidebeanAttachment implements Sidehandle, LifetimeStoreEntry {
+public sealed abstract class PackedSidehandle implements Sidehandle, LifetimeStoreEntry {
 
     /** The bean this sidebean is applied to. */
     public final BeanSetup bean;
@@ -43,7 +43,7 @@ public sealed abstract class PackedSidebeanAttachment implements Sidehandle, Lif
 
     public final ServiceMap<Object> constants = new ServiceMap<>();
 
-    PackedSidebeanAttachment(BeanSetup sidebean, BeanSetup bean) {
+    PackedSidehandle(BeanSetup sidebean, BeanSetup bean) {
         this.bean = requireNonNull(bean);
         this.sidebean = requireNonNull(sidebean);
     }
@@ -57,7 +57,7 @@ public sealed abstract class PackedSidebeanAttachment implements Sidehandle, Lif
         }
     }
 
-    public static final class OfBean extends PackedSidebeanAttachment {
+    public static final class OfBean extends PackedSidehandle {
 
         /**
          * @param handle
@@ -69,7 +69,7 @@ public sealed abstract class PackedSidebeanAttachment implements Sidehandle, Lif
 
     }
 
-    public static final class OfOperation extends PackedSidebeanAttachment {
+    public static final class OfOperation extends PackedSidehandle {
 
         public final OperationSetup operation;
 

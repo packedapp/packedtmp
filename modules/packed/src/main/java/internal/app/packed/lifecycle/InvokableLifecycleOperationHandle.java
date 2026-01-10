@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import internal.app.packed.bean.sidebean.PackedSidebeanAttachment;
+import internal.app.packed.bean.sidehandle.PackedSidehandle;
 import internal.app.packed.invoke.OperationCodeGenerator;
 import internal.app.packed.operation.OperationSetup;
 
@@ -36,7 +36,7 @@ public final class InvokableLifecycleOperationHandle<H extends LifecycleOperatio
     /** Holds generated code for the operation. */
     public final OperationCodeGenerator codeGenerator;
 
-    public InvokableLifecycleOperationHandle(H operationHandle, PackedSidebeanAttachment sidebean) {
+    public InvokableLifecycleOperationHandle(H operationHandle, PackedSidehandle sidebean) {
         this.handle = requireNonNull(operationHandle);
         if (sidebean == null) {
             this.codeGenerator = OperationSetup.crack(handle).codeGenerator;

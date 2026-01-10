@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.stream.Stream;
 
-import internal.app.packed.bean.sidebean.SidebeanHandle;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 
 /**
  * A mirror of a side bean.
@@ -27,10 +27,10 @@ import internal.app.packed.bean.sidebean.SidebeanHandle;
 public final class SidehandleBeanMirror extends BeanMirror {
 
     /** The handle of the sidebean. */
-    final SidebeanHandle<?> handle;
+    final SidehandleBeanHandle<?> handle;
 
     public SidehandleBeanMirror(BeanHandle<?> handle) {
-        this.handle = (SidebeanHandle<?>) requireNonNull(handle);
+        this.handle = (SidehandleBeanHandle<?>) requireNonNull(handle);
         super(handle);
     }
 
