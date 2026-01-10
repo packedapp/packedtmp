@@ -109,31 +109,31 @@ public class Types {
     public static boolean equals(Type a, Type b) {
         if (a == b) {
             return true;
-        } else if (a instanceof Class) {
-            return a == b;
-        } else if (a instanceof ParameterizedType) {
-            if (b instanceof ParameterizedType) {
-                ParameterizedType pa = (ParameterizedType) a;
-                ParameterizedType pb = (ParameterizedType) b;
-                return Objects.equals(pa.getOwnerType(), pb.getOwnerType()) && pa.getRawType().equals(pb.getRawType())
-                        && Arrays.equals(pa.getActualTypeArguments(), pb.getActualTypeArguments());
-            }
-        } else if (a instanceof GenericArrayType) {
-            return b instanceof GenericArrayType && equals(((GenericArrayType) a).getGenericComponentType(), ((GenericArrayType) b).getGenericComponentType());
-        } else if (a instanceof WildcardType) {
-            if (b instanceof WildcardType) {
-                WildcardType wa = (WildcardType) a;
-                WildcardType wb = (WildcardType) b;
-                return Arrays.equals(wa.getUpperBounds(), wb.getUpperBounds()) && Arrays.equals(wa.getLowerBounds(), wb.getLowerBounds());
-            }
-        } else if (a instanceof TypeVariable) {
-            if (b instanceof TypeVariable) {
-                TypeVariable<?> va = (TypeVariable) a;
-                TypeVariable<?> vb = (TypeVariable) b;
-                return va.getGenericDeclaration().equals(vb.getGenericDeclaration()) && va.getName().equals(vb.getName());
-            }
         }
-        return false; // Unsupported type or a=null && b!=null
+        return switch (a) {
+            case Class<?> cl -> a == b;
+            case ParameterizedType pa -> {
+                if (b instanceof ParameterizedType pb) {
+                    yield Objects.equals(pa.getOwnerType(), pb.getOwnerType()) && pa.getRawType().equals(pb.getRawType())
+                            && Arrays.equals(pa.getActualTypeArguments(), pb.getActualTypeArguments());
+                }
+                yield false;
+            }
+            case GenericArrayType ga -> b instanceof GenericArrayType gb && equals(ga.getGenericComponentType(), gb.getGenericComponentType());
+            case WildcardType wa -> {
+                if (b instanceof WildcardType wb) {
+                    yield Arrays.equals(wa.getUpperBounds(), wb.getUpperBounds()) && Arrays.equals(wa.getLowerBounds(), wb.getLowerBounds());
+                }
+                yield false;
+            }
+            case TypeVariable<?> va -> {
+                if (b instanceof TypeVariable<?> vb) {
+                    yield va.getGenericDeclaration().equals(vb.getGenericDeclaration()) && va.getName().equals(vb.getName());
+                }
+                yield false;
+            }
+            case null, default -> false; // Unsupported type or a=null && b!=null
+        };
     }
 
     /**
@@ -183,17 +183,14 @@ public class Types {
      * @return the raw type
      */
     public static Class<?> findRawType(Type type) {
-        if (type instanceof Class<?>) {
-            return (Class<?>) type;
-        } else if (type instanceof ParameterizedType) {
-            return (Class<?>) ((ParameterizedType) type).getRawType();
-        } else if (type instanceof GenericArrayType) {
-            return Array.newInstance(findRawType(((GenericArrayType) type).getGenericComponentType()), 0).getClass();
-        } else if (type instanceof TypeVariable || type instanceof WildcardType) {
-            return Object.class;// Best effort, maybe just fail??
-        } else {
-            throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of type: " + type.getClass().getName());
-        }
+        return switch (type) {
+            case Class<?> cl -> cl;
+            case ParameterizedType pt -> (Class<?>) pt.getRawType();
+            case GenericArrayType gat -> Array.newInstance(findRawType(gat.getGenericComponentType()), 0).getClass();
+            case TypeVariable<?> tv -> Object.class; // Best effort, maybe just fail??
+            case WildcardType wt -> Object.class; // Best effort, maybe just fail??
+            default -> throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of type: " + type.getClass().getName());
+        };
     }
 
     private static int indexOf(Object[] array, Object toFind) {
@@ -207,14 +204,12 @@ public class Types {
 
     /** Returns true if {@code type} is free from type variables. */
     private static boolean isFreeFromTypeVariables(Type type) {
-        if (type instanceof Class) {
-            return true;
-        } else if (type instanceof CompositeType) {
-            return ((CompositeType) type).isFreeFromTypeVariables();
-        } else if (type instanceof TypeVariable) {
-            return false;
-        }
-        return ((CompositeType) canonicalize(type)).isFreeFromTypeVariables();
+        return switch (type) {
+            case Class<?> cl -> true;
+            case CompositeType ct -> ct.isFreeFromTypeVariables();
+            case TypeVariable<?> tv -> false;
+            default -> ((CompositeType) canonicalize(type)).isFreeFromTypeVariables();
+        };
     }
 
     public static Type resolveTypeVariable(Type type, Class<?> rawType, TypeVariable unknown) {

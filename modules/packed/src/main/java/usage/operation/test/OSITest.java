@@ -78,19 +78,21 @@ public class OSITest extends BaseAssembly {
         static class MyBI extends BeanIntrospector<MyExt> {
             @Override
             public void onAnnotatedVariable(Annotation hook, OnVariable d) {
-                if (hook instanceof BuildTime) {
-                    d.checkAssignableTo(LocalDateTime.class);
-                    // d.bindConstant(LocalDateTime.now());
-                    d.bindComputedConstant(() -> LocalDateTime.now());
-                } else if (hook instanceof InitializationTime) {
-                    extensionHandle().applicationRoot().base().installIfAbsent(AppInitializeTime.class);
-                    d.checkAssignableTo(LocalDateTime.class);
-                    d.bindOp(new Op1<AppInitializeTime, LocalDateTime>(b -> b.initialized) {});
-                } else if (hook instanceof Now) { // now
-                    d.checkAssignableTo(LocalDateTime.class);
-                    d.bindOp(new Op0<>(LocalDateTime::now) {});
-                } else {
-                    super.onAnnotatedVariable(hook, d);
+                switch (hook) {
+                    case BuildTime bt -> {
+                        d.checkAssignableTo(LocalDateTime.class);
+                        d.bindComputedConstant(() -> LocalDateTime.now());
+                    }
+                    case InitializationTime it -> {
+                        extensionHandle().applicationRoot().base().installIfAbsent(AppInitializeTime.class);
+                        d.checkAssignableTo(LocalDateTime.class);
+                        d.bindOp(new Op1<AppInitializeTime, LocalDateTime>(b -> b.initialized) {});
+                    }
+                    case Now n -> {
+                        d.checkAssignableTo(LocalDateTime.class);
+                        d.bindOp(new Op0<>(LocalDateTime::now) {});
+                    }
+                    default -> super.onAnnotatedVariable(hook, d);
                 }
             }
         }

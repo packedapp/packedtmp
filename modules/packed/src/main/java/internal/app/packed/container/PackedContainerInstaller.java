@@ -40,7 +40,7 @@ import internal.app.packed.container.wirelets.CompositeWirelet;
 import internal.app.packed.container.wirelets.InternalBaseWirelet;
 import internal.app.packed.util.accesshelper.AssemblyAccessHandler;
 
-/** Implementation of {@link ContainerTemplate.Installer} */
+/** Implementation of {@link ContainerInstaller} */
 public final class PackedContainerInstaller<H extends ContainerHandle<?>> extends AbstractComponentInstaller<ContainerSetup, PackedContainerInstaller<H>>
         implements ContainerInstaller<H> {
 
@@ -64,7 +64,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     @Nullable
     String nameFromWirelet;
 
-    /** The parent of the new container. Or <code>null</code> if a root container. */
+    /** The parent of the container we are creating. Or <code>null</code> if a root container. */
     @Nullable
     public final ContainerSetup parent;
 

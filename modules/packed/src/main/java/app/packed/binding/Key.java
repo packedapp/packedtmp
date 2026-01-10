@@ -585,49 +585,33 @@ public abstract class Key<T> {
 
     static Type convertType0(Object source, Type originalType, Type type) {
         requireNonNull(type, "type is null");
-        if (type instanceof Class<?>) {
-            return type;
-        } else if (type instanceof ParameterizedType pt) {
-            Type rawType = convertType0(source, originalType, pt.getRawType());
-
-            Type[] args = pt.getActualTypeArguments();
-            for (int i = 0; i < args.length; i++) {
-                args[i] = convertType0(source, originalType, args[i]);
-            }
-            return Types.createNewParameterizedType(rawType, args);
-//            throw new UnsupportedOperationException();
-//            pt.get
-//            if (pt.getOwnerType() != null && !isFreeFromTypeVariables(pt.getOwnerType())) {
-//                return false;
-//            }
-//            for (Type t : pt.getActualTypeArguments()) {
-//                if (!isFreeFromTypeVariables(t)) {
-//                    return false;
-//                }
-//            }
-//            // To be safe we check the raw type as well, I expect it should always be a class, but the method signature says
-//            // something else
-//            return isFreeFromTypeVariables(pt.getRawType());
-        } else if (type instanceof GenericArrayType gat) {
-            return gat;
-        } else if (type instanceof TypeVariable) {
-            throw new InvalidKeyException("opps");
-        } else if (type instanceof WildcardType wt) {
-            Type[] lowerBounds = wt.getLowerBounds();
-            Type t;
-            if (lowerBounds.length == 0) {
-                t = wt.getUpperBounds()[0];
-                if (t == null) {
-                    throw new InvalidKeyException("opps");
+        return switch (type) {
+            case Class<?> cl -> type;
+            case ParameterizedType pt -> {
+                Type rawType = convertType0(source, originalType, pt.getRawType());
+                Type[] args = pt.getActualTypeArguments();
+                for (int i = 0; i < args.length; i++) {
+                    args[i] = convertType0(source, originalType, args[i]);
                 }
-
-            } else {
-                t = lowerBounds[0];
+                yield Types.createNewParameterizedType(rawType, args);
             }
-            return convertType0(source, originalType, t);
-        } else {
-            throw new InvalidKeyException("Unknown type: " + type);
-        }
+            case GenericArrayType gat -> gat;
+            case TypeVariable<?> tv -> throw new InvalidKeyException("opps");
+            case WildcardType wt -> {
+                Type[] lowerBounds = wt.getLowerBounds();
+                Type t;
+                if (lowerBounds.length == 0) {
+                    t = wt.getUpperBounds()[0];
+                    if (t == null) {
+                        throw new InvalidKeyException("opps");
+                    }
+                } else {
+                    t = lowerBounds[0];
+                }
+                yield convertType0(source, originalType, t);
+            }
+            default -> throw new InvalidKeyException("Unknown type: " + type);
+        };
     }
 
     /**

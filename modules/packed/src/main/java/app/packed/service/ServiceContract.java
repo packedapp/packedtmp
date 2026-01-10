@@ -305,12 +305,10 @@ public final class ServiceContract {
             HashSet<Key<?>> tmpRequires = new HashSet<>();
 
             elements.forEach((k, v) -> {
-                if (v == OPTIONAL) {
-                    tmpOptional.add(k);
-                } else if (v == PROVIDES) {
-                    tmpProvides.add(k);
-                } else {
-                    tmpRequires.add(k);
+                switch (v) {
+                    case OPTIONAL -> tmpOptional.add(k);
+                    case PROVIDES -> tmpProvides.add(k);
+                    default -> tmpRequires.add(k);
                 }
             });
             return new ServiceContract(Set.copyOf(tmpRequires), Set.copyOf(tmpOptional), Set.copyOf(tmpProvides));

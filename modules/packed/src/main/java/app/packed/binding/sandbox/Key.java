@@ -227,29 +227,28 @@ public abstract class Key<T> {
 
     private static Type convertType0(Type originalType, Type type) {
         requireNonNull(type, "type is null");
-        if (type instanceof Class<?>) {
-            return type;
-        } else if (type instanceof ParameterizedType pt) {
-            Type rawType = convertType0(originalType, pt.getRawType());
-            Type[] args = pt.getActualTypeArguments();
-            for (int i = 0; i < args.length; i++) {
-                args[i] = convertType0(originalType, args[i]);
+        return switch (type) {
+            case Class<?> cl -> type;
+            case ParameterizedType pt -> {
+                Type rawType = convertType0(originalType, pt.getRawType());
+                Type[] args = pt.getActualTypeArguments();
+                for (int i = 0; i < args.length; i++) {
+                    args[i] = convertType0(originalType, args[i]);
+                }
+                yield Types.createNewParameterizedType(rawType, args);
             }
-            return Types.createNewParameterizedType(rawType, args);
-        } else if (type instanceof GenericArrayType gat) {
-            return gat;
-        } else if (type instanceof TypeVariable) {
-            throw new InvalidKeyException("Type variables not allowed: " + type);
-        } else if (type instanceof WildcardType wt) {
-            Type[] lowerBounds = wt.getLowerBounds();
-            Type t = lowerBounds.length == 0 ? wt.getUpperBounds()[0] : lowerBounds[0];
-            if (t == null) {
-                throw new InvalidKeyException("Invalid wildcard bounds in " + originalType);
+            case GenericArrayType gat -> gat;
+            case TypeVariable<?> tv -> throw new InvalidKeyException("Type variables not allowed: " + type);
+            case WildcardType wt -> {
+                Type[] lowerBounds = wt.getLowerBounds();
+                Type t = lowerBounds.length == 0 ? wt.getUpperBounds()[0] : lowerBounds[0];
+                if (t == null) {
+                    throw new InvalidKeyException("Invalid wildcard bounds in " + originalType);
+                }
+                yield convertType0(originalType, t);
             }
-            return convertType0(originalType, t);
-        } else {
-            throw new InvalidKeyException("Unknown type: " + type);
-        }
+            default -> throw new InvalidKeyException("Unknown type: " + type);
+        };
     }
 
     public static Key<?> fromBindableVariable(OnVariable variable) {

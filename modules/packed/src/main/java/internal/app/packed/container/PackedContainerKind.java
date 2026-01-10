@@ -27,12 +27,12 @@ public enum PackedContainerKind {
 
     // Same lifetime as parent
     FROM_CONTAINER,
+//
+//    // ContainerTempalte#requiresEntryPoints
+//    GATEWAY,
 
-    // ContainerTempalte#requiresEntryPoints
-    GATEWAY,
-
-    /** A container that is lazily created. */
-    LAZY,   /// MAnaged -> Unmanaged
+//    /** A container that is lazily created. */
+//    LAZY,   /// MAnaged -> Unmanaged
 
     // A container lifetime that must define 1 or more entry points
     // Must Be property

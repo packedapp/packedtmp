@@ -61,42 +61,43 @@ public final class StringFormatter {
      */
     private static void formatSimple(Type type, StringBuilder sb) {
         requireNonNull(type, "type is null");
-        if (type instanceof Class<?> cl) {
-            sb.append(cl.getSimpleName());
-        } else if (type instanceof ParameterizedType pt) {
-            formatSimple(pt.getRawType(), sb);
-            Type[] actualTypeArguments = pt.getActualTypeArguments();
-            // The array can be empty according to #ParameterizedType.getActualTypeArguments()
-            if (actualTypeArguments.length > 0) {
-                sb.append("<");
-                formatSimple(actualTypeArguments[0], sb);
-                for (int i = 1; i < actualTypeArguments.length; i++) {
-                    sb.append(", ");
-                    formatSimple(actualTypeArguments[i], sb);
+        switch (type) {
+            case Class<?> cl -> sb.append(cl.getSimpleName());
+            case ParameterizedType pt -> {
+                formatSimple(pt.getRawType(), sb);
+                Type[] actualTypeArguments = pt.getActualTypeArguments();
+                // The array can be empty according to #ParameterizedType.getActualTypeArguments()
+                if (actualTypeArguments.length > 0) {
+                    sb.append("<");
+                    formatSimple(actualTypeArguments[0], sb);
+                    for (int i = 1; i < actualTypeArguments.length; i++) {
+                        sb.append(", ");
+                        formatSimple(actualTypeArguments[i], sb);
+                    }
+                    sb.append(">");
                 }
-                sb.append(">");
             }
-        } else if (type instanceof GenericArrayType gat) {
-            formatSimple(gat.getGenericComponentType(), sb);
-            sb.append("[]");
-        } else if (type instanceof TypeVariable<?> tv) {
-            sb.append(tv.getName());
-        } else if (type instanceof WildcardType wt) {
-            Type[] lowerBounds = wt.getLowerBounds();
-            if (lowerBounds.length == 1) {
-                sb.append("? super ");
-                formatSimple(lowerBounds[0], sb);
-            } else {
-                Type[] upperBounds = wt.getUpperBounds();
-                if (upperBounds[0] == Object.class) {
-                    sb.append("?");
+            case GenericArrayType gat -> {
+                formatSimple(gat.getGenericComponentType(), sb);
+                sb.append("[]");
+            }
+            case TypeVariable<?> tv -> sb.append(tv.getName());
+            case WildcardType wt -> {
+                Type[] lowerBounds = wt.getLowerBounds();
+                if (lowerBounds.length == 1) {
+                    sb.append("? super ");
+                    formatSimple(lowerBounds[0], sb);
                 } else {
-                    sb.append("? extends ");
-                    formatSimple(upperBounds[0], sb);
+                    Type[] upperBounds = wt.getUpperBounds();
+                    if (upperBounds[0] == Object.class) {
+                        sb.append("?");
+                    } else {
+                        sb.append("? extends ");
+                        formatSimple(upperBounds[0], sb);
+                    }
                 }
             }
-        } else {
-            throw new IllegalArgumentException("Don't know how to process type '" + type + "' of type: " + type.getClass().getName());
+            default -> throw new IllegalArgumentException("Don't know how to process type '" + type + "' of type: " + type.getClass().getName());
         }
     }
 
