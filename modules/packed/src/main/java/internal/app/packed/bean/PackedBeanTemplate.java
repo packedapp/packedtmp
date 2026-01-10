@@ -18,6 +18,4 @@ package internal.app.packed.bean;
 import app.packed.bean.BeanKind;
 import internal.app.packed.operation.PackedOperationTemplate;
 
-public record PackedBeanTemplate(BeanKind beanKind, PackedOperationTemplate initializationTemplate) {
-
-}
+public record PackedBeanTemplate(BeanKind beanKind, PackedOperationTemplate initializationTemplate) {}
