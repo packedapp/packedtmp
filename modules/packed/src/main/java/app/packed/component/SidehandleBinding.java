@@ -24,7 +24,6 @@ import java.util.Optional;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
-import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
@@ -50,30 +49,28 @@ public @interface SidehandleBinding {
 
 final class SidehandleBindingBeanIntrospector extends BaseExtensionBeanIntrospector {
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
         SidehandleBinding binding = (SidehandleBinding) annotation;
 
-        // For APPLICATION_PROVIDED, try GuestBeanHandle first
-        if (binding.value() == SidehandleBinding.Kind.FROM_CONTEXT) {
-            Optional<GuestBeanHandle> guestHandle = beanHandle(GuestBeanHandle.class);
-            if (guestHandle.isPresent()) {
-                guestHandle.get().resolve(this, v);
-                return;
-            }
-        }
-
-        // Fall through for other kinds or if no GuestBeanHandle
         @SuppressWarnings("rawtypes")
         Optional<SidehandleBeanHandle> sideHandle = beanHandle(SidehandleBeanHandle.class);
 
         if (sideHandle.isEmpty()) {
             throw new BeanInstallationException(SidehandleBinding.class.getSimpleName() + " can only be used on sidebeans or guest beans");
-        } else {
-            if (v.operationHandle(AbstractInitializingOperationHandle.class).isEmpty()) {
-                throw new BeanInstallationException("Can only be used on Factory, Inject, Initialize methods" + beanClass());
-            }
-            sideHandle.get().onInject(binding, (IntrospectorOnVariable) v);
         }
+
+        // For FROM_CONTEXT, use resolve method
+        if (binding.value() == SidehandleBinding.Kind.FROM_CONTEXT) {
+            sideHandle.get().resolve(this, v);
+            return;
+        }
+
+        // Fall through for other kinds
+        if (v.operationHandle(AbstractInitializingOperationHandle.class).isEmpty()) {
+            throw new BeanInstallationException("Can only be used on Factory, Inject, Initialize methods" + beanClass());
+        }
+        sideHandle.get().onInject(binding, (IntrospectorOnVariable) v);
     }
 }

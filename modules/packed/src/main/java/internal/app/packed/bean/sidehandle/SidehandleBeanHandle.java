@@ -19,21 +19,39 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
+import app.packed.application.ApplicationMirror;
+import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanMirror;
 import app.packed.binding.Key;
+import app.packed.binding.Variable;
 import app.packed.component.Sidehandle;
 import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.component.SidehandleBinding;
+import app.packed.component.SidehandleContext;
+import app.packed.operation.Op1;
+import app.packed.runtime.ManagedLifecycle;
+import app.packed.service.ServiceLocator;
+import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
+import internal.app.packed.build.AuthoritySetup;
+import internal.app.packed.context.PackedComponentHostContext;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.BeanLifecycleSupport;
 import internal.app.packed.invoke.SidehandleInvokerModel;
 import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
+import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
+import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
+import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.util.ServiceMap;
 
 /**
@@ -42,6 +60,12 @@ import internal.app.packed.service.util.ServiceMap;
 // SideBeanHandle -has many> SideBeanInstance
 public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfiguration<T>> {
 
+    // --- Fields from GuestBeanHandle ---
+    static final Set<Key<?>> KEYS = Set.of(Key.of(ApplicationMirror.class), Key.of(String.class), Key.of(ManagedLifecycle.class), Key.of(ServiceLocator.class));
+
+    public static final PackedComponentHostContext DEFAULT = new PackedComponentHostContext(KEYS);
+
+    // --- Original SidehandleBeanHandle fields ---
     public final ServiceMap<PackedSidehandleBinding> bindings = new ServiceMap<>();
 
     private ArrayList<PackedSidehandle> sidehandles = new ArrayList<>();
@@ -129,5 +153,47 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
 
         bindings.putIfAbsent(key, binding);
         v.bindSidebeanBinding(key, this);
+    }
+
+    // --- Methods from GuestBeanHandle ---
+
+    public FactoryOperationHandle factory() {
+       return (FactoryOperationHandle) lifecycleInvokers().get(0);
+    }
+
+    public void resolve(BeanIntrospector<?> i, OnVariable v) {
+        Variable va = v.variable();
+
+        // AssignableTo in case of
+        if (va.rawType().equals(ApplicationMirror.class)) {
+            v.bindOp(new Op1<ApplicationLaunchContext, ApplicationMirror>(a -> a.mirror()) {});
+        } else if (va.rawType().equals(String.class)) {
+            v.bindOp(new Op1<ApplicationLaunchContext, String>(a -> a.name()) {});
+        } else if (va.rawType().equals(ManagedLifecycle.class)) {
+            v.bindOp(new Op1<ApplicationLaunchContext, ManagedLifecycle>(a -> a.runner.runtime) {});
+        } else if (va.rawType().equals(ServiceLocator.class)) {
+            v.bindOp(new Op1<ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});
+        } else if (va.rawType().equals(SidehandleContext.class)) {
+            v.bindOp(new Op1<ApplicationLaunchContext, SidehandleContext>(_ -> PackedComponentHostContext.DEFAULT) {});
+        } else {
+            throw new UnsupportedOperationException("Unknown Container Guest Service " + va.rawType());
+        }
+    }
+
+    public SidehandleContext toContext() {
+        return DEFAULT;
+    }
+
+    public static SidehandleBeanHandle<?> install(PackedApplicationTemplate<?> template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
+        // Create a new installer for the bean
+        PackedBeanTemplate beanTemplate =
+                new PackedBeanTemplate(BeanLifetime.UNMANAGED, PackedOperationTemplate.DEFAULTS.withRaw().withContext(ApplicationLaunchContext.class));
+        BeanInstaller installer =  beanTemplate.newInstaller(installingExtension, owner);
+
+        // Create the bean
+        Bean<?> bean = template.op() == null ? Bean.of(template.guestClass()) : Bean.of(template.op());
+
+        SidehandleBeanHandle<?> h = installer.install(bean, SidehandleBeanHandle::new);
+        return h;
     }
 }

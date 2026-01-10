@@ -24,8 +24,8 @@ import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.RunState;
 import internal.app.packed.ValueBased;
-import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
@@ -144,7 +144,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     /** The assembly responsible for building the bootstrap app. */
     private static class BootstrapAppAssembly extends BuildableAssembly {
 
-        private GuestBeanHandle gbh;
+        private SidehandleBeanHandle<?> gbh;
 
         /** The application template for the application type we need to bootstrap. */
         private final PackedApplicationTemplate<?> template;
@@ -164,7 +164,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
             ExtensionSetup es = ExtensionSetup.crack(assembly().containerRoot().use(BaseExtension.class));
 
             // Install the guest bean (code is shared with App-On-App) in the bootstrap application
-            gbh = GuestBeanHandle.install(template, es, es.container.assembly);
+            gbh = SidehandleBeanHandle.install(template, es, es.container.assembly);
         }
     }
 }

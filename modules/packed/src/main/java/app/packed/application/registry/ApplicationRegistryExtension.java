@@ -25,8 +25,8 @@ import app.packed.bean.BeanLifetime;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.FrameworkExtension;
 import app.packed.service.ProvidableBeanConfiguration;
-import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.application.repository.AbstractApplicationRepository;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.ServiceSupport;
@@ -72,7 +72,7 @@ public final class ApplicationRegistryExtension extends FrameworkExtension<Appli
 
         // Create a new installer for the guest bean
 
-        GuestBeanHandle gbh = GuestBeanHandle.install(t, ExtensionSetup.crack(this), ExtensionSetup.crack(this).container.assembly);
+        SidehandleBeanHandle<?> gbh = SidehandleBeanHandle.install(t, ExtensionSetup.crack(this), ExtensionSetup.crack(this).container.assembly);
         h.repository.mh = ServiceSupport.newApplicationBaseLauncher(gbh);
         return h.configuration();
     }

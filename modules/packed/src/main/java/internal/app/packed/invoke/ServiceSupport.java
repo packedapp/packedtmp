@@ -22,7 +22,7 @@ import java.util.Map;
 
 import app.packed.bean.BeanSourceKind;
 import app.packed.operation.OperationHandle;
-import internal.app.packed.application.GuestBeanHandle;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 import internal.app.packed.invoke.MethodHandleInvoker.ExportedServiceWrapper;
@@ -51,7 +51,7 @@ public class ServiceSupport {
         return CollectionUtil.copyOf(ink, v -> OperationSetup.crack(v).codeGenerator.generate(true));
     }
 
-    public static ApplicationBaseLauncher newApplicationBaseLauncher(GuestBeanHandle handle) {
+    public static ApplicationBaseLauncher newApplicationBaseLauncher(SidehandleBeanHandle<?> handle) {
         MethodHandle m = OperationSetup.crack(handle.factory()).codeGenerator.generate(true);
         m = MethodHandles.explicitCastArguments(m, m.type().changeReturnType(Object.class));
         return new ApplicationBaseLauncher(m);

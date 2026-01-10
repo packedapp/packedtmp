@@ -20,7 +20,7 @@ import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.application.GuestBeanHandle;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 
 /**
  *
@@ -32,7 +32,7 @@ final class SidehandleContextBeanIntrospector extends BeanIntrospector<BaseExten
 
     @Override
     public void onExtensionService(Key<?> key, OnContextService service) {
-        SidehandleContext c = beanHandle(GuestBeanHandle.class).get().toContext();
+        SidehandleContext c = beanHandle(SidehandleBeanHandle.class).get().toContext();
         service.binder().bindConstant(c);
     }
 }
