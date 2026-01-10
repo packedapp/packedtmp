@@ -33,10 +33,11 @@ import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.BindingKind;
 import app.packed.binding.BindingMirror;
 import app.packed.component.ComponentRealm;
+import app.packed.bean.BeanIntrospector;
+import app.packed.binding.Key;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 import tck.ServiceLocatorAppTest;
 
 /**
@@ -80,12 +81,20 @@ public class RuntimeMirrorInjectionTest extends ServiceLocatorAppTest {
 
     @Test
     public void unknownMirror() {
-        @AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
+        @AutoInject(introspector = MirrorAlienBeanIntrospector.class)
         record MirrorAlien() {}
 
         hooks().onAnnotatedField((_, b) -> b.newGetOperation());
         record Foo(MirrorAlien alien) {}
 
         assertThrows(BeanInstallationException.class, () -> install(Foo.class));
+    }
+}
+
+final class MirrorAlienBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        super.onExtensionService(key, service);
     }
 }

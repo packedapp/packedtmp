@@ -15,13 +15,15 @@
  */
 package app.packed.bean.sandbox;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
+import app.packed.extension.BaseExtension;
 
 /**
  * Can be used to annotated injectable parameters into a guest bean.
@@ -36,5 +38,14 @@ import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-@OnAnnotatedVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@OnAnnotatedVariable(introspector = FromBeanAttachmentBeanIntrospector.class)
 public @interface FromBeanAttachment {}
+
+final class FromBeanAttachmentBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onAnnotatedVariable(Annotation annotation, OnVariable variable) {
+        // TODO: implement bean attachment binding
+        super.onAnnotatedVariable(annotation, variable);
+    }
+}

@@ -15,14 +15,16 @@
  */
 package sandbox.extension.sandbox;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
+import app.packed.extension.BaseExtension;
 
 // I virkeligheden er det jo en slags multi-return fra en operation...
 // Som bliver brugt til at populere en bean...
@@ -48,9 +50,18 @@ import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector
 @Target({ ElementType.PARAMETER, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@OnAnnotatedVariable(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@OnAnnotatedVariable(introspector = AncestorBeanIntrospector.class)
 public @interface AncestorBean {} // childExtension? instead
 
 //Alternativt en ContainerLaucherContext? med context services.
 //Saa kan vi ogsaa se praecis hvad der er tilgaengelig via OperationContext
 //Maaske er det bare initialize with? IDK, er maaske ret at have seperat
+
+final class AncestorBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onAnnotatedVariable(Annotation annotation, OnVariable variable) {
+        // TODO: implement ancestor bean binding
+        super.onAnnotatedVariable(annotation, variable);
+    }
+}

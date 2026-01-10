@@ -15,6 +15,7 @@
  */
 package sandbox.extension.sandbox;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,12 +26,13 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import app.packed.bean.lifecycle.Initialize;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 
 /**
  *
@@ -86,7 +88,7 @@ public class Ddd extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @OnAnnotatedMethod(allowInvoke = true, introspector = BaseExtensionHostGuestBeanintrospector.class)
+    @OnAnnotatedMethod(allowInvoke = true, introspector = MyOnInitializeBeanIntrospector.class)
     public @interface MyOnInitialize {
 
         /**
@@ -107,5 +109,14 @@ public class Ddd extends BaseAssembly {
         public void onInixt() {
             IO.println("xxASDASD");
         }
+    }
+}
+
+final class MyOnInitializeBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onAnnotatedMethod(Annotation annotation, OnMethod method) {
+        // TODO: implement custom initialization handling
+        super.onAnnotatedMethod(annotation, method);
     }
 }

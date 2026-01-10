@@ -29,14 +29,15 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.component.guest.GuestBinding;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtension;
 import app.packed.operation.Op1;
 import app.packed.runtime.RunState;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 import internal.app.packed.service.util.PackedServiceLocator;
 
@@ -107,7 +108,7 @@ import internal.app.packed.service.util.PackedServiceLocator;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is unchangeable.
  */
-@AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@AutoInject(introspector = ServiceLocatorBeanIntrospector.class)
 // I don't think this should have a service provider
 public interface ServiceLocator extends ApplicationInterface {
 
@@ -386,5 +387,14 @@ public interface ServiceLocator extends ApplicationInterface {
         public ServiceLocator initialize() {
             return image.initialize();
         }
+    }
+}
+
+final class ServiceLocatorBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        // TODO: implement ServiceLocator binding
+        super.onExtensionService(key, service);
     }
 }

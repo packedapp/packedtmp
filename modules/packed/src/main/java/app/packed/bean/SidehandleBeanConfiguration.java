@@ -15,18 +15,13 @@
  */
 package app.packed.bean;
 
-import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
-
 /**
  * A configuration object for aside bean.
  */
 public final class SidehandleBeanConfiguration<T> extends BeanConfiguration<T> {
 
-    private final SidehandleBeanHandle<?> handle;
-
     public SidehandleBeanConfiguration(BeanHandle<?> handle) {
         super(handle);
-        this.handle = (SidehandleBeanHandle<?>) handle;
     }
 
     public void initOnly() {
@@ -37,22 +32,4 @@ public final class SidehandleBeanConfiguration<T> extends BeanConfiguration<T> {
         // Brugbart fx fra CLI
     }
 
-//    /**
-//     * Attaches this side bean to the specified bean (handle).
-//     *
-//     * @param beanHandle
-//     *            the handle of the bean to attach the sidebean to
-//     * @return
-//     */
-//    public SidebeanAttachment attachToBean(BeanHandle<?> beanHandle) {
-//        return handle.attachTo(new PackedSidebeanAttachment.OfBean(BeanSetup.crack(handle), beanHandle));
-//    }
-//
-//
-//    // Hmm, fx for CurrentTime... Vil vi vil bare tilfoeje en til beanen
-//    // Kunne man bruge den samme til flere beans?
-//    // For example, InvocationCount
-//    public SidebeanAttachment attachToVariable(OnVariable handle) {
-//        throw new UnsupportedOperationException();
-//    }
 }

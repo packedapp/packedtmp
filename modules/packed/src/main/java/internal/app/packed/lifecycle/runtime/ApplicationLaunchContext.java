@@ -19,7 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.ManagedLifecycle;
@@ -27,12 +29,11 @@ import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-@AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@AutoInject(introspector = ApplicationLaunchContextBeanIntrospector.class)
 // Wait a bit with transforming this class to a record.
 // We might have some mutable fields such as name
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
@@ -110,5 +111,17 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
         Object result = application.launcher.launch(context);
         return (A) result;
+    }
+}
+
+final class ApplicationLaunchContextBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        if (ApplicationLaunchContext.class.isAssignableFrom(key.rawType())) {
+            service.binder().bindContext(ApplicationLaunchContext.class);
+        } else {
+            super.onExtensionService(key, service);
+        }
     }
 }

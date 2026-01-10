@@ -15,10 +15,11 @@
  */
 package internal.app.packed.extension;
 
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 
 /**
@@ -28,7 +29,7 @@ import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
  */
 // I don't know about this after we have gotten typed invokers...
 // I think they should be preferable
-@AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@AutoInject(introspector = ExtensionContextBeanIntrospector.class)
 public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}
 
 
@@ -45,3 +46,18 @@ public sealed interface ExtensionContext extends Context<BaseExtension> permits 
 //Maaske har vi negativ context (man kan fjerne det eksplicit via bean templates)
 
 //Maaske er ContainerContext simpelthen bare ikke ContainerWide...
+
+final class ExtensionContextBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        if (key.rawType() == ExtensionContext.class) {
+            if (beanOwner().isUserland()) {
+                service.binder().failWith(ExtensionContext.class.getSimpleName() + " can only be injected into bean that owned by an extension");
+            }
+            service.binder().bindContext(ExtensionContext.class);
+        } else {
+            super.onExtensionService(key, service);
+        }
+    }
+}

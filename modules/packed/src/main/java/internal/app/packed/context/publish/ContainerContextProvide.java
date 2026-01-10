@@ -15,15 +15,19 @@
  */
 package internal.app.packed.context.publish;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
+import app.packed.extension.BaseExtension;
 
 /**
  * Ideen er at provide context fra en bean. Typisk container brug.
@@ -45,10 +49,25 @@ import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@OnAnnotatedMethod(introspector = BaseExtensionHostGuestBeanintrospector.class, allowInvoke = true)
-@BeanTrigger.OnAnnotatedField(introspector = BaseExtensionHostGuestBeanintrospector.class, allowGet = true)
+@OnAnnotatedMethod(introspector = ContainerContextProvideBeanIntrospector.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedField(introspector = ContainerContextProvideBeanIntrospector.class, allowGet = true)
 // Skal returnere implementationen
 public @interface ContainerContextProvide {
     // Det kan vi vel extracte fra metode/field signaturen
     // Class<? extends Context<?>> context(); // context.extension must be identical to owner
+}
+
+final class ContainerContextProvideBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onAnnotatedMethod(Annotation annotation, OnMethod method) {
+        // TODO: implement context provision from method
+        super.onAnnotatedMethod(annotation, method);
+    }
+
+    @Override
+    public void onAnnotatedField(Annotation annotation, OnField field) {
+        // TODO: implement context provision from field
+        super.onAnnotatedField(annotation, field);
+    }
 }

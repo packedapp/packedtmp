@@ -15,18 +15,20 @@
  */
 package internal.app.packed.lifecycle.runtime;
 
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.binding.Key;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.ValueBased;
 import internal.app.packed.extension.ExtensionContext;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
 import internal.app.packed.lifecycle.lifetime.LifetimeStore;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 
 /**
  * All strongly connected components relate to the same pod.
  */
-@AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@AutoInject(introspector = PackedExtensionContextBeanIntrospector.class)
 @ValueBased
 public final class PackedExtensionContext implements ExtensionContext {
 
@@ -81,5 +83,20 @@ public final class PackedExtensionContext implements ExtensionContext {
     @Override
     public String toString() {
         return "ConstantPool [size = " + objects.length + "]";
+    }
+}
+
+final class PackedExtensionContextBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        if (key.rawType() == ExtensionContext.class) {
+            if (beanOwner().isUserland()) {
+                service.binder().failWith(ExtensionContext.class.getSimpleName() + " can only be injected into bean that owned by an extension");
+            }
+            service.binder().bindContext(ExtensionContext.class);
+        } else {
+            super.onExtensionService(key, service);
+        }
     }
 }

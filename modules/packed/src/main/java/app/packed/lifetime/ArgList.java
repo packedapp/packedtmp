@@ -17,8 +17,10 @@ package app.packed.lifetime;
 
 import java.util.List;
 
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
+import app.packed.binding.Key;
+import app.packed.extension.BaseExtension;
 
 /**
  *
@@ -40,7 +42,7 @@ import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector
 // Hvad goere vi med child lifetimes? Maaske er den kun til gaeneglig i app lifetimen...
 // Det tror jeg faktisk
 
-@AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class)
+@AutoInject(introspector = ArgListBeanIntrospector.class)
 public /* primitive */ class ArgList {
     private final String[] args;
 
@@ -59,5 +61,14 @@ public /* primitive */ class ArgList {
     public ArgList of(String... args) {
         List.of(args); // checks for null
         return new ArgList(args.clone());
+    }
+}
+
+final class ArgListBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        // TODO: implement ArgList binding
+        super.onExtensionService(key, service);
     }
 }

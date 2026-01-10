@@ -17,11 +17,12 @@ package app.packed.component.guest;
 
 import java.util.Set;
 
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector;
+import internal.app.packed.application.GuestBeanHandle;
 
 /**
  * I think this probably mostly be informational. You would only need it for debugging.
@@ -29,7 +30,7 @@ import internal.app.packed.extension.base.BaseExtensionHostGuestBeanintrospector
  * @see FromComponentGuest
  * @see OnComponentGuestLifecycle
  */
-@AutoInject(introspector = BaseExtensionHostGuestBeanintrospector.class, requiresContext = ComponentHostContext.class)
+@AutoInject(introspector = ComponentHostContextBeanIntrospector.class, requiresContext = ComponentHostContext.class)
 // Alternativt er ogsaa at have en per type.
 // A.ka GuestApplicationContext
 public interface ComponentHostContext extends Context<BaseExtension> {
@@ -41,4 +42,17 @@ public interface ComponentHostContext extends Context<BaseExtension> {
      * This services can be injected into parameter of a factory method using {@link FromComponentGuest}.
      */
     Set<Key<?>> keys();
+}
+
+final class ComponentHostContextBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        if (key.rawType() == ComponentHostContext.class) {
+            ComponentHostContext c = beanHandle(GuestBeanHandle.class).get().toContext();
+            service.binder().bindConstant(c);
+        } else {
+            super.onExtensionService(key, service);
+        }
+    }
 }
