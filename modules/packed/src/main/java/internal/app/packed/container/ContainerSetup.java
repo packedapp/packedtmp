@@ -34,7 +34,6 @@ import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import app.packed.extension.InternalExtensionException;
 import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
