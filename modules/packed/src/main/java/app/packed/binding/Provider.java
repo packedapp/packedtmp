@@ -47,43 +47,12 @@ public interface Provider<T> {
      * @return a new provider that provides the specified instance
      */
     static <T> Provider<T> ofConstant(T constant) {
-        requireNonNull(constant, "instance is null");
         record InstanceProvider<T>(T provide) implements Provider<T> {}
-        return new InstanceProvider<>(constant);
+        return new InstanceProvider<>(requireNonNull(constant, "instance is null"));
     }
-
 }
 
 final class ProviderBeanIntrospector extends BaseExtensionBeanIntrospector {
 
 }
-///**
-//* Returns an infinite stream of instances.
-//*
-//* @return an infinite stream of instances
-//*/
-//// Cannot come up with a single use case for this method
-//default Stream<T> stream() {
-// return Stream.generate(() -> provide());
-//}
-///**
-// * Returns whether or not this provider is guaranteed to return the same instance on every invocation.
-// * <p>
-// * This method is always allowed to return false.
-// * <p>
-// * The default value is false.
-// *
-// * @return true if this provider is guaranteed to return the same instance on every invocation. Otherwise false.
-// */
-//// I'm not sure if we want this...
-//default boolean isConstant() {
-//    return false;
-//}
 
-// Provider's can also be obtained for non-services.
-
-//Previously this interface also contained information about where
-//the instances came from. However, this information is now only
-//available from InjectionContext or ServiceProvider.. ServiceProvider
-//To avoid storing all this static information if we don't need to
-//We let people implement this in order to help with testing.
