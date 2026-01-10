@@ -26,7 +26,7 @@ import app.packed.bean.lifecycle.Stop;
 public final class DaemonJobRuntimeManager {
 
     /** All active daemon jobs. */
-    final ConcurrentHashMap<Thread, DaemonJobSidebean> deamons = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<Thread, DaemonJobSidehandle> deamons = new ConcurrentHashMap<>();
 
     @Start
     public void onStart() {

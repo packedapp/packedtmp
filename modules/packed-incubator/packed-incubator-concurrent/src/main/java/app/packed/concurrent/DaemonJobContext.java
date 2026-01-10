@@ -22,7 +22,7 @@ import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
-import internal.app.packed.concurrent.daemon.DaemonJobSidebean;
+import internal.app.packed.concurrent.daemon.DaemonJobSidehandle;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
@@ -31,7 +31,7 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
  */
 // I think we need a bit understand about where we are in the shutdown process, early, vs late
 @AutoInject(introspector = DaemonJobContextBeanIntrospector.class, requiresContext = DaemonJobContext.class)
-public sealed interface DaemonJobContext extends Context<BaseExtension> permits DaemonJobSidebean {
+public sealed interface DaemonJobContext extends Context<BaseExtension> permits DaemonJobSidehandle {
 
     /**
      * @return The annotated method should exit when this method returns true.

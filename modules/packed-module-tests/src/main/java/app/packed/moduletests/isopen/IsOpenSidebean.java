@@ -23,7 +23,7 @@ import app.packed.bean.SidehandleBinding.Kind;
  */
 public class IsOpenSidebean {
 
-    public IsOpenSidebean(@SidehandleBinding(Kind.HANDLE_CONSTANT) IsOpenInvokerInterface iface) {
+    public IsOpenSidebean(@SidehandleBinding(Kind.OPERATION_INVOKER) IsOpenInvokerInterface iface) {
 
     }
 }

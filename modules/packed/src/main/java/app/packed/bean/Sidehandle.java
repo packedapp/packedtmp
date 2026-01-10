@@ -29,7 +29,7 @@ public interface Sidehandle {
      * @param key
      * @param object
      *
-     * @see SidebeanConfiguration#sidebeanBindConstant(Class)
+     * @see SidehandleBinding
      */
     default <T> void bindConstant(Class<T> key, T object) {
         bindConstant(Key.of(key), object);

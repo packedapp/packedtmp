@@ -13,7 +13,7 @@ import app.packed.bean.lifecycle.Start;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.concurrent.DaemonJobContext;
 
-public final class DaemonJobSidebean implements DaemonJobContext {
+public final class DaemonJobSidehandle implements DaemonJobContext {
 
     /** A latch that is counted down when the daemon is requested to stop. */
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
@@ -30,7 +30,7 @@ public final class DaemonJobSidebean implements DaemonJobContext {
 
     private volatile Thread thread;
 
-    public DaemonJobSidebean(@SidehandleBinding(Kind.HANDLE_CONSTANT) ThreadFactory factory,
+    public DaemonJobSidehandle(@SidehandleBinding(Kind.HANDLE_CONSTANT) ThreadFactory factory,
             @SidehandleBinding(Kind.OPERATION_INVOKER) DaemonOperationInvoker invoker, DaemonJobRuntimeManager manager) {
         this.factory = requireNonNull(factory);
         this.invoker = requireNonNull(invoker);

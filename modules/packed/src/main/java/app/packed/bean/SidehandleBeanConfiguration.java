@@ -15,10 +15,7 @@
  */
 package app.packed.bean;
 
-import app.packed.binding.Key;
-import internal.app.packed.bean.sidehandle.PackedSidehandleBinding;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
-import internal.app.packed.invoke.SidebeanInvokerModel;
 
 /**
  * A configuration object for aside bean.
@@ -58,52 +55,4 @@ public final class SidehandleBeanConfiguration<T> extends BeanConfiguration<T> {
 //    public SidebeanAttachment attachToVariable(OnVariable handle) {
 //        throw new UnsupportedOperationException();
 //    }
-
-    private void sidebeanBind(Key<?> key, PackedSidehandleBinding binding) {
-        checkIsConfigurable();
-        if (handle.bindings.putIfAbsent(key, binding) != null) {
-            throw new IllegalArgumentException(key + " has already been registered");
-        }
-    }
-
-    public <K> void sidebeanBindComputedConstant(Class<K> key) {
-        sidebeanBindComputedConstant(Key.of(key));
-    }
-
-    public <K> void sidebeanBindComputedConstant(Key<K> key) {
-        checkIsConfigurable();
-    }
-
-    /**
-     * @param <K>
-     * @param key
-     * @see SidebeanAttachment#bindConstant(Class, Object)
-     */
-    public <K> void sidebeanBindConstant(Class<K> key) {
-        sidebeanBindConstant(Key.of(key));
-    }
-
-    public <K> void sidebeanBindConstant(Key<K> key) {
-        sidebeanBind(key, new PackedSidehandleBinding.Constant());
-    }
-
-    // bindAbstractInvoker???
-    // Hmm Maybe we need this for lifetimes as well
-    public void sidebeanOperationInvoker(Class<?> invokerClass) {
-        Key<?> invokerKey = Key.of(invokerClass);
-        if (handle.invokerModel != null) {
-            throw new IllegalStateException();
-        }
-        SidebeanInvokerModel sim = handle.invokerModel = SidebeanInvokerModel.of(invokerClass);
-
-        // Right now we always generate it, because we have a test in module-tests that needs to fail.
-        // However, right now it does not use the sidebean, so code is never generated.
-        sim.constructor();
-        sidebeanBind(invokerKey, new PackedSidehandleBinding.Invoker(sim));
-    }
-
-    // Cannot use it from the constructor, use @Inject
-    protected void sidebeanBeanInstance(Class<?> beanClass) {
-
-    }
 }

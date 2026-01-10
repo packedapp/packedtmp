@@ -28,8 +28,8 @@ import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.Sidehandle;
-import app.packed.bean.SidehandleBinding;
 import app.packed.bean.SidehandleBeanConfiguration;
+import app.packed.bean.SidehandleBinding;
 import app.packed.binding.Key;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.invoke.BeanLifecycleSupport;
@@ -119,8 +119,24 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
      * @param v
      */
     public void onInject(SidehandleBinding annotation, IntrospectorOnVariable v) {
-        // This method is invoked, before #bindings is populated, so we cannot make any checks here
         Key<?> key = v.toKey();
+
+        PackedSidehandleBinding binding;
+        SidehandleBinding.Kind kind = annotation.value();
+        if (kind == SidehandleBinding.Kind.HANDLE_CONSTANT || kind == SidehandleBinding.Kind.HANDLE_COMPUTED_CONSTANT) {
+            binding = new PackedSidehandleBinding.Constant();
+        } else if (kind == SidehandleBinding.Kind.OPERATION_INVOKER) {
+            if (invokerModel != null) {
+                throw new IllegalStateException("Only one operation invoker supported per sidebean");
+            }
+            SidebeanInvokerModel sim = invokerModel = SidebeanInvokerModel.of(key.rawType());
+            sim.constructor(); // Awaits fix in module-tests
+            binding = new PackedSidehandleBinding.Invoker(sim);
+        } else {
+            throw new IllegalStateException("Unknown kind: " + kind);
+        }
+
+        bindings.putIfAbsent(key, binding);
         injectionSites.add(key);
         v.bindSidebeanBinding(key, this);
     }

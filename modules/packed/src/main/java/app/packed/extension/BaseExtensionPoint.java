@@ -11,7 +11,6 @@ import app.packed.bean.BeanLifetime;
 import app.packed.bean.SidehandleBeanConfiguration;
 import app.packed.bean.SidehandleContext;
 import app.packed.bean.SidehandleTargetKind;
-import app.packed.build.action.BuildActionable;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
 import app.packed.operation.Op;
@@ -102,7 +101,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         return install(Bean.ofInstance(instance));
     }
 
-    @BuildActionable("bean.install")
+    // maybe replace SidehandleTargetKind with Class<? extends ComponentHandle>>
     public <T> SidehandleBeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, SidehandleTargetKind targetKind, Consumer<? super SidehandleBeanConfiguration<T>> installationAction) {
         BeanInstaller installer = newBean(BeanLifetime.SIDEBEAN, handle()).addContext(SidehandleContext.class);
         SidehandleBeanHandle<T> h = installer.installIfAbsent(implementation, SidehandleBeanHandle.class, SidehandleBeanHandle<T>::new,

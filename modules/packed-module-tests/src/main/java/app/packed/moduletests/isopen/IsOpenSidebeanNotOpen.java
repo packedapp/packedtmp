@@ -24,7 +24,7 @@ import app.packed.moduletests.notopen.NotOpenInvokerInterface;
  */
 public class IsOpenSidebeanNotOpen {
 
-    public IsOpenSidebeanNotOpen(@SidehandleBinding(Kind.HANDLE_CONSTANT) NotOpenInvokerInterface iface) {
+    public IsOpenSidebeanNotOpen(@SidehandleBinding(Kind.OPERATION_INVOKER) NotOpenInvokerInterface iface) {
 
     }
 }

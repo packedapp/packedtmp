@@ -33,6 +33,6 @@ public final class NotOpenExtension extends Extension<NotOpenExtension>{
     }
 
     public void addSidebean() {
-        base().installSidebeanIfAbsent(IsOpenSidebean.class, SidehandleTargetKind.OPERATION, c -> c.sidebeanOperationInvoker(NotOpenInvokerInterface.class));
+        base().installSidebeanIfAbsent(IsOpenSidebean.class, SidehandleTargetKind.OPERATION, _ -> {});
     }
 }

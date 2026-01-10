@@ -15,8 +15,6 @@
  */
 package internal.app.packed.concurrent.daemon;
 
-import java.util.concurrent.ThreadFactory;
-
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.SidehandleBeanConfiguration;
 import app.packed.bean.SidehandleTargetKind;
@@ -28,7 +26,6 @@ import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationInstaller;
 import internal.app.packed.concurrent.AbstractJobOperationHandle;
 import internal.app.packed.concurrent.ThreadNamespaceHandle;
-import internal.app.packed.concurrent.daemon.DaemonJobSidebean.DaemonOperationInvoker;
 
 /** An operation handle for a daemon operation. */
 public final class DaemonJobOperationHandle extends AbstractJobOperationHandle<DaemonJobConfiguration> {
@@ -52,11 +49,8 @@ public final class DaemonJobOperationHandle extends AbstractJobOperationHandle<D
     }
 
     public static void onDaemonJobAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, DaemonJob annotation) {
-        // Lazy install the sidebean and runtime manager
-       // SidebeanInstallationConfig.operation().withBindConstant(ThreadFactory.class).withInvoker(DaemonOperationInvoker.class);
-        SidehandleBeanConfiguration<DaemonJobSidebean> sideBean = introspector.applicationBase().installSidebeanIfAbsent(DaemonJobSidebean.class, SidehandleTargetKind.OPERATION, c -> {
-            c.sidebeanOperationInvoker(DaemonOperationInvoker.class);
-            c.sidebeanBindConstant(ThreadFactory.class);
+        // Lazy install the sidehandle and runtime manager
+        SidehandleBeanConfiguration<DaemonJobSidehandle> sideBean = introspector.applicationBase().installSidebeanIfAbsent(DaemonJobSidehandle.class, SidehandleTargetKind.OPERATION, _ -> {
             introspector.applicationBase().install(DaemonJobRuntimeManager.class).provide();
         });
 
