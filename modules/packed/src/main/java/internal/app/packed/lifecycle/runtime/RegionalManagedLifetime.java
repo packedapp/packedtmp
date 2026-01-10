@@ -152,7 +152,7 @@ public final class RegionalManagedLifetime implements ManagedLifecycle {
             throw new IllegalArgumentException("INITIALIZING is not a valid launch state");
         }
 
-        if (!runner.container.template.isManaged() && desiredState != RunState.INITIALIZED) {
+        if (!runner.container.containerKind.isManaged() && desiredState != RunState.INITIALIZED) {
             throw new IllegalArgumentException("Unmanaged applications and containers can only launch with runstate INITIALIZED, was " + desiredState);
         }
 

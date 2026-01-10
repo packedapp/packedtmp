@@ -68,18 +68,18 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     @Nullable
     public final ContainerSetup parent;
 
-    /** The template for the new container. */
-    public final PackedContainerTemplate<H> template;
+    /** The kind of container to create. */
+    public final PackedContainerKind containerKind;
 
     /** A list of wirelets that have not been consumed yet. */
     public final ArrayList<Wirelet> unconsumedWirelets = new ArrayList<>();
 
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
-    public PackedContainerInstaller(PackedContainerTemplate<H> template, @Nullable PackedApplicationInstaller<?> application, @Nullable ContainerSetup parent,
+    public PackedContainerInstaller(PackedContainerKind containerKind, @Nullable PackedApplicationInstaller<?> application, @Nullable ContainerSetup parent,
             Class<? extends Extension<?>> installedBy) {
         super(Set.of(), new HashMap<>());
         this.applicationInstaller = application;
-        this.template = requireNonNull(template, "template is null");
+        this.containerKind = requireNonNull(containerKind, "containerKind is null");
         this.parent = parent;
         this.installedBy = installedBy;
     }
@@ -174,16 +174,9 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
         }
     }
 
-    public static PackedContainerInstaller<?> of(PackedContainerTemplate<?> template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+    public static PackedContainerInstaller<?> of(PackedContainerKind containerKind, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
-        PackedContainerInstaller<?> pcb = new PackedContainerInstaller<>(template, null, parent, installedBy);
-
-//        for (PackedContainerLink b : pcb.template.links().packs) {
-//            if (b.onUse() != null) {
-//                b.onUse().accept(pcb);
-//            }
-//        }
-        return pcb;
+        return new PackedContainerInstaller<>(containerKind, null, parent, installedBy);
     }
 
     /** {@inheritDoc} */

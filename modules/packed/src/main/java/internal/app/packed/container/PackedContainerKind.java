@@ -40,6 +40,10 @@ public enum PackedContainerKind {
     MANAGED,
 
     UNMANAGED;
+
+    public boolean isManaged() {
+        return this != UNMANAGED;
+    }
 }
 
 // Managed, Unmanaged, FromParent

@@ -90,7 +90,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     // Maybe replace with ContainerServiceSetup. Where all the logic is.
     private MainServiceNamespaceHandle sm;
 
-    public final PackedContainerTemplate<?> template;
+    public final PackedContainerKind containerKind;
 
     public final ArrayList<Wirelet> wirelets;
 
@@ -108,9 +108,9 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         super(installer.parent);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
-        this.template = installer.template;
+        this.containerKind = installer.containerKind;
 
-        if (installer.template.kind() == PackedContainerKind.FROM_CONTAINER) {
+        if (installer.containerKind == PackedContainerKind.FROM_CONTAINER) {
             this.lifetime = installer.parent.lifetime;
         } else {
             this.lifetime = new ContainerLifetimeSetup(installer, this, null);
@@ -419,11 +419,8 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
 
         container.nameNewContainer(installer);
 
-        // Create the operation's handle.
-        ContainerHandle<?> handle = container.handle = installer.template.handleFactory().apply(installer);
-        if (handle == null) {
-            throw new InternalExtensionException(BaseExtension.class + " handleFactory returned null, when creating a new ContainerHandle");
-        }
+        // Create the container's handle.
+        container.handle = new ContainerHandle<>(installer);
 
         // BaseExtension is always present in any container.
         container.baseExtension = ExtensionSetup.newExtension(BaseExtension.class, container, null);

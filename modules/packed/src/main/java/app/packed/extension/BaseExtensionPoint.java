@@ -21,7 +21,7 @@ import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionPointHandle;
 
@@ -130,15 +130,14 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     /**
      * Creates a new container installer to be able to install a new container on behalf of the user.
      *
-     * @param template
-     *            a container template representing the behaviour of the new container
+     * @param containerKind
+     *            the kind of container to create
      * @return the installer
      */
-
-    ContainerInstaller<?> newContainer(PackedContainerTemplate<?> template) {
+    ContainerInstaller<?> newContainer(PackedContainerKind containerKind) {
         // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup es = handle.usedBy();
-        return PackedContainerInstaller.of(template, es.extensionType, es.container.application, es.container);
+        return PackedContainerInstaller.of(containerKind, es.extensionType, es.container.application, es.container);
     }
 
     public int registerEntryPoint(Class<?> hook) {

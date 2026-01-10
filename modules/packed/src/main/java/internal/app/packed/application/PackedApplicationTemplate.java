@@ -29,12 +29,12 @@ import app.packed.container.Wirelet;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.component.ComponentTagHolder;
-import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 
 /** Implementation of {@link ApplicationTemplate}. */
 public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
-        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerTemplate<?> rootContainer,
+        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerKind rootContainer,
         Set<String> componentTags) implements ApplicationTemplate<H> {
 
     public PackedApplicationTemplate(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
@@ -44,9 +44,9 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
 
 
     /** {@inheritDoc} */
-    public PackedApplicationTemplate<H> withRootContainer(PackedContainerTemplate<?> template) {
-        requireNonNull(template);
-        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, template, componentTags);
+    public PackedApplicationTemplate<H> withRootContainer(PackedContainerKind kind) {
+        requireNonNull(kind);
+        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, kind, componentTags);
     }
 
     /**
@@ -118,9 +118,9 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
         @Override
         public <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
                 Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
-            PackedContainerTemplate<?> container = managed ? PackedContainerTemplate.MANAGED : PackedContainerTemplate.UNMANAGED;
+            PackedContainerKind containerKind = managed ? PackedContainerKind.MANAGED : PackedContainerKind.UNMANAGED;
             return new PackedApplicationTemplate<>(guestClass, op, handleClass,
-                    handleFactory, container, componentTags);
+                    handleFactory, containerKind, componentTags);
         }
     }
 }
