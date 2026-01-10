@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import static app.packed.bean.SidehandleBinding.Kind.APPLICATION_PROVIDED;
+import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.bean.SidehandleBinding;
 import app.packed.bean.SidehandleContext;
@@ -42,7 +42,7 @@ final class PackedJobApp implements JobApp {
     /** Manages the lifecycle of the app. */
     private final ManagedLifecycle lifecycle;
 
-    PackedJobApp(@SidehandleBinding(APPLICATION_PROVIDED) ManagedLifecycle lc, @SidehandleBinding(APPLICATION_PROVIDED) Future<?> result, SidehandleContext context) {
+    PackedJobApp(@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle lc, @SidehandleBinding(FROM_CONTEXT) Future<?> result, SidehandleContext context) {
         this.lifecycle = lc;
     }
 

@@ -20,7 +20,7 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
-import static app.packed.bean.SidehandleBinding.Kind.APPLICATION_PROVIDED;
+import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.bean.SidehandleBinding;
 import app.packed.container.Wirelet;
@@ -155,7 +155,7 @@ public interface ProgramX extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementationX(@SidehandleBinding(APPLICATION_PROVIDED) String name, @SidehandleBinding(APPLICATION_PROVIDED) ServiceLocator services, @SidehandleBinding(APPLICATION_PROVIDED) ManagedLifecycle runtime)
+record ProgramImplementationX(@SidehandleBinding(FROM_CONTEXT) String name, @SidehandleBinding(FROM_CONTEXT) ServiceLocator services, @SidehandleBinding(FROM_CONTEXT) ManagedLifecycle runtime)
         implements ProgramX {
 
     ProgramImplementationX {

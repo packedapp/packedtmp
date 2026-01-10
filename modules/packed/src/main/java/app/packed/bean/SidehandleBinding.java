@@ -43,7 +43,7 @@ public @interface SidehandleBinding {
     Kind value();
 
     public enum Kind {
-        HANDLE_CONSTANT, HANDLE_COMPUTED_CONSTANT, OPERATION_INVOKER, APPLICATION_PROVIDED;
+        HANDLE_CONSTANT, HANDLE_COMPUTED_CONSTANT, OPERATION_INVOKER, FROM_CONTEXT;
     }
 }
 
@@ -54,7 +54,7 @@ final class SidebeanInjectBeanIntrospector extends BaseExtensionBeanIntrospector
         SidehandleBinding binding = (SidehandleBinding) annotation;
 
         // For APPLICATION_PROVIDED, try GuestBeanHandle first
-        if (binding.value() == SidehandleBinding.Kind.APPLICATION_PROVIDED) {
+        if (binding.value() == SidehandleBinding.Kind.FROM_CONTEXT) {
             Optional<GuestBeanHandle> guestHandle = beanHandle(GuestBeanHandle.class);
             if (guestHandle.isPresent()) {
                 guestHandle.get().resolve(this, v);

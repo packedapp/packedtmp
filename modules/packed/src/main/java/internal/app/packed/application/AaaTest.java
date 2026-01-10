@@ -25,7 +25,7 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.Start;
 import app.packed.bean.lifecycle.Stop;
-import static app.packed.bean.SidehandleBinding.Kind.APPLICATION_PROVIDED;
+import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.bean.SidehandleBinding;
 import app.packed.bean.SidehandleContext;
@@ -81,7 +81,7 @@ public class AaaTest extends BaseAssembly {
         /** Manages the lifecycle of the app. */
         private final ManagedLifecycle lifecycle;
 
-        AApp(@SidehandleBinding(APPLICATION_PROVIDED) ManagedLifecycle lc, SidehandleContext context) {
+        AApp(@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle lc, SidehandleContext context) {
             this.lifecycle = lc;
         }
 

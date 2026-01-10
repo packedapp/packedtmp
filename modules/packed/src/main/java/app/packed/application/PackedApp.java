@@ -18,7 +18,7 @@ package app.packed.application;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.binding.Key;
-import static app.packed.bean.SidehandleBinding.Kind.APPLICATION_PROVIDED;
+import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.bean.SidehandleBinding;
 import app.packed.bean.SidehandleContext;
@@ -38,7 +38,7 @@ final class PackedApp implements App {
     /** Manages the lifecycle of the app. */
     private final ManagedLifecycle lifecycle;
 
-    PackedApp(@SidehandleBinding(APPLICATION_PROVIDED) ManagedLifecycle lc, SidehandleContext context) {
+    PackedApp(@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle lc, SidehandleContext context) {
         this.lifecycle = lc;
     }
 

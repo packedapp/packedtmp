@@ -18,7 +18,7 @@ package sandbox.application;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import static app.packed.bean.SidehandleBinding.Kind.APPLICATION_PROVIDED;
+import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.bean.SidehandleBinding;
 
@@ -60,5 +60,5 @@ public final class Te {
         BOOTSTRAP.getClass();
     }
 
-    record Holder(@SidehandleBinding(APPLICATION_PROVIDED) ApplicationMirror am) {}
+    record Holder(@SidehandleBinding(FROM_CONTEXT) ApplicationMirror am) {}
 }

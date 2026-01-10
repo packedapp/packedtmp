@@ -17,7 +17,7 @@ package tck;
 
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import static app.packed.bean.SidehandleBinding.Kind.APPLICATION_PROVIDED;
+import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.bean.SidehandleBinding;
 import app.packed.operation.Op1;
@@ -29,7 +29,7 @@ import app.packed.service.ServiceLocator;
 public class ServiceLocatorAppTest extends AbstractBootstrapedAppTest<ServiceLocator> {
 
     private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-            .of(ApplicationTemplate.builder(new Op1<@SidehandleBinding(APPLICATION_PROVIDED) ServiceLocator, ServiceLocator>(e -> e) {}).unmanaged().build());
+            .of(ApplicationTemplate.builder(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {}).unmanaged().build());
 
     public ServiceLocatorAppTest() {
         super(APP);

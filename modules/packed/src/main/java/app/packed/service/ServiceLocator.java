@@ -33,7 +33,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import static app.packed.bean.SidehandleBinding.Kind.APPLICATION_PROVIDED;
+import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.bean.SidehandleBinding;
 import app.packed.container.Wirelet;
@@ -321,7 +321,7 @@ public interface ServiceLocator extends ApplicationInterface {
         // ServiceLocatorBootstrap because we cannot have private static fields on interfaces
         class ServiceLocatorBootstrap {
             private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-                    .of(ApplicationTemplate.builder(new Op1<@SidehandleBinding(APPLICATION_PROVIDED) ServiceLocator, ServiceLocator>(e -> e) {}).unmanaged().build());
+                    .of(ApplicationTemplate.builder(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {}).unmanaged().build());
         }
         return ServiceLocatorBootstrap.APP;
     }
