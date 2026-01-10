@@ -133,11 +133,18 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
      * @param annotation
      * @param v
      */
-    public void onInject(SidehandleBinding annotation, IntrospectorOnVariable v) {
+    public void onInject(BeanIntrospector<?> introspector, SidehandleBinding annotation, IntrospectorOnVariable v) {
+        SidehandleBinding.Kind kind = annotation.value();
+
+        // For FROM_CONTEXT, use resolve method
+        if (kind == SidehandleBinding.Kind.FROM_CONTEXT) {
+            resolve(introspector, v);
+            return;
+        }
+
         Key<?> key = v.toKey();
 
         PackedSidehandleBinding binding;
-        SidehandleBinding.Kind kind = annotation.value();
         if (kind == SidehandleBinding.Kind.HANDLE_CONSTANT || kind == SidehandleBinding.Kind.HANDLE_COMPUTED_CONSTANT) {
             binding = new PackedSidehandleBinding.Constant();
         } else if (kind == SidehandleBinding.Kind.OPERATION_INVOKER) {

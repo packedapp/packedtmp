@@ -52,25 +52,16 @@ final class SidehandleBindingBeanIntrospector extends BaseExtensionBeanIntrospec
     @SuppressWarnings("unchecked")
     @Override
     public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
-        SidehandleBinding binding = (SidehandleBinding) annotation;
-
         @SuppressWarnings("rawtypes")
         Optional<SidehandleBeanHandle> sideHandle = beanHandle(SidehandleBeanHandle.class);
 
         if (sideHandle.isEmpty()) {
-            throw new BeanInstallationException(SidehandleBinding.class.getSimpleName() + " can only be used on sidebeans or guest beans");
+            throw new BeanInstallationException(SidehandleBinding.class.getSimpleName() + " can only be used on sidehandle beans");
         }
-
-        // For FROM_CONTEXT, use resolve method
-        if (binding.value() == SidehandleBinding.Kind.FROM_CONTEXT) {
-            sideHandle.get().resolve(this, v);
-            return;
-        }
-
-        // Fall through for other kinds
         if (v.operationHandle(AbstractInitializingOperationHandle.class).isEmpty()) {
-            throw new BeanInstallationException("Can only be used on Factory, Inject, Initialize methods" + beanClass());
+            throw new BeanInstallationException(SidehandleBinding.class.getSimpleName() + " can only be used on Factory, Inject, Initialize methods" + beanClass());
         }
-        sideHandle.get().onInject(binding, (IntrospectorOnVariable) v);
+
+        sideHandle.get().onInject(this, (SidehandleBinding) annotation, (IntrospectorOnVariable) v);
     }
 }
