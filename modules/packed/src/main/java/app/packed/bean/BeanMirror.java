@@ -29,7 +29,7 @@ import app.packed.extension.Extension;
 import app.packed.lifecycle.FactoryOperationMirror;
 import app.packed.lifecycle.InitializeOperationMirror;
 import app.packed.lifecycle.InjectOperationMirror;
-import app.packed.lifecycle.LifecycleModel;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.StartOperationMirror;
 import app.packed.lifecycle.StopOperationMirror;
 import app.packed.lifetime.LifetimeMirror;
@@ -253,7 +253,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
         }
 
         /** {@return the beans lifecycle kind} */
-        public LifecycleModel kind() {
+        public LifecycleKind kind() {
             return handle.bean.beanLifecycleKind;
         }
 

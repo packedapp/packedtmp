@@ -27,7 +27,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
-import app.packed.lifecycle.LifecycleModel;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
@@ -74,7 +74,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     public final BeanKind beanKind;
 
     /** The lifecycle kind of the bean. */
-    public final LifecycleModel beanLifecycleKind = LifecycleModel.UNMANAGED_LIFECYCLE;
+    public final LifecycleKind beanLifecycleKind = LifecycleKind.UNMANAGED;
 
     /** Services that have been bound specifically for this bean. */
     public final ServiceMap<BeanServiceProviderSetup> serviceProviders = new ServiceMap<>();

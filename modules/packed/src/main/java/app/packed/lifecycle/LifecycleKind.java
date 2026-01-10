@@ -43,25 +43,10 @@ package app.packed.lifecycle;
  *
  *
  */
-
-// Unmanaged Container - Unmanaged Application
-// Unmanaged Container - Managed Application (Det er vel det en bootstrap app laver)
-// Unmanaged Container - Unmanaged Container (OK)
-// Unmanaged Container - Managed Container (?)
-// Unmanaged Container - Unmanaged Bean (OK)
-// Unmanaged Container - Managed Bean (FAIL)
-
-
-// Bean vs Container er ogsaa en slags Kind
-
-// NONE, CREATIONAL, DESTRUCTIBLE
-// NONE, UNMANAGED, MANAGED
-
-/// MAYBE THIS is only for beans....
-public enum LifecycleModel {
+public enum LifecycleKind {
 
     /** A bean that has no lifecycle. */
-    NO_LIFECYCLE,
+    NONE,
 
     /**
      * Represents a bean or container who either have no run-state (static) or whose run-state is not tracked by the
@@ -76,60 +61,12 @@ public enum LifecycleModel {
      * <p>
      * Unmanaged beans cannot be started or stopped.
      **/
-    UNMANAGED_LIFECYCLE, // has initialize
+    UNMANAGED, // has initialize
 
     /**
      *
      * Managed bean can only be registered in a managed container. Installing a managed bean in an unmanaged container will
      * fail with UnmanagedLifetimeException at build time.
      **/
-    MANAGED_LIFECYCLE; // has start/stop
+    MANAGED; // has start/stop
 }
-
-///**
-//* Represents a bean or container who either have no run-state (static) or whose run-state is not tracked by any
-//* extension.
-//* <p>
-//* Beans that have stateless lifetime. Will be contained in the container's lifetime. Meaning that they can be used as
-//* long as the container they are installed in is running.
-//*
-//* @see app.packed.bean.BeanKind#STATIC
-//* @see app.packed.bean.BeanKind#FOREIGN
-//**/
-//STATELESS,
-
-//
-//enum AlternativeNaming {
-//    STATIC,
-//
-//    UNMANAGED_INSTANCE,
-//
-//    MANAGED_INSTANCE
-//}
-//
-//// Functional+ Static does not have a lifetime. dvs Optional paa alle componenter
-//enum AlternativeNaming2 {
-//    NONE,
-//
-//    UNMANAGED,
-//
-//    MANAGED;
-//}
-
-// An Unmanaged Lifetime must not have active threads running inside of it
-// post startup
-
-// An Unmanaged lifetime will never have Managed lifetime as children
-
-// Det her betyder at Injector har en Unmanaged Lifetime.
-// Og App har en Managed Lifetime
-
-// Unmanaged Lifetime typically relies on the garbage collection to clean up things.
-// Cleaner can be used. But
-
-// Or Tracked vs Untracked
-
-// Unmanaged it is created, but then no longer tracked...
-
-// Applications that are Managed should generally be AutoCloseable
-// Or managed by an application host
