@@ -42,7 +42,7 @@ public @interface SidehandleBinding {
     Kind value();
 
     public enum Kind {
-        HANDLE_CONSTANT, HANDLE_COMPUTED_CONSTANT, OPERATION_INVOKER;
+        HANDLE_CONSTANT, HANDLE_COMPUTED_CONSTANT, OPERATION_INVOKER, APPLICATION_PROVIDED;
     }
 }
 
