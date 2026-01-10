@@ -18,8 +18,10 @@ package app.packed.application;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.binding.Key;
-import app.packed.component.guest.ComponentHostContext;
-import app.packed.component.guest.GuestBinding;
+import static app.packed.bean.SidehandleBinding.Kind.APPLICATION_PROVIDED;
+
+import app.packed.bean.SidehandleBinding;
+import app.packed.bean.SidehandleContext;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -36,7 +38,7 @@ final class PackedApp implements App {
     /** Manages the lifecycle of the app. */
     private final ManagedLifecycle lifecycle;
 
-    PackedApp(@GuestBinding ManagedLifecycle lc, ComponentHostContext context) {
+    PackedApp(@SidehandleBinding(APPLICATION_PROVIDED) ManagedLifecycle lc, SidehandleContext context) {
         this.lifecycle = lc;
     }
 

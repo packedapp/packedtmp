@@ -23,7 +23,9 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
 import app.packed.bean.lifecycle.Inject;
-import app.packed.component.guest.GuestBinding;
+import static app.packed.bean.SidehandleBinding.Kind.APPLICATION_PROVIDED;
+
+import app.packed.bean.SidehandleBinding;
 import app.packed.operation.Op1;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
@@ -34,18 +36,18 @@ import sandbox.lifetime.external.ManagedLifetimeState;
 /**
  *
  */
-public record SimpleManagedApplication(@GuestBinding ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle {
+public record SimpleManagedApplication(@SidehandleBinding(APPLICATION_PROVIDED) ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle {
 
     // Problemet er vi skal definere en Handle Class... Der har <I> = ManagedLifecycle
     // Men syntes ogsaa det er fint at folk skal lave en guest bean
     public static final ApplicationTemplate<GuestApplicationHandle2> MANAGED = ApplicationTemplate
-            .builder(new Op1<@GuestBinding ManagedLifecycle, ManagedLifecycle>(e -> e) {}).build(GuestApplicationHandle2.class, GuestApplicationHandle2::new);
+            .builder(new Op1<@SidehandleBinding(APPLICATION_PROVIDED) ManagedLifecycle, ManagedLifecycle>(e -> e) {}).build(GuestApplicationHandle2.class, GuestApplicationHandle2::new);
 
     public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.builder(SimpleManagedApplication.class)
             .build(GuestApplicationHandle.class, GuestApplicationHandle::new);
 
     @Inject
-    public SimpleManagedApplication(@GuestBinding ManagedLifecycle lifecyle) {
+    public SimpleManagedApplication(@SidehandleBinding(APPLICATION_PROVIDED) ManagedLifecycle lifecyle) {
         this(lifecyle, System.nanoTime());
     }
 

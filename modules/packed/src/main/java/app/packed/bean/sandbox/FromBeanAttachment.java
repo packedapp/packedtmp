@@ -28,7 +28,7 @@ import app.packed.extension.BaseExtension;
 /**
  * Can be used to annotated injectable parameters into a guest bean.
  *
- * @see ComponentHostContext
+ * @see SidehandleContext
  * @see OnComponentGuestLifecycle
  *
  * @see BeanHandle#attach(app.packed.operation.Op)

@@ -26,8 +26,8 @@ import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.bean.BeanLifetime;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
-import app.packed.component.guest.ComponentHostConfiguration;
-import app.packed.component.guest.ComponentHostContext;
+import app.packed.bean.SidehandleBeanConfiguration;
+import app.packed.bean.SidehandleContext;
 import app.packed.operation.Op1;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.ServiceLocator;
@@ -42,7 +42,7 @@ import internal.app.packed.operation.PackedOperationTemplate;
 /**
  *
  */
-public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration<?>> {
+public final class GuestBeanHandle extends BeanHandle<SidehandleBeanConfiguration<?>> {
 
     static final Set<Key<?>> KEYS = Set.of(Key.of(ApplicationMirror.class), Key.of(String.class), Key.of(ManagedLifecycle.class), Key.of(ServiceLocator.class));
 
@@ -70,14 +70,14 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
             v.bindOp(new Op1<ApplicationLaunchContext, ManagedLifecycle>(a -> a.runner.runtime) {});
         } else if (va.rawType().equals(ServiceLocator.class)) {
             v.bindOp(new Op1<ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});
-        } else if (va.rawType().equals(ComponentHostContext.class)) {
-            v.bindOp(new Op1<ApplicationLaunchContext, ComponentHostContext>(_ -> PackedComponentHostContext.DEFAULT) {});
+        } else if (va.rawType().equals(SidehandleContext.class)) {
+            v.bindOp(new Op1<ApplicationLaunchContext, SidehandleContext>(_ -> PackedComponentHostContext.DEFAULT) {});
         } else {
             throw new UnsupportedOperationException("Unknown Container Guest Service " + va.rawType());
         }
     }
 
-    public PackedComponentHostContext toContext() {
+    public SidehandleContext toContext() {
         return DEFAULT;
     }
 

@@ -19,7 +19,7 @@ import app.packed.runtime.RunState;
 
 /**
  *
- * @see ComponentHostContext
+ * @see SidehandleContext
  * @see OnComponentGuestLifecycle
  */
 // Things that be injected

@@ -16,12 +16,22 @@
 package app.packed.bean;
 
 import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
+import internal.app.packed.application.GuestBeanHandle;
 
 /**
  *
  */
-@AutoInject(requiresContext = SidehandleContext.class, introspector = BaseExtensionBeanIntrospector.class)
+@AutoInject(requiresContext = SidehandleContext.class, introspector = SidehandleContextBeanIntrospector.class)
 public interface SidehandleContext extends Context<BaseExtension> {}
+
+final class SidehandleContextBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    @Override
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        SidehandleContext c = beanHandle(GuestBeanHandle.class).get().toContext();
+        service.binder().bindConstant(c);
+    }
+}
