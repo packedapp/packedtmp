@@ -23,5 +23,5 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 /**
  *
  */
-@AutoInject(requiresContext = SidebeanContext.class, introspector = BaseExtensionBeanIntrospector.class)
-public interface SidebeanContext extends Context<BaseExtension> {}
+@AutoInject(requiresContext = SidehandleContext.class, introspector = BaseExtensionBeanIntrospector.class)
+public interface SidehandleContext extends Context<BaseExtension> {}

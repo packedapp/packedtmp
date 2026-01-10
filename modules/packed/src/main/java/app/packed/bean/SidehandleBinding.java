@@ -36,8 +36,8 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.AbstractInitializi
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-@OnAnnotatedVariable(introspector = SidebeanInjectBeanIntrospector.class, requiresContext = SidebeanContext.class)
-public @interface SidebeanBinding {}
+@OnAnnotatedVariable(introspector = SidebeanInjectBeanIntrospector.class, requiresContext = SidehandleContext.class)
+public @interface SidehandleBinding {}
 
 final class SidebeanInjectBeanIntrospector extends BaseExtensionBeanIntrospector {
 
@@ -47,12 +47,12 @@ final class SidebeanInjectBeanIntrospector extends BaseExtensionBeanIntrospector
         Optional<SidebeanHandle> beanHandle = beanHandle(SidebeanHandle.class);
 
         if (beanHandle.isEmpty()) {
-            throw new BeanInstallationException(SidebeanBinding.class.getSimpleName() + " can only be used on sidebeans");
+            throw new BeanInstallationException(SidehandleBinding.class.getSimpleName() + " can only be used on sidebeans");
         } else {
             if (v.operationHandle(AbstractInitializingOperationHandle.class).isEmpty()) {
                 throw new BeanInstallationException("Can only be used on Factory, Inject, Initialize methods" + beanClass());
             }
-            beanHandle.get().onInject((SidebeanBinding) annotation, (IntrospectorOnVariable) v);
+            beanHandle.get().onInject((SidehandleBinding) annotation, (IntrospectorOnVariable) v);
         }
     }
 }

@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 Skal selvfoelgelig fungere ligesom sidebeans.
 Hvis jeg har 100 entities, skal jeg ikke 100 pool beans.
 

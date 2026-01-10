@@ -15,25 +15,22 @@
  */
 package app.packed.bean;
 
-import app.packed.binding.Key;
-
 /**
  *
  */
-// Was SidebeanInstance
-public interface SidebeanAttachment {
+// For now we have all 6.
+// Application and Container and Namespace are probably not super important.
+// But maybe a special SidebeanLifecycle can be useful for better control of @Stop, @Start
+public enum SidehandleTargetKind {
+    APPLICATION,
+    CONTAINER,
 
-    // I should probably be able to get the configuration???
-    /**
-     * @param <T>
-     * @param key
-     * @param object
-     *
-     * @see SidebeanConfiguration#sidebeanBindConstant(Class)
-     */
-    default <T> void bindConstant(Class<T> key, T object) {
-        bindConstant(Key.of(key), object);
-    }
+    // Altsaa den er jo en del anderledes. Eftersom jeg taenker vi kun laver den en gang.
+    // Eller hmm, Naar vi laver et request er del invoker.invoke(Req, Res)
+    LIFETIME,
+    NAMESPACE,
+    BEAN,
 
-    <T> void bindConstant(Key<T> key, T object);
+    /** The target for a sidebean is an operation. */
+    OPERATION;
 }

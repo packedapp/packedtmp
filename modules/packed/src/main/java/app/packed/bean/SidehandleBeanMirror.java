@@ -24,23 +24,23 @@ import internal.app.packed.bean.sidebean.SidebeanHandle;
 /**
  * A mirror of a side bean.
  */
-public final class SidebeanBeanMirror extends BeanMirror {
+public final class SidehandleBeanMirror extends BeanMirror {
 
     /** The handle of the sidebean. */
     final SidebeanHandle<?> handle;
 
-    public SidebeanBeanMirror(BeanHandle<?> handle) {
+    public SidehandleBeanMirror(BeanHandle<?> handle) {
         this.handle = (SidebeanHandle<?>) requireNonNull(handle);
         super(handle);
     }
 
     /** {@return a stream of all places where this sidebean has been attached} */
-    public Stream<SidebeanAttachmentMirror> attachments() {
+    public Stream<SidehandleMirror> attachments() {
      //   handle.attachments().
         throw new UnsupportedOperationException();
     }
 
-    public SidebeanTargetKind targetKind() {
+    public SidehandleTargetKind targetKind() {
         throw new UnsupportedOperationException();
     }
 }

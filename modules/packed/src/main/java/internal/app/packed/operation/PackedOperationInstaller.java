@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.bean.SidebeanConfiguration;
+import app.packed.bean.SidehandleBeanConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.namespace.NamespaceHandle;
@@ -113,7 +113,7 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
 
     /** {@inheritDoc} */
     @Override
-    public PackedOperationInstaller attachToSidebean(SidebeanConfiguration<?> configuration) {
+    public PackedOperationInstaller attachToSidebean(SidehandleBeanConfiguration<?> configuration) {
         if (attachToSidebean != null) {
             throw new IllegalStateException("this method has already been called once");
         }

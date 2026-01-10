@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanTrigger.AutoInjectInheritable;
-import app.packed.bean.SidebeanTargetMirror;
+import app.packed.bean.SidehandleTargetMirror;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.component.ComponentMirror;
@@ -65,7 +65,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  */
 @AutoInjectInheritable(introspector = OperationMirrorBeanIntrospector.class)
 public non-sealed class OperationMirror
-        implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror, SidebeanTargetMirror {
+        implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror, SidehandleTargetMirror {
 
     /** The handle of the operation we are mirroring. */
     private final OperationHandle<?> handle;

@@ -22,7 +22,7 @@ import java.lang.invoke.MethodType;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.SidebeanAttachment;
+import app.packed.bean.Sidehandle;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
@@ -261,8 +261,8 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         return new OperationMirror(this);
     }
 
-    public final SidebeanAttachment sidebeanAttachment() {
-        SidebeanAttachment attachment = operation.attachment;
+    public final Sidehandle sidebeanAttachment() {
+        Sidehandle attachment = operation.attachment;
         if (attachment == null) {
             throw new UnsupportedOperationException("Operation has not been attached to a sidebean");
         }

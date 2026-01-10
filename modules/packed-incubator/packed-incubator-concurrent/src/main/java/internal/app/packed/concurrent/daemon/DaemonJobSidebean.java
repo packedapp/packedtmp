@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import app.packed.bean.SidebeanBinding;
+import app.packed.bean.SidehandleBinding;
 import app.packed.bean.lifecycle.Start;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.concurrent.DaemonJobContext;
@@ -29,7 +29,7 @@ public final class DaemonJobSidebean implements DaemonJobContext {
 
     private volatile Thread thread;
 
-    public DaemonJobSidebean(@SidebeanBinding ThreadFactory factory, @SidebeanBinding DaemonOperationInvoker invoker, DaemonJobRuntimeManager manager) {
+    public DaemonJobSidebean(@SidehandleBinding ThreadFactory factory, @SidehandleBinding DaemonOperationInvoker invoker, DaemonJobRuntimeManager manager) {
         this.factory = requireNonNull(factory);
         this.invoker = requireNonNull(invoker);
         this.manager = requireNonNull(manager);

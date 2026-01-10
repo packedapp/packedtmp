@@ -15,7 +15,7 @@
  */
 package app.packed.moduletests.notopen;
 
-import app.packed.bean.SidebeanTargetKind;
+import app.packed.bean.SidehandleTargetKind;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.moduletests.isopen.IsOpenSidebean;
@@ -33,6 +33,6 @@ public final class NotOpenExtension extends Extension<NotOpenExtension>{
     }
 
     public void addSidebean() {
-        base().installSidebeanIfAbsent(IsOpenSidebean.class, SidebeanTargetKind.OPERATION, c -> c.sidebeanOperationInvoker(NotOpenInvokerInterface.class));
+        base().installSidebeanIfAbsent(IsOpenSidebean.class, SidehandleTargetKind.OPERATION, c -> c.sidebeanOperationInvoker(NotOpenInvokerInterface.class));
     }
 }

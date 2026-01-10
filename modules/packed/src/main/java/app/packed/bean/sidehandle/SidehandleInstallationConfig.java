@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sidebean;
+package app.packed.bean.sidehandle;
 
-import app.packed.bean.SidebeanTargetKind;
+import app.packed.bean.SidehandleTargetKind;
 
 /**
  *
@@ -25,9 +25,9 @@ import app.packed.bean.SidebeanTargetKind;
 
 // Alternativ nogen annoteringer
 
-public interface SidebeanInstallationConfig {
+public interface SidehandleInstallationConfig {
 
-    SidebeanTargetKind targetKind();
+    SidehandleTargetKind targetKind();
 
     static OfOperation operation() {
         throw new UnsupportedOperationException();

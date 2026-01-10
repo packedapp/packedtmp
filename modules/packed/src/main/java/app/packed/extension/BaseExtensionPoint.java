@@ -8,9 +8,9 @@ import java.util.function.Consumer;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLifetime;
-import app.packed.bean.SidebeanConfiguration;
-import app.packed.bean.SidebeanContext;
-import app.packed.bean.SidebeanTargetKind;
+import app.packed.bean.SidehandleBeanConfiguration;
+import app.packed.bean.SidehandleContext;
+import app.packed.bean.SidehandleTargetKind;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
@@ -103,8 +103,8 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     @BuildActionable("bean.install")
-    public <T> SidebeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, SidebeanTargetKind targetKind, Consumer<? super SidebeanConfiguration<T>> installationAction) {
-        BeanInstaller installer = newBean(BeanLifetime.SIDEBEAN, handle()).addContext(SidebeanContext.class);
+    public <T> SidehandleBeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, SidehandleTargetKind targetKind, Consumer<? super SidehandleBeanConfiguration<T>> installationAction) {
+        BeanInstaller installer = newBean(BeanLifetime.SIDEBEAN, handle()).addContext(SidehandleContext.class);
         SidebeanHandle<T> h = installer.installIfAbsent(implementation, SidebeanHandle.class, SidebeanHandle<T>::new,
                 ha -> installationAction.accept(ha.configuration()));
         return h.configuration();

@@ -27,9 +27,9 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.SidebeanAttachment;
-import app.packed.bean.SidebeanBinding;
-import app.packed.bean.SidebeanConfiguration;
+import app.packed.bean.Sidehandle;
+import app.packed.bean.SidehandleBinding;
+import app.packed.bean.SidehandleBeanConfiguration;
 import app.packed.binding.Key;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.invoke.BeanLifecycleSupport;
@@ -42,7 +42,7 @@ import internal.app.packed.service.util.ServiceMap;
  *
  */
 // SideBeanHandle -has many> SideBeanInstance
-public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
+public class SidebeanHandle<T> extends BeanHandle<SidehandleBeanConfiguration<T>> {
 
     public final ServiceMap<PackedSidebeanBinding> bindings = new ServiceMap<>();
 
@@ -63,7 +63,7 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
         return attachments.stream();
     }
 
-    public SidebeanAttachment attachTo(PackedSidebeanAttachment usage) {
+    public Sidehandle attachTo(PackedSidebeanAttachment usage) {
         // For example, for a cron
         usage.bean.sideBeanAttachments.add(usage);
 
@@ -96,8 +96,8 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
     }
 
     @Override
-    protected SidebeanConfiguration<T> newBeanConfiguration() {
-        return new SidebeanConfiguration<>(this);
+    protected SidehandleBeanConfiguration<T> newBeanConfiguration() {
+        return new SidehandleBeanConfiguration<>(this);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class SidebeanHandle<T> extends BeanHandle<SidebeanConfiguration<T>> {
      * @param annotation
      * @param v
      */
-    public void onInject(SidebeanBinding annotation, IntrospectorOnVariable v) {
+    public void onInject(SidehandleBinding annotation, IntrospectorOnVariable v) {
         // This method is invoked, before #bindings is populated, so we cannot make any checks here
         Key<?> key = v.toKey();
         injectionSites.add(key);

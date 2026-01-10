@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.bean.SidebeanAttachment;
+import app.packed.bean.Sidehandle;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
@@ -112,7 +112,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
 
     /** Any sidebean attached to the operation. */
     @Nullable
-    public final SidebeanAttachment attachment;
+    public final Sidehandle attachment;
 
     /**
      * Create a new operation.

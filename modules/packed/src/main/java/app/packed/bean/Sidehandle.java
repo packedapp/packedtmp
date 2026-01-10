@@ -13,15 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sidebean;
+package app.packed.bean;
+
+import app.packed.binding.Key;
 
 /**
  *
  */
-public enum SidebeanBindingKind {
-    CONSTANT,
+// Was SidebeanInstance
+public interface Sidehandle {
 
-    COMPUTED_CONSTANT,
+    // I should probably be able to get the configuration???
+    /**
+     * @param <T>
+     * @param key
+     * @param object
+     *
+     * @see SidebeanConfiguration#sidebeanBindConstant(Class)
+     */
+    default <T> void bindConstant(Class<T> key, T object) {
+        bindConstant(Key.of(key), object);
+    }
 
-    INVOKER;
+    <T> void bindConstant(Key<T> key, T object);
 }

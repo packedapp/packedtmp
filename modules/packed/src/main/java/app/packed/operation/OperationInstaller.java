@@ -18,7 +18,7 @@ package app.packed.operation;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.bean.SidebeanConfiguration;
+import app.packed.bean.SidehandleBeanConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint;
 import app.packed.namespace.NamespaceHandle;
@@ -43,7 +43,7 @@ public sealed interface OperationInstaller permits PackedOperationInstaller {
      * @throws UnsupportedOperationException
      *             if the target kind of the sidebean is not {@link app.packed.bean.SidebeanTargetKind#OPERATION}.
      */
-    OperationInstaller attachToSidebean(SidebeanConfiguration<?> configuration);
+    OperationInstaller attachToSidebean(SidehandleBeanConfiguration<?> configuration);
 
     // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);
     OperationInstaller delegateTo(ExtensionPoint.ExtensionPointHandle extension);
