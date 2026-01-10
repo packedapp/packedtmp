@@ -16,11 +16,10 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHook;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.lifecycle.LifecycleModel;
 import app.packed.binding.Key;
 import app.packed.build.hook.BuildHook;
 import app.packed.component.ComponentKind;
@@ -28,6 +27,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
+import app.packed.lifecycle.LifecycleModel;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
@@ -71,7 +71,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     public final HashMap<PackedBeanAttachmentKey, PackedAttachmentOperationHandle> attachments = new HashMap<>();
 
     /** The kind of bean. */
-    public final BeanLifetime beanKind;
+    public final BeanKind beanKind;
 
     /** The lifecycle kind of the bean. */
     public final LifecycleModel beanLifecycleKind = LifecycleModel.UNMANAGED_LIFECYCLE;
@@ -134,7 +134,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         this.owner = requireNonNull(installer.owner);
 
         ContainerLifetimeSetup containerLifetime = container.lifetime;
-        if (beanKind == BeanLifetime.SINGLETON) {
+        if (beanKind == BeanKind.SINGLETON) {
             this.lifetime = containerLifetime;
             this.lifetimeStoreIndex = container.lifetime.addBean(this);
         } else {
@@ -168,12 +168,12 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     public BindingProvider beanInstanceBindingProvider() {
         if (bean.beanSourceKind == BeanSourceKind.INSTANCE) {
             return new FromConstant(bean.beanSource.getClass(), bean.beanSource);
-        } else if (beanKind == BeanLifetime.SINGLETON) { // we've already checked if instance
+        } else if (beanKind == BeanKind.SINGLETON) { // we've already checked if instance
             return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, bean.beanClass);
-        } else if (beanKind == BeanLifetime.SIDEBEAN) {
+        } else if (beanKind == BeanKind.SIDEHANDLE) {
             throw new UnsupportedOperationException();
             //return new FromSidebeanAttachment(bean.beanClass, null);
-        } else if (beanKind == BeanLifetime.UNMANAGED) {
+        } else if (beanKind == BeanKind.UNMANAGED) {
             return new FromEmbeddedOperation(operations.first());
         } else {
             throw new Error();

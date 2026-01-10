@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.lifecycle;
+package app.packed.lifecycle;
 
 import app.packed.operation.OperationHandle;
 
 /**
- *
+ * Represents a starting operation.
  */
-public final class InjectOperationConfiguration extends LifecycleOperationConfiguration {
+// Mangler lidt en struktur for pre/post. Interceptor like
+public final class StartOperationMirror extends LifecycleOperationMirror {
 
     /**
      * @param handle
      */
-    public InjectOperationConfiguration(OperationHandle<?> handle) {
+   public StartOperationMirror(OperationHandle<?> handle) {
         super(handle);
     }
 }

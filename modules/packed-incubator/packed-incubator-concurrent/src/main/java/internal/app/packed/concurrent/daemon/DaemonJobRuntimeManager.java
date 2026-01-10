@@ -17,8 +17,8 @@ package internal.app.packed.concurrent.daemon;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import app.packed.bean.lifecycle.Start;
-import app.packed.bean.lifecycle.Stop;
+import app.packed.lifecycle.Start;
+import app.packed.lifecycle.Stop;
 
 // Vi har jo strengt taget ikke brug for denne laengere
 // Med mindre vi vil se en liste af alle daemons

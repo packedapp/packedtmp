@@ -16,9 +16,9 @@
 package app.packed.application.registry.usage;
 
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Initialize;
-import app.packed.bean.lifecycle.Start;
-import app.packed.bean.lifecycle.Stop;
+import app.packed.lifecycle.Initialize;
+import app.packed.lifecycle.Start;
+import app.packed.lifecycle.Stop;
 
 /**
  *

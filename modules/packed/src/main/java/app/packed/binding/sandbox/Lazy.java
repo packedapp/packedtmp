@@ -18,7 +18,7 @@ package app.packed.binding.sandbox;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-import app.packed.bean.lifecycle.Start;
+import app.packed.lifecycle.Start;
 
 /**
  *

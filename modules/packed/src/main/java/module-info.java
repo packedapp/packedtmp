@@ -6,7 +6,7 @@ module app.packed {
     exports app.packed.application;
     exports app.packed.assembly;
     exports app.packed.bean;
-    exports app.packed.bean.lifecycle;
+    exports app.packed.lifecycle;
     exports app.packed.binding;
     exports app.packed.build;
     exports app.packed.component;
@@ -23,7 +23,6 @@ module app.packed {
 
     // temporary sandbox thingies
     exports app.packed.build.hook;
-    exports app.packed.component.guest;
     exports app.packed.service.mirror;
 
     /* Special support for packed-devtools */

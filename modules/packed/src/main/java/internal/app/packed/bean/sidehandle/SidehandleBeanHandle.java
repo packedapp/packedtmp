@@ -28,7 +28,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.OnVariable;
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
@@ -88,7 +88,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
         usage.bean.sideBeanAttachments.add(usage);
 
         // Im guessing we need to make room for it no matter what
-        if (usage.bean.beanKind == BeanLifetime.SINGLETON) {
+        if (usage.bean.beanKind == BeanKind.SINGLETON) {
             usage.lifetimeStoreIndex = usage.bean.container.lifetime.store.add(usage);
         }
         attachTolifecycle(usage);
@@ -194,7 +194,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
     public static SidehandleBeanHandle<?> install(PackedApplicationTemplate<?> template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
         // Create a new installer for the bean
         PackedBeanTemplate beanTemplate =
-                new PackedBeanTemplate(BeanLifetime.UNMANAGED, PackedOperationTemplate.DEFAULTS.withRaw().withContext(ApplicationLaunchContext.class));
+                new PackedBeanTemplate(BeanKind.UNMANAGED, PackedOperationTemplate.DEFAULTS.withRaw().withContext(ApplicationLaunchContext.class));
         BeanInstaller installer =  beanTemplate.newInstaller(installingExtension, owner);
 
         // Create the bean

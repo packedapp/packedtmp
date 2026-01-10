@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.binding.Key;
 import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
@@ -204,7 +204,7 @@ public final class OperationCodeGenerator {
         }
 
         // Singleton beans needs to be stored in their respective lifetime.
-        boolean isFactoryStore = isFactory && operation.bean.beanKind == BeanLifetime.SINGLETON;
+        boolean isFactoryStore = isFactory && operation.bean.beanKind == BeanKind.SINGLETON;
         if (isFactoryStore) {
             mh = mh.asType(mh.type().changeReturnType(Object.class)); // We store in Object[]
             mh = BeanLifecycleSupport.MH_INVOKE_INITIALIZER.bindTo(operation.bean).bindTo(mh);

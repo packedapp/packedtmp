@@ -152,7 +152,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
     }
 
     /** {@return an annotation reader for the bean class.} */
-    public final BeanLifetime beanKind() {
+    public final BeanKind beanKind() {
         return bean().beanKind;
     }
 

@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.lifecycle;
+package app.packed.lifecycle;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
 import app.packed.operation.OperationHandle;
-import internal.app.packed.lifecycle.LifecycleOperationHandle.InitializeOperationHandle;
 
 /** A mirror representing an {@link OnInitialize} operation. */
-// Vi prøvede vist at samle alle Initialization handles. Men maaske er det fint at de har hver deres
-public final class InjectOperationMirror extends LifecycleOperationMirror {
+public final class FactoryOperationMirror extends LifecycleOperationMirror {
 
     /** A handle for the initialization operation. */
-    final InitializeOperationHandle handle;
+    final OperationHandle<?> handle;
 
     /**
      * Create a new mirror.
@@ -35,17 +33,15 @@ public final class InjectOperationMirror extends LifecycleOperationMirror {
      * @param handle
      *            the operation's handle
      */
-    public InjectOperationMirror(OperationHandle<?> handle) {
-        this.handle = (InitializeOperationHandle) requireNonNull(handle);
+    public FactoryOperationMirror(OperationHandle<?> handle) {
         super(handle);
+        this.handle = requireNonNull(handle);
     }
 
-    // ListWithPointer bean()
-    // ListWithPointer lifetime();
-
     // Maybe OperationMirrorList
-    public List<InjectOperationMirror> friends() {
+    public List<FactoryOperationMirror> friends() {
         throw new UnsupportedOperationException();
     }
     // ListWithPointer into initialization methods on the bean
+
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.lifecycle;
+package app.packed.lifecycle;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.StructuredTaskScope;

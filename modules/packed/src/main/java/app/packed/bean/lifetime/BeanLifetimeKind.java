@@ -21,12 +21,13 @@ package app.packed.bean.lifetime;
 // Region -> Group
 public enum BeanLifetimeKind {
 
-    /** 1 or more beans. That are all initialized together (unless lazy). */
+    /** 1 or more beans. That are all initialized together (may be lazy). */
     REGION,
 
-    /** The bean is created independently of any other beans.*/
+    /** The bean is created independently of any other beans.*/ // for example entity beans
     BEAN,
 
     /** The runtime creates a new bean instance for the duration of a single operation. */
+    // For example a web request, that requires a new bean per request
     OPERATION;
 }

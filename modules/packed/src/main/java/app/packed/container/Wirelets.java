@@ -18,8 +18,8 @@ package app.packed.container;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.lifecycle.LifecycleModel;
 import app.packed.context.Context;
+import app.packed.lifecycle.LifecycleModel;
 import app.packed.runtime.StopOption;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.wirelets.InternalBaseWirelet;

@@ -17,8 +17,8 @@ package internal.app.packed.lifecycle.runtime;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Start;
-import app.packed.bean.lifecycle.StartContext;
+import app.packed.lifecycle.Start;
+import app.packed.lifecycle.StartContext;
 
 /**
  *

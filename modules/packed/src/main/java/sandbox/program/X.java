@@ -18,9 +18,9 @@ package sandbox.program;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Initialize;
-import app.packed.bean.lifecycle.Start;
-import app.packed.bean.lifecycle.Stop;
+import app.packed.lifecycle.Initialize;
+import app.packed.lifecycle.Start;
+import app.packed.lifecycle.Stop;
 import app.packed.lifetime.Main;
 
 /**

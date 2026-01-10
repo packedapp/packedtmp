@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import app.packed.bean.lifecycle.Initialize;
-import app.packed.bean.lifecycle.Inject;
+import app.packed.lifecycle.Initialize;
+import app.packed.lifecycle.Inject;
 import testutil.stubs.Injectables.InjectA;
 import testutil.stubs.Letters.A;
 

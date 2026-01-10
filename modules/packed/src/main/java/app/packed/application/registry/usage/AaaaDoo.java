@@ -23,7 +23,7 @@ import app.packed.application.registry.ApplicationRegistryBeanConfiguration;
 import app.packed.application.registry.ApplicationRegistryExtension;
 import app.packed.application.registry.usage.SimpleManagedApplication.GuestApplicationHandle;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Initialize;
+import app.packed.lifecycle.Initialize;
 
 /**
  *

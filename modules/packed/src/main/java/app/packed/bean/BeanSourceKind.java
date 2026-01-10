@@ -18,8 +18,6 @@ package app.packed.bean;
 /** This enum represents the various type of bean sources that can be used when installing a bean. */
 public enum BeanSourceKind {
 
-    // If we mutate we need SYNTHETIC
-
     /**
      * A {@link Class} was specified when installing the bean.
      *
@@ -41,6 +39,9 @@ public enum BeanSourceKind {
      * @see BaseExtension#install(Op)
      */
     OP,
+
+    /** A bean that has been synthetically created or modified from another bean    . */
+    SYNTHETIC,
 
     /**
      * No source was specified when installing the bean.

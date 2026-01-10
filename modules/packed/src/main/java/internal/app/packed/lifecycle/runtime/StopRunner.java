@@ -20,7 +20,7 @@ import java.util.concurrent.StructureViolationException;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.StructuredTaskScope.Joiner;
 
-import app.packed.bean.lifecycle.StopContext;
+import app.packed.lifecycle.StopContext;
 import app.packed.runtime.StopInfo;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;

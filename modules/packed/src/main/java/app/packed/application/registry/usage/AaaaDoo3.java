@@ -19,7 +19,7 @@ import app.packed.application.App;
 import app.packed.application.registry.ApplicationRegistryExtension;
 import app.packed.application.registry.LaunchableApplication;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Start;
+import app.packed.lifecycle.Start;
 import app.packed.runtime.ManagedLifecycle;
 
 /**

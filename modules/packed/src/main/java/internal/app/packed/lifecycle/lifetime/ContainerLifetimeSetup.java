@@ -21,7 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.component.ComponentRealm;
 import app.packed.lifetime.CompositeLifetimeMirror;
@@ -93,7 +93,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     public LifetimeStoreIndex addBean(BeanSetup bean) {
         beans.add(bean);
-        if (bean.beanKind == BeanLifetime.SINGLETON && bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+        if (bean.beanKind == BeanKind.SINGLETON && bean.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             return store.add(bean);
         }
         return null;

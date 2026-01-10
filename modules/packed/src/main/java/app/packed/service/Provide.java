@@ -25,7 +25,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTrigger.OnAnnotatedField;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import app.packed.build.BuildException;
@@ -74,7 +74,7 @@ final class ProvideBeanIntrospector extends BaseExtensionBeanIntrospector {
     @Override
     public void onAnnotatedField(Annotation annotation, OnField onField) {
         if (!Modifier.isStatic(onField.modifiers())) {
-            if (beanKind() != BeanLifetime.SINGLETON) {
+            if (beanKind() != BeanKind.SINGLETON) {
                 throw new BuildException("Not okay)");
             }
         }
@@ -85,7 +85,7 @@ final class ProvideBeanIntrospector extends BaseExtensionBeanIntrospector {
     @Override
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
         if (!Modifier.isStatic(method.modifiers())) {
-            if (beanKind() != BeanLifetime.SINGLETON) {
+            if (beanKind() != BeanKind.SINGLETON) {
                 throw new BeanInstallationException("Not okay)");
             }
         }

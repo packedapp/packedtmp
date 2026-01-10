@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Stop;
 import app.packed.concurrent.DaemonJob;
 import app.packed.concurrent.DaemonJobContext;
+import app.packed.lifecycle.Stop;
 
 /**
  *

@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.binding.Key;
-import app.packed.component.guest.OldContainerTemplateLink;
+import app.packed.component.OldContainerTemplateLink;
 import app.packed.extension.Extension;
 
 /**

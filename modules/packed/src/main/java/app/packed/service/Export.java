@@ -10,7 +10,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTrigger;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
@@ -32,7 +32,7 @@ final class ExportBeanIntrospector extends BaseExtensionBeanIntrospector {
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
         // Det vi godt vil sige
         if (!Modifier.isStatic(method.modifiers())) {
-            if (beanKind() != BeanLifetime.SINGLETON) {
+            if (beanKind() != BeanKind.SINGLETON) {
                 throw new BeanInstallationException("Not okay)");
             }
         }

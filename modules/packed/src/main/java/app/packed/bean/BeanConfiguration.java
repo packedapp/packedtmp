@@ -70,7 +70,7 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
     }
 
     /** {@return the lifetime of the bean} */
-    public final BeanLifetime beanLifetime() {
+    public final BeanKind beanLifetime() {
         return handle.beanKind();
     }
 

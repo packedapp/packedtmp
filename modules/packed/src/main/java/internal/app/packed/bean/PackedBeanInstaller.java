@@ -25,7 +25,7 @@ import java.util.function.Function;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanSourceKind;
 import app.packed.context.Context;
@@ -56,7 +56,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     /** The bean's template. */
     public PackedBeanTemplate template;
 
-    public final BeanLifetime beanlifetime;
+    public final BeanKind beanlifetime;
     /**
      * Create a new bean installer.
      * <p>
@@ -77,7 +77,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
         this.beanlifetime = template.beanKind();
     }
 
-    public static PackedBeanInstaller newInstaller(BeanLifetime lifetime, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
+    public static PackedBeanInstaller newInstaller(BeanKind lifetime, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
         return new PackedBeanInstaller(new PackedBeanTemplate(lifetime, PackedOperationTemplate.DEFAULTS), installingExtension, owner);
     }
 

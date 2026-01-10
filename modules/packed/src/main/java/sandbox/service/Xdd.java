@@ -17,7 +17,7 @@ package sandbox.service;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Initialize;
+import app.packed.lifecycle.Initialize;
 import app.packed.service.ServiceContract;
 
 /**

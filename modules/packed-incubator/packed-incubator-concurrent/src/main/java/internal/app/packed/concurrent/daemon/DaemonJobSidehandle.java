@@ -7,11 +7,11 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import app.packed.bean.lifecycle.Start;
-import app.packed.bean.lifecycle.Stop;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleBinding.Kind;
 import app.packed.concurrent.DaemonJobContext;
+import app.packed.lifecycle.Start;
+import app.packed.lifecycle.Stop;
 
 public final class DaemonJobSidehandle implements DaemonJobContext {
 

@@ -13,8 +13,7 @@ package app.packed.bean;
 
 // I don't know where to cut it. FOREIGN and FUNCTION are both something you cannot interacts with
 
-
-public enum BeanLifetime {
+public enum BeanKind {
 
     /**
      * A singleton is a stateful bean with a single instance in the container in which it is registered.
@@ -59,7 +58,7 @@ public enum BeanLifetime {
     // Can they be removed? Obviously if we have more than one
     FOREIGN,
 
-    SIDEBEAN,
+    SIDEHANDLE,
 
     MANANGED,
 

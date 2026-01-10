@@ -20,8 +20,8 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.containerdynamic.ManagedInstance;
-import app.packed.bean.lifecycle.Stop;
-import app.packed.bean.lifecycle.StopContext;
+import app.packed.lifecycle.Stop;
+import app.packed.lifecycle.StopContext;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
 

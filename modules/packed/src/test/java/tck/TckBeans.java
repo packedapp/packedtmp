@@ -17,7 +17,7 @@ package tck;
 
 import java.lang.reflect.Method;
 
-import app.packed.bean.lifecycle.Initialize;
+import app.packed.lifecycle.Initialize;
 import app.packed.lifetime.Main;
 import testutil.MemberFinder;
 import testutil.stubs.Letters.A;

@@ -15,12 +15,12 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.PackedOperationTemplate;
 
-public record PackedBeanTemplate(BeanLifetime beanKind, PackedOperationTemplate initializationTemplate) {
+public record PackedBeanTemplate(BeanKind beanKind, PackedOperationTemplate initializationTemplate) {
 
     public PackedBeanInstaller newInstaller(ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
         return new PackedBeanInstaller(this, installingExtension, owner);

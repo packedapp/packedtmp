@@ -54,6 +54,7 @@ public interface Bean2<T> {
 }
 
 // Hmmm, Er en Factory Op saa en Constructor????
+// Rename to BeanElement
 interface Members {
 
     /**

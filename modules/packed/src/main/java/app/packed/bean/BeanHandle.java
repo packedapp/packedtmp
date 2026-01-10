@@ -100,7 +100,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
     }
 
     /** {@return the bean kind.} */
-    public final BeanLifetime beanKind() {
+    public final BeanKind beanKind() {
         return bean.beanKind;
     }
 

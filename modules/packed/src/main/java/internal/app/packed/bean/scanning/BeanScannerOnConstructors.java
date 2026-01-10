@@ -21,7 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.lifecycle.Inject;
+import app.packed.lifecycle.Inject;
 import app.packed.operation.OperationType;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;

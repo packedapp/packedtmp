@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.lifecycle;
+package app.packed.lifecycle;
 
-import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 
 /**
  *
  */
-public abstract sealed class LifecycleOperationConfiguration extends OperationConfiguration permits FactoryOperationConfiguration, InjectOperationConfiguration,
-        InitializeOperationConfiguration, StartOperationConfiguration, StopOperationConfiguration {
+public final class InjectOperationConfiguration extends LifecycleOperationConfiguration {
 
     /**
      * @param handle
      */
-    public LifecycleOperationConfiguration(OperationHandle<?> handle) {
+    public InjectOperationConfiguration(OperationHandle<?> handle) {
         super(handle);
     }
-
 }

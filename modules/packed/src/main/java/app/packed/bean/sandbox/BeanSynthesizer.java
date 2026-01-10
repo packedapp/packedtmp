@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.binding.Variable;
 import app.packed.operation.Op;
@@ -120,7 +120,7 @@ public interface BeanSynthesizer {
     Class<?> beanClass();
 
     /** {@return the bean kind.} */
-    BeanLifetime beanKind();
+    BeanKind beanKind();
 
     /** {@return the bean source kind.} */
     BeanSourceKind beanSourceKind();

@@ -14,12 +14,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanTrigger.AutoInjectInheritable;
-import app.packed.bean.lifecycle.FactoryOperationMirror;
-import app.packed.bean.lifecycle.InitializeOperationMirror;
-import app.packed.bean.lifecycle.InjectOperationMirror;
-import app.packed.bean.lifecycle.LifecycleModel;
-import app.packed.bean.lifecycle.StartOperationMirror;
-import app.packed.bean.lifecycle.StopOperationMirror;
 import app.packed.binding.Key;
 import app.packed.build.Mirror;
 import app.packed.build.action.BuildActionMirror;
@@ -32,6 +26,12 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
+import app.packed.lifecycle.FactoryOperationMirror;
+import app.packed.lifecycle.InitializeOperationMirror;
+import app.packed.lifecycle.InjectOperationMirror;
+import app.packed.lifecycle.LifecycleModel;
+import app.packed.lifecycle.StartOperationMirror;
+import app.packed.lifecycle.StopOperationMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.mirror.ServiceBindingMirror;
@@ -98,7 +98,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     }
 
     /** {@return the bean kind} */
-    public final BeanLifetime beanKind() {
+    public final BeanKind beanKind() {
         return handle.bean.beanKind;
     }
 

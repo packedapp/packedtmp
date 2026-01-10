@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.guest;
+package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -38,6 +38,29 @@ import internal.app.packed.container.PackedContainerLink.KeyFragment;
 //// Constants
 //// Rekey
 //// (Future) actions to execute if the extension is not installed
+
+///**
+// * Specifies an action that will be invoked whenever the extension is first used in the targeted container.
+// *
+// * @param action
+// *            the specified action will be invoked whenever the extension is first used.
+// * @return this configurator
+// */
+//Configurator<E> onExtensionUsed(Consumer<? super E> action);
+//
+//// The extension was never used in the target
+//Configurator<E> onExtensionUnused(Runnable action);
+//
+//Configurator<E> named(String string);
+//
+//// Hvis extensionen ikke er installeret (or exported)
+//
+//// extensionClass#MAIN
+//<T> Configurator<E> bindNamespaceService();
+//
+//<T> Configurator<E> bindNamespaceService(Key<?> as);
+//
+//<T> Configurator<E> bindNamespaceServiceFallback(Object alternative);
 
 /**
  * An container lifetime channel allows extensions to communicate across containers with different lifetimes.

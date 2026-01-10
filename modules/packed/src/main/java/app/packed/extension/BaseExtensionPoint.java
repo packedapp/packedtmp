@@ -7,11 +7,11 @@ import java.util.function.Consumer;
 
 import app.packed.bean.Bean;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
+import app.packed.component.OldContainerTemplateLink;
 import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.component.SidehandleContext;
 import app.packed.component.SidehandleTargetKind;
-import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
 import app.packed.operation.Op;
 import app.packed.runtime.ManagedLifecycle;
@@ -47,7 +47,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
-        ProvidableBeanHandle<T> h = newBean(BeanLifetime.SINGLETON, handle()).install(bean, ProvidableBeanHandle::new);
+        ProvidableBeanHandle<T> h = newBean(BeanKind.SINGLETON, handle()).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -84,7 +84,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public <T> ProvidableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ProvidableBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        return newBean(BeanLifetime.SINGLETON, handle())
+        return newBean(BeanKind.SINGLETON, handle())
                 .installIfAbsent(clazz, ProvidableBeanHandle.class, ProvidableBeanHandle<T>::new, h -> action.accept(h.configuration())).configuration();
     }
 
@@ -103,7 +103,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     // maybe replace SidehandleTargetKind with Class<? extends ComponentHandle>>
     public <T> SidehandleBeanConfiguration<T> installSidebeanIfAbsent(Class<T> implementation, SidehandleTargetKind targetKind, Consumer<? super SidehandleBeanConfiguration<T>> installationAction) {
-        BeanInstaller installer = newBean(BeanLifetime.SIDEBEAN, handle()).addContext(SidehandleContext.class);
+        BeanInstaller installer = newBean(BeanKind.SIDEHANDLE, handle()).addContext(SidehandleContext.class);
         SidehandleBeanHandle<T> h = installer.installIfAbsent(implementation, SidehandleBeanHandle.class, SidehandleBeanHandle<T>::new,
                 ha -> installationAction.accept(ha.configuration()));
         return h.configuration();
@@ -117,12 +117,12 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a bean template representing the behaviour of the new bean
      * @return the installer
      */
-    public BeanInstaller newBean(BeanLifetime bl) {
+    public BeanInstaller newBean(BeanKind bl) {
         ExtensionSetup e = handle.usedBy();
         return PackedBeanInstaller.newInstaller(bl, e, e.container.assembly);
     }
 
-    public BeanInstaller newBean(BeanLifetime bl, ExtensionPointHandle forExtension) {
+    public BeanInstaller newBean(BeanKind bl, ExtensionPointHandle forExtension) {
         requireNonNull(forExtension, "forExtension is null");
         return PackedBeanInstaller.newInstaller(bl, extension().extension, ((PackedExtensionPointHandle) forExtension).usedBy());
     }

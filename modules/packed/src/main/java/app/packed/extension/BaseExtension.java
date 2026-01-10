@@ -6,7 +6,7 @@ import app.packed.assembly.Assembly;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.bean.sandbox.BeanSynthesizer;
 import app.packed.build.action.BuildActionable;
 import app.packed.container.ContainerBuildLocal;
@@ -110,7 +110,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // interacts with other exports in some way
 
     public <T> ProvidableBeanConfiguration<T> install(Bean<T> bean) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(BeanLifetime.SINGLETON).install(bean, ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(BeanKind.SINGLETON).install(bean, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -140,7 +140,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         return install(Bean.of(op));
     }
 
-    private PackedBeanInstaller install0(BeanLifetime kind) {
+    private PackedBeanInstaller install0(BeanKind kind) {
         return PackedBeanInstaller.newInstaller(kind, extension, extension.container.assembly);
     }
 
@@ -160,7 +160,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> installPrototype(Bean<T> bean) {
-        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(BeanLifetime.UNMANAGED).install(bean, ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> handle = install0(BeanKind.UNMANAGED).install(bean, ProvidableBeanHandle::new);
         return handle.configuration();
     }
 
@@ -201,7 +201,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         // Create a new bean that holds the ServiceLocator to export
         // will fail if installed multiple times
 
-        BeanHandle<ProvidableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(BeanLifetime.SINGLETON).install(Bean.of(PackedServiceLocator.class),
+        BeanHandle<ProvidableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(BeanKind.SINGLETON).install(Bean.of(PackedServiceLocator.class),
                 ProvidableBeanHandle::new);
         ha.configuration().exportAs(ServiceLocator.class);
 
@@ -209,7 +209,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         ha.bindComputedConstant(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
 
         // Alternative, If we do not use it for anything else
-        newBeanBuilderSelf(BeanLifetime.SINGLETON).installIfAbsent(PackedServiceLocator.class, BeanHandle.class, BeanHandle::new, bh -> {
+        newBeanBuilderSelf(BeanKind.SINGLETON).installIfAbsent(PackedServiceLocator.class, BeanHandle.class, BeanHandle::new, bh -> {
             bh.exportAs(ServiceLocator.class);
             bh.bindComputedConstant(PackedServiceLocator.KEY, () -> extension.container.servicesMain().exportedServices());
         });
@@ -264,7 +264,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            a template for the bean
      * @return a bean installer
      */
-    private BeanInstaller newBeanBuilderSelf(BeanLifetime lifetime) {
+    private BeanInstaller newBeanBuilderSelf(BeanKind lifetime) {
         return PackedBeanInstaller.newInstaller(lifetime, extension, extension);
     }
 

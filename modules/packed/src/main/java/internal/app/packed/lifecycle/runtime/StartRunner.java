@@ -22,7 +22,7 @@ import java.util.concurrent.StructureViolationException;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.StructuredTaskScope.Joiner;
 
-import app.packed.bean.lifecycle.StartContext;
+import app.packed.lifecycle.StartContext;
 import internal.app.packed.ValueBased;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;

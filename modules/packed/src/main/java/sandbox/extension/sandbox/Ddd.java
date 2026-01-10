@@ -27,12 +27,12 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
-import app.packed.bean.lifecycle.Initialize;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
+import app.packed.lifecycle.Initialize;
 
 /**
  *
@@ -71,7 +71,7 @@ public class Ddd extends BaseAssembly {
         MyEntityExtension child;
 
         public void addEntityBean(Class<?> entityBean) {
-            child().base().newBean(BeanLifetime.MANANGED).install(Bean.of(entityBean), BeanHandle::new);
+            child().base().newBean(BeanKind.MANANGED).install(Bean.of(entityBean), BeanHandle::new);
         }
 
         MyEntityExtension child() {

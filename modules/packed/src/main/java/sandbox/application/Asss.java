@@ -18,10 +18,10 @@ package sandbox.application;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.lifecycle.Initialize;
 import app.packed.build.BuildProcess;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
+import app.packed.lifecycle.Initialize;
 
 /**
  *

@@ -27,6 +27,8 @@ import app.packed.extension.Extension;
  * @param <E>
  *            the extension the context is a part of
  */
+//Maybe rename to ComponentContext and put in .component.
+//
 public interface Context<E extends Extension<E>> {}
 
 //Check that if try to inject a a ContextImplementation
@@ -40,12 +42,10 @@ public interface Context<E extends Extension<E>> {}
 //Bean Contexts are available when construcing a bean
 
 // Context vs Namespaces
-//// Context er lidt mere lavet explicit paa basis af de operation man vaelger
-//// Namespaces er bare lidt mere der
+//// Context er lidt mere lavet explicit paa basis af de operation man vaelger Namespaces er bare lidt mere der
 
 //A context has a
-////ContextClass
-////ContextSpan (Variable)
+//// ContextClass ContextSpan (Variable)
 
 //er requiresContext hard paa hook annotation?
 //dvs kan man kun se de contexts der er til raadighed
