@@ -15,13 +15,8 @@
  */
 package app.packed.component.guest;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import app.packed.bean.BeanConfiguration;
-import app.packed.binding.Key;
 import internal.app.packed.application.GuestBeanHandle;
-import internal.app.packed.container.PackedContainerLink;
 
 /**
  *
@@ -33,8 +28,6 @@ import internal.app.packed.container.PackedContainerLink;
 
 // De enkelt required service links maa addes her
 public class ComponentHostConfiguration<T> extends BeanConfiguration<T> {
-
-    Map<Key<?>, PackedContainerLink> links = new HashMap<>();
 
     /**
      * @param handle

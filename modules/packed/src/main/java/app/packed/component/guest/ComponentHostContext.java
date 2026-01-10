@@ -15,8 +15,6 @@
  */
 package app.packed.component.guest;
 
-import java.util.Set;
-
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
@@ -35,13 +33,13 @@ import internal.app.packed.application.GuestBeanHandle;
 // A.ka GuestApplicationContext
 public interface ComponentHostContext extends Context<BaseExtension> {
 
-    // Hvis vi teanker paa at faa injected selve bean instancen. Kan vi sagtens have Object, eller Entity som key
-    /**
-     * {@return services that are available from the guest}
-     * <p>
-     * This services can be injected into parameter of a factory method using {@link FromComponentGuest}.
-     */
-    Set<Key<?>> keys();
+//    // Hvis vi teanker paa at faa injected selve bean instancen. Kan vi sagtens have Object, eller Entity som key
+//    /**
+//     * {@return services that are available from the guest}
+//     * <p>
+//     * This services can be injected into parameter of a factory method using {@link FromComponentGuest}.
+//     */
+//    Set<Key<?>> keys();
 }
 
 final class ComponentHostContextBeanIntrospector extends BeanIntrospector<BaseExtension> {

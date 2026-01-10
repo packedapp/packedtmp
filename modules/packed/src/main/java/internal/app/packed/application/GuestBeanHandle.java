@@ -55,7 +55,6 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         super(installer);
     }
 
-
     public FactoryOperationHandle factory() {
        return (FactoryOperationHandle) lifecycleInvokers().get(0);
     }

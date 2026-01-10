@@ -17,7 +17,6 @@ package app.packed.component.hostguest;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanMirror;
-import app.packed.component.guest.GuestKind;
 
 /**
  *
@@ -29,9 +28,5 @@ public class ComponentHostMirror extends BeanMirror {
      */
     public ComponentHostMirror(BeanHandle<?> handle) {
         super(handle);
-    }
-
-    public GuestKind guestKind() {
-        throw new UnsupportedOperationException();
     }
 }
