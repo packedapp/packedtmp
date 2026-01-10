@@ -28,9 +28,9 @@ import java.util.concurrent.BrokenBarrierException;
 import org.junit.jupiter.api.Test;
 
 import internal.app.packed.extension.ExtensionContext;
-import internal.app.packed.invoke.SidebeanInvokerModel;
+import internal.app.packed.invoke.SidehandleInvokerModel;
 
-class SidebeanInvokerModelTest {
+class SidehandleInvokerModelTest {
 
     // --- Test interfaces ---
 
@@ -110,10 +110,10 @@ class SidebeanInvokerModelTest {
 
     @Test
     void testVoidNoArgs() throws Throwable {
-        MethodHandle targetMH = LOOKUP.findStatic(SidebeanInvokerModelTest.class, "targetVoidNoArgs",
+        MethodHandle targetMH = LOOKUP.findStatic(SidehandleInvokerModelTest.class, "targetVoidNoArgs",
             MethodType.methodType(void.class, ExtensionContext.class));
 
-        MethodHandle constructor = SidebeanInvokerModel.of(VoidNoArgs.class).constructor();
+        MethodHandle constructor = SidehandleInvokerModel.of(VoidNoArgs.class).constructor();
         VoidNoArgs instance = (VoidNoArgs) constructor.invoke(targetMH, (ExtensionContext) null);
         instance.execute();
     }
@@ -121,10 +121,10 @@ class SidebeanInvokerModelTest {
     @Test
     void testVoidSingleArg() throws Throwable {
         capturedValue = null;
-        MethodHandle targetMH = LOOKUP.findStatic(SidebeanInvokerModelTest.class, "targetVoidSingleArg",
+        MethodHandle targetMH = LOOKUP.findStatic(SidehandleInvokerModelTest.class, "targetVoidSingleArg",
             MethodType.methodType(void.class, ExtensionContext.class, String.class));
 
-        MethodHandle constructor = SidebeanInvokerModel.of(VoidSingleArg.class).constructor();
+        MethodHandle constructor = SidehandleInvokerModel.of(VoidSingleArg.class).constructor();
         VoidSingleArg instance = (VoidSingleArg) constructor.invoke(targetMH, (ExtensionContext) null);
 
         instance.invoke("test-value");
@@ -133,10 +133,10 @@ class SidebeanInvokerModelTest {
 
     @Test
     void testVoidMultipleArgs() throws Throwable {
-        MethodHandle targetMH = LOOKUP.findStatic(SidebeanInvokerModelTest.class, "targetVoidMultipleArgs",
+        MethodHandle targetMH = LOOKUP.findStatic(SidehandleInvokerModelTest.class, "targetVoidMultipleArgs",
             MethodType.methodType(void.class, ExtensionContext.class, String.class, int.class, long.class));
 
-        MethodHandle constructor = SidebeanInvokerModel.of(VoidMultipleArgs.class).constructor();
+        MethodHandle constructor = SidehandleInvokerModel.of(VoidMultipleArgs.class).constructor();
         VoidMultipleArgs instance = (VoidMultipleArgs) constructor.invoke(targetMH, (ExtensionContext) null);
 
         instance.process("hello", 42, 123456789L);
@@ -147,10 +147,10 @@ class SidebeanInvokerModelTest {
 
     @Test
     void testReturnsPrimitiveInt() throws Throwable {
-        MethodHandle targetMH = LOOKUP.findStatic(SidebeanInvokerModelTest.class, "targetReturnsPrimitive",
+        MethodHandle targetMH = LOOKUP.findStatic(SidehandleInvokerModelTest.class, "targetReturnsPrimitive",
             MethodType.methodType(int.class, ExtensionContext.class, int.class, int.class));
 
-        MethodHandle constructor = SidebeanInvokerModel.of(ReturnsPrimitive.class).constructor();
+        MethodHandle constructor = SidehandleInvokerModel.of(ReturnsPrimitive.class).constructor();
         ReturnsPrimitive instance = (ReturnsPrimitive) constructor.invoke(targetMH, (ExtensionContext) null);
 
         assertThat(instance.compute(10, 32)).isEqualTo(42);
@@ -160,10 +160,10 @@ class SidebeanInvokerModelTest {
 
     @Test
     void testPropagatesRuntimeException() throws Throwable {
-        MethodHandle targetMH = LOOKUP.findStatic(SidebeanInvokerModelTest.class, "targetThrowsRuntimeException",
+        MethodHandle targetMH = LOOKUP.findStatic(SidehandleInvokerModelTest.class, "targetThrowsRuntimeException",
             MethodType.methodType(void.class, ExtensionContext.class));
 
-        MethodHandle constructor = SidebeanInvokerModel.of(VoidNoArgs.class).constructor();
+        MethodHandle constructor = SidehandleInvokerModel.of(VoidNoArgs.class).constructor();
         VoidNoArgs instance = (VoidNoArgs) constructor.invoke(targetMH, (ExtensionContext) null);
 
         assertThatThrownBy(instance::execute)
@@ -173,10 +173,10 @@ class SidebeanInvokerModelTest {
 
     @Test
     void testPropagatesError() throws Throwable {
-        MethodHandle targetMH = LOOKUP.findStatic(SidebeanInvokerModelTest.class, "targetThrowsError",
+        MethodHandle targetMH = LOOKUP.findStatic(SidehandleInvokerModelTest.class, "targetThrowsError",
             MethodType.methodType(void.class, ExtensionContext.class));
 
-        MethodHandle constructor = SidebeanInvokerModel.of(VoidNoArgs.class).constructor();
+        MethodHandle constructor = SidehandleInvokerModel.of(VoidNoArgs.class).constructor();
         VoidNoArgs instance = (VoidNoArgs) constructor.invoke(targetMH, (ExtensionContext) null);
 
         assertThatThrownBy(instance::execute)
@@ -186,10 +186,10 @@ class SidebeanInvokerModelTest {
 
     @Test
     void testPropagatesDeclaredCheckedException() throws Throwable {
-        MethodHandle targetMH = LOOKUP.findStatic(SidebeanInvokerModelTest.class, "targetThrowsIOException",
+        MethodHandle targetMH = LOOKUP.findStatic(SidehandleInvokerModelTest.class, "targetThrowsIOException",
             MethodType.methodType(void.class, ExtensionContext.class));
 
-        MethodHandle constructor = SidebeanInvokerModel.of(SamWithException.class).constructor();
+        MethodHandle constructor = SidehandleInvokerModel.of(SamWithException.class).constructor();
         SamWithException instance = (SamWithException) constructor.invoke(targetMH, (ExtensionContext) null);
 
         assertThatThrownBy(instance::run)
@@ -199,10 +199,10 @@ class SidebeanInvokerModelTest {
 
     @Test
     void testWrapsUndeclaredCheckedException() throws Throwable {
-        MethodHandle targetMH = LOOKUP.findStatic(SidebeanInvokerModelTest.class, "targetThrowsOtherChecked",
+        MethodHandle targetMH = LOOKUP.findStatic(SidehandleInvokerModelTest.class, "targetThrowsOtherChecked",
             MethodType.methodType(void.class, ExtensionContext.class));
 
-        MethodHandle constructor = SidebeanInvokerModel.of(VoidNoArgs.class).constructor();
+        MethodHandle constructor = SidehandleInvokerModel.of(VoidNoArgs.class).constructor();
         VoidNoArgs instance = (VoidNoArgs) constructor.invoke(targetMH, (ExtensionContext) null);
 
         assertThatThrownBy(instance::execute)
@@ -214,10 +214,10 @@ class SidebeanInvokerModelTest {
 
     @Test
     void testWrapsUndeclaredEvenIfOthersAreDeclared() throws Throwable {
-        MethodHandle targetMH = LOOKUP.findStatic(SidebeanInvokerModelTest.class, "targetThrowsOtherChecked",
+        MethodHandle targetMH = LOOKUP.findStatic(SidehandleInvokerModelTest.class, "targetThrowsOtherChecked",
             MethodType.methodType(void.class, ExtensionContext.class));
 
-        MethodHandle constructor = SidebeanInvokerModel.of(SamWithException.class).constructor();
+        MethodHandle constructor = SidehandleInvokerModel.of(SamWithException.class).constructor();
         SamWithException instance = (SamWithException) constructor.invoke(targetMH, (ExtensionContext) null);
 
         assertThatThrownBy(instance::run)
@@ -230,24 +230,24 @@ class SidebeanInvokerModelTest {
 
     @Test
     void testNotAnInterface() {
-        assertThatThrownBy(() -> SidebeanInvokerModel.of(String.class).constructor())
+        assertThatThrownBy(() -> SidehandleInvokerModel.of(String.class).constructor())
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("is not an interface");
     }
 
     @Test
     void testNotSamInterface() {
-        assertThatThrownBy(() -> SidebeanInvokerModel.of(NotSamInterface.class).constructor())
+        assertThatThrownBy(() -> SidehandleInvokerModel.of(NotSamInterface.class).constructor())
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("has multiple abstract methods");
     }
 
     @Test
     void testMultipleInvocations() throws Throwable {
-        MethodHandle targetMH = LOOKUP.findStatic(SidebeanInvokerModelTest.class, "targetVoidSingleArg",
+        MethodHandle targetMH = LOOKUP.findStatic(SidehandleInvokerModelTest.class, "targetVoidSingleArg",
             MethodType.methodType(void.class, ExtensionContext.class, String.class));
 
-        MethodHandle constructor = SidebeanInvokerModel.of(VoidSingleArg.class).constructor();
+        MethodHandle constructor = SidehandleInvokerModel.of(VoidSingleArg.class).constructor();
         VoidSingleArg instance = (VoidSingleArg) constructor.invoke(targetMH, (ExtensionContext) null);
 
         instance.invoke("first");
@@ -259,8 +259,8 @@ class SidebeanInvokerModelTest {
 
     @Test
     void testMultipleGeneratedClasses() throws Throwable {
-        MethodHandle ctor1 = SidebeanInvokerModel.of(VoidNoArgs.class).constructor();
-        MethodHandle ctor2 = SidebeanInvokerModel.of(VoidNoArgs.class).constructor();
+        MethodHandle ctor1 = SidehandleInvokerModel.of(VoidNoArgs.class).constructor();
+        MethodHandle ctor2 = SidehandleInvokerModel.of(VoidNoArgs.class).constructor();
 
         assertThat(ctor1).isNotNull();
         assertThat(ctor2).isNotNull();

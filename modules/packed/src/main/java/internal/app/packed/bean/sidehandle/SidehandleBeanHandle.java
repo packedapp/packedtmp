@@ -33,7 +33,7 @@ import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.component.SidehandleBinding;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.invoke.BeanLifecycleSupport;
-import internal.app.packed.invoke.SidebeanInvokerModel;
+import internal.app.packed.invoke.SidehandleInvokerModel;
 import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
 import internal.app.packed.service.util.ServiceMap;
@@ -50,7 +50,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
 
     private ArrayList<PackedSidehandle> attachments = new ArrayList<>();
 
-    public SidebeanInvokerModel invokerModel;
+    public SidehandleInvokerModel invokerModel;
 
     /**
      * @param installer
@@ -129,7 +129,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
             if (invokerModel != null) {
                 throw new IllegalStateException("Only one operation invoker supported per sidebean");
             }
-            SidebeanInvokerModel sim = invokerModel = SidebeanInvokerModel.of(key.rawType());
+            SidehandleInvokerModel sim = invokerModel = SidehandleInvokerModel.of(key.rawType());
             sim.constructor(); // Awaits fix in module-tests
             binding = new PackedSidehandleBinding.Invoker(sim);
         } else {

@@ -15,12 +15,12 @@
  */
 package internal.app.packed.bean.sidehandle;
 
-import internal.app.packed.invoke.SidebeanInvokerModel;
+import internal.app.packed.invoke.SidehandleInvokerModel;
 
 /**
  *
  */
 public sealed interface PackedSidehandleBinding {
     public record Constant() implements PackedSidehandleBinding {}
-    public record Invoker(SidebeanInvokerModel invokerModel) implements PackedSidehandleBinding {}
+    public record Invoker(SidehandleInvokerModel invokerModel) implements PackedSidehandleBinding {}
 }

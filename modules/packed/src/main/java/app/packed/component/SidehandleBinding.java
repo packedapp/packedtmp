@@ -38,7 +38,7 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.AbstractInitializi
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-@OnAnnotatedVariable(introspector = SidebeanInjectBeanIntrospector.class, requiresContext = SidehandleContext.class)
+@OnAnnotatedVariable(introspector = SidehandleBindingBeanIntrospector.class, requiresContext = SidehandleContext.class)
 public @interface SidehandleBinding {
 
     Kind value();
@@ -48,7 +48,7 @@ public @interface SidehandleBinding {
     }
 }
 
-final class SidebeanInjectBeanIntrospector extends BaseExtensionBeanIntrospector {
+final class SidehandleBindingBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
     public void onAnnotatedVariable(Annotation annotation, OnVariable v) {

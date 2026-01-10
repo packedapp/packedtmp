@@ -50,7 +50,7 @@ import internal.app.packed.extension.ExtensionContext;
  * @implNote the main reason we do not use {@link java.lang.invoke.MethodHandleProxies} is that they require the
  *           interface to be public.
  */
-public final class SidebeanInvokerModel {
+public final class SidehandleInvokerModel {
 
     private static final ClassDesc CD_Error = ClassDesc.of(Error.class.getName());
     private static final ClassDesc CD_ExtensionContext = ClassDesc.of(ExtensionContext.class.getName());
@@ -63,7 +63,7 @@ public final class SidebeanInvokerModel {
 
     private final Method method;
 
-    private SidebeanInvokerModel(Class<?> iface, Method method) {
+    private SidehandleInvokerModel(Class<?> iface, Method method) {
         this.iface = iface;
         this.method = method;
         this.constructor = StableValue.supplier(() -> generateInvoker(iface, method));
@@ -212,9 +212,9 @@ public final class SidebeanInvokerModel {
         };
     }
 
-    public static SidebeanInvokerModel of(Class<?> iface) {
+    public static SidehandleInvokerModel of(Class<?> iface) {
         Method sam = findSamMethod(iface);
-        SidebeanInvokerModel sim = new SidebeanInvokerModel(iface, sam);
+        SidehandleInvokerModel sim = new SidehandleInvokerModel(iface, sam);
         return sim;
     }
 }
