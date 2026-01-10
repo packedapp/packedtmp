@@ -15,15 +15,15 @@
  */
 package app.packed.concurrent.job.app;
 
+import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
+
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
-
-import app.packed.bean.SidehandleBinding;
-import app.packed.bean.SidehandleContext;
+import app.packed.component.SidehandleBinding;
+import app.packed.component.SidehandleContext;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;

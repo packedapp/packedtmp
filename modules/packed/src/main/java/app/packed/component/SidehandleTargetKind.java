@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.component;
 
 /**
- * A configuration object for aside bean.
+ *
  */
-public final class SidehandleBeanConfiguration<T> extends BeanConfiguration<T> {
+// For now we have all 6.
+// Application and Container and Namespace are probably not super important.
+// But maybe a special SidebeanLifecycle can be useful for better control of @Stop, @Start
+public enum SidehandleTargetKind {
+    APPLICATION,
+    CONTAINER,
 
-    public SidehandleBeanConfiguration(BeanHandle<?> handle) {
-        super(handle);
-    }
+    // Altsaa den er jo en del anderledes. Eftersom jeg taenker vi kun laver den en gang.
+    // Eller hmm, Naar vi laver et request er del invoker.invoke(Req, Res)
+    LIFETIME,
+    NAMESPACE,
+    BEAN,
 
-    public void initOnly() {
-        // Ideen er egentlig at vi ikke beholder en instans af sidebeanen
-        // Men den kalder ind i en anden klasse med den som parameter
-        // Problemet er lidt af vi aldrig kan afregistrer den.
-
-        // Brugbart fx fra CLI
-    }
-
+    /** The target for a sidebean is an operation. */
+    OPERATION;
 }

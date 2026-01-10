@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.stream.Stream;
 
+import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanMirror;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 
 /**

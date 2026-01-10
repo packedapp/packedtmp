@@ -15,6 +15,8 @@
  */
 package app.packed.application.registry.usage;
 
+import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,9 +25,7 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
 import app.packed.bean.lifecycle.Inject;
-import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
-
-import app.packed.bean.SidehandleBinding;
+import app.packed.component.SidehandleBinding;
 import app.packed.operation.Op1;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;

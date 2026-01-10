@@ -15,7 +15,7 @@
  */
 package app.packed.moduletests.notopen;
 
-import app.packed.bean.SidehandleTargetKind;
+import app.packed.component.SidehandleTargetKind;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.moduletests.isopen.IsOpenSidebean;

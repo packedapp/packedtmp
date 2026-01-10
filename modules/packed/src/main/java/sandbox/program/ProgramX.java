@@ -15,14 +15,14 @@
  */
 package sandbox.program;
 
+import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
+
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
-import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
-
-import app.packed.bean.SidehandleBinding;
+import app.packed.component.SidehandleBinding;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;

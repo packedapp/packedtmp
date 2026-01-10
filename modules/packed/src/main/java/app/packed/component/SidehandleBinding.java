@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
 
+import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
 import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;

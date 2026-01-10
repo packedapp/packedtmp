@@ -15,6 +15,8 @@
  */
 package internal.app.packed.application;
 
+import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
+
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
@@ -25,10 +27,8 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.Start;
 import app.packed.bean.lifecycle.Stop;
-import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
-
-import app.packed.bean.SidehandleBinding;
-import app.packed.bean.SidehandleContext;
+import app.packed.component.SidehandleBinding;
+import app.packed.component.SidehandleContext;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;

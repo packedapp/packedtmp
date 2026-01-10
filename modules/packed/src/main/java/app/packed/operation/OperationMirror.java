@@ -31,11 +31,11 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanTrigger.AutoInjectInheritable;
-import app.packed.bean.SidehandleTargetMirror;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
+import app.packed.component.SidehandleTargetMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;

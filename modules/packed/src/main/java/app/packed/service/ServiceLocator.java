@@ -15,6 +15,7 @@
  */
 package app.packed.service;
 
+import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
@@ -33,9 +34,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
-
-import app.packed.bean.SidehandleBinding;
+import app.packed.component.SidehandleBinding;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op1;

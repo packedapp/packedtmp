@@ -18,8 +18,8 @@ package internal.app.packed.bean.sidehandle;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanHandle;
-import app.packed.bean.Sidehandle;
 import app.packed.binding.Key;
+import app.packed.component.Sidehandle;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreEntry;

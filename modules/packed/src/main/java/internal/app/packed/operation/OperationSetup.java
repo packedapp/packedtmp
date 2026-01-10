@@ -23,9 +23,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.bean.Sidehandle;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import app.packed.component.Sidehandle;
 import app.packed.context.Context;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.OperationHandle;

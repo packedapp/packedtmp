@@ -15,11 +15,11 @@
  */
 package tck;
 
+import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
+
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
-
-import app.packed.bean.SidehandleBinding;
+import app.packed.component.SidehandleBinding;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
 

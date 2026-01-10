@@ -15,15 +15,15 @@
  */
 package internal.app.packed.service;
 
+import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
+
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.assembly.AbstractComposer.ComposerAction;
+import app.packed.component.SidehandleBinding;
 import app.packed.assembly.Assembly;
-import static app.packed.bean.SidehandleBinding.Kind.FROM_CONTEXT;
-
-import app.packed.bean.SidehandleBinding;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;

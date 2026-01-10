@@ -16,8 +16,8 @@
 package internal.app.packed.concurrent.daemon;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.SidehandleBeanConfiguration;
-import app.packed.bean.SidehandleTargetKind;
+import app.packed.component.SidehandleBeanConfiguration;
+import app.packed.component.SidehandleTargetKind;
 import app.packed.concurrent.DaemonJob;
 import app.packed.concurrent.DaemonJobConfiguration;
 import app.packed.concurrent.DaemonJobContext;
