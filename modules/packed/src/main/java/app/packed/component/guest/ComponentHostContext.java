@@ -48,11 +48,7 @@ final class ComponentHostContextBeanIntrospector extends BeanIntrospector<BaseEx
 
     @Override
     public void onExtensionService(Key<?> key, OnContextService service) {
-        if (key.rawType() == ComponentHostContext.class) {
-            ComponentHostContext c = beanHandle(GuestBeanHandle.class).get().toContext();
-            service.binder().bindConstant(c);
-        } else {
-            super.onExtensionService(key, service);
-        }
+        ComponentHostContext c = beanHandle(GuestBeanHandle.class).get().toContext();
+        service.binder().bindConstant(c);
     }
 }

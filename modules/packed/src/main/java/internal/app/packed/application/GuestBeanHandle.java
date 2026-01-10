@@ -15,7 +15,6 @@
  */
 package internal.app.packed.application;
 
-import java.util.Map;
 import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
@@ -29,7 +28,6 @@ import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.component.guest.ComponentHostConfiguration;
 import app.packed.component.guest.ComponentHostContext;
-import app.packed.context.Context;
 import app.packed.operation.Op1;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.ServiceLocator;
@@ -57,10 +55,6 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         super(installer);
     }
 
-    // Called when service resolving contexts...
-    public Map<Class<? extends Context<?>>, Set<Key<?>>> dynamicContexts() {
-        return Map.of();
-    }
 
     public FactoryOperationHandle factory() {
        return (FactoryOperationHandle) lifecycleInvokers().get(0);
