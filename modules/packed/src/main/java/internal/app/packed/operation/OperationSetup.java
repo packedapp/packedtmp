@@ -112,7 +112,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
 
     /** Any sidebean attached to the operation. */
     @Nullable
-    public final Sidehandle attachment;
+    public final Sidehandle sidehandle;
 
     /**
      * Create a new operation.
@@ -141,9 +141,9 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         this.codeGenerator = new OperationCodeGenerator(this, null);
         if (installer.attachToSidebean != null) {
             SidehandleBeanHandle<?> handle2 = (SidehandleBeanHandle<?>) installer.attachToSidebean.handle();
-            this.attachment = handle2.attachTo(new PackedSidehandle.OfOperation(installer.attachToSidebean, this));
+            this.sidehandle = handle2.attachTo(new PackedSidehandle.OfOperation(installer.attachToSidebean, this));
         } else {
-            this.attachment = null;
+            this.sidehandle = null;
         }
     }
 

@@ -18,9 +18,7 @@ package internal.app.packed.bean.sidehandle;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanHandle;
@@ -46,9 +44,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
 
     public final ServiceMap<PackedSidehandleBinding> bindings = new ServiceMap<>();
 
-    public final Set<Key<?>> injectionSites = new HashSet<>();
-
-    private ArrayList<PackedSidehandle> attachments = new ArrayList<>();
+    private ArrayList<PackedSidehandle> sidehandles = new ArrayList<>();
 
     public SidehandleInvokerModel invokerModel;
 
@@ -59,8 +55,8 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
         super(installer);
     }
 
-    public Stream<PackedSidehandle> attachments() {
-        return attachments.stream();
+    public Stream<PackedSidehandle> sidehandles() {
+        return sidehandles.stream();
     }
 
     public Sidehandle attachTo(PackedSidehandle usage) {
@@ -76,10 +72,9 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
         return usage;
     }
 
-
     private void attachTolifecycle(PackedSidehandle susage) {
         requireNonNull(susage);
-        attachments.add(susage);
+        sidehandles.add(susage);
         for (List<InvokableLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
             for (InvokableLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
                 InvokableLifecycleOperationHandle<LifecycleOperationHandle> newh = new InvokableLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);
@@ -90,7 +85,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
     }
 
     public void checkUnusued() {
-        if (!attachments.isEmpty()) {
+        if (!sidehandles.isEmpty()) {
             throw new IllegalStateException();
         }
     }
@@ -107,10 +102,6 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
 
     @Override
     protected void onConfigured() {
-        if (!bindings.keySet().equals(injectionSites)) {
-            throw new IllegalStateException(bindings.keySet() + "  " + injectionSites);
-        }
-
         super.onConfigured();
     }
 
@@ -137,7 +128,6 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
         }
 
         bindings.putIfAbsent(key, binding);
-        injectionSites.add(key);
         v.bindSidebeanBinding(key, this);
     }
 }

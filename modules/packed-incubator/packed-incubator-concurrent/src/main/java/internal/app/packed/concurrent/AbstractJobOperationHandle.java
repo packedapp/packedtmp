@@ -42,6 +42,6 @@ public class AbstractJobOperationHandle<T extends JobConfiguration> extends Thre
         if (tf == null) {
             tf = threadKind.threadFactory();
         }
-        sidebeanAttachment().bindConstant(ThreadFactory.class, tf);
+        sidehandle().bindConstant(ThreadFactory.class, tf);
     }
 }

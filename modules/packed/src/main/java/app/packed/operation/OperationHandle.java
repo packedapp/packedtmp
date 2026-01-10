@@ -261,12 +261,12 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         return new OperationMirror(this);
     }
 
-    public final Sidehandle sidebeanAttachment() {
-        Sidehandle attachment = operation.attachment;
-        if (attachment == null) {
+    public final Sidehandle sidehandle() {
+        Sidehandle sidehandle = operation.sidehandle;
+        if (sidehandle == null) {
             throw new UnsupportedOperationException("Operation has not been attached to a sidebean");
         }
-        return attachment;
+        return sidehandle;
     }
 
     /**

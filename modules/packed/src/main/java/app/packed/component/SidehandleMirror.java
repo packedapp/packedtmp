@@ -27,7 +27,7 @@ public interface SidehandleMirror {
 
     SidehandleTargetMirror target();
 
-    SidehandleBeanMirror sidebean();
+    SidehandleBeanMirror sidehandleBean();
 }
 
 class Foo extends AtomicLong {
