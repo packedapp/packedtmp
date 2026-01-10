@@ -20,10 +20,10 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.containerdynamic.ManagedInstance;
+import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.Stop;
 import app.packed.lifecycle.StopContext;
-import app.packed.runtime.RunState;
-import app.packed.runtime.StopOption;
+import app.packed.lifecycle.runtime.StopOption;
 
 /**
  *

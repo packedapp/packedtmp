@@ -21,7 +21,7 @@ import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.StructuredTaskScope.Joiner;
 
 import app.packed.lifecycle.StopContext;
-import app.packed.runtime.StopInfo;
+import app.packed.lifecycle.runtime.StopInfo;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;

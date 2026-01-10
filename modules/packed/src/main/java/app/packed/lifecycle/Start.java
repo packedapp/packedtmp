@@ -113,7 +113,7 @@ public @interface Start {
      */
     boolean interruptOnStopping() default true;
 
-    String lifetime() default "bean"; // The lifetime the bean is in
+    //String lifetime() default "bean"; // The lifetime the bean is in
 
     // forkMode
     // forkAsDaemon (keepRunning) = Mark the bean as keep running. Don't await

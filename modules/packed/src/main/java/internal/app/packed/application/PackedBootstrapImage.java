@@ -26,7 +26,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.application.BootstrapApp.Image;
 import app.packed.binding.Key;
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.deployment.FutureApplicationSetup;
 import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;

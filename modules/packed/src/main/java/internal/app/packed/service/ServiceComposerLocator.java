@@ -26,9 +26,9 @@ import app.packed.component.SidehandleBinding;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
+import app.packed.lifecycle.RunState;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
-import app.packed.runtime.RunState;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 

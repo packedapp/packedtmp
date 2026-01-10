@@ -8,7 +8,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.runtime.errorhandling.ErrorProcessor;
+import app.packed.lifecycle.runtime.errorhandling.ErrorProcessor;
 import internal.app.packed.util.StringFormatter;
 
 /** Various utility methods for working {@link Class classes}. */

@@ -20,7 +20,7 @@ import app.packed.application.registry.ApplicationRegistryExtension;
 import app.packed.application.registry.LaunchableApplication;
 import app.packed.assembly.BaseAssembly;
 import app.packed.lifecycle.Start;
-import app.packed.runtime.ManagedLifecycle;
+import app.packed.lifecycle.runtime.ManagedLifecycle;
 
 /**
  * Wauv...

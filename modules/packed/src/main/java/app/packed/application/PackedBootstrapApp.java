@@ -22,7 +22,7 @@ import app.packed.assembly.BuildableAssembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;

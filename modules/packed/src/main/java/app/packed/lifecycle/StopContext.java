@@ -21,7 +21,7 @@ import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import app.packed.runtime.StopInfo;
+import app.packed.lifecycle.runtime.StopInfo;
 import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 

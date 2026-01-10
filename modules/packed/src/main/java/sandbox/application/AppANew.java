@@ -19,9 +19,9 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.runtime.ManagedLifecycle;
-import app.packed.runtime.RunState;
-import app.packed.runtime.StopOption;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.runtime.ManagedLifecycle;
+import app.packed.lifecycle.runtime.StopOption;
 
 /**
  * Similar to App with the extra features that you can

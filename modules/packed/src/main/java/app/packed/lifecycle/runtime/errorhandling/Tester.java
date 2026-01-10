@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
+package app.packed.lifecycle.runtime.errorhandling;
 
-import app.packed.extension.BaseExtension;
-
-// All operations are automatically in the global context.
-// However this is never mentioned when querying for context mirrors? Or maybe it is
-
-// Can you inject it? Why not
-
-// Maybe ApplicationContext?
-// Man specificere da bare Context.class
 /**
- * A special marker interface that can be used with {@link ServiceResolver#contexts()} to indicate that only services
- * with no context should be resolved.
+ *
  */
-interface GlobalContext extends Context<BaseExtension> {}
+public class Tester {
+
+    public static void main(String[] args) {
+    }
+
+    public static <T extends Throwable> double calc(int f, ErrorProcessor<T> ep) throws T {
+        if (f < 0) {
+            throw ep.onError("f must be positive");
+        }
+        return 3.0 / f;
+    }
+}

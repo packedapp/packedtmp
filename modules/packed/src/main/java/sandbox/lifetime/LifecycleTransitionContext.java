@@ -15,8 +15,8 @@
  */
 package sandbox.lifetime;
 
-import app.packed.runtime.RunState;
-import app.packed.runtime.StopInfo.Reason;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.runtime.StopInfo.Reason;
 
 /**
  * A context that is available to all lifecycle transition operations.

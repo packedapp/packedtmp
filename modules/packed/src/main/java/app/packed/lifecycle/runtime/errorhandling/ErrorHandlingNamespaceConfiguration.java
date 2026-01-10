@@ -13,14 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime;
+package app.packed.lifecycle.runtime.errorhandling;
+
+import app.packed.component.ComponentRealm;
+import app.packed.extension.BaseExtension;
+import app.packed.namespace.NamespaceConfiguration;
+import app.packed.namespace.NamespaceHandle;
 
 /**
  *
  */
-// Ideen er lidt at dette er runtime Wirelet
+public final class ErrorHandlingNamespaceConfiguration extends NamespaceConfiguration<BaseExtension> {
 
-// Needs to be well integrated with application.properties
-public @interface LaunchArg {
+    /**
+     * @param namespace
+     * @param extension
+     * @param actor
+     */
+    protected ErrorHandlingNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> namespace, BaseExtension extension, ComponentRealm actor) {
+        super(namespace, extension, actor);
+    }
 
 }

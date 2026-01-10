@@ -13,25 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime.errorhandling;
-
-import app.packed.component.ComponentRealm;
-import app.packed.extension.BaseExtension;
-import app.packed.namespace.NamespaceConfiguration;
-import app.packed.namespace.NamespaceHandle;
+package app.packed.lifecycle.runtime.errorhandling;
 
 /**
  *
  */
-public final class ErrorHandlingNamespaceConfiguration extends NamespaceConfiguration<BaseExtension> {
-
-    /**
-     * @param namespace
-     * @param extension
-     * @param actor
-     */
-    protected ErrorHandlingNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> namespace, BaseExtension extension, ComponentRealm actor) {
-        super(namespace, extension, actor);
-    }
-
+@FunctionalInterface
+public interface ErrorProcessor<T extends Throwable> {
+    T onError(String message);
 }

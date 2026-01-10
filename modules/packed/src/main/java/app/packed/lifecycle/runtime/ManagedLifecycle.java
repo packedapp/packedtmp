@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime;
+package app.packed.lifecycle.runtime;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import app.packed.lifecycle.RunState;
 import app.packed.util.Nullable;
 import sandbox.lifetime.external.ManagedLifetimeState;
 

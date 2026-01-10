@@ -17,7 +17,7 @@ module app.packed {
     exports app.packed.lifetime;
     exports app.packed.namespace;
     exports app.packed.operation;
-    exports app.packed.runtime;  //IDK
+    exports app.packed.lifecycle.runtime;  //IDK
     exports app.packed.service;
     exports app.packed.util;
 

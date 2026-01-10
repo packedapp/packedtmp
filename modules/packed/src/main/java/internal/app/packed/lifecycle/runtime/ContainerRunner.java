@@ -15,7 +15,7 @@
  */
 package internal.app.packed.lifecycle.runtime;
 
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;

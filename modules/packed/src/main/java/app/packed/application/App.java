@@ -8,8 +8,8 @@ import app.packed.application.registry.ApplicationRegistryExtension;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.container.Wirelet;
-import app.packed.runtime.RunState;
-import app.packed.runtime.StopOption;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.runtime.StopOption;
 
 /**
  * Represents the main entry point for executing and managing Packed applications. This interface provides methods for

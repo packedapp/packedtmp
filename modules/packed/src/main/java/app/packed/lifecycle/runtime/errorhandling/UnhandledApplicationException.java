@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime.errorhandling;
+package app.packed.lifecycle.runtime.errorhandling;
 
 import static java.util.Objects.requireNonNull;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import app.packed.lifecycle.RunState;
 import app.packed.operation.OperationInfoOld;
-import app.packed.runtime.RunState;
 
 /**
  * An exception that is thrown when an application failed to execute.

@@ -17,7 +17,7 @@ package app.packed.application.containerdynamic;
 
 import java.util.Optional;
 
-import app.packed.runtime.ManagedLifecycle;
+import app.packed.lifecycle.runtime.ManagedLifecycle;
 
 // Kunne maaske ogssa shares med container
 // Maaske kan vi godt droppe denne...

@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime.errorhandling;
+package app.packed.lifecycle.runtime;
 
 /**
  *
  */
-public class Tester {
+// Ideen er lidt at dette er runtime Wirelet
 
-    public static void main(String[] args) {
-    }
+// Needs to be well integrated with application.properties
+public @interface LaunchArg {
 
-    public static <T extends Throwable> double calc(int f, ErrorProcessor<T> ep) throws T {
-        if (f < 0) {
-            throw ep.onError("f must be positive");
-        }
-        return 3.0 / f;
-    }
 }

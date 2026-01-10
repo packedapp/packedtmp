@@ -37,8 +37,8 @@ import app.packed.binding.Provider;
 import app.packed.component.SidehandleBinding;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
+import app.packed.lifecycle.RunState;
 import app.packed.operation.Op1;
-import app.packed.runtime.RunState;
 import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 import internal.app.packed.service.util.PackedServiceLocator;
 

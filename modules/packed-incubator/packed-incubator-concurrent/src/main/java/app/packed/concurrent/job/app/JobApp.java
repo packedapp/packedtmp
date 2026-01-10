@@ -21,7 +21,7 @@ import app.packed.application.App;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.BaseAssembly;
 import app.packed.container.Wirelet;
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
 import internal.app.packed.util.types.GenericType;
 
 /**

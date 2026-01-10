@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedBootstrapImage;
 import internal.app.packed.application.PackedBootstrapImage.ImageMapped;

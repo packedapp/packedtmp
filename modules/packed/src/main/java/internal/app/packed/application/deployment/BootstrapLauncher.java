@@ -7,7 +7,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
 
 interface BootstrapLauncher<A> {
 

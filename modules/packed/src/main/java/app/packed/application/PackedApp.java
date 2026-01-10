@@ -22,9 +22,9 @@ import java.util.concurrent.TimeUnit;
 import app.packed.binding.Key;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
-import app.packed.runtime.ManagedLifecycle;
-import app.packed.runtime.RunState;
-import app.packed.runtime.StopOption;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.runtime.ManagedLifecycle;
+import app.packed.lifecycle.runtime.StopOption;
 import internal.app.packed.ValueBased;
 
 /** The default implementation of {@link App}. */

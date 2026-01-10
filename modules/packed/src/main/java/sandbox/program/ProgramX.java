@@ -24,8 +24,8 @@ import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.component.SidehandleBinding;
 import app.packed.container.Wirelet;
-import app.packed.runtime.ManagedLifecycle;
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.service.ServiceLocator;
 
 /**

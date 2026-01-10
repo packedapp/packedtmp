@@ -23,10 +23,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import app.packed.runtime.ManagedLifecycle;
-import app.packed.runtime.RunState;
-import app.packed.runtime.StopOption;
-import app.packed.runtime.errorhandling.UnhandledApplicationException;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.runtime.ManagedLifecycle;
+import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifecycle.runtime.errorhandling.UnhandledApplicationException;
 import internal.app.packed.lifecycle.lifetime.entrypoint.OldEntryPointSetup;
 
 /**

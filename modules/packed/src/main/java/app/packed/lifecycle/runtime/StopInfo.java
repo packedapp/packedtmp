@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime;
+package app.packed.lifecycle.runtime;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
+
+import app.packed.lifecycle.RunState;
 
 /**
  * Information about why a lifetime (application, container or bean) was stopped.

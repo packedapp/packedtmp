@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.containerdynamic.ManagedInstance;
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
 import internal.app.packed.application.repository.PackedInstalledApplication;
 
 /**

@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
 import sandbox.program.ProgramX;
 
 /**

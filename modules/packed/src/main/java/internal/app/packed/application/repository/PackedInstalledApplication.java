@@ -25,8 +25,8 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.containerdynamic.ManagedInstance;
 import app.packed.application.registry.LaunchableApplication;
-import app.packed.runtime.ManagedLifecycle;
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.runtime.ManagedLifecycle;
 import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 
 public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, ?>> implements ApplicationLauncherOrFuture<I, H>, LaunchableApplication<I> {

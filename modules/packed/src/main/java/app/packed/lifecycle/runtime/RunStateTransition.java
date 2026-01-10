@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime;
+package app.packed.lifecycle.runtime;
 
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
+
+import app.packed.lifecycle.RunState;
 
 /**
  * Useful for example together {@link app.packed.lifetime.OnStop}

@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime.errorhandling;
+package app.packed.lifecycle.runtime.errorhandling;
+
+import app.packed.lifecycle.RunState;
+import app.packed.operation.OperationInfoOld;
 
 /**
  *
  */
-@FunctionalInterface
-public interface ErrorProcessor<T extends Throwable> {
-    T onError(String message);
+public interface ErrorHandler {
+
+    // Probably also a message
+    // But I don't if lazy created
+    boolean handle(RunState state, OperationInfoOld operationSite, Exception cause);
 }

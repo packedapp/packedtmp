@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime.errorhandling;
-
-import app.packed.operation.OperationInfoOld;
-import app.packed.runtime.RunState;
+package app.packed.lifecycle.runtime.errorhandling;
 
 /**
  *
  */
-public interface ErrorHandler {
+// IDK hoere den til i Bean?
+public class BeanErrorHandling {
 
-    // Probably also a message
-    // But I don't if lazy created
-    boolean handle(RunState state, OperationInfoOld operationSite, Exception cause);
 }

@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime.errorhandling;
+package app.packed.context;
 
+import app.packed.extension.BaseExtension;
+
+// All operations are automatically in the global context.
+// However this is never mentioned when querying for context mirrors? Or maybe it is
+
+// Can you inject it? Why not
+
+// Maybe ApplicationContext?
+// Man specificere da bare Context.class
 /**
- *
+ * A special marker interface that can be used with {@link ServiceResolver#contexts()} to indicate that only services
+ * with no context should be resolved.
  */
-// IDK hoere den til i Bean?
-public class BeanErrorHandling {
+interface ApplicationContext extends Context<BaseExtension> {
 
+    // void shutdownAsync(StopOption... );
 }

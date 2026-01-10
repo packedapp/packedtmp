@@ -15,7 +15,7 @@
  */
 package app.packed.component;
 
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
 
 /**
  *

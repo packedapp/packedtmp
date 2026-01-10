@@ -15,7 +15,7 @@
  */
 package internal.app.packed.lifecycle;
 
-import app.packed.runtime.RunState;
+import app.packed.lifecycle.RunState;
 
 /**
  * The various internal bean lifecycle

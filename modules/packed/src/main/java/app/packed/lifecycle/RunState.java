@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.runtime;
+package app.packed.lifecycle;
 
 /**
- * An enum containing all valid states of a component of some kind.
+ * An enum containing all valid states of a component.
  *
  * There are 4 <b>steady</b> states: {@link #UNINITIALIZED}, {@link #INITIALIZED}, {@link #RUNNING} and
  * {@link #TERMINATED}.
@@ -44,10 +44,6 @@ package app.packed.runtime;
 
 //// ApplicationInstanceState
 //// BeanInstanceState
-
-// ManagedState?? Hmm Vi har jo @Initialize for non-managed application
-// Lifetime state
-// ContainerState?
 public enum RunState {
 
     /**

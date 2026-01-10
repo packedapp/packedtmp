@@ -26,10 +26,10 @@ import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
 import app.packed.component.SidehandleBinding;
 import app.packed.lifecycle.Inject;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.runtime.ManagedLifecycle;
+import app.packed.lifecycle.runtime.StopOption;
 import app.packed.operation.Op1;
-import app.packed.runtime.ManagedLifecycle;
-import app.packed.runtime.RunState;
-import app.packed.runtime.StopOption;
 import app.packed.util.Nullable;
 import sandbox.lifetime.external.ManagedLifetimeState;
 
