@@ -40,10 +40,6 @@ package app.packed.lifecycle;
 // Fx, hvad vil det sige at stoppe?? Det vil sige at terminere alle state machines der koere ind i den.
 // Managed Resource
 // Status vs State..
-// Was RunState
-
-//// ApplicationInstanceState
-//// BeanInstanceState
 public enum RunState {
 
     /**
