@@ -157,7 +157,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         /** {@inheritDoc} */
         @Override
         protected void build() {
-            if (template.bean().beanSourceKind()==BeanSourceKind.SOURCELESS) {
+            if (template.bean().beanSourceKind() == BeanSourceKind.SOURCELESS) {
                 return;
             }
 

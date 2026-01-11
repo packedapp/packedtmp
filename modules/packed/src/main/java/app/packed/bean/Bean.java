@@ -84,7 +84,7 @@ public sealed interface Bean<T> permits PackedBean {
      *
      * @return the new bean
      */
-    static Bean<?> of() {
+    static Bean<Void> of() {
         return PackedBean.of();
     }
 

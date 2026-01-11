@@ -81,7 +81,7 @@ public final class PackedBean<T> implements Bean<T> {
      *
      * @return
      */
-    public static PackedBean<?> of() {
+    public static PackedBean<Void> of() {
         return new PackedBean<>(BeanSourceKind.SOURCELESS, void.class, null);
     }
 

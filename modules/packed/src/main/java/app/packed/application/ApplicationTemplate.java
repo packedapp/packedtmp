@@ -37,14 +37,16 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
     /** {@return whether this template represents a managed or unmanaged application} */
     boolean isManaged();
 
-    static Builder<Void> builder() {
-        return new PackedApplicationTemplate.Builder<>((Bean) Bean.of());
+    static <T> Builder<T> builder(Bean<T> bean) {
+        return new PackedApplicationTemplate.Builder<>(bean);
     }
 
+    @Deprecated // use builder(Bean)
     static <I> Builder<I> builder(Class<I> hostClass) {
         return new PackedApplicationTemplate.Builder<>(Bean.of(hostClass));
     }
 
+    @Deprecated // use builder(Bean)
     static <I> Builder<I> builder(Op<I> hostOp) {
         return new PackedApplicationTemplate.Builder<>(Bean.of(hostOp));
     }
@@ -58,5 +60,4 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
        <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
                Function<? super ApplicationInstaller<H>, ? extends H> handleFactory);
     }
-
 }
