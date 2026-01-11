@@ -40,7 +40,6 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
         return new PackedApplicationTemplate.Builder<>(bean);
     }
 
-
     // bean, isManaged,
     // bean, isManaged, Handle
 

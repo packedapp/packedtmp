@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
+import app.packed.bean.Bean;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;
 import internal.app.packed.application.PackedApplicationTemplate;
@@ -199,8 +200,12 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
         return PackedBootstrapApp.of((PackedApplicationTemplate<H>) template);
     }
 
-    static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> ofNew(Function<? super ApplicationInstaller<H>, H> factory) {
-        throw new UnsupportedOperationException();
+    static <A> BootstrapApp<A> ofManaged(Bean<A> bean) {
+        return of(ApplicationTemplate.builder(bean).build());
+    }
+
+    static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> ofUnmanaged(Bean<A> bean) {
+        return of(ApplicationTemplate.builder(bean).unmanaged().build());
     }
 
     /**
