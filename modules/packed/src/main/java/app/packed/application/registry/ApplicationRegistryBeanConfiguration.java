@@ -75,10 +75,4 @@ public final class ApplicationRegistryBeanConfiguration<I, H extends Application
         super.provide();
         return this;
     }
-
-    /** {@return the template this repository uses) */
-    @SuppressWarnings("unchecked")
-    public ApplicationTemplate<H> template() {
-        return (ApplicationTemplate<H>) handle.repository.template;
-    }
 }

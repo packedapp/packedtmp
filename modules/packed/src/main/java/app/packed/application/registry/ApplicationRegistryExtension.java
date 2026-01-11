@@ -61,7 +61,7 @@ public final class ApplicationRegistryExtension extends FrameworkExtension<Appli
      */
     public <A, H extends ApplicationHandle<A, ?>> ApplicationRegistryBeanConfiguration<A, H> installRegistry(ApplicationTemplate<H> template) {
         PackedApplicationTemplate<H> t = (PackedApplicationTemplate<H>) template;
-        if (t.guestClass() == Void.class) {
+        if (t.bean().beanClass() == Void.class) {
             throw new IllegalArgumentException("Application templates for Void.class guest type are not supported");
         }
 

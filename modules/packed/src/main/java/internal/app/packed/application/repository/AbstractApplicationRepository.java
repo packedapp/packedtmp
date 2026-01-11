@@ -28,6 +28,7 @@ import app.packed.application.ApplicationInstaller;
 import app.packed.application.registry.ApplicationRegistry;
 import app.packed.application.registry.LaunchableApplication;
 import app.packed.build.BuildGoal;
+import app.packed.lifecycle.LifecycleKind;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
@@ -93,6 +94,6 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
     }
 
     public static Class<?> repositoryClassFor(PackedApplicationTemplate<?> template) {
-        return template.isManaged() ? ManagedApplicationRepository.class : UnmanagedApplicationRepository.class;
+        return template.lifecycleKind() == LifecycleKind.MANAGED ? ManagedApplicationRepository.class : UnmanagedApplicationRepository.class;
     }
 }

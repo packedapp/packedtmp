@@ -34,10 +34,6 @@ import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(LifecycleKind lifecycleKind, Bean<?> bean, Class<? super H> handleClass,
         Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory) implements ApplicationTemplate<H> {
 
-    public Class<?> guestClass() {
-        return bean.beanClass();
-    }
-
     public static <I> PackedApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> of(LifecycleKind kind, Bean<I> bean) {
         requireNonNull(kind, "lifecycleKind is null");
         requireNonNull(bean, "bean is null");
@@ -62,18 +58,10 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Lifec
 
     public interface ApplicationInstallingSource {}
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean isManaged() {
-        return lifecycleKind == LifecycleKind.MANAGED;
-    }
-
     /** Implementation of {@link ApplicationTemplate.Builder}. */
     public static final class Builder<I> implements ApplicationTemplate.Builder<I> {
 
         private final Bean<I> bean;
-
-        private LifecycleKind lifecycleKind = LifecycleKind.MANAGED;
 
         public Builder(Bean<I> bean) {
             this.bean = bean;
@@ -81,15 +69,9 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Lifec
 
         /** {@inheritDoc} */
         @Override
-        public PackedApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build() {
-            return build(ApplicationHandle.class, ApplicationHandle::new);
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public <H extends ApplicationHandle<I, ?>> PackedApplicationTemplate<H> build(Class<? super H> handleClass,
                 Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
-            return new PackedApplicationTemplate<>(lifecycleKind, bean, handleClass, handleFactory);
+            return new PackedApplicationTemplate<>( LifecycleKind.MANAGED, bean, handleClass, handleFactory);
         }
     }
 }

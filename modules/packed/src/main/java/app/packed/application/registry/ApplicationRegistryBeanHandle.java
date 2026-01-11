@@ -36,7 +36,7 @@ final class ApplicationRegistryBeanHandle<I, H extends ApplicationHandle<I, ?>> 
     /** {@inheritDoc} */
     @Override
     public Key<?> defaultKey() {
-        return Key.fromParamaterizedTypes(ApplicationRegistry.class, repository.template.guestClass(), repository.template.handleClass());
+        return Key.fromParamaterizedTypes(ApplicationRegistry.class, repository.template.bean().beanClass(), repository.template.handleClass());
     }
 
     /** {@inheritDoc} */

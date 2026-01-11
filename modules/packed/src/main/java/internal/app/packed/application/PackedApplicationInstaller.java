@@ -26,6 +26,7 @@ import app.packed.application.ApplicationInstaller;
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.build.PackedBuildProcess;
@@ -68,7 +69,7 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
 
     PackedApplicationInstaller(PackedApplicationTemplate<?> template, @Nullable ApplicationBaseLauncher launcher, BuildGoal goal) {
         this.template = template;
-        this.isManaged = template.isManaged();
+        this.isManaged = template.lifecycleKind() == LifecycleKind.MANAGED;
 
         PackedContainerKind pck = isManaged ? PackedContainerKind.MANAGED : PackedContainerKind.UNMANAGED;
         this.containerInstaller = new PackedContainerInstaller<>(pck, this, null, null);

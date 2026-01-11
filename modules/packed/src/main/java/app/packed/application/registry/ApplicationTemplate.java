@@ -17,7 +17,6 @@ package app.packed.application.registry;
 
 import java.util.function.Function;
 
-import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.bean.Bean;
@@ -33,24 +32,20 @@ import internal.app.packed.application.PackedApplicationTemplate;
  */
 public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> permits PackedApplicationTemplate {
 
-    /** {@return the handle class that was specified when creating the template} */
-    Class<? super H> handleClass();
-
-    /** {@return whether this template represents a managed or unmanaged application} */
-    boolean isManaged();
-
     static <T> Builder<T> builder(Bean<T> bean) {
         return new PackedApplicationTemplate.Builder<>(bean);
+    }
+
+    static <T, H extends ApplicationHandle<T, ?>> ApplicationTemplate<H> of(Bean<T> bean, Class<? super H> handleClass,
+            Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
+        return new PackedApplicationTemplate.Builder<>(bean).build(handleClass, handleFactory);
     }
 
     // bean, isManaged,
     // bean, isManaged, Handle
 
     interface Builder<I> {
-
-       ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build();
-
-       <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
-               Function<? super ApplicationInstaller<H>, ? extends H> handleFactory);
+        <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
+                Function<? super ApplicationInstaller<H>, ? extends H> handleFactory);
     }
 }
