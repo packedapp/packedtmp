@@ -37,7 +37,7 @@ public class ContextsHelpers {
         });
 
         t.hooks().onAnnotatedMethod((_, b) -> {
-            OperationHandle<?> h = b.newOperation().returnType(int.class).addContext(NoImplContext.class) .install(OperationHandle::new);
+            OperationHandle<?> h = b.newOperation().returnType(int.class).addContext(NoImplContext.class).install(OperationHandle::new);
             t.add(h);
         });
 

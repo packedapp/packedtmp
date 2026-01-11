@@ -44,7 +44,7 @@ import internal.app.packed.util.accesshelper.AssemblyAccessHandler;
 public final class PackedContainerInstaller<H extends ContainerHandle<?>> extends AbstractComponentInstaller<ContainerSetup, PackedContainerInstaller<H>>
         implements ContainerInstaller<H> {
 
-    /** Non-null if this container is being installed as the root container of an application. */
+    /** Non-null for root container of an application. */
     @Nullable
     public final PackedApplicationInstaller<?> applicationInstaller;
 
