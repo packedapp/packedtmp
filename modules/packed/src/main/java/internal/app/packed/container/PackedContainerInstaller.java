@@ -68,9 +68,6 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     @Nullable
     public final ContainerSetup parent;
 
-    /** The kind of container to create. */
-    public final PackedContainerKind containerKind;
-
     /** A list of wirelets that have not been consumed yet. */
     public final ArrayList<Wirelet> unconsumedWirelets = new ArrayList<>();
 
@@ -79,7 +76,6 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
             Class<? extends Extension<?>> installedBy) {
         super(Set.of(), new HashMap<>());
         this.applicationInstaller = application;
-        this.containerKind = requireNonNull(containerKind, "containerKind is null");
         this.parent = parent;
         this.installedBy = installedBy;
     }

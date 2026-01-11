@@ -89,8 +89,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     // Maybe replace with ContainerServiceSetup. Where all the logic is.
     private MainServiceNamespaceHandle sm;
 
-    public final PackedContainerKind containerKind;
-
     public final ArrayList<Wirelet> wirelets;
 
     public ContainerWireletSpecs wireletSpecs = new ContainerWireletSpecs();
@@ -107,13 +105,13 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         super(installer.parent);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
-        this.containerKind = installer.containerKind;
 
-        if (installer.containerKind == PackedContainerKind.FROM_CONTAINER) {
+        if (installer.parent != null) {
             this.lifetime = installer.parent.lifetime;
         } else {
             this.lifetime = new ContainerLifetimeSetup(installer, this, null);
         }
+
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = installer.nameFromWirelet != null || installer.isFromAssembly;
         this.wirelets = installer.unconsumedWirelets;

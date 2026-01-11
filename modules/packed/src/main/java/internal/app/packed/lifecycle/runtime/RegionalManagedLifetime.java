@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.lifecycle.runtime.StopOption;
@@ -33,8 +34,7 @@ import internal.app.packed.lifecycle.lifetime.entrypoint.OldEntryPointSetup;
  *
  */
 // Altsaa det fede var jo hvis vi kunne lave en generisk statemachine.
-/// current state + Mask
-/// Error bit (data =
+/// current state + Mask Error bit (data =
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
 public final class RegionalManagedLifetime implements ManagedLifecycle {
@@ -152,7 +152,7 @@ public final class RegionalManagedLifetime implements ManagedLifecycle {
             throw new IllegalArgumentException("INITIALIZING is not a valid launch state");
         }
 
-        if (!runner.container.containerKind.isManaged() && desiredState != RunState.INITIALIZED) {
+        if (runner.container.application.template.lifecycleKind() != LifecycleKind.MANAGED && desiredState != RunState.INITIALIZED) {
             throw new IllegalArgumentException("Unmanaged applications and containers can only launch with runstate INITIALIZED, was " + desiredState);
         }
 
