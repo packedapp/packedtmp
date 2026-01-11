@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanIntrospector;
@@ -195,9 +194,6 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
                 PackedOperationTemplate.DEFAULTS.withRaw().withContext(ApplicationLaunchContext.class));
         BeanInstaller installer = new PackedBeanInstaller(beanTemplate, installingExtension, owner);
 
-        // Create the bean
-        Bean<?> bean = template.op() == null ? Bean.of(template.guestClass()) : Bean.of(template.op());
-
-        return installer.install(bean, SidehandleBeanHandle::new);
+        return installer.install(template.bean(), SidehandleBeanHandle::new);
     }
 }

@@ -65,6 +65,8 @@ public sealed interface Bean<T> permits PackedBean {
     /** {@return the source kind the bean was created from} */
     BeanSourceKind beanSourceKind();
 
+    Class<?> beanClass();
+
     default Set<String> componentTags() {
         return Set.of();
     }

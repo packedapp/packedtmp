@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.BuildableAssembly;
+import app.packed.bean.BeanSourceKind;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
@@ -156,7 +157,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         /** {@inheritDoc} */
         @Override
         protected void build() {
-            if (template.guestClass() == Void.class) {
+            if (template.bean().beanSourceKind()==BeanSourceKind.SOURCELESS) {
                 return;
             }
 

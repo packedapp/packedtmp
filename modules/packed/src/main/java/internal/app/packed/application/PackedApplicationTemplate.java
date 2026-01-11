@@ -21,17 +21,20 @@ import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
+import app.packed.bean.Bean;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
-import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 
 /** Implementation of {@link ApplicationTemplate}. */
-public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
+public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Bean<?> bean, Class<? super H> handleClass,
         Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, boolean isManaged
        ) implements ApplicationTemplate<H> {
 
+    public Class<?> guestClass() {
+        return bean.beanClass();
+    }
     /**
      * Creates a new {@link ApplicationInstaller} from this template.
      *
@@ -59,20 +62,12 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
     /** Implementation of {@link ApplicationTemplate.Builder}. */
     public static final class Builder<I> implements ApplicationTemplate.Builder<I> {
 
-        private final Class<?> guestClass;
+        private final Bean<I> bean;
 
         private boolean managed = true;
 
-        private final @Nullable Op<?> op;
-
-        public Builder(Class<I> guestClass) {
-            this.guestClass = guestClass;
-            this.op = null;
-        }
-
-        public Builder(Op<I> op) {
-            this.guestClass = op.type().returnRawType();
-            this.op = op;
+        public Builder(Bean<I> bean) {
+            this.bean = bean;
         }
 
         /** {@inheritDoc} */
@@ -85,7 +80,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
         @Override
         public <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
                 Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
-            return new PackedApplicationTemplate<>(guestClass, op, handleClass,
+            return new PackedApplicationTemplate<>(bean, handleClass,
                     handleFactory, managed);
         }
 

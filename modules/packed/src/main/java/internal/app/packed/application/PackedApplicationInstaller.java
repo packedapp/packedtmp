@@ -69,6 +69,7 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
     PackedApplicationInstaller(PackedApplicationTemplate<?> template, @Nullable ApplicationBaseLauncher launcher, BuildGoal goal) {
         this.template = template;
         this.isManaged = template.isManaged();
+
         PackedContainerKind pck = isManaged ? PackedContainerKind.MANAGED : PackedContainerKind.UNMANAGED;
         this.containerInstaller = new PackedContainerInstaller<>(pck, this, null, null);
         this.buildProcess = new PackedBuildProcess(this, goal);

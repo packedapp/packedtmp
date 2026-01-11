@@ -34,6 +34,7 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.BaseAssembly;
 import app.packed.assembly.BuildableAssembly;
+import app.packed.bean.Bean;
 import app.packed.build.BuildGoal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -212,7 +213,7 @@ abstract class AbstractAppTest<A> {
 
         final class State2Building implements InternalTestState, ApplicationInstallingSource {
             public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
-            static final PackedApplicationTemplate<?> PAT = new PackedApplicationTemplate<>(Void.class, null, ApplicationHandle.class, ApplicationHandle::new,
+            static final PackedApplicationTemplate<?> PAT = new PackedApplicationTemplate<>(Bean.of(), ApplicationHandle.class, ApplicationHandle::new,
                     true);
             final AssemblySetup assembly;
 

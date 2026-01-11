@@ -17,6 +17,7 @@ package app.packed.application;
 
 import java.util.function.Function;
 
+import app.packed.bean.Bean;
 import app.packed.operation.Op;
 import internal.app.packed.application.PackedApplicationTemplate;
 
@@ -36,13 +37,16 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
     /** {@return whether this template represents a managed or unmanaged application} */
     boolean isManaged();
 
+    static Builder<Void> builder() {
+        return new PackedApplicationTemplate.Builder<>((Bean) Bean.of());
+    }
 
     static <I> Builder<I> builder(Class<I> hostClass) {
-        return new PackedApplicationTemplate.Builder<>(hostClass);
+        return new PackedApplicationTemplate.Builder<>(Bean.of(hostClass));
     }
 
     static <I> Builder<I> builder(Op<I> hostOp) {
-        return new PackedApplicationTemplate.Builder<>(hostOp);
+        return new PackedApplicationTemplate.Builder<>(Bean.of(hostOp));
     }
 
     interface Builder<I> {

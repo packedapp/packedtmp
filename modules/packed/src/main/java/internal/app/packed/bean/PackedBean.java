@@ -108,4 +108,10 @@ public final class PackedBean<T> implements Bean<T> {
     public AnnotationList annotations() {
         return new PackedAnnotationList(beanClass.getAnnotations());
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> beanClass() {
+        return beanClass;
+    }
 }
