@@ -103,9 +103,9 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
      * @see BindableVariable#bindGeneratedConstant(Supplier)
      */
     @BuildActionable("bean.addCodeGenerator")
-    public <K> void bindCodeGenerator(Class<K> key, Supplier<? extends K> supplier) {
+    public <K> void bindComputedConstant(Class<K> key, Supplier<? extends K> supplier) {
         checkIsConfigurable();
-        bindCodeGenerator(Key.of(key), supplier);
+        bindComputedConstant(Key.of(key), supplier);
     }
 
     /**
@@ -144,7 +144,7 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
     // bind(Supplier) <-- every time we create the bean
     // bindSuppler(BuildTime, CodegenTime, Lazy, PerUsage); // Multithreaded???
     // Lazy_Per_ApplicationInstance, ...
-    public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
+    public <K> void bindComputedConstant(Key<K> key, Supplier<? extends K> supplier) {
         checkIsConfigurable();
         handle.bindComputedConstant(key, supplier);
         // Future Functionality:

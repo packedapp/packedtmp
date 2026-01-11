@@ -30,7 +30,7 @@ public final class DaemonJobSidehandle implements DaemonJobContext {
 
     private volatile Thread thread;
 
-    public DaemonJobSidehandle(@SidehandleBinding(Kind.HANDLE_CONSTANT) ThreadFactory factory,
+    public DaemonJobSidehandle(@SidehandleBinding(Kind.CONSTANT) ThreadFactory factory,
             @SidehandleBinding(Kind.OPERATION_INVOKER) DaemonOperationInvoker invoker, DaemonJobRuntimeManager manager) {
         this.factory = requireNonNull(factory);
         this.invoker = requireNonNull(invoker);

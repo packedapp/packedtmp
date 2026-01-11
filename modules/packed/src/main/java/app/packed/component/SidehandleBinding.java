@@ -43,7 +43,14 @@ public @interface SidehandleBinding {
     Kind value();
 
     public enum Kind {
-        HANDLE_CONSTANT, HANDLE_COMPUTED_CONSTANT, OPERATION_INVOKER, FROM_CONTEXT;
+
+        /**
+         * A constant specified for each handle where the sidehandle is applied.
+         *
+         * @see Sidehandle#bindConstant(Class, Object)
+         * @see Sidehandle#bindConstant(app.packed.binding.Key, Object)
+         */
+        CONSTANT, COMPUTED_CONSTANT, OPERATION_INVOKER, FROM_CONTEXT;
     }
 }
 
@@ -59,7 +66,8 @@ final class SidehandleBindingBeanIntrospector extends BaseExtensionBeanIntrospec
             throw new BeanInstallationException(SidehandleBinding.class.getSimpleName() + " can only be used on sidehandle beans");
         }
         if (v.operationHandle(AbstractInitializingOperationHandle.class).isEmpty()) {
-            throw new BeanInstallationException(SidehandleBinding.class.getSimpleName() + " can only be used on Factory, Inject, Initialize methods" + beanClass());
+            throw new BeanInstallationException(
+                    SidehandleBinding.class.getSimpleName() + " can only be used on Factory, Inject, Initialize methods" + beanClass());
         }
 
         sideHandle.get().onInject(this, (SidehandleBinding) annotation, (IntrospectorOnVariable) v);

@@ -255,7 +255,7 @@ public final class OperationCodeGenerator {
         MethodHandle tmp = MethodHandles.insertArguments(ServiceSupport.MH_CONSTANT_POOL_READER, 1, sidebeanAttachment.lifetimeStoreIndex.index);
         assert tmp.type().returnType() == Object.class;
         // We need to convert it from Object to the expected type
-        tmp = tmp.asType(tmp.type().changeReturnType(sidebeanAttachment.sidebean.bean.beanClass));
+        tmp = tmp.asType(tmp.type().changeReturnType(sidebeanAttachment.sidehandleBean.bean.beanClass));
 
         return MethodHandleUtil.merge(methodHandle, tmp);
     }

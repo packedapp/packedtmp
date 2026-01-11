@@ -15,13 +15,20 @@
  */
 package app.packed.component;
 
+import java.util.function.Supplier;
+
 import app.packed.binding.Key;
 
 /**
- *
+ * A sidehandle application
  */
-// Was SidebeanInstance
 public interface Sidehandle {
+
+    default <T> void bindComputedConstant(Class<T> key, Supplier<? extends T> supplier) {
+        bindComputedConstant(Key.of(key), supplier);
+    }
+
+    <T> void bindComputedConstant(Key<T> key, Supplier<? extends T> supplier);
 
     // I should probably be able to get the configuration???
     /**

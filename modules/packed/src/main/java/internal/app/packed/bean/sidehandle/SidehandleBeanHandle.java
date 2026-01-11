@@ -100,7 +100,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
     private void attachTolifecycle(PackedSidehandle susage) {
         requireNonNull(susage);
         sidehandles.add(susage);
-        for (List<InvokableLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidebean.operations.lifecycleHandles.values()) {
+        for (List<InvokableLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidehandleBean.operations.lifecycleHandles.values()) {
             for (InvokableLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
                 InvokableLifecycleOperationHandle<LifecycleOperationHandle> newh = new InvokableLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);
                 susage.bean.operations.addLifecycleHandle(newh);
@@ -146,7 +146,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
         Key<?> key = v.toKey();
 
         PackedSidehandleBinding binding;
-        if (kind == SidehandleBinding.Kind.HANDLE_CONSTANT || kind == SidehandleBinding.Kind.HANDLE_COMPUTED_CONSTANT) {
+        if (kind == SidehandleBinding.Kind.CONSTANT || kind == SidehandleBinding.Kind.COMPUTED_CONSTANT) {
             binding = new PackedSidehandleBinding.Constant();
         } else if (kind == SidehandleBinding.Kind.OPERATION_INVOKER) {
             if (invokerModel != null) {

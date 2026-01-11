@@ -17,6 +17,8 @@ package internal.app.packed.bean.sidehandle;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Supplier;
+
 import app.packed.bean.BeanHandle;
 import app.packed.binding.Key;
 import app.packed.component.Sidehandle;
@@ -28,29 +30,34 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.util.ServiceMap;
 
 /**
- *
+ * Implementation of {@link Sidehandle}. This class defines a number a number of subclasses, each supporting a different
+ * type of component.
  */
+// Alternativt har vi en klasse, og saa nulls fx for bean/operation
 public sealed abstract class PackedSidehandle implements Sidehandle, LifetimeStoreEntry {
 
     /** The bean this sidebean is applied to. */
     public final BeanSetup bean;
 
+    public final ServiceMap<Object> constants = new ServiceMap<>();
+
     @Nullable
     public LifetimeStoreIndex lifetimeStoreIndex;
 
-    /** The sidebean. */
-    public final BeanSetup sidebean;
+    /** The bean that defines the Sidehandle bean that is applied to components. */
+    public final BeanSetup sidehandleBean;
 
-    public final ServiceMap<Object> constants = new ServiceMap<>();
-
-    PackedSidehandle(BeanSetup sidebean, BeanSetup bean) {
+    PackedSidehandle(BeanSetup sidehandleBean, BeanSetup bean) {
         this.bean = requireNonNull(bean);
-        this.sidebean = requireNonNull(sidebean);
+        this.sidehandleBean = requireNonNull(sidehandleBean);
     }
+
+    @Override
+    public final <T> void bindComputedConstant(Key<T> key, Supplier<? extends T> supplier) {}
 
     /** {@inheritDoc} */
     @Override
-    public <T> void bindConstant(Key<T> key, T object) {
+    public final <T> void bindConstant(Key<T> key, T object) {
         // TODO check type
         if (constants.putIfAbsent(key, object) != null) {
             throw new IllegalStateException();
@@ -77,7 +84,7 @@ public sealed abstract class PackedSidehandle implements Sidehandle, LifetimeSto
          * @param handle
          * @param bean
          */
-        public OfOperation(BeanSetup  sideBeanHandle, OperationSetup operation) {
+        public OfOperation(BeanSetup sideBeanHandle, OperationSetup operation) {
             this.operation = requireNonNull(operation);
             super(sideBeanHandle, operation.bean);
         }

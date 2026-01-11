@@ -228,7 +228,7 @@ public abstract class Key<T> {
     private static Type convertType0(Type originalType, Type type) {
         requireNonNull(type, "type is null");
         return switch (type) {
-            case Class<?> cl -> type;
+            case Class<?> _ -> type;
             case ParameterizedType pt -> {
                 Type rawType = convertType0(originalType, pt.getRawType());
                 Type[] args = pt.getActualTypeArguments();
@@ -238,7 +238,7 @@ public abstract class Key<T> {
                 yield Types.createNewParameterizedType(rawType, args);
             }
             case GenericArrayType gat -> gat;
-            case TypeVariable<?> tv -> throw new InvalidKeyException("Type variables not allowed: " + type);
+            case TypeVariable<?> _ -> throw new InvalidKeyException("Type variables not allowed: " + type);
             case WildcardType wt -> {
                 Type[] lowerBounds = wt.getLowerBounds();
                 Type t = lowerBounds.length == 0 ? wt.getUpperBounds()[0] : lowerBounds[0];

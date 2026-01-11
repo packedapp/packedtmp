@@ -74,32 +74,31 @@ public class OSITest extends BaseAssembly {
             super(handle);
         }
 
-
         static class MyBI extends BeanIntrospector<MyExt> {
             @Override
             public void onAnnotatedVariable(Annotation hook, OnVariable d) {
                 switch (hook) {
-                    case BuildTime bt -> {
-                        d.checkAssignableTo(LocalDateTime.class);
-                        d.bindComputedConstant(() -> LocalDateTime.now());
-                    }
-                    case InitializationTime it -> {
-                        extensionHandle().applicationRoot().base().installIfAbsent(AppInitializeTime.class);
-                        d.checkAssignableTo(LocalDateTime.class);
-                        d.bindOp(new Op1<AppInitializeTime, LocalDateTime>(b -> b.initialized) {});
-                    }
-                    case Now n -> {
-                        d.checkAssignableTo(LocalDateTime.class);
-                        d.bindOp(new Op0<>(LocalDateTime::now) {});
-                    }
-                    default -> super.onAnnotatedVariable(hook, d);
+                case BuildTime _ -> {
+                    d.checkAssignableTo(LocalDateTime.class);
+                    d.bindConstant(LocalDateTime.now());
+                }
+                case InitializationTime _ -> {
+                    extensionHandle().applicationRoot().base().installIfAbsent(AppInitializeTime.class);
+                    d.checkAssignableTo(LocalDateTime.class);
+                    d.bindOp(new Op1<AppInitializeTime, LocalDateTime>(b -> b.initialized) {});
+                }
+                case Now _ -> {
+                    d.checkAssignableTo(LocalDateTime.class);
+                    d.bindOp(new Op0<>(LocalDateTime::now) {});
+                }
+                default -> super.onAnnotatedVariable(hook, d);
                 }
             }
         }
+
         private static class AppInitializeTime {
             final LocalDateTime initialized = LocalDateTime.now();
         }
-
 
     }
 
