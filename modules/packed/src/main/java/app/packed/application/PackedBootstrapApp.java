@@ -25,8 +25,8 @@ import app.packed.extension.BaseExtension;
 import app.packed.lifecycle.RunState;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.PackedApplicationTemplate;
-import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 import internal.app.packed.invoke.ServiceSupport;
@@ -40,7 +40,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     // TODO we need to restrict the extensions that can be used to BaseExtension
     // So beans do not uses hooks from various extensions
     private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE = (PackedApplicationTemplate<?>) ApplicationTemplate
-            .builder(PackedBootstrapApp.class).withComponentTags("bootstrap").build();
+            .builder(PackedBootstrapApp.class).build();
 
     /** The application launcher. */
     private final ApplicationBaseLauncher launcher;
@@ -131,11 +131,11 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         BootstrapAppAssembly assembly = new BootstrapAppAssembly(template);
 
         // Creates a new application installer and installs the specified assembly and build the final bootstrap application
-        BOOTSTRAP_APP_TEMPLATE.newInstaller(null, BuildGoal.LAUNCH, null).install(assembly);
+        BOOTSTRAP_APP_TEMPLATE.newInstaller(null, BuildGoal.LAUNCH, null).componentTag("bootstrap").install(assembly);
 
         ApplicationBaseLauncher launcher = ApplicationBaseLauncher.EMPTY;
-        if (assembly.gbh != null) {
-            launcher = ServiceSupport.newApplicationBaseLauncher(assembly.gbh);
+        if (assembly.sidehandle != null) {
+            launcher = ServiceSupport.newApplicationBaseLauncher(assembly.sidehandle);
         }
         // Returned the bootstrap implementation (represented by a construcing method handle) wrapped in this class.
         return new PackedBootstrapApp<A, H>(template, launcher);
@@ -144,7 +144,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     /** The assembly responsible for building the bootstrap app. */
     private static class BootstrapAppAssembly extends BuildableAssembly {
 
-        private SidehandleBeanHandle<?> gbh;
+        private SidehandleBeanHandle<?> sidehandle;
 
         /** The application template for the application type we need to bootstrap. */
         private final PackedApplicationTemplate<?> template;
@@ -164,7 +164,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
             ExtensionSetup es = ExtensionSetup.crack(assembly().containerRoot().use(BaseExtension.class));
 
             // Install the guest bean (code is shared with App-On-App) in the bootstrap application
-            gbh = SidehandleBeanHandle.install(template, es, es.container.assembly);
+            sidehandle = SidehandleBeanHandle.install(template, es, es.container.assembly);
         }
     }
 }

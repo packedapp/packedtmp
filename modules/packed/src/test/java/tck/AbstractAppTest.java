@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.AfterEach;
@@ -215,7 +214,7 @@ abstract class AbstractAppTest<A> {
         final class State2Building implements InternalTestState, ApplicationInstallingSource {
             public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
             static final PackedApplicationTemplate<?> PAT = new PackedApplicationTemplate<>(Void.class, null, ApplicationHandle.class, ApplicationHandle::new,
-                    PackedContainerKind.MANAGED, Set.of());
+                    PackedContainerKind.MANAGED);
             final AssemblySetup assembly;
 
             final PackedApplicationInstaller<?> b;

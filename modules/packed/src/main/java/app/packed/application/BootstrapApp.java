@@ -199,6 +199,10 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
         return PackedBootstrapApp.of((PackedApplicationTemplate<H>) template);
     }
 
+    static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> ofNew(Function<? super ApplicationInstaller<H>, H> factory) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * A base image represents a pre-built application.
      * <p>
@@ -251,6 +255,7 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
 
         /**
          * Create a new instance of the application in the initialized state.
+         *
          * @return
          */
         default A initialize() {

@@ -15,7 +15,6 @@
  */
 package app.packed.application;
 
-import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.operation.Op;
@@ -30,9 +29,6 @@ import internal.app.packed.application.PackedApplicationTemplate;
  *            the type of application handles the template creates
  */
 public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> permits PackedApplicationTemplate {
-
-    /** {@return the initial component tags for the application} */
-    Set<String> componentTags();
 
     /** {@return the handle class that was specified when creating the template} */
     Class<? super H> handleClass();
@@ -52,18 +48,6 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
     interface Builder<I> {
 
        Builder<I> unmanaged();
-
-       /**
-        * Creates a new application template, Adding the specified tag(s) to the template.
-        *
-        * @param tags
-        *            the tag(s) to add
-        * @return the new application template
-        * @see ApplicationMirror#componentTags()
-        * @see ApplicationHandle#componentTag(String...)
-        * @see ApplicationConfiguration#componentTag(String...)
-        */
-       Builder<I> withComponentTags(String... tags);
 
        ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build();
 

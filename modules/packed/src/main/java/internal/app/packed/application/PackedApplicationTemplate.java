@@ -17,7 +17,6 @@ package internal.app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationConfiguration;
@@ -28,25 +27,24 @@ import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
-import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 
 /** Implementation of {@link ApplicationTemplate}. */
 public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
-        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerKind rootContainer,
-        Set<String> componentTags) implements ApplicationTemplate<H> {
+        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerKind rootContainer
+       ) implements ApplicationTemplate<H> {
 
     public PackedApplicationTemplate(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
             Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory) {
-        this(guestClass, op, handleClass, handleFactory, null, Set.of());
+        this(guestClass, op, handleClass, handleFactory, null);
     }
 
 
     /** {@inheritDoc} */
     public PackedApplicationTemplate<H> withRootContainer(PackedContainerKind kind) {
         requireNonNull(kind);
-        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, kind, componentTags);
+        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, kind);
     }
 
     /**
@@ -82,8 +80,6 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
 
         private boolean managed = true;
 
-        private Set<String> componentTags = Set.of();
-
         public Builder(Class<I> guestClass) {
             this.guestClass = guestClass;
             this.op = null;
@@ -103,13 +99,6 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
 
         /** {@inheritDoc} */
         @Override
-        public Builder<I> withComponentTags(String... tags) {
-            this.componentTags = ComponentTagHolder.copyAndAdd(componentTags, tags);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build() {
             return build(ApplicationHandle.class, ApplicationHandle::new);
         }
@@ -120,7 +109,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
                 Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
             PackedContainerKind containerKind = managed ? PackedContainerKind.MANAGED : PackedContainerKind.UNMANAGED;
             return new PackedApplicationTemplate<>(guestClass, op, handleClass,
-                    handleFactory, containerKind, componentTags);
+                    handleFactory, containerKind);
         }
     }
 }
