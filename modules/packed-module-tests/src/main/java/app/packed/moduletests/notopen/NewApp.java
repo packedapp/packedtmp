@@ -17,6 +17,7 @@ package app.packed.moduletests.notopen;
 
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
+import app.packed.lifecycle.LifecycleKind;
 
 /**
  *
@@ -25,6 +26,6 @@ public class NewApp {
     static final class PackedApp {}
 
     public static void main(String[] args) {
-        BootstrapApp.ofManaged(Bean.of(PackedApp.class));
+        BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(PackedApp.class));
     }
 }

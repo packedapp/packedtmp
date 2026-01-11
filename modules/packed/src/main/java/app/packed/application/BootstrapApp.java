@@ -190,28 +190,15 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
         throw new UnsupportedOperationException();
     }
 
-    static <A> BootstrapApp<A> of(Bean<A> bean, LifecycleKind lifecycleKind) {
-       //TODO_CLAUDE implement this method
-        // And remove and replace usage of the two deprecated methods below
-//        NONE should throw IllegalArgumentException
-
-    }
-    /**
-     * Creates a new {@link BootstrapApp} from the specified application template.
-     *
-     * @param template
-     *            the application template to create the bootstrap app from
-     * @return the new bootstrap app.
-     */
-    // Alternativt tage en MethodHandles.lookup
-    @Deprecated
-    static <A> BootstrapApp<A> ofManaged(Bean<A> bean) {
-        return PackedBootstrapApp.of(new PackedApplicationTemplate.Builder<>(bean).build());
-    }
-
-    @Deprecated
-    static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> ofUnmanaged(Bean<A> bean) {
-        return PackedBootstrapApp.of(new PackedApplicationTemplate.Builder<>(bean).unmanaged().build());
+    static <A> BootstrapApp<A> of(LifecycleKind lifecycleKind, Bean<A> bean) {
+        requireNonNull(bean, "bean is null");
+        requireNonNull(lifecycleKind, "lifecycleKind is null");
+        PackedApplicationTemplate.Builder<A> builder = new PackedApplicationTemplate.Builder<>(bean);
+        return switch (lifecycleKind) {
+            case NONE -> throw new IllegalArgumentException("LifecycleKind.NONE is not supported for BootstrapApp");
+            case UNMANAGED -> PackedBootstrapApp.of(builder.unmanaged().build());
+            case MANAGED -> PackedBootstrapApp.of(builder.build());
+        };
     }
 
     /**

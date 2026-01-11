@@ -20,6 +20,7 @@ import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.component.SidehandleBinding;
 
 /**
@@ -54,7 +55,7 @@ import app.packed.component.SidehandleBinding;
 public final class Te {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.ofManaged(Bean.of(Holder.class));
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(Holder.class));
 
     public static void main(String[] args) {
         BOOTSTRAP.getClass();

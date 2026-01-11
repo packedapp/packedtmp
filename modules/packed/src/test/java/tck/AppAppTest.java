@@ -17,6 +17,7 @@ package tck;
 
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
+import app.packed.lifecycle.LifecycleKind;
 
 /**
  *
@@ -24,7 +25,7 @@ import app.packed.bean.Bean;
 public abstract class AppAppTest extends AbstractBootstrapedAppTest<Void> {
 
     /** The bootstrap app we are testing. */
-    private static final BootstrapApp<Void> APP = BootstrapApp.ofManaged(Bean.of());
+    private static final BootstrapApp<Void> APP = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of());
 
     public AppAppTest() {
         super(APP);

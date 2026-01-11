@@ -18,6 +18,7 @@ package app.packed.cli.other;
 import app.packed.application.App;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.bean.Bean;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;
@@ -75,7 +76,7 @@ public final class PackedCliApp {
      */
     private static BootstrapApp<Void> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<Void> APP = BootstrapApp.ofManaged(Bean.of(Void.class));
+            private static final BootstrapApp<Void> APP = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(Void.class));
         }
         return ServiceLocatorBootstrap.APP;
     }

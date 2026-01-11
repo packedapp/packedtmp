@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.bean.Bean;
 import app.packed.binding.Key;
 import app.packed.component.OldContainerTemplateLink;
@@ -169,7 +170,7 @@ record ProgramImplementation(@SidehandleBinding(FROM_CONTEXT) String name, @Side
     static OldContainerTemplateLink EL = OldContainerTemplateLink.of(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.ofManaged(Bean.of(ProgramImplementation.class));
+    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(ProgramImplementation.class));
 //
 //            BootstrapApp.of(ProgramImplementation.class, c -> {
 //        c.managedLifetime();

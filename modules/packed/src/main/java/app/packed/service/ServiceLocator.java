@@ -29,6 +29,7 @@ import app.packed.application.ApplicationInterface;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
@@ -320,7 +321,7 @@ public interface ServiceLocator extends ApplicationInterface {
         // ServiceLocatorBootstrap because we cannot have private static fields on interfaces
         class ServiceLocatorBootstrap {
             private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-                    .ofUnmanaged(Bean.<ServiceLocator>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {}));
+                    .of(LifecycleKind.UNMANAGED, Bean.<ServiceLocator>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {}));
         }
         return ServiceLocatorBootstrap.APP;
     }

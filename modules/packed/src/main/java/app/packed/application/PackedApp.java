@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.Bean;
 import app.packed.binding.Key;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
 import app.packed.lifecycle.RunState;
@@ -33,7 +34,7 @@ import internal.app.packed.ValueBased;
 final class PackedApp implements App {
 
     /** The bootstrap app for this application. */
-    public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.ofManaged(Bean.of(PackedApp.class));
+    public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(PackedApp.class));
 
     /** Manages the lifecycle of the app. */
     private final ManagedLifecycle lifecycle;

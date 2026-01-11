@@ -20,6 +20,7 @@ import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.bean.Bean;
 import app.packed.binding.Key;
 import app.packed.component.SidehandleBinding;
@@ -164,7 +165,7 @@ record ProgramImplementationX(@SidehandleBinding(FROM_CONTEXT) String name, @Sid
 
     /** An driver for creating App instances. */
 
-    static final BootstrapApp<ProgramImplementationX> DRIVER = BootstrapApp.ofManaged(Bean.of(ProgramImplementationX.class));
+    static final BootstrapApp<ProgramImplementationX> DRIVER = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(ProgramImplementationX.class));
 
     /** {@inheritDoc} */
     @Override

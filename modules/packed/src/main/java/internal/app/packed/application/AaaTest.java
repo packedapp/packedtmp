@@ -23,6 +23,7 @@ import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.BaseAssembly;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
@@ -76,7 +77,7 @@ public class AaaTest extends BaseAssembly {
     static final class AApp implements App {
 
         /** The bootstrap app for this application. */
-        public static final BootstrapApp<AApp> BOOTSTRAP_APP = BootstrapApp.ofManaged(Bean.of(AApp.class));
+        public static final BootstrapApp<AApp> BOOTSTRAP_APP = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(AApp.class));
 
         /** Manages the lifecycle of the app. */
         private final ManagedLifecycle lifecycle;

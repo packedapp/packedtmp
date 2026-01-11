@@ -19,6 +19,7 @@ import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
 import app.packed.lifecycle.runtime.ManagedLifecycle;
@@ -31,12 +32,12 @@ public class NewApp {
 
         /** The bootstrap app for this application. */
         // Hmm, read of constructor, think we need module expose to packed, should probably be in the docs somewhere
-        public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.ofManaged(Bean.of(PackedApp.class));
+        public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(PackedApp.class));
 
         PackedApp(@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle lc, SidehandleContext context) {
         }
     }
     public static void main(String[] args) {
-        BootstrapApp.ofManaged(Bean.of(PackedApp.class));
+        BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(PackedApp.class));
     }
 }

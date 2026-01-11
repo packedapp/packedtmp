@@ -26,6 +26,7 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BaseExtensionMirror;
 import tck.AppAppTest;
@@ -73,7 +74,7 @@ public class ApplicationMirrorTest extends AppAppTest {
     @Disabled
     public void specializeApplicationMirror() {
         // Test default application mirror type
-        BootstrapApp<Void> ba = BootstrapApp.ofManaged(Bean.of(Void.class));
+        BootstrapApp<Void> ba = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(Void.class));
         assertThat(ba.mirrorOf(new HelloWorldAssembly())).isExactlyInstanceOf(ApplicationMirror.class);
 
         // Specialize application mirror type
@@ -83,7 +84,7 @@ public class ApplicationMirrorTest extends AppAppTest {
             }
         }
         // specializeMirror(MyAppMirror::new).
-        ba = BootstrapApp.ofManaged(Bean.of(Void.class));
+        ba = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(Void.class));
         assertThat(ba.mirrorOf(new HelloWorldAssembly())).isExactlyInstanceOf(MyAppMirror.class);
     }
 }
