@@ -45,7 +45,7 @@ import internal.app.packed.binding.BindingProvider.FromComputedConstant;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingProvider.FromInvocationArgument;
-import internal.app.packed.binding.BindingProvider.FromSidebeanAttachment;
+import internal.app.packed.binding.BindingProvider.FromSidehandle;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.binding.SuppliedBindingKind;
 import internal.app.packed.context.ContextSetup;
@@ -208,7 +208,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
     // not on interface
     public IntrospectorOnVariable bindSidebeanBinding(Key<?> key, SidehandleBeanHandle<?> sidebean) {
         checkBeforeBind();
-        bind(new FromSidebeanAttachment(key, sidebean));
+        bind(new FromSidehandle(key, sidebean));
         return this;
     }
 

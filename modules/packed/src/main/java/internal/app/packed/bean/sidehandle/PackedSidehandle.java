@@ -24,6 +24,9 @@ import app.packed.binding.Key;
 import app.packed.component.Sidehandle;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.binding.BindingProvider.FromComputedConstant;
+import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreEntry;
 import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 import internal.app.packed.operation.OperationSetup;
@@ -39,7 +42,7 @@ public sealed abstract class PackedSidehandle implements Sidehandle, LifetimeSto
     /** The bean this sidebean is applied to. */
     public final BeanSetup bean;
 
-    public final ServiceMap<Object> constants = new ServiceMap<>();
+    public final ServiceMap<BindingProvider> bindings = new ServiceMap<>();
 
     @Nullable
     public LifetimeStoreIndex lifetimeStoreIndex;
@@ -52,16 +55,22 @@ public sealed abstract class PackedSidehandle implements Sidehandle, LifetimeSto
         this.sidehandleBean = requireNonNull(sidehandleBean);
     }
 
+    private void add(Key<?> key, BindingProvider provider) {
+        if (bindings.putIfAbsent(key, provider) != null) {
+            throw new IllegalStateException();
+        }
+    }
+
+    /** {@inheritDoc} */
     @Override
-    public final <T> void bindComputedConstant(Key<T> key, Supplier<? extends T> supplier) {}
+    public final <T> void bindComputedConstant(Key<T> key, Supplier<? extends T> supplier) {
+        add(key, FromComputedConstant.fromUser(key, supplier));
+    }
 
     /** {@inheritDoc} */
     @Override
     public final <T> void bindConstant(Key<T> key, T object) {
-        // TODO check type
-        if (constants.putIfAbsent(key, object) != null) {
-            throw new IllegalStateException();
-        }
+        add(key, FromConstant.fromUser(key, object));
     }
 
     public static final class OfBean extends PackedSidehandle {

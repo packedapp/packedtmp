@@ -15,6 +15,8 @@
  */
 package internal.app.packed.binding;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.function.Supplier;
 
 import app.packed.binding.Key;
@@ -40,11 +42,27 @@ public sealed interface BindingProvider {
         public BindingProviderKind kind() {
             return BindingProviderKind.CONSTANT;
         }
+
+        /**
+         * @param key
+         * @param supplier2
+         * @return
+         */
+        public static <T> BindingProvider fromUser(Key<T> key, Supplier<? extends T> supplier2) {
+            return new FromComputedConstant(supplier2, SuppliedBindingKind.CODEGEN);
+        }
     }
 
     /** Provide instance from a constant. */
     public record FromConstant(Class<?> constantType, Object constant) implements SupplierOrInstance {
 
+        public static <T> FromConstant fromUser(Key<T> key, T instance) {
+            requireNonNull(key);
+
+            // Add a service provider for the instance
+            Class<?> claz = instance == null ? Object.class : instance.getClass();
+            return new FromConstant(claz, instance);
+        }
         /** {@inheritDoc} */
         @Override
         public BindingProviderKind kind() {
@@ -72,7 +90,7 @@ public sealed interface BindingProvider {
         }
     }
 
-    public record FromSidebeanAttachment(Key<?> key, SidehandleBeanHandle<?> handle) implements BindingProvider {
+    public record FromSidehandle(Key<?> key, SidehandleBeanHandle<?> handle) implements BindingProvider {
 
         /** {@inheritDoc} */
         @Override

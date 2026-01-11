@@ -28,13 +28,14 @@ import app.packed.binding.Key;
 import app.packed.binding.ProvisionException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.sidehandle.PackedSidehandle;
-import internal.app.packed.bean.sidehandle.PackedSidehandleBinding;
-import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.bean.sidehandle.PackedSidehandle.OfOperation;
+import internal.app.packed.bean.sidehandle.PackedSidehandleBinding;
 import internal.app.packed.bean.sidehandle.PackedSidehandleBinding.Constant;
 import internal.app.packed.bean.sidehandle.PackedSidehandleBinding.Invoker;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.binding.BindingProvider;
-import internal.app.packed.binding.BindingProvider.FromSidebeanAttachment;
+import internal.app.packed.binding.BindingProvider.FromConstant;
+import internal.app.packed.binding.BindingProvider.FromSidehandle;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.invoke.MethodHandleUtil.LazyResolvable;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.FactoryOperationHandle;
@@ -222,11 +223,13 @@ public final class OperationCodeGenerator {
         if (isFactory) {
             // System.out.println(" .... " + isFactory + " " + methodHandle.type());
             for (BindingSetup binding : operation.bindings) {
-                if (binding.provider() instanceof FromSidebeanAttachment a) {
+                if (binding.provider() instanceof FromSidehandle a) {
                     Key<?> key = a.key();
                     PackedSidehandleBinding b = a.handle().bindings.get(key); // Existance has been checked
+
                     if (b instanceof Constant _) {
-                        Object instance = sidebeanAttachment.constants.get(key);
+                        BindingProvider bp = sidebeanAttachment.bindings.get(key);
+                        Object instance = ((FromConstant) bp).constant();
                         methodHandle = MethodHandles.insertArguments(methodHandle, 1, instance);
                     } else if (b instanceof Invoker invokerType) {
                         PackedSidehandle.OfOperation oo = (OfOperation) sidebeanAttachment;
@@ -301,7 +304,7 @@ public final class OperationCodeGenerator {
             yield MethodHandles.collectArguments(mh, pos, beanFetcher);
         }
 
-        case BindingProvider.FromSidebeanAttachment(Key<?> _, SidehandleBeanHandle<?> _) -> {
+        case BindingProvider.FromSidehandle(Key<?> _, SidehandleBeanHandle<?> _) -> {
             Class<?> requiredType = mh.type().parameterType(pos);
 
             int newIndexInInvocationType = invocationType.parameterCount();

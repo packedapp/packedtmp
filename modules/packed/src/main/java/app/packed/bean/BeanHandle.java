@@ -127,14 +127,9 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
         bindConstant(Key.of(key), constant);
     }
 
-    // Problemet med dette navn er at folk kan tror det er en bean instance
-    // Hmm vi kaldet det bind
     public final <K> void bindConstant(Key<K> key, K instance) {
         requireNonNull(key);
-
-        // Add a service provider for the instance
-        Class<?> claz = instance == null ? Object.class : instance.getClass();
-        bean.serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromConstant(claz, instance)));
+        bean.serviceProviders.put(key, new BeanServiceProviderSetup(key, FromConstant.fromUser(key, instance)));
     }
 
     /** {@inheritDoc} */

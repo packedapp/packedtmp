@@ -18,6 +18,7 @@ package internal.app.packed.bean.sidehandle;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -102,16 +103,11 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
         sidehandles.add(susage);
         for (List<InvokableLifecycleOperationHandle<LifecycleOperationHandle>> l : susage.sidehandleBean.operations.lifecycleHandles.values()) {
             for (InvokableLifecycleOperationHandle<LifecycleOperationHandle> loh : l) {
-                InvokableLifecycleOperationHandle<LifecycleOperationHandle> newh = new InvokableLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle, susage);
+                InvokableLifecycleOperationHandle<LifecycleOperationHandle> newh = new InvokableLifecycleOperationHandle<LifecycleOperationHandle>(loh.handle,
+                        susage);
                 susage.bean.operations.addLifecycleHandle(newh);
                 BeanLifecycleSupport.addLifecycleHandle(newh);
             }
-        }
-    }
-
-    public void checkUnusued() {
-        if (!sidehandles.isEmpty()) {
-            throw new IllegalStateException();
         }
     }
 
@@ -125,10 +121,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
         return super.newBeanMirror();
     }
 
-    @Override
-    protected void onConfigured() {
-        super.onConfigured();
-    }
+    private HashMap<Key<?>, SidehandleBinding.Kind> kinds = new HashMap<>();
 
     /**
      * @param annotation
@@ -136,14 +129,18 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
      */
     public void onInject(BeanIntrospector<?> introspector, SidehandleBinding annotation, IntrospectorOnVariable v) {
         SidehandleBinding.Kind kind = annotation.value();
+        Key<?> key = v.toKey();
+
+        //TODO_CLAUDE check that if there is already an value from a specific key in the hashtable.
+        // The value must be the same, otherwise throw an BeanInstallationException, detailing both kinds
+        kinds.put(key, kind);
+
 
         // For FROM_CONTEXT, use resolve method
         if (kind == SidehandleBinding.Kind.FROM_CONTEXT) {
             resolve(introspector, v);
             return;
         }
-
-        Key<?> key = v.toKey();
 
         PackedSidehandleBinding binding;
         if (kind == SidehandleBinding.Kind.CONSTANT || kind == SidehandleBinding.Kind.COMPUTED_CONSTANT) {
@@ -166,7 +163,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
     // --- Methods from GuestBeanHandle ---
 
     public FactoryOperationHandle factory() {
-       return (FactoryOperationHandle) lifecycleInvokers().getFirst();
+        return (FactoryOperationHandle) lifecycleInvokers().getFirst();
     }
 
     public void resolve(BeanIntrospector<?> i, OnVariable v) {
@@ -194,9 +191,9 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
 
     public static SidehandleBeanHandle<?> install(PackedApplicationTemplate<?> template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
         // Create a new installer for the bean
-        PackedBeanTemplate beanTemplate =
-                new PackedBeanTemplate(BeanKind.UNMANAGED, PackedOperationTemplate.DEFAULTS.withRaw().withContext(ApplicationLaunchContext.class));
-        BeanInstaller installer =  new PackedBeanInstaller(beanTemplate, installingExtension, owner);
+        PackedBeanTemplate beanTemplate = new PackedBeanTemplate(BeanKind.UNMANAGED,
+                PackedOperationTemplate.DEFAULTS.withRaw().withContext(ApplicationLaunchContext.class));
+        BeanInstaller installer = new PackedBeanInstaller(beanTemplate, installingExtension, owner);
 
         // Create the bean
         Bean<?> bean = template.op() == null ? Bean.of(template.guestClass()) : Bean.of(template.op());
