@@ -76,7 +76,7 @@ public final class PackedCliApp {
      */
     private static BootstrapApp<Void> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<Void> APP = BootstrapApp.of(ApplicationTemplate.builder(Bean.of(Void.class)).build());
+            private static final BootstrapApp<Void> APP = BootstrapApp.ofManaged(Bean.of(Void.class));
         }
         return ServiceLocatorBootstrap.APP;
     }

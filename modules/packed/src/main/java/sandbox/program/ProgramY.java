@@ -170,7 +170,7 @@ record ProgramImplementation(@SidehandleBinding(FROM_CONTEXT) String name, @Side
     static OldContainerTemplateLink EL = OldContainerTemplateLink.of(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ApplicationTemplate.builder(Bean.of(ProgramImplementation.class)).build());
+    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.ofManaged(Bean.of(ProgramImplementation.class));
 //
 //            BootstrapApp.of(ProgramImplementation.class, c -> {
 //        c.managedLifetime();

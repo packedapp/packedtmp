@@ -44,7 +44,7 @@ public class ServiceComposerLocator {
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
             private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-                    .of(ApplicationTemplate.builder(Bean.<ServiceLocator>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {})).unmanaged().build());
+                    .ofUnmanaged(Bean.<ServiceLocator>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {}));
         }
         return ServiceLocatorBootstrap.APP;
     }

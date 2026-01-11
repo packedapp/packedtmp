@@ -25,7 +25,7 @@ import app.packed.bean.Bean;
 public abstract class AppAppTest extends AbstractBootstrapedAppTest<Void> {
 
     /** The bootstrap app we are testing. */
-    private static final BootstrapApp<Void> APP = BootstrapApp.of(ApplicationTemplate.builder(Bean.of()).build());
+    private static final BootstrapApp<Void> APP = BootstrapApp.ofManaged(Bean.of());
 
     public AppAppTest() {
         super(APP);

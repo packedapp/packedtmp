@@ -30,7 +30,7 @@ import app.packed.service.ServiceLocator;
 public class ServiceLocatorAppTest extends AbstractBootstrapedAppTest<ServiceLocator> {
 
     private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-            .of(ApplicationTemplate.builder(Bean.<ServiceLocator>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {})).unmanaged().build());
+            .ofUnmanaged(Bean.<ServiceLocator>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {}));
 
     public ServiceLocatorAppTest() {
         super(APP);

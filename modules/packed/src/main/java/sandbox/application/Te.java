@@ -55,7 +55,7 @@ import app.packed.component.SidehandleBinding;
 public final class Te {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.builder(Bean.of(Holder.class)).build());
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.ofManaged(Bean.of(Holder.class));
 
     public static void main(String[] args) {
         BOOTSTRAP.getClass();

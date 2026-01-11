@@ -165,7 +165,7 @@ record ProgramImplementationX(@SidehandleBinding(FROM_CONTEXT) String name, @Sid
 
     /** An driver for creating App instances. */
 
-    static final BootstrapApp<ProgramImplementationX> DRIVER = BootstrapApp.of(ApplicationTemplate.builder(Bean.of(ProgramImplementationX.class)).build());
+    static final BootstrapApp<ProgramImplementationX> DRIVER = BootstrapApp.ofManaged(Bean.of(ProgramImplementationX.class));
 
     /** {@inheritDoc} */
     @Override

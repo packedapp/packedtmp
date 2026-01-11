@@ -34,7 +34,7 @@ final class PackedApp implements App {
 
     /** The bootstrap app for this application. */
     // Hmm, read of constructor, think we need module expose to packed, should probably be in the docs somewhere
-    public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.builder(Bean.of(PackedApp.class)).build());
+    public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.ofManaged(Bean.of(PackedApp.class));
 
     /** Manages the lifecycle of the app. */
     private final ManagedLifecycle lifecycle;
