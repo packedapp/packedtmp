@@ -24,6 +24,7 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.PackedApplicationTemplate;
@@ -42,7 +43,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     // TODO we need to restrict the extensions that can be used to BaseExtension
     // So beans do not uses hooks from various extensions
     private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE =
-            new PackedApplicationTemplate.Builder<>(Bean.of(PackedBootstrapApp.class)).build();
+            PackedApplicationTemplate.of(LifecycleKind.UNMANAGED, Bean.of(PackedBootstrapApp.class));
 
     /** The application launcher. */
     private final ApplicationBaseLauncher launcher;
@@ -120,16 +121,13 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Builds a new bootstrap app for applications represented by the specified template.
-     *
-     * @param <A>
-     * @param template
-     *            the template for the type applications that should be bootstrapped
-     * @return a new bootstrap app
-     */
-    public static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> of(PackedApplicationTemplate<H> template) {
-        // We need a an assembly to build the (bootstrap) application
+    public static <A> BootstrapApp<A> of(LifecycleKind lifecycleKind, Bean<A> bean) {
+        if (lifecycleKind == LifecycleKind.NONE) {
+            throw new IllegalArgumentException("LifecycleKind.NONE is not supported for BootstrapApp");
+        }
+        PackedApplicationTemplate<ApplicationHandle<A, ApplicationConfiguration>> template = PackedApplicationTemplate.of(lifecycleKind, bean);
+
+        // We need an assembly to build the (bootstrap) application
         BootstrapAppAssembly assembly = new BootstrapAppAssembly(template);
 
         // Creates a new application installer and installs the specified assembly and build the final bootstrap application
@@ -139,8 +137,8 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
         if (assembly.sidehandle != null) {
             launcher = ServiceSupport.newApplicationBaseLauncher(assembly.sidehandle);
         }
-        // Returned the bootstrap implementation (represented by a construcing method handle) wrapped in this class.
-        return new PackedBootstrapApp<A, H>(template, launcher);
+        // Returned the bootstrap implementation wrapped in this class.
+        return new PackedBootstrapApp<>(template, launcher);
     }
 
     /** The assembly responsible for building the bootstrap app. */

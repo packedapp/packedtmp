@@ -24,7 +24,6 @@ import app.packed.bean.Bean;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
-import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedBootstrapImage;
 import internal.app.packed.application.PackedBootstrapImage.ImageMapped;
 
@@ -191,14 +190,7 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
     }
 
     static <A> BootstrapApp<A> of(LifecycleKind lifecycleKind, Bean<A> bean) {
-        requireNonNull(bean, "bean is null");
-        requireNonNull(lifecycleKind, "lifecycleKind is null");
-        PackedApplicationTemplate.Builder<A> builder = new PackedApplicationTemplate.Builder<>(bean);
-        return switch (lifecycleKind) {
-            case NONE -> throw new IllegalArgumentException("LifecycleKind.NONE is not supported for BootstrapApp");
-            case UNMANAGED -> PackedBootstrapApp.of(builder.unmanaged().build());
-            case MANAGED -> PackedBootstrapApp.of(builder.build());
-        };
+        return PackedBootstrapApp.of(lifecycleKind, bean);
     }
 
     /**

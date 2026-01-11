@@ -15,6 +15,8 @@
  */
 package internal.app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.function.Function;
 
 import app.packed.application.ApplicationConfiguration;
@@ -24,17 +26,24 @@ import app.packed.application.registry.ApplicationTemplate;
 import app.packed.bean.Bean;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.util.Nullable;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 
 /** Implementation of {@link ApplicationTemplate}. */
-public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Bean<?> bean, Class<? super H> handleClass,
-        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, boolean isManaged
-       ) implements ApplicationTemplate<H> {
+public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(LifecycleKind lifecycleKind, Bean<?> bean, Class<? super H> handleClass,
+        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory) implements ApplicationTemplate<H> {
 
     public Class<?> guestClass() {
         return bean.beanClass();
     }
+
+    public static <I> PackedApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> of(LifecycleKind kind, Bean<I> bean) {
+        requireNonNull(kind, "lifecycleKind is null");
+        requireNonNull(bean, "bean is null");
+        return new PackedApplicationTemplate<>(kind, bean, ApplicationHandle.class, ApplicationHandle::new);
+    }
+
     /**
      * Creates a new {@link ApplicationInstaller} from this template.
      *
@@ -56,7 +65,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Bean<
     /** {@inheritDoc} */
     @Override
     public boolean isManaged() {
-        return isManaged;
+        return lifecycleKind == LifecycleKind.MANAGED;
     }
 
     /** Implementation of {@link ApplicationTemplate.Builder}. */
@@ -64,7 +73,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Bean<
 
         private final Bean<I> bean;
 
-        private boolean managed = true;
+        private LifecycleKind lifecycleKind = LifecycleKind.MANAGED;
 
         public Builder(Bean<I> bean) {
             this.bean = bean;
@@ -80,15 +89,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Bean<
         @Override
         public <H extends ApplicationHandle<I, ?>> PackedApplicationTemplate<H> build(Class<? super H> handleClass,
                 Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
-            return new PackedApplicationTemplate<>(bean, handleClass,
-                    handleFactory, managed);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Builder<I> unmanaged() {
-            this.managed = false;
-            return this;
+            return new PackedApplicationTemplate<>(lifecycleKind, bean, handleClass, handleFactory);
         }
     }
 }

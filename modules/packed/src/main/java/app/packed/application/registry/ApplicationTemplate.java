@@ -48,8 +48,6 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
 
     interface Builder<I> {
 
-       Builder<I> unmanaged();
-
        ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build();
 
        <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
