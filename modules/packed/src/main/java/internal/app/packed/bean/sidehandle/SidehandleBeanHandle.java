@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.OnVariable;
@@ -130,9 +131,11 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
         SidehandleBinding.Kind kind = annotation.value();
         Key<?> key = v.toKey();
 
-        //TODO_CLAUDE check that if there is already an value from a specific key in the hashtable.
-        // The value must be the same, otherwise throw an BeanInstallationException, detailing both kinds
-        kinds.put(key, kind);
+        SidehandleBinding.Kind existingKind = kinds.put(key, kind);
+        if (existingKind != null && existingKind != kind) {
+            throw new BeanInstallationException("Conflicting SidehandleBinding kinds for key " + key
+                + ": existing=" + existingKind + ", new=" + kind);
+        }
 
 
         // For FROM_CONTEXT, use resolve method
