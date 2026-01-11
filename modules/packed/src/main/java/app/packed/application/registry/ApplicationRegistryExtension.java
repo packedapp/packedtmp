@@ -71,7 +71,7 @@ public final class ApplicationRegistryExtension extends FrameworkExtension<Appli
 
         // Create a new installer for the guest bean
 
-        SidehandleBeanHandle<?> gbh = SidehandleBeanHandle.install(t, ExtensionSetup.crack(this), ExtensionSetup.crack(this).container.assembly);
+        SidehandleBeanHandle<?> gbh = SidehandleBeanHandle.installApplication(t, ExtensionSetup.crack(this), ExtensionSetup.crack(this).container.assembly);
         h.repository.mh = ServiceSupport.newApplicationBaseLauncher(gbh);
         return h.configuration();
     }

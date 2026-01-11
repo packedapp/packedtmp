@@ -21,6 +21,7 @@ import app.packed.application.BootstrapApp.Image;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
+import app.packed.component.Sidehandle;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
@@ -131,6 +132,14 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
             throw new IllegalStateException("The application must be installed with BuildImage, was " + application.goal);
         }
         return i;
+    }
+
+    public final Sidehandle sidehandle() {
+        Sidehandle sidehandle = application.sidehandle;
+        if (sidehandle == null) {
+            throw new UnsupportedOperationException("Operation has not been attached to a sidehandle");
+        }
+        return sidehandle;
     }
 
     /** {@inheritDoc} */

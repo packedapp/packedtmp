@@ -29,6 +29,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import app.packed.component.Sidehandle;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
@@ -107,6 +108,10 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
 
     /** The template used to create the application. */
     public final PackedApplicationTemplate<?> template;
+
+    /** Any sidebean attached to the application. */
+    @Nullable
+    public Sidehandle sidehandle;
 
     /**
      * Create a new application.

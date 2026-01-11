@@ -33,7 +33,6 @@ import internal.app.packed.ValueBased;
 final class PackedApp implements App {
 
     /** The bootstrap app for this application. */
-    // Hmm, read of constructor, think we need module expose to packed, should probably be in the docs somewhere
     public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.ofManaged(Bean.of(PackedApp.class));
 
     /** Manages the lifecycle of the app. */

@@ -22,6 +22,7 @@ import java.util.function.Function;
 import app.packed.assembly.Assembly;
 import app.packed.bean.Bean;
 import app.packed.container.Wirelet;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedBootstrapImage;
@@ -189,6 +190,12 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
         throw new UnsupportedOperationException();
     }
 
+    static <A> BootstrapApp<A> of(Bean<A> bean, LifecycleKind lifecycleKind) {
+       //TODO_CLAUDE implement this method
+        // And remove and replace usage of the two deprecated methods below
+//        NONE should throw IllegalArgumentException
+
+    }
     /**
      * Creates a new {@link BootstrapApp} from the specified application template.
      *
@@ -196,10 +203,13 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
      *            the application template to create the bootstrap app from
      * @return the new bootstrap app.
      */
+    // Alternativt tage en MethodHandles.lookup
+    @Deprecated
     static <A> BootstrapApp<A> ofManaged(Bean<A> bean) {
         return PackedBootstrapApp.of(new PackedApplicationTemplate.Builder<>(bean).build());
     }
 
+    @Deprecated
     static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> ofUnmanaged(Bean<A> bean) {
         return PackedBootstrapApp.of(new PackedApplicationTemplate.Builder<>(bean).unmanaged().build());
     }

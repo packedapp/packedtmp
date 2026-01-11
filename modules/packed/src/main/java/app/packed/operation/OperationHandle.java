@@ -264,7 +264,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     public final Sidehandle sidehandle() {
         Sidehandle sidehandle = operation.sidehandle;
         if (sidehandle == null) {
-            throw new UnsupportedOperationException("Operation has not been attached to a sidebean");
+            throw new UnsupportedOperationException("Operation has not been attached to a sidehandle");
         }
         return sidehandle;
     }

@@ -161,12 +161,13 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
             if (template.bean().beanSourceKind() == BeanSourceKind.SOURCELESS) {
                 return;
             }
+            // use(ApplicationExtension).installApp(bean, isManaged);
 
             // Get the internal configuration of BaseExtension
             ExtensionSetup es = ExtensionSetup.crack(assembly().containerRoot().use(BaseExtension.class));
 
             // Install the guest bean (code is shared with App-On-App) in the bootstrap application
-            sidehandle = SidehandleBeanHandle.install(template, es, es.container.assembly);
+            sidehandle = SidehandleBeanHandle.installApplication(template, es, es.container.assembly);
         }
     }
 }

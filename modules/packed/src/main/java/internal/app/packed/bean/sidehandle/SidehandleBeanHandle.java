@@ -191,7 +191,7 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
         return DEFAULT;
     }
 
-    public static SidehandleBeanHandle<?> install(PackedApplicationTemplate<?> template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
+    public static SidehandleBeanHandle<?> installApplication(PackedApplicationTemplate<?> template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
         // Create a new installer for the bean
         PackedBeanTemplate beanTemplate = new PackedBeanTemplate(BeanKind.UNMANAGED,
                 PackedOperationTemplate.DEFAULTS.withRaw().withContext(ApplicationLaunchContext.class));
