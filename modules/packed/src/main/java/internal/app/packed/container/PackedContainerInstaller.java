@@ -72,7 +72,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     public final ArrayList<Wirelet> unconsumedWirelets = new ArrayList<>();
 
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
-    public PackedContainerInstaller(PackedContainerKind containerKind, @Nullable PackedApplicationInstaller<?> application, @Nullable ContainerSetup parent,
+    public PackedContainerInstaller(@Nullable PackedApplicationInstaller<?> application, @Nullable ContainerSetup parent,
             Class<? extends Extension<?>> installedBy) {
         super(Set.of(), new HashMap<>());
         this.applicationInstaller = application;
@@ -170,9 +170,9 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
         }
     }
 
-    public static PackedContainerInstaller<?> of(PackedContainerKind containerKind, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+    public static PackedContainerInstaller<?> of(Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
-        return new PackedContainerInstaller<>(containerKind, null, parent, installedBy);
+        return new PackedContainerInstaller<>(null, parent, installedBy);
     }
 
     /** {@inheritDoc} */

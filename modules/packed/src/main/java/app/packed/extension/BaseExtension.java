@@ -22,7 +22,6 @@ import app.packed.service.ServiceNamespaceConfiguration;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.service.util.PackedServiceLocator;
 
 /**
@@ -243,7 +242,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** {@return a new container builder used for linking.} */
     private ContainerInstaller<?> link0() {
-        return PackedContainerInstaller.of(PackedContainerKind.FROM_CONTAINER, BaseExtension.class,
+        return PackedContainerInstaller.of(BaseExtension.class,
                 extension.container.application, extension.container);
     }
 
