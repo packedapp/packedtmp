@@ -20,7 +20,6 @@ import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;

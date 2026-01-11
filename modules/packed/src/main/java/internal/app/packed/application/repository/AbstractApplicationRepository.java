@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationTemplate;
 import app.packed.application.registry.ApplicationRegistry;
 import app.packed.application.registry.LaunchableApplication;
 import app.packed.build.BuildGoal;
@@ -93,13 +92,7 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
         return pal;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final ApplicationTemplate<H> template() {
-        return template;
-    }
-
-    public static Class<?> repositoryClassFor(ApplicationTemplate<?> template) {
+    public static Class<?> repositoryClassFor(PackedApplicationTemplate<?> template) {
         return template.isManaged() ? ManagedApplicationRepository.class : UnmanagedApplicationRepository.class;
     }
 }

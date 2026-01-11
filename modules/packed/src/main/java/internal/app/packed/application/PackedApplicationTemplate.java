@@ -20,7 +20,7 @@ import java.util.function.Function;
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationTemplate;
+import app.packed.application.registry.ApplicationTemplate;
 import app.packed.bean.Bean;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
@@ -72,13 +72,13 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Bean<
 
         /** {@inheritDoc} */
         @Override
-        public ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build() {
+        public PackedApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build() {
             return build(ApplicationHandle.class, ApplicationHandle::new);
         }
 
         /** {@inheritDoc} */
         @Override
-        public <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
+        public <H extends ApplicationHandle<I, ?>> PackedApplicationTemplate<H> build(Class<? super H> handleClass,
                 Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
             return new PackedApplicationTemplate<>(bean, handleClass,
                     handleFactory, managed);

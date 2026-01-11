@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationTemplate;
 import app.packed.application.containerdynamic.ManagedInstance;
 import internal.app.packed.application.repository.AbstractApplicationRepository;
 
@@ -74,6 +73,4 @@ public sealed interface ApplicationRegistry<I, H extends ApplicationHandle<I, ?>
      */
     LaunchableApplication<I> install(Consumer<? super ApplicationInstaller<H>> installer);
 
-    /** {@return the underlying application template that every application in this repository uses} */
-    ApplicationTemplate<H> template();
 }

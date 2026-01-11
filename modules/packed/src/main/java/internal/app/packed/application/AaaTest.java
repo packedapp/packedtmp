@@ -21,10 +21,9 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import app.packed.bean.Bean;
 import app.packed.assembly.BaseAssembly;
+import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
 import app.packed.lifecycle.Initialize;

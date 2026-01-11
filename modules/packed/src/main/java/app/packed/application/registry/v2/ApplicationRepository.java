@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationTemplate;
 
 /**
  *
@@ -65,7 +64,4 @@ public interface ApplicationRepository<I extends ApplicationImage, H extends App
 
     /** {@return a stream of all installed applications in this repository} */
     Stream<I> stream();
-
-    /** {@return the underlying application template that every application in this repository must use} */
-    ApplicationTemplate<H> template();
 }

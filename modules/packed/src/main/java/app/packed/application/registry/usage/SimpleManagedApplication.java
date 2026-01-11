@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationTemplate;
+import app.packed.application.registry.ApplicationTemplate;
 import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;
 import app.packed.lifecycle.Inject;

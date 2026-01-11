@@ -15,7 +15,6 @@
  */
 package tck;
 
-import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
 

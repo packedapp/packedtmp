@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
 import app.packed.extension.BaseExtension;

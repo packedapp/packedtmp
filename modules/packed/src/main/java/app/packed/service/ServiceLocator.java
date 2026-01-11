@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationInterface;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.bean.Bean;

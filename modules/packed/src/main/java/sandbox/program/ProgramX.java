@@ -18,10 +18,9 @@ package sandbox.program;
 import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import app.packed.bean.Bean;
 import app.packed.assembly.Assembly;
+import app.packed.bean.Bean;
 import app.packed.binding.Key;
 import app.packed.component.SidehandleBinding;
 import app.packed.container.Wirelet;

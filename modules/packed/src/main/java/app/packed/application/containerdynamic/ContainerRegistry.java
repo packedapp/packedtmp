@@ -16,16 +16,9 @@
 package app.packed.application.containerdynamic;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.application.ApplicationHandle;
-import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationTemplate;
-import app.packed.application.registry.ApplicationRegistryBeanConfiguration;
 import app.packed.application.registry.LaunchableApplication.Launcher;
-import app.packed.extension.BaseExtension;
-import app.packed.service.ProvidableBeanConfiguration;
 
 // Den er jo super general...
 // Instance Manager
@@ -48,15 +41,15 @@ public interface ContainerRegistry<I> {
 
     Launcher<I> launcher();
 
-    // Problemet her kan jo saa vaere noget namespace fis...
-    // Naar vi skal launches shittet
-    static <A, H extends ApplicationHandle<A, ?>> ProvidableBeanConfiguration<A> install(ApplicationTemplate<H> template, BaseExtension extension,
-            Consumer<? super ApplicationInstaller<H>> installer) {
-        throw new UnsupportedOperationException();
-    }
-
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRegistryBeanConfiguration<A, H> install(Class<H> handleKind, ApplicationTemplate<H> template,
-            BaseExtension extension) {
-        throw new UnsupportedOperationException();
-    }
+//    // Problemet her kan jo saa vaere noget namespace fis...
+//    // Naar vi skal launches shittet
+//    static <A, H extends ApplicationHandle<A, ?>> ProvidableBeanConfiguration<A> install(ApplicationTemplate<H> template, BaseExtension extension,
+//            Consumer<? super ApplicationInstaller<H>> installer) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    static <A, H extends ApplicationHandle<A, ?>> ApplicationRegistryBeanConfiguration<A, H> install(Class<H> handleKind, ApplicationTemplate<H> template,
+//            BaseExtension extension) {
+//        throw new UnsupportedOperationException();
+//    }
 }

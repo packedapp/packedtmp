@@ -19,15 +19,14 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationTemplate;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanKind;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.FrameworkExtension;
 import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.PackedApplicationTemplate;
-import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.application.repository.AbstractApplicationRepository;
+import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.ServiceSupport;
 
@@ -68,7 +67,7 @@ public final class ApplicationRegistryExtension extends FrameworkExtension<Appli
 
         // Create a new repository bean
         ApplicationRegistryBeanHandle<A, H> h = base().newBean(BeanKind.SINGLETON)
-                .install(Bean.of(AbstractApplicationRepository.repositoryClassFor(template)), i -> new ApplicationRegistryBeanHandle<>(i, t));
+                .install(Bean.of(AbstractApplicationRepository.repositoryClassFor(t)), i -> new ApplicationRegistryBeanHandle<>(i, t));
 
         // Create a new installer for the guest bean
 

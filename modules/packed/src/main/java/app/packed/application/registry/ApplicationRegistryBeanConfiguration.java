@@ -19,7 +19,6 @@ import java.util.function.Function;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 
 /**

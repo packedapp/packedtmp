@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.registry;
 
 import java.util.function.Function;
 
+import app.packed.application.ApplicationConfiguration;
+import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationInstaller;
 import app.packed.bean.Bean;
 import internal.app.packed.application.PackedApplicationTemplate;
 

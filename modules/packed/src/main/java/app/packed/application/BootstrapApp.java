@@ -196,16 +196,16 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
      *            the application template to create the bootstrap app from
      * @return the new bootstrap app.
      */
-    static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> of(ApplicationTemplate<H> template) {
-        return PackedBootstrapApp.of((PackedApplicationTemplate<H>) template);
+    private static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> of(PackedApplicationTemplate<H> template) {
+        return PackedBootstrapApp.of(template);
     }
 
     static <A> BootstrapApp<A> ofManaged(Bean<A> bean) {
-        return of(ApplicationTemplate.builder(bean).build());
+        return of(new PackedApplicationTemplate.Builder<>(bean).build());
     }
 
     static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> ofUnmanaged(Bean<A> bean) {
-        return of(ApplicationTemplate.builder(bean).unmanaged().build());
+        return of(new PackedApplicationTemplate.Builder<>(bean).unmanaged().build());
     }
 
     /**
