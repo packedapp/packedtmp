@@ -20,6 +20,7 @@ import java.util.function.Function;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.bean.Bean;
+import app.packed.lifecycle.LifecycleKind;
 import internal.app.packed.application.PackedApplicationTemplate;
 
 /**
@@ -32,20 +33,8 @@ import internal.app.packed.application.PackedApplicationTemplate;
  */
 public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> permits PackedApplicationTemplate {
 
-    static <T> Builder<T> builder(Bean<T> bean) {
-        return new PackedApplicationTemplate.Builder<>(bean);
-    }
-
     static <T, H extends ApplicationHandle<T, ?>> ApplicationTemplate<H> of(Bean<T> bean, Class<? super H> handleClass,
             Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
-        return new PackedApplicationTemplate.Builder<>(bean).build(handleClass, handleFactory);
-    }
-
-    // bean, isManaged,
-    // bean, isManaged, Handle
-
-    interface Builder<I> {
-        <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
-                Function<? super ApplicationInstaller<H>, ? extends H> handleFactory);
+        return new PackedApplicationTemplate<>(LifecycleKind.MANAGED, bean, handleClass, handleFactory);
     }
 }

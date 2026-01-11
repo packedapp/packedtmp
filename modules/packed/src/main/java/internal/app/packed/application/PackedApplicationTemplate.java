@@ -57,21 +57,4 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Lifec
     }
 
     public interface ApplicationInstallingSource {}
-
-    /** Implementation of {@link ApplicationTemplate.Builder}. */
-    public static final class Builder<I> implements ApplicationTemplate.Builder<I> {
-
-        private final Bean<I> bean;
-
-        public Builder(Bean<I> bean) {
-            this.bean = bean;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <H extends ApplicationHandle<I, ?>> PackedApplicationTemplate<H> build(Class<? super H> handleClass,
-                Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
-            return new PackedApplicationTemplate<>( LifecycleKind.MANAGED, bean, handleClass, handleFactory);
-        }
-    }
 }

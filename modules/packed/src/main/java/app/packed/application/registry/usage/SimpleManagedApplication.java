@@ -41,11 +41,12 @@ public record SimpleManagedApplication(@SidehandleBinding(FROM_CONTEXT) ManagedL
 
     // Problemet er vi skal definere en Handle Class... Der har <I> = ManagedLifecycle
     // Men syntes ogsaa det er fint at folk skal lave en guest bean
-    public static final ApplicationTemplate<GuestApplicationHandle2> MANAGED = ApplicationTemplate
-            .builder(Bean.<ManagedLifecycle>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle, ManagedLifecycle>(e -> e) {})).build(GuestApplicationHandle2.class, GuestApplicationHandle2::new);
+    public static final ApplicationTemplate<GuestApplicationHandle2> MANAGED = ApplicationTemplate.of(
+            Bean.<ManagedLifecycle>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle, ManagedLifecycle>(e -> e) {}), GuestApplicationHandle2.class,
+            GuestApplicationHandle2::new);
 
-    public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.builder(Bean.of(SimpleManagedApplication.class))
-            .build(GuestApplicationHandle.class, GuestApplicationHandle::new);
+    public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.of(Bean.of(SimpleManagedApplication.class),
+            GuestApplicationHandle.class, GuestApplicationHandle::new);
 
     @Inject
     public SimpleManagedApplication(@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle lifecyle) {
