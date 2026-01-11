@@ -32,6 +32,7 @@ import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -67,8 +68,9 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
 
     PackedApplicationInstaller(PackedApplicationTemplate<?> template, @Nullable ApplicationBaseLauncher launcher, BuildGoal goal) {
         this.template = template;
-        this.isManaged = template.rootContainer().isManaged();
-        this.containerInstaller = new PackedContainerInstaller<>(template.rootContainer(), this, null, null);
+        this.isManaged = template.isManaged();
+        PackedContainerKind pck = isManaged ? PackedContainerKind.MANAGED : PackedContainerKind.UNMANAGED;
+        this.containerInstaller = new PackedContainerInstaller<>(pck, this, null, null);
         this.buildProcess = new PackedBuildProcess(this, goal);
         this.launcher = launcher;
     }

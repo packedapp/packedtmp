@@ -15,8 +15,6 @@
  */
 package internal.app.packed.application;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.function.Function;
 
 import app.packed.application.ApplicationConfiguration;
@@ -27,25 +25,12 @@ import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
-import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 
 /** Implementation of {@link ApplicationTemplate}. */
 public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
-        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerKind rootContainer
+        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, boolean isManaged
        ) implements ApplicationTemplate<H> {
-
-    public PackedApplicationTemplate(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
-            Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory) {
-        this(guestClass, op, handleClass, handleFactory, null);
-    }
-
-
-    /** {@inheritDoc} */
-    public PackedApplicationTemplate<H> withRootContainer(PackedContainerKind kind) {
-        requireNonNull(kind);
-        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, kind);
-    }
 
     /**
      * Creates a new {@link ApplicationInstaller} from this template.
@@ -68,7 +53,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
     /** {@inheritDoc} */
     @Override
     public boolean isManaged() {
-        return rootContainer().isManaged();
+        return isManaged;
     }
 
     /** Implementation of {@link ApplicationTemplate.Builder}. */
@@ -76,9 +61,9 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
 
         private final Class<?> guestClass;
 
-        private final @Nullable Op<?> op;
-
         private boolean managed = true;
+
+        private final @Nullable Op<?> op;
 
         public Builder(Class<I> guestClass) {
             this.guestClass = guestClass;
@@ -92,13 +77,6 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
 
         /** {@inheritDoc} */
         @Override
-        public Builder<I> unmanaged() {
-            this.managed = false;
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> build() {
             return build(ApplicationHandle.class, ApplicationHandle::new);
         }
@@ -107,9 +85,15 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
         @Override
         public <H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> build(Class<? super H> handleClass,
                 Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
-            PackedContainerKind containerKind = managed ? PackedContainerKind.MANAGED : PackedContainerKind.UNMANAGED;
             return new PackedApplicationTemplate<>(guestClass, op, handleClass,
-                    handleFactory, containerKind);
+                    handleFactory, managed);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Builder<I> unmanaged() {
+            this.managed = false;
+            return this;
         }
     }
 }

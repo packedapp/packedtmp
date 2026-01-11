@@ -44,7 +44,6 @@ import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
 import internal.app.packed.assembly.AssemblySetup;
-import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 import tck.AbstractAppTest.InternalTestState.State1Setup;
 import tck.AbstractAppTest.InternalTestState.State2Building;
@@ -214,7 +213,7 @@ abstract class AbstractAppTest<A> {
         final class State2Building implements InternalTestState, ApplicationInstallingSource {
             public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
             static final PackedApplicationTemplate<?> PAT = new PackedApplicationTemplate<>(Void.class, null, ApplicationHandle.class, ApplicationHandle::new,
-                    PackedContainerKind.MANAGED);
+                    true);
             final AssemblySetup assembly;
 
             final PackedApplicationInstaller<?> b;
