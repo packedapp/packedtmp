@@ -19,6 +19,7 @@ import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
+import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
@@ -29,7 +30,7 @@ import app.packed.service.ServiceLocator;
 public class ServiceLocatorAppTest extends AbstractBootstrapedAppTest<ServiceLocator> {
 
     private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-            .of(ApplicationTemplate.builder(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {}).unmanaged().build());
+            .of(ApplicationTemplate.builder(Bean.<ServiceLocator>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {})).unmanaged().build());
 
     public ServiceLocatorAppTest() {
         super(APP);

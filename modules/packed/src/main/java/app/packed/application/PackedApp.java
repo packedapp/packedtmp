@@ -19,6 +19,7 @@ import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import java.util.concurrent.TimeUnit;
 
+import app.packed.bean.Bean;
 import app.packed.binding.Key;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
@@ -33,7 +34,7 @@ final class PackedApp implements App {
 
     /** The bootstrap app for this application. */
     // Hmm, read of constructor, think we need module expose to packed, should probably be in the docs somewhere
-    public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.builder(PackedApp.class).build());
+    public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.builder(Bean.of(PackedApp.class)).build());
 
     /** Manages the lifecycle of the app. */
     private final ManagedLifecycle lifecycle;

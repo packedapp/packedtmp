@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
+import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
 import app.packed.lifecycle.RunState;
@@ -37,7 +38,7 @@ import internal.app.packed.ValueBased;
 final class PackedJobApp implements JobApp {
 
     /** The bootstrap app for this application. */
-    public static final BootstrapApp<PackedJobApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.builder(PackedJobApp.class).build());
+    public static final BootstrapApp<PackedJobApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.builder(Bean.of(PackedJobApp.class)).build());
 
     /** Manages the lifecycle of the app. */
     private final ManagedLifecycle lifecycle;

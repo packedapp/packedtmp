@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.BuildableAssembly;
+import app.packed.bean.Bean;
 import app.packed.bean.BeanSourceKind;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
@@ -41,7 +42,7 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     // TODO we need to restrict the extensions that can be used to BaseExtension
     // So beans do not uses hooks from various extensions
     private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE = (PackedApplicationTemplate<?>) ApplicationTemplate
-            .builder(PackedBootstrapApp.class).build();
+            .builder(Bean.of( PackedBootstrapApp.class)).build();
 
     /** The application launcher. */
     private final ApplicationBaseLauncher launcher;

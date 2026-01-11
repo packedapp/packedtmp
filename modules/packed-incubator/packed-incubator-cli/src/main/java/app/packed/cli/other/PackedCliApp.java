@@ -18,6 +18,7 @@ package app.packed.cli.other;
 import app.packed.application.App;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
+import app.packed.bean.Bean;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;
@@ -75,7 +76,7 @@ public final class PackedCliApp {
      */
     private static BootstrapApp<Void> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<Void> APP = BootstrapApp.of(ApplicationTemplate.builder(Void.class).build());
+            private static final BootstrapApp<Void> APP = BootstrapApp.of(ApplicationTemplate.builder(Bean.of(Void.class)).build());
         }
         return ServiceLocatorBootstrap.APP;
     }

@@ -20,6 +20,7 @@ import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
+import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;
 
 /**
@@ -54,7 +55,7 @@ import app.packed.component.SidehandleBinding;
 public final class Te {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.builder(Holder.class).build());
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.builder(Bean.of(Holder.class)).build());
 
     public static void main(String[] args) {
         BOOTSTRAP.getClass();

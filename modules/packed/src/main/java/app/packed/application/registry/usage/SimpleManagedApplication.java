@@ -24,6 +24,7 @@ import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
+import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;
 import app.packed.lifecycle.Inject;
 import app.packed.lifecycle.RunState;
@@ -41,9 +42,9 @@ public record SimpleManagedApplication(@SidehandleBinding(FROM_CONTEXT) ManagedL
     // Problemet er vi skal definere en Handle Class... Der har <I> = ManagedLifecycle
     // Men syntes ogsaa det er fint at folk skal lave en guest bean
     public static final ApplicationTemplate<GuestApplicationHandle2> MANAGED = ApplicationTemplate
-            .builder(new Op1<@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle, ManagedLifecycle>(e -> e) {}).build(GuestApplicationHandle2.class, GuestApplicationHandle2::new);
+            .builder(Bean.<ManagedLifecycle>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle, ManagedLifecycle>(e -> e) {})).build(GuestApplicationHandle2.class, GuestApplicationHandle2::new);
 
-    public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.builder(SimpleManagedApplication.class)
+    public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.builder(Bean.of(SimpleManagedApplication.class))
             .build(GuestApplicationHandle.class, GuestApplicationHandle::new);
 
     @Inject

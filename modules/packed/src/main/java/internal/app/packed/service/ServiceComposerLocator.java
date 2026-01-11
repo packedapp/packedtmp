@@ -19,6 +19,7 @@ import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
+import app.packed.bean.Bean;
 import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.assembly.AbstractComposer.ComposerAction;
@@ -43,7 +44,7 @@ public class ServiceComposerLocator {
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
             private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-                    .of(ApplicationTemplate.builder(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {}).unmanaged().build());
+                    .of(ApplicationTemplate.builder(Bean.<ServiceLocator>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ServiceLocator, ServiceLocator>(e -> e) {})).unmanaged().build());
         }
         return ServiceLocatorBootstrap.APP;
     }

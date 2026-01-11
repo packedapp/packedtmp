@@ -18,7 +18,6 @@ package app.packed.application;
 import java.util.function.Function;
 
 import app.packed.bean.Bean;
-import app.packed.operation.Op;
 import internal.app.packed.application.PackedApplicationTemplate;
 
 /**
@@ -41,15 +40,9 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
         return new PackedApplicationTemplate.Builder<>(bean);
     }
 
-    @Deprecated // use builder(Bean)
-    static <I> Builder<I> builder(Class<I> hostClass) {
-        return new PackedApplicationTemplate.Builder<>(Bean.of(hostClass));
-    }
 
-    @Deprecated // use builder(Bean)
-    static <I> Builder<I> builder(Op<I> hostOp) {
-        return new PackedApplicationTemplate.Builder<>(Bean.of(hostOp));
-    }
+    // bean, isManaged,
+    // bean, isManaged, Handle
 
     interface Builder<I> {
 
