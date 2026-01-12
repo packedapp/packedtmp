@@ -17,6 +17,7 @@ package internal.app.packed.bean.scanning;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Set;
 
 import app.packed.context.Context;
 import app.packed.extension.Extension;
@@ -42,7 +43,7 @@ public interface BeanTriggerModel {
 
     record ParameterAnnotatedCache(BeanIntrospectorClassModel bim) {}
 
-    record ParameterTypeCache(BeanIntrospectorClassModel bim, @Nullable Class<?> definingIfInherited) {}
+    record ParameterTypeCache(BeanIntrospectorClassModel bim, @Nullable Class<?> definingIfInherited, Set<Class<? extends Context<?>>> requiredContexts) {}
 
     sealed interface FieldCache permits OnAnnotatedVariableCache, OnAnnotatedFieldCache {
         void handleOne(BeanScanner scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList triggeringAnnotations);

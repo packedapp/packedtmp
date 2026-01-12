@@ -82,6 +82,9 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
                 n = prefix + ++counter;
             }
             bean.multiInstall = counter;
+
+            // Register the bean class for installIfAbsent lookups
+            beanClasses.put(key, bean);
         }
         bean.name = n;
     }

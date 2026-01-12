@@ -133,6 +133,11 @@ public sealed abstract class PackedOperationTarget {
         public OperationTarget target() {
             return (OperationTarget) target;
         }
+
+        @Override
+        public String toString() {
+            return target.member.toString();
+        }
     }
 
     /** An operation that invokes a method handle. */

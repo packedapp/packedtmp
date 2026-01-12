@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
+import internal.app.packed.web.WebGetOperationHandle;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -38,7 +39,7 @@ final class WebGetBeanIntrospector extends BaseExtensionBeanIntrospector {
     /** {@inheritDoc} */
     @Override
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
-        //TODO
+        WebGetOperationHandle.onWebGetAnnotation(this, method, (WebGet) annotation);
     }
 }
 

@@ -16,6 +16,7 @@
 package internal.app.packed.bean.scanning;
 
 import java.lang.annotation.Annotation;
+import java.util.Set;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
@@ -99,25 +100,25 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
         @Override
         protected ParameterTypeCache computeValue(Class<?> type) {
-            AutoInject h = type.getAnnotation(AutoInject.class);
-            AutoInjectInheritable ih = type.getAnnotation(AutoInjectInheritable.class);
+            AutoInject autoInject = type.getAnnotation(AutoInject.class);
+            AutoInjectInheritable autoInjectInheritable = type.getAnnotation(AutoInjectInheritable.class);
 
-            if (h == null && ih == null) {
+            if (autoInject == null && autoInjectInheritable == null) {
                 return null;
             }
 
-            if (h != null && ih != null) {
+            if (autoInject != null && autoInjectInheritable != null) {
                 throw new InternalExtensionException(
                         "Cannot use both " + AutoInject.class + " and " + AutoInjectInheritable.class + " on @" + type);
             }
 
-            if (h != null) {
-                BeanIntrospectorClassModel bim = bim(type, h.introspector());
-                return new ParameterTypeCache(bim, null);
+            if (autoInject != null) {
+                BeanIntrospectorClassModel bim = bim(type, autoInject.introspector());
+                return new ParameterTypeCache(bim, null, Set.of(autoInject.requiresContext()) );
             } else {
 //                throw new InternalExtensionException("@" + OnExtensionServiceInteritedBeanTrigger.class.getSimpleName()
 //                        + " cannot be used on interfaces as interface annotations are never inherited, class = " + type);
-                BeanIntrospectorClassModel bim = bim(type, ih.introspector());
+                BeanIntrospectorClassModel bim = bim(type, autoInjectInheritable.introspector());
 
                 Class<?> inherited = type;
                 while (inherited != null) {
@@ -127,7 +128,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
                     inherited = inherited.getSuperclass();
                 }
 
-                return new ParameterTypeCache(bim, inherited);
+                return new ParameterTypeCache(bim, inherited, Set.of(autoInjectInheritable.requiresContext()));
             }
         }
     };

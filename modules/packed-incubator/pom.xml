@@ -16,10 +16,12 @@
 
   <!-- ==================================================================== -->
   <modules>
+  <!--
     <module>packed-incubator-cli</module>
     <module>packed-incubator-concurrent</module>
     <module>packed-incubator-telemetry</module>
     <module>packed-incubator-web</module>
+    -->
   </modules>
 
 </project>

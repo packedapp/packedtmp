@@ -15,7 +15,9 @@
  */
 package app.packed.concurrent.job;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
@@ -23,6 +25,8 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.concurrent.DaemonJob;
 import app.packed.concurrent.DaemonJobContext;
 import app.packed.lifecycle.Stop;
+import app.packed.web.HttpContext;
+import app.packed.web.WebGet;
 
 /**
  *
@@ -38,7 +42,7 @@ public class ScTest2 extends BaseAssembly {
 //        });
 
         App app = App.start(new ScTest2());
-        Thread.sleep(3000);
+        Thread.sleep(30000);
         app.stop();
         Thread.sleep(1000);
         System.out.println(app.state());
@@ -55,10 +59,18 @@ public class ScTest2 extends BaseAssembly {
 
     public static class MuB {
 
+        private final AtomicLong al = new AtomicLong();
+
+        @WebGet(url = "/json")
+        public void json(HttpContext ctx) throws IOException {
+            ctx.response().write("{\"status\":\"" + al.get()+ "\"}", "application/json");
+        }
+
         @DaemonJob
         public void dae(ApplicationMirror am, DaemonJobContext sc) throws Exception {
             while (sc.awaitShutdown(1, TimeUnit.SECONDS)) {
                 IO.println("Daemon " + am.allOperations().count());
+                al.incrementAndGet();
             }
         }
 

@@ -164,7 +164,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
         if (context != ExtensionContext.class) {
             ContextSetup findContext = operation.findContext(context);
             if (findContext == null) {
-                throw new UnavilableContextException("oops " + context);
+                throw new UnavilableContextException("Context " + context.getSimpleName() + " not available for " + operation.target );
             }
         }
         MethodType mt = operation.template.invocationType();

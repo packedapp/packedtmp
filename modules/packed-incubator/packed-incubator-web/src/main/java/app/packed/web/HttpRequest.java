@@ -15,10 +15,47 @@
  */
 package app.packed.web;
 
+import java.io.IOException;
+import java.net.URI;
+
+import com.sun.net.httpserver.Headers;
+
+import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.binding.Key;
+import app.packed.operation.Op1;
+import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
+
 /**
- *
+ * Represents an HTTP request.
  */
-//@OnExtensionServiceBeanTrigger(extension = WebExtension.class, requiresContext = HttpContext.class)
+@AutoInject(introspector = HttpRequestBeanIntrospector.class, requiresContext = HttpContext.class)
 public interface HttpRequest {
 
+    /** Returns the request URI. */
+    URI uri();
+
+    /** Returns the request method (GET, POST, etc.). */
+    String method();
+
+    /** Returns a request header value. */
+    String header(String name);
+
+    /** Returns all request headers. */
+    Headers headers();
+
+    /** Returns a query parameter value. */
+    String queryParam(String name);
+
+    /** Returns the request body as a string. */
+    String body() throws IOException;
+}
+
+final class HttpRequestBeanIntrospector extends BaseExtensionBeanIntrospector {
+
+    /** {@inheritDoc} */
+    @Override
+    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+        service.binder().bindOp(new Op1<HttpContext, HttpRequest>(f->f.request()) {});
+    }
 }

@@ -82,7 +82,6 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *           Even for action and the returned bean
      */
     public <T> ProvidableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ProvidableBeanConfiguration<T>> action) {
-        requireNonNull(action, "action is null");
         return newBean(BeanKind.SINGLETON, handle())
                 .installIfAbsent(clazz, ProvidableBeanHandle.class, ProvidableBeanHandle<T>::new, h -> action.accept(h.configuration())).configuration();
     }

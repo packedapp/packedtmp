@@ -21,6 +21,7 @@ import java.lang.invoke.MethodType;
 import java.util.Map;
 
 import app.packed.bean.BeanSourceKind;
+import app.packed.component.SidehandleContext;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.extension.ExtensionContext;
@@ -53,6 +54,7 @@ public class ServiceSupport {
 
     public static ApplicationBaseLauncher newApplicationBaseLauncher(SidehandleBeanHandle<?> handle) {
         MethodHandle m = OperationSetup.crack(handle.factory()).codeGenerator.generate(true);
+        m = MethodHandles.insertArguments(m, 1, new SidehandleContext() {});
         m = MethodHandles.explicitCastArguments(m, m.type().changeReturnType(Object.class));
         return new ApplicationBaseLauncher(m);
     }
