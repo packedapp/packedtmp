@@ -1,3 +1,9 @@
+Major Architectual
+  Hooks
+  Namespaces/Extensions
+  Lifecycle
+  
+
 
 
 
