@@ -61,6 +61,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     /** The assembly that defines the container. */
     public final AssemblySetup assembly;
 
+    /** The base extension of this container. */
     @Nullable
     private ExtensionSetup baseExtension;
 
@@ -89,7 +90,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     // Maybe replace with ContainerServiceSetup. Where all the logic is.
     private MainServiceNamespaceHandle sm;
 
-    public final ArrayList<Wirelet> wirelets;
+    public final ArrayList<Wirelet> unprocessedWirelets;
 
     public ContainerWireletSpecs wireletSpecs = new ContainerWireletSpecs();
 
@@ -114,7 +115,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
 
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = installer.nameFromWirelet != null || installer.isFromAssembly;
-        this.wirelets = installer.unconsumedWirelets;
+        this.unprocessedWirelets = installer.unprocessedWirelets;
     }
 
     /**

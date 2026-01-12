@@ -18,6 +18,7 @@ package app.packed.concurrent.job;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.concurrent.DaemonJob;
 import app.packed.concurrent.DaemonJobContext;
@@ -29,7 +30,7 @@ import app.packed.lifecycle.Stop;
 public class ScTest2 extends BaseAssembly {
 
     public static void main(String[] args) throws Exception {
-        //ApplicationMirror m = App.mirrorOf(new ScTest2());
+        // ApplicationMirror m = App.mirrorOf(new ScTest2());
 //        Optional<ThreadNamespaceMirror> o = m.namespace(ThreadNamespaceMirror.class);
 
 //        o.get().daemons().forEach(c -> {
@@ -55,9 +56,9 @@ public class ScTest2 extends BaseAssembly {
     public static class MuB {
 
         @DaemonJob
-        public void dae(DaemonJobContext sc) throws Exception {
-            while(sc.awaitShutdown(1, TimeUnit.SECONDS)) {
-                IO.println("Daemon");
+        public void dae(ApplicationMirror am, DaemonJobContext sc) throws Exception {
+            while (sc.awaitShutdown(1, TimeUnit.SECONDS)) {
+                IO.println("Daemon " + am.allOperations().count());
             }
         }
 

@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanSourceKind;
 import app.packed.component.ComponentRealm;
+import internal.app.packed.ValueBased;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.extension.ExtensionSetup;
 
@@ -142,7 +143,8 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         return bean.multiInstall & CLASS_COUNT_MASK;
     }
 
-    public /* primitive */ record BeanClassKey(ComponentRealm realm, Class<?> beanClass) {}
+    @ValueBased
+    public record BeanClassKey(ComponentRealm realm, Class<?> beanClass) {}
 
     // Kunne maaske have en int paa BeanSetup
     // Og saa i Bean Classes har vi den seneste indsatte

@@ -27,8 +27,6 @@ import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
  * <p>
  * An instance of this class is typically required when invoking operations.
  */
-// I don't know about this after we have gotten typed invokers...
-// I think they should be preferable
 @AutoInject(introspector = ExtensionContextBeanIntrospector.class)
 public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}
 

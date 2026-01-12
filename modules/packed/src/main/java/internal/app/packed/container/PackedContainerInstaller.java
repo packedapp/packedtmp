@@ -69,7 +69,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     public final ContainerSetup parent;
 
     /** A list of wirelets that have not been consumed yet. */
-    public final ArrayList<Wirelet> unconsumedWirelets = new ArrayList<>();
+    public final ArrayList<Wirelet> unprocessedWirelets = new ArrayList<>();
 
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
     public PackedContainerInstaller(@Nullable PackedApplicationInstaller<?> application, @Nullable ContainerSetup parent,
@@ -165,7 +165,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
             switch (wirelet) {
             case CompositeWirelet w -> processWirelets(w.wirelets);
             case InternalBaseWirelet w -> w.onBuild(this);
-            default -> unconsumedWirelets.add(wirelet);
+            default -> unprocessedWirelets.add(wirelet);
             }
         }
     }

@@ -94,6 +94,6 @@ public final class DaemonJobSidehandle implements DaemonJobContext {
     }
 
     interface DaemonOperationInvoker {
-        void invoke(DaemonJobContext context) throws Throwable;
+        void invoke(DaemonJobSidehandle context) throws Throwable;
     }
 }

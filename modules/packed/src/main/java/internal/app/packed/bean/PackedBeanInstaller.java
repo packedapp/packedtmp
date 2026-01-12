@@ -54,7 +54,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     final AuthoritySetup<?> owner;
 
     /** The bean's template. */
-    public PackedBeanTemplate template;
+    public final PackedBeanTemplate template;
 
     public final BeanKind beanlifetime;
     /**

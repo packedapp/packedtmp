@@ -42,6 +42,8 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     /** An application template that is used for the bootstrap app. */
     // TODO we need to restrict the extensions that can be used to BaseExtension
     // So beans do not uses hooks from various extensions
+    // Or maybe we check this somewhere. I think SidehandleBinding is the only supported annotation + Lifecycle
+    // Maybe all base extension actually.
     private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE =
             PackedApplicationTemplate.of(LifecycleKind.UNMANAGED, Bean.of(PackedBootstrapApp.class));
 

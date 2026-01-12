@@ -35,17 +35,17 @@ import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
  */
 public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration> extends ComponentHandle implements ApplicationBuildLocal.Accessor {
 
-    /** The handle's application. */
+    /** The applications's setup. */
     final ApplicationSetup application;
 
-    /** The lazy generated application configuration. */
+    /** The configuration for the application. */
     private final Supplier<C> configuration = StableValue.supplier(() -> newApplicationConfiguration());
 
     /** An image if the application has been constructed using {@link BuildGoal#IMAGE}. */
     @Nullable
     private final Image<A> image;
 
-    /** The lazy generated application mirror. */
+    /** A mirror for the application. */
     private final Supplier<ApplicationMirror> mirror = StableValue.supplier(() -> newApplicationMirror());
 
     /**

@@ -22,6 +22,8 @@ import app.packed.service.bridge.ServiceNamespaceBridge;
 /**
  *
  */
+// Maybe BaseExtensionSupport??
+// Vi har det jo her fordi det er svaert at tilgaa BaseExtension fra interne pakker
 public class ContainerWireletSpecs {
 
     public String name;

@@ -160,6 +160,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
     /** {@inheritDoc} */
     @Override
     public IntrospectorOnVariable bindContext(Class<? extends Context<?>> context) {
+        checkNotBound();
         if (context != ExtensionContext.class) {
             ContextSetup findContext = operation.findContext(context);
             if (findContext == null) {

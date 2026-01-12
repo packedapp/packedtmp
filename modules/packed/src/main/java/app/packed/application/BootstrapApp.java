@@ -266,12 +266,6 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
          */
         A launch(RunState state);
     }
-
-    // Valid runstates, could also be methods...
-    // Taenker den boer kunne genbruges i ApplicationRepository
-    enum LaunchState {
-        INITIALIZED,
-    }
 }
 
 // I don't if we have any usecases Maybe just skip it

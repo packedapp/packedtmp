@@ -133,7 +133,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            the kind of container to create
      * @return the installer
      */
-    ContainerInstaller<?> newContainer() {
+    ContainerInstaller<?> newContainer( ) {
         // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup es = handle.usedBy();
         return PackedContainerInstaller.of(es.extensionType, es.container.application, es.container);

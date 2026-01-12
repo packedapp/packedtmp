@@ -34,11 +34,9 @@ public enum PackedBeanLifecycleKind {
     /** Runs initialization reverse. */
     INITIALIZE_POST_ORDER(RunState.INITIALIZING, DependantOrder.RUN_AFTER_DEPENDANTS),
 
-    START_PRE_ORDER(RunState.STARTING, DependantOrder.RUN_BEFORE_DEPENDANTS),
-    START_POST_ORDER(RunState.STARTING, DependantOrder.RUN_AFTER_DEPENDANTS),
+    START_PRE_ORDER(RunState.STARTING, DependantOrder.RUN_BEFORE_DEPENDANTS), START_POST_ORDER(RunState.STARTING, DependantOrder.RUN_AFTER_DEPENDANTS),
 
-    STOP_PRE_ORDER(RunState.STOPPING, DependantOrder.RUN_BEFORE_DEPENDANTS),
-    STOP_POST_ORDER(RunState.STOPPING, DependantOrder.RUN_AFTER_DEPENDANTS);
+    STOP_PRE_ORDER(RunState.STOPPING, DependantOrder.RUN_BEFORE_DEPENDANTS), STOP_POST_ORDER(RunState.STOPPING, DependantOrder.RUN_AFTER_DEPENDANTS);
 
     public final RunState runState;
 
@@ -46,28 +44,28 @@ public enum PackedBeanLifecycleKind {
 
     PackedBeanLifecycleKind(RunState runState, DependantOrder ordering) {
         this.runState = runState;
-        this.ordering=ordering;
+        this.ordering = ordering;
     }
 
     /**
-    *
-    * @see OnInitialize
-    * @see OnStart
-    * @see OnStop
-    */
-   // BeanLifecycleOrder
-   // DependencyOrder <---
-   // In app.packed.lifetime/lifecycle?
+     *
+     * @see OnInitialize
+     * @see OnStart
+     * @see OnStop
+     */
+    // BeanLifecycleOrder
+    // DependencyOrder <---
+    // In app.packed.lifetime/lifecycle?
 
-   //PreOrder, PostOrder | OperationDependencyORder->DependencyOrder (Or just Ordering)
+    // PreOrder, PostOrder | OperationDependencyORder->DependencyOrder (Or just Ordering)
 
-   // remove this, and just have boolean naturalOrder
-   public enum DependantOrder {
+    // remove this, and just have boolean naturalOrder
+    public enum DependantOrder {
 
-       /** The operation will be executed before any other operation on beans that have this bean as a dependency. */
-       RUN_BEFORE_DEPENDANTS,
+        /** The operation will be executed before any other operation on beans that have this bean as a dependency. */
+        RUN_BEFORE_DEPENDANTS,
 
-       /** The operation will be executed after any dependencies. */
-       RUN_AFTER_DEPENDANTS;
-   }
+        /** The operation will be executed after any dependencies. */
+        RUN_AFTER_DEPENDANTS;
+    }
 }
