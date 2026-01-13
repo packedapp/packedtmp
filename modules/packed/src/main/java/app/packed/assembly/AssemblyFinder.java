@@ -104,12 +104,6 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
      */
     AssemblyFinder classLoader(ClassLoader classLoader);
 
-    // finders can ikke laengere modificeres
-    // Compose with
-    default AssemblyFinder compose(AssemblyFinder... finders) {
-        throw new UnsupportedOperationException();
-    }
-
     default <T extends Assembly> Stream<T> findAll(ServiceLoader<T> loader) {
         throw new UnsupportedOperationException();
     }
@@ -152,6 +146,10 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
         return this;
     }
 
+    static AssemblyFinder compose(AssemblyFinder... finders) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return an assembly finder that uses the classpath to find assemblies} */
     // I think we still need need classloader from a class
     static AssemblyFinder onClasspath() {
@@ -171,7 +169,6 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
     /**
      * An assembly finder can be used to find assemblies either on the class or module path. But not both.
      */
-    // I think just have two is methods(), isClassPath, isModulePath
     enum Mode {
         SEARCH_CLASSPATH, SEARCH_MODULEPATH;
     }

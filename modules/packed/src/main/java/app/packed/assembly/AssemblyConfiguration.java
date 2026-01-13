@@ -58,7 +58,7 @@ public final class AssemblyConfiguration {
      * If this assembly is on the modulepath the assembly finder will search for assemblies on the modulepath.
      * Otherwise the classpath will be searched.
      */
-    public AssemblyFinder assemblyFinder() {
+    public AssemblyFinder finder() {
         return new PackedAssemblyFinder(getClass(), assembly);
     }
 

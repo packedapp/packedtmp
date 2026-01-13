@@ -16,6 +16,7 @@
 package app.packed.concurrent.job;
 
 import java.io.IOException;
+import java.util.ServiceLoader;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -51,6 +52,10 @@ public class ScTest2 extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
+
+        link(assembly().finder().findOne("foo.bar"));
+        assembly().finder().findAll(ServiceLoader.load(BaseAssembly.class)).forEach(e -> link(e));
+
         provideInstance("asdasd");
         install(MuB.class);
 
@@ -63,7 +68,7 @@ public class ScTest2 extends BaseAssembly {
 
         @WebGet(url = "/json")
         public void json(HttpContext ctx) throws IOException {
-            ctx.response().write("{\"status\":\"" + al.get()+ "\"}", "application/json");
+            ctx.response().write("{\"status\":\"" + al.get() + "\"}", "application/json");
         }
 
         @DaemonJob
