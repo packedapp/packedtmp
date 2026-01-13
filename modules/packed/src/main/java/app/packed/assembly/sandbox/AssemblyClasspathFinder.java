@@ -55,6 +55,7 @@ import internal.app.packed.assembly.PackedAssemblyClasspathFinder;
  */
 public interface AssemblyClasspathFinder extends AssemblyFinder {
 
+    @Override
     /**
      * Finds and instantiates an assembly by its fully qualified class name.
      *
@@ -74,6 +75,7 @@ public interface AssemblyClasspathFinder extends AssemblyFinder {
      */
     Assembly findOne(String className);
 
+    @Override
     /**
      * Finds and instantiates an assembly by its fully qualified class name, returning
      * an empty optional if the class cannot be found.
@@ -99,6 +101,7 @@ public interface AssemblyClasspathFinder extends AssemblyFinder {
      */
     Optional<Assembly> findOptional(String className);
 
+    @Override
     /**
      * Discovers and instantiates assemblies using the {@link ServiceLoader} mechanism.
      *
@@ -124,6 +127,7 @@ public interface AssemblyClasspathFinder extends AssemblyFinder {
      */
     <T extends Assembly> Stream<T> serviceLoader(Class<T> assemblyType);
 
+    @Override
     /**
      * Returns a new finder that additionally searches the specified paths.
      *

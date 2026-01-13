@@ -17,7 +17,6 @@ package internal.app.packed.bean.scanning;
 
 import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
-import static sandbox.Debug.debug;
 
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
@@ -179,7 +178,6 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
     public IntrospectorOnVariable bindInvocationArgument(int argumentIndex) {
         checkBeforeBind();
         if (operation.installedByExtension != bindingExtension) {
-            debug(operation.bean.bean.beanClass + "   " + operation.type);
             throw new UnsupportedOperationException("For binding " + variable + " InstalledBy:" + operation.installedByExtension +"  Binding:" + bindingExtension
                     );
         }

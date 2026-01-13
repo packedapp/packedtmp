@@ -17,7 +17,6 @@ package app.packed.assembly.sandbox;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.module.ModuleDescriptor;
-import java.lang.module.ModuleReference;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
@@ -77,6 +76,7 @@ import internal.app.packed.assembly.PackedAssemblyModulepathFinder;
  */
 public interface AssemblyModulepathFinder extends AssemblyFinder {
 
+    @Override
     /**
      * Finds and instantiates an assembly by its fully qualified class name.
      *
@@ -100,6 +100,7 @@ public interface AssemblyModulepathFinder extends AssemblyFinder {
      */
     Assembly findOne(String className);
 
+    @Override
     /**
      * Finds and instantiates an assembly by its fully qualified class name, returning
      * an empty optional if the class cannot be found.
@@ -256,6 +257,7 @@ public interface AssemblyModulepathFinder extends AssemblyFinder {
      */
     ModuleLayer parentLayer();
 
+    @Override
     /**
      * Discovers and instantiates assemblies using the {@link ServiceLoader} mechanism.
      *
@@ -296,6 +298,7 @@ public interface AssemblyModulepathFinder extends AssemblyFinder {
      */
     ModuleLayer layer();
 
+    @Override
     /**
      * Returns a new finder that will search the specified paths for modules.
      *
