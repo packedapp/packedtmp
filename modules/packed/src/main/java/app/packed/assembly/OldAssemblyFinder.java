@@ -89,9 +89,9 @@ import internal.app.packed.assembly.PackedAssemblyFinder;
 
 // Ideen er nok at den her kan bruges til at finde flere
 // Mens container linker kun kan bruges til en
-public sealed interface AssemblyFinder permits PackedAssemblyFinder {
+public sealed interface OldAssemblyFinder permits PackedAssemblyFinder {
 
-    AssemblyFinder addModuleLayer(ModuleLayer moduleLayer);
+    OldAssemblyFinder addModuleLayer(ModuleLayer moduleLayer);
 
     /**
      * <p>
@@ -102,7 +102,7 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
      *            the class loader to use as a parent loader
      * @return this assembly finder
      */
-    AssemblyFinder classLoader(ClassLoader classLoader);
+    OldAssemblyFinder classLoader(ClassLoader classLoader);
 
     default <T extends Assembly> Stream<T> findAll(ServiceLoader<T> loader) {
         throw new UnsupportedOperationException();
@@ -137,22 +137,22 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
     // Altsaa
     Assembly findOne(String moduleName, String className);
 
-    AssemblyFinder paths(Path... paths);
+    OldAssemblyFinder paths(Path... paths);
 
-    default AssemblyFinder paths(String... paths) {
+    default OldAssemblyFinder paths(String... paths) {
         for (String s : paths) {
             paths(Path.of(s));
         }
         return this;
     }
 
-    static AssemblyFinder compose(AssemblyFinder... finders) {
+    static OldAssemblyFinder compose(OldAssemblyFinder... finders) {
         throw new UnsupportedOperationException();
     }
 
     /** {@return an assembly finder that uses the classpath to find assemblies} */
     // I think we still need need classloader from a class
-    static AssemblyFinder onClasspath() {
+    static OldAssemblyFinder onClasspath() {
         throw new UnsupportedOperationException();
     }
 
@@ -162,7 +162,7 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
      * @param caller
      *            a lookup object that is used for class visibility and for instantiating assembly instances
      */
-    static AssemblyFinder onModulepath(MethodHandles.Lookup caller) {
+    static OldAssemblyFinder onModulepath(MethodHandles.Lookup caller) {
         throw new UnsupportedOperationException();
     }
 

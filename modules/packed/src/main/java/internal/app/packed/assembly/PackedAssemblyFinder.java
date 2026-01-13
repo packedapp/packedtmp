@@ -26,7 +26,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import app.packed.assembly.Assembly;
-import app.packed.assembly.AssemblyFinder;
+import app.packed.assembly.OldAssemblyFinder;
 import app.packed.build.BuildException;
 
 /**
@@ -35,7 +35,7 @@ import app.packed.build.BuildException;
 
 // Tror maaske vi skal implementere en Class og en module thingy
 
-public final class PackedAssemblyFinder implements AssemblyFinder {
+public final class PackedAssemblyFinder implements OldAssemblyFinder {
 
     AssemblySetup as;
 
@@ -102,21 +102,21 @@ public final class PackedAssemblyFinder implements AssemblyFinder {
 
     /** {@inheritDoc} */
     @Override
-    public AssemblyFinder classLoader(ClassLoader classLoader) {
+    public OldAssemblyFinder classLoader(ClassLoader classLoader) {
         this.parentLoader = requireNonNull(classLoader);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public AssemblyFinder addModuleLayer(ModuleLayer moduleLayer) {
+    public OldAssemblyFinder addModuleLayer(ModuleLayer moduleLayer) {
         moduleLayers.add(moduleLayer);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public AssemblyFinder paths(Path... paths) {
+    public OldAssemblyFinder paths(Path... paths) {
         ModuleFinder m = ModuleFinder.of(paths);
         ModuleFinder existing = mf;
         this.mf = mf == null ? m : ModuleFinder.compose(existing, m);
