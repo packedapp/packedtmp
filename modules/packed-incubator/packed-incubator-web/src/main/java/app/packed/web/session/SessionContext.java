@@ -15,28 +15,26 @@
  */
 package app.packed.web.session;
 
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.operation.Op1;
 import app.packed.web.HttpContext;
 import app.packed.web.WebExtension;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
-import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
  *
  */
-@AutoInject(introspector = SessionContextBeanIntrospector.class, requiresContext = { SessionContext.class, HttpContext.class })
+@AutoService(introspector = SessionContextBeanIntrospector.class, requiresContext = { SessionContext.class, HttpContext.class })
 public interface SessionContext extends Context<WebExtension> {
 
 }
 
-final class SessionContextBeanIntrospector extends BaseExtensionBeanIntrospector {
+final class SessionContextBeanIntrospector extends BeanIntrospector<WebExtension> {
 
-    /** {@inheritDoc} */
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        service.binder().bindOp(new Op1<HttpContext, SessionContext>(HttpContext::session) {});
+    public void onAutoService(Key<?> key, OnAutoService service) {
+        service.binder().bindOp(new Op1<>(HttpContext::session) {});
     }
 }

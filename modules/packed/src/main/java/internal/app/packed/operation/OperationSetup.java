@@ -121,6 +121,8 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
      *            the operation's installer
      */
     private OperationSetup(PackedOperationInstaller installer) {
+        System.out.println(installer.operator + "  " + installer.bean.bean.beanClass);
+
         this.installedByExtension = requireNonNull(installer.operator);
         this.target = requireNonNull(installer.operationTarget);
         this.bean = requireNonNull(installer.bean);

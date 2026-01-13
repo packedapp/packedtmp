@@ -17,6 +17,7 @@ package internal.app.packed.bean.scanning;
 
 import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
+import static sandbox.Debug.debug;
 
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
@@ -178,7 +179,9 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
     public IntrospectorOnVariable bindInvocationArgument(int argumentIndex) {
         checkBeforeBind();
         if (operation.installedByExtension != bindingExtension) {
-            throw new UnsupportedOperationException("For binding " + variable);
+            debug(operation.bean.bean.beanClass + "   " + operation.type);
+            throw new UnsupportedOperationException("For binding " + variable + " InstalledBy:" + operation.installedByExtension +"  Binding:" + bindingExtension
+                    );
         }
         checkIndex(argumentIndex, operation.template.invocationType().parameterCount());
         // TODO check type
@@ -196,9 +199,10 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
         // Nested operation get the same arguments as this operation, but with op return type
         PackedOperationTemplate template = operation.template.withReturnType(pop.type().returnRawType());
 
+        debug(bindingExtension);
         // Create the nested operation
         OperationSetup os = pop
-                .newOperationSetup(new NewOperation(operation.bean, bindingExtension, template, OperationHandle::new, new EmbeddedIntoOperation(operation, index), pop.getComposedMethodHandle()));
+                .newOperationSetup(new NewOperation(operation.bean, operation.installedByExtension, template, OperationHandle::new, new EmbeddedIntoOperation(operation, index), pop.getComposedMethodHandle()));
         bind(new FromEmbeddedOperation(os));
 
         // Resolve the new operation immediately

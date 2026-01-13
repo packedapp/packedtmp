@@ -15,7 +15,7 @@
  */
 package tck.context;
 
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.context.Context;
 import app.packed.operation.OperationHandle;
 import tck.AbstractBootstrapedAppTest;
@@ -25,7 +25,7 @@ import tck.HookTestingExtensionBeanIntrospector;
 /** Various context class and their templates that can be used where applicable. */
 public class ContextsHelpers {
 
-    @AutoInject(introspector = HookTestingExtensionBeanIntrospector.class)
+    @AutoService(introspector = HookTestingExtensionBeanIntrospector.class)
     public record NoImplContext(int i) implements Context<HookTestingExtension> {
 
     }

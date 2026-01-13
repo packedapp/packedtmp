@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.containerdynamic.ManagedInstance;
+import app.packed.lifetimedynamic.ManagedInstance;
 import internal.app.packed.application.repository.AbstractApplicationRepository;
 
 /**

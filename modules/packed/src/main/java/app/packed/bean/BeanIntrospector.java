@@ -49,7 +49,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnConstructor;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 import internal.app.packed.bean.scanning.IntrospectorOnField;
 import internal.app.packed.bean.scanning.IntrospectorOnMethod;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
@@ -349,7 +349,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
      * @see BeanTrigger.AutoInject
      * @see BeanTrigger.AutoInjectInheritable
      */
-    public void onExtensionService(Key<?> key, OnContextService service) {
+    public void onAutoService(Key<?> key, OnAutoService service) {
         throw new BeanInstallationException(extensionDescriptor().fullName() + " cannot handle type hook " + key);
     }
 
@@ -511,7 +511,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         Key<?> toKey();
     }
 
-    public sealed interface OnContextService permits IntrospectorOnContextService {
+    public sealed interface OnAutoService permits IntrospectorOnAutoService {
 
         Class<?> baseClass();
 

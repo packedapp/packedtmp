@@ -49,7 +49,7 @@ public @interface BeanTrigger {
     // OnServiceVariable
     // OnContextServiceVariable
     // Was OnExtensionServiceBeanTrigger
-    public @interface AutoInject {
+    public @interface AutoService {
 
         /** The introspector responsible for this trigger. */
         Class<? extends BeanIntrospector<?>> introspector();
@@ -78,7 +78,7 @@ public @interface BeanTrigger {
      * A version of the {@link ContextualServiceProvider} annotation that is {@link Inherited}. All other functionality is
      * identical.
      * <p>
-     * NOTE: Remember, inherited annotations are not inherited on interfaces. So you an abstract class if you need to design
+     * NOTE: Remember, inherited annotations are not inherited on interfaces. So you need an abstract class if you need to design
      * a inheritance hierarchy.
      *
      * @see ContextualServiceProvider
@@ -88,7 +88,7 @@ public @interface BeanTrigger {
     @Documented
     @BeanTrigger
     @Inherited
-    public @interface AutoInjectInheritable {
+    public @interface AutoServiceInheritable {
 
         /** The introspector responsible for this trigger. */
         Class<? extends BeanIntrospector<?>> introspector();

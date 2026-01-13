@@ -19,8 +19,8 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanTrigger.AutoInject;
-import app.packed.bean.BeanTrigger.AutoInjectInheritable;
+import app.packed.bean.BeanTrigger.AutoService;
+import app.packed.bean.BeanTrigger.AutoServiceInheritable;
 import app.packed.bean.BeanTrigger.OnAnnotatedField;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
@@ -100,8 +100,8 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
         @Override
         protected ParameterTypeCache computeValue(Class<?> type) {
-            AutoInject autoInject = type.getAnnotation(AutoInject.class);
-            AutoInjectInheritable autoInjectInheritable = type.getAnnotation(AutoInjectInheritable.class);
+            AutoService autoInject = type.getAnnotation(AutoService.class);
+            AutoServiceInheritable autoInjectInheritable = type.getAnnotation(AutoServiceInheritable.class);
 
             if (autoInject == null && autoInjectInheritable == null) {
                 return null;
@@ -109,7 +109,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
             if (autoInject != null && autoInjectInheritable != null) {
                 throw new InternalExtensionException(
-                        "Cannot use both " + AutoInject.class + " and " + AutoInjectInheritable.class + " on @" + type);
+                        "Cannot use both " + AutoService.class + " and " + AutoServiceInheritable.class + " on @" + type);
             }
 
             if (autoInject != null) {
@@ -122,7 +122,7 @@ public final class BeanTriggerModelDefaults implements BeanTriggerModel {
 
                 Class<?> inherited = type;
                 while (inherited != null) {
-                    if (inherited.getDeclaredAnnotation(AutoInjectInheritable.class) != null) {
+                    if (inherited.getDeclaredAnnotation(AutoServiceInheritable.class) != null) {
                         break;
                     }
                     inherited = inherited.getSuperclass();

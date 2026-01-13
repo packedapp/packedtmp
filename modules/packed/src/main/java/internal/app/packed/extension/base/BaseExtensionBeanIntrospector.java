@@ -18,7 +18,7 @@ package internal.app.packed.extension.base;
 import app.packed.bean.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 
 /**
  *
@@ -26,11 +26,11 @@ import internal.app.packed.bean.scanning.IntrospectorOnContextService;
 public abstract class BaseExtensionBeanIntrospector extends BeanIntrospector<BaseExtension> {
 
     @Override
-    public final void onExtensionService(Key<?> key, OnContextService service) {
-        onExtensionService(key, (IntrospectorOnContextService) service);
+    public final void onAutoService(Key<?> key, OnAutoService service) {
+        onExtensionService(key, (IntrospectorOnAutoService) service);
     }
 
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        super.onExtensionService(key, service);
+    public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
+        super.onAutoService(key, service);
     }
 }

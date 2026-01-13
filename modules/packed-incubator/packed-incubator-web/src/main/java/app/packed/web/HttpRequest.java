@@ -20,16 +20,15 @@ import java.net.URI;
 
 import com.sun.net.httpserver.Headers;
 
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.operation.Op1;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
-import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
  * Represents an HTTP request.
  */
-@AutoInject(introspector = HttpRequestBeanIntrospector.class, requiresContext = HttpContext.class)
+@AutoService(introspector = HttpRequestBeanIntrospector.class, requiresContext = HttpContext.class)
 public interface HttpRequest {
 
     /** Returns the request URI. */
@@ -51,11 +50,10 @@ public interface HttpRequest {
     String body() throws IOException;
 }
 
-final class HttpRequestBeanIntrospector extends BaseExtensionBeanIntrospector {
+final class HttpRequestBeanIntrospector extends BeanIntrospector<WebExtension> {
 
-    /** {@inheritDoc} */
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+    public void onAutoService(Key<?> key, OnAutoService service) {
         service.binder().bindOp(new Op1<>(HttpContext::request) {});
     }
 }

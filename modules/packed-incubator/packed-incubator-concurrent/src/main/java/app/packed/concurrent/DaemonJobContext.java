@@ -17,11 +17,11 @@ package app.packed.concurrent;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 import internal.app.packed.concurrent.daemon.DaemonJobSidehandle;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
@@ -30,7 +30,7 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
  *
  */
 // I think we need a bit understand about where we are in the shutdown process, early, vs late
-@AutoInject(introspector = DaemonJobContextBeanIntrospector.class, requiresContext = DaemonJobContext.class)
+@AutoService(introspector = DaemonJobContextBeanIntrospector.class, requiresContext = DaemonJobContext.class)
 public sealed interface DaemonJobContext extends Context<BaseExtension> permits DaemonJobSidehandle {
 
     /**
@@ -57,7 +57,7 @@ final class DaemonJobContextBeanIntrospector extends BaseExtensionBeanIntrospect
 
     /** {@inheritDoc} */
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+    public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
         service.binder().bindContext(DaemonJobContext.class);
     }
 }

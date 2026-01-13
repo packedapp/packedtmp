@@ -70,9 +70,9 @@ final class BeanScannerOnVariable {
                     throw new ContextNotAvailableException(operation.target + " must be in context " + cla.getCanonicalName() + ". In order to resolve " + k);
                 }
             }
-            IntrospectorOnContextService pcs = new IntrospectorOnContextService(k, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(), contexts,
+            IntrospectorOnAutoService pcs = new IntrospectorOnAutoService(k, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(), contexts,
                     new IntrospectorOnVariableUnwrapped(h));
-            contributor.introspector.onExtensionService(k, pcs);
+            contributor.introspector.onAutoService(k, pcs);
 
 //            contributor.introspector.onProvide(k, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(), contexts,
 //                    new PackedBindableWrappedVariable(h));

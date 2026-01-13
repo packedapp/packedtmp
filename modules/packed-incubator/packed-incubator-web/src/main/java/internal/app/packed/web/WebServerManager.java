@@ -16,6 +16,7 @@
 package internal.app.packed.web;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +27,7 @@ import com.sun.net.httpserver.HttpServer;
 
 import app.packed.lifecycle.Start;
 import app.packed.lifecycle.Stop;
+import app.packed.web.PortInUseException;
 
 /**
  * Manages the HTTP server lifecycle for the application.
@@ -38,7 +40,11 @@ public final class WebServerManager {
 
     @Start
     public void onStart() throws IOException {
-        server = HttpServer.create(new InetSocketAddress(port), 0);
+        try {
+            server = HttpServer.create(new InetSocketAddress(port), 0);
+        } catch (BindException e) {
+            throw new PortInUseException(port, e);
+        }
 
         // Register all handlers that were added during build phase
         for (Map.Entry<String, HttpHandler> entry : handlers.entrySet()) {

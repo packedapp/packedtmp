@@ -18,7 +18,7 @@ package app.packed.web;
 import java.io.IOException;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op1;
@@ -26,7 +26,7 @@ import app.packed.operation.Op1;
 /**
  * Represents an HTTP response.
  */
-@AutoInject(introspector = HttpResponseBeanIntrospector.class, requiresContext = HttpContext.class)
+@AutoService(introspector = HttpResponseBeanIntrospector.class, requiresContext = HttpContext.class)
 public interface HttpResponse {
 
     /** Sets a response header. */
@@ -46,7 +46,7 @@ final class HttpResponseBeanIntrospector extends BeanIntrospector<BaseExtension>
 
     /** {@inheritDoc} */
     @Override
-    public void onExtensionService(Key<?> key, OnContextService service) {
+    public void onAutoService(Key<?> key, OnAutoService service) {
         service.binder().bindOp(new Op1<>(HttpContext::response) {});
     }
 }

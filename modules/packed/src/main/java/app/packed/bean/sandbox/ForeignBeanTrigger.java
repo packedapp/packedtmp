@@ -189,7 +189,7 @@ public @interface ForeignBeanTrigger {
     static class LoggerBeanIntrospector extends BeanIntrospector<BaseExtension> {
 
         @Override
-        public void onExtensionService(Key<?> key, OnContextService service) {
+        public void onAutoService(Key<?> key, OnAutoService service) {
             assert key.equals(Key.of(java.lang.System.Logger.class));
             // inject
         }

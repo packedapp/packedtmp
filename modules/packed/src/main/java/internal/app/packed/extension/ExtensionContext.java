@@ -16,7 +16,7 @@
 package internal.app.packed.extension;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
@@ -27,7 +27,7 @@ import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
  * <p>
  * An instance of this class is typically required when invoking operations.
  */
-@AutoInject(introspector = ExtensionContextBeanIntrospector.class)
+@AutoService(introspector = ExtensionContextBeanIntrospector.class)
 public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}
 
 
@@ -48,14 +48,14 @@ public sealed interface ExtensionContext extends Context<BaseExtension> permits 
 final class ExtensionContextBeanIntrospector extends BeanIntrospector<BaseExtension> {
 
     @Override
-    public void onExtensionService(Key<?> key, OnContextService service) {
+    public void onAutoService(Key<?> key, OnAutoService service) {
         if (key.rawType() == ExtensionContext.class) {
             if (beanOwner().isUserland()) {
                 service.binder().failWith(ExtensionContext.class.getSimpleName() + " can only be injected into bean that owned by an extension");
             }
             service.binder().bindContext(ExtensionContext.class);
         } else {
-            super.onExtensionService(key, service);
+            super.onAutoService(key, service);
         }
     }
 }

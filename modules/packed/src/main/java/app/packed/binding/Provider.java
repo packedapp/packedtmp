@@ -17,7 +17,7 @@ package app.packed.binding;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
@@ -27,7 +27,7 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
  *            the type of instances that are provided
  */
 @FunctionalInterface
-@AutoInject(introspector = ProviderBeanIntrospector.class)
+@AutoService(introspector = ProviderBeanIntrospector.class)
 public interface Provider<T> {
 
     /**

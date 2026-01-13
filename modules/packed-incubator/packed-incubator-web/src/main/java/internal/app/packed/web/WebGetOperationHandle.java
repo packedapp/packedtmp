@@ -18,10 +18,10 @@ package internal.app.packed.web;
 import app.packed.bean.BeanIntrospector;
 import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.component.SidehandleTargetKind;
-import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
 import app.packed.web.HttpContext;
+import app.packed.web.WebExtension;
 import app.packed.web.WebGet;
 import app.packed.web.WebOperationMirror;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;
@@ -51,7 +51,7 @@ public final class WebGetOperationHandle extends BaseExtensionOperationHandle<Op
     /**
      * Called when a @WebGet annotation is found on a method.
      */
-    public static void onWebGetAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, WebGet annotation) {
+    public static void onWebGetAnnotation(BeanIntrospector<WebExtension> introspector, BeanIntrospector.OnMethod method, WebGet annotation) {
 
         // Install server manager as singleton (only once per application)
         introspector.applicationBase().installIfAbsent(WebServerManager.class, c -> c.provide());

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
@@ -33,7 +33,7 @@ import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-@AutoInject(introspector = ApplicationLaunchContextBeanIntrospector.class)
+@AutoService(introspector = ApplicationLaunchContextBeanIntrospector.class)
 // Wait a bit with transforming this class to a record.
 // We might have some mutable fields such as name
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
@@ -117,11 +117,11 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
 final class ApplicationLaunchContextBeanIntrospector extends BeanIntrospector<BaseExtension> {
 
     @Override
-    public void onExtensionService(Key<?> key, OnContextService service) {
+    public void onAutoService(Key<?> key, OnAutoService service) {
         if (ApplicationLaunchContext.class.isAssignableFrom(key.rawType())) {
             service.binder().bindContext(ApplicationLaunchContext.class);
         } else {
-            super.onExtensionService(key, service);
+            super.onAutoService(key, service);
         }
     }
 }

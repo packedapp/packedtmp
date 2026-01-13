@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanTrigger.AutoInjectInheritable;
+import app.packed.bean.BeanTrigger.AutoServiceInheritable;
 import app.packed.binding.Key;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
@@ -25,7 +25,7 @@ import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.extension.ExtensionSetup;
@@ -42,7 +42,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected
  */
-@AutoInjectInheritable(introspector = ContainerMirrorBeanIntrospector.class)
+@AutoServiceInheritable(introspector = ContainerMirrorBeanIntrospector.class)
 public non-sealed class ContainerMirror implements ComponentMirror, ContainerBuildLocal.Accessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
@@ -275,7 +275,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
 final class ContainerMirrorBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+    public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
         service.binder().bindConstant(service.bean().container.mirror());
     }
 }

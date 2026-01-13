@@ -21,13 +21,13 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.build.Mirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.util.TreeView;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
@@ -40,7 +40,7 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 // Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
 
 //Cluster|Node? < Java Process(Logical name) < Family
-@AutoInject(introspector = DeploymentBeanIntrospector.class)
+@AutoService(introspector = DeploymentBeanIntrospector.class)
 public class DeploymentMirror implements Mirror {
 
     /** The deployment we are mirroring. */
@@ -101,7 +101,7 @@ public class DeploymentMirror implements Mirror {
 final class DeploymentBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+    public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
         service.binder().bindConstant(service.bean().container.application.deployment.mirror());
     }
 }

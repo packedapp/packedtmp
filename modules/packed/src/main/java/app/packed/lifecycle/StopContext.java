@@ -17,18 +17,18 @@ package app.packed.lifecycle;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.lifecycle.runtime.StopInfo;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
  * A context that can be injected into methods annotated with {@link Stop}.
  */
-@AutoInject(introspector = StopContextBeanIntrospector.class, requiresContext = StopContext.class)
+@AutoService(introspector = StopContextBeanIntrospector.class, requiresContext = StopContext.class)
 public interface StopContext extends Context<BaseExtension> {
 
     /**
@@ -51,7 +51,7 @@ public interface StopContext extends Context<BaseExtension> {
 final class StopContextBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+    public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
         service.binder().bindContext(StopContext.class);
     }
 }

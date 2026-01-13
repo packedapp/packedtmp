@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
-import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.web.WebGetOperationHandle;
 
 @Target(ElementType.METHOD)
@@ -34,7 +33,7 @@ public @interface WebGet {
     String url() default "/";
 }
 
-final class WebGetBeanIntrospector extends BaseExtensionBeanIntrospector {
+final class WebGetBeanIntrospector extends BeanIntrospector<WebExtension> {
 
     /** {@inheritDoc} */
     @Override

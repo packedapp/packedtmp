@@ -16,7 +16,7 @@
 package internal.app.packed.lifecycle.runtime;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.InternalExtensionException;
@@ -28,7 +28,7 @@ import internal.app.packed.lifecycle.lifetime.LifetimeStoreIndex;
 /**
  * All strongly connected components relate to the same pod.
  */
-@AutoInject(introspector = PackedExtensionContextBeanIntrospector.class)
+@AutoService(introspector = PackedExtensionContextBeanIntrospector.class)
 @ValueBased
 public final class PackedExtensionContext implements ExtensionContext {
 
@@ -89,14 +89,14 @@ public final class PackedExtensionContext implements ExtensionContext {
 final class PackedExtensionContextBeanIntrospector extends BeanIntrospector<BaseExtension> {
 
     @Override
-    public void onExtensionService(Key<?> key, OnContextService service) {
+    public void onAutoService(Key<?> key, OnAutoService service) {
         if (key.rawType() == ExtensionContext.class) {
             if (beanOwner().isUserland()) {
                 service.binder().failWith(ExtensionContext.class.getSimpleName() + " can only be injected into bean that owned by an extension");
             }
             service.binder().bindContext(ExtensionContext.class);
         } else {
-            super.onExtensionService(key, service);
+            super.onAutoService(key, service);
         }
     }
 }

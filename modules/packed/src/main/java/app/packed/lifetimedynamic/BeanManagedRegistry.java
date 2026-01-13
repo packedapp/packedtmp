@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.containerdynamic;
+package app.packed.lifetimedynamic;
 
-import java.util.Optional;
-
-import app.packed.lifecycle.runtime.ManagedLifecycle;
-
-// Kunne maaske ogssa shares med container
-// Maaske kan vi godt droppe denne...
-// Evt kan vi bede folk om at guesten skal implementere dette interface
-public interface ManagedInstance<G> extends ManagedLifecycle {
-
-    Optional<G> get();
-
-    G getNow();
-
-    /** {@return the unique name of the instance} */
-    String name();
+/**
+ *
+ */
+public interface BeanManagedRegistry<I> {
+    I invoker();
 }

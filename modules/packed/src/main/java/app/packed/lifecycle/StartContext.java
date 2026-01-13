@@ -18,11 +18,11 @@ package app.packed.lifecycle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.StructuredTaskScope;
 
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /** A context object that can be injected into methods annotated with {@link OnStart}. */
@@ -30,7 +30,7 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 // Okay, den eneste maade vi supportere join er via OnStart
 // De forskellige scheduling operationer kan ikke supportere det
 // Det store problemer er phases
-@AutoInject(requiresContext = StartContext.class, introspector = StartContextBeanIntrospector.class)
+@AutoService(requiresContext = StartContext.class, introspector = StartContextBeanIntrospector.class)
 public interface StartContext extends Context<BaseExtension> {
 
     default Start.ForkMode forkMode() {
@@ -71,7 +71,7 @@ public interface StartContext extends Context<BaseExtension> {
 final class StartContextBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+    public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
         service.binder().bindContext(StartContext.class);
     }
 }

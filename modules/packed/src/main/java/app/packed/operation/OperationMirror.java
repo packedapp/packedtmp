@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanTrigger.AutoInjectInheritable;
+import app.packed.bean.BeanTrigger.AutoServiceInheritable;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.component.ComponentMirror;
@@ -45,7 +45,7 @@ import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
 import app.packed.service.mirrorold.ServiceProviderIsThisUsefulMirror;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
@@ -63,7 +63,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@AutoInjectInheritable(introspector = OperationMirrorBeanIntrospector.class)
+@AutoServiceInheritable(introspector = OperationMirrorBeanIntrospector.class)
 public non-sealed class OperationMirror
         implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderIsThisUsefulMirror, SidehandleTargetMirror {
 
@@ -306,7 +306,7 @@ public non-sealed class OperationMirror
 final class OperationMirrorBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+    public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
         service.binder().bindConstant(service.operation().mirror());
     }
 }

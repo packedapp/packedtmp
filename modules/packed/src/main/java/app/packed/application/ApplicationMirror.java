@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanTrigger.AutoInjectInheritable;
+import app.packed.bean.BeanTrigger.AutoServiceInheritable;
 import app.packed.binding.Key;
 import app.packed.build.BuildGoal;
 import app.packed.build.Mirror;
@@ -26,7 +26,7 @@ import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
+import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.operation.OperationSetup;
@@ -44,7 +44,7 @@ import internal.app.packed.util.PackedTreeView;
  * Like many other mirrors classes the type of application mirror being returned can be specialized. See
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
-@AutoInjectInheritable(introspector = ApplicationMirrorIntrospector.class)
+@AutoServiceInheritable(introspector = ApplicationMirrorIntrospector.class)
 public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationBuildLocal.Accessor {
 
     /** The application's handle. */
@@ -272,7 +272,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
 final class ApplicationMirrorIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+    public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
         service.binder().bindConstant(service.bean().container.application.mirror());
     }
 }

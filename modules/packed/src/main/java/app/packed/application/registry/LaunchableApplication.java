@@ -19,8 +19,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.containerdynamic.ManagedInstance;
 import app.packed.lifecycle.RunState;
+import app.packed.lifetimedynamic.ManagedInstance;
 import internal.app.packed.application.repository.PackedInstalledApplication;
 
 /**

@@ -15,16 +15,15 @@
  */
 package app.packed.web;
 
-import app.packed.bean.BeanTrigger.AutoInject;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.web.session.SessionContext;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
-import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 /**
  * Context providing access to the HTTP request and response.
  */
-@AutoInject(introspector = HttpContextBeanIntrospector.class, requiresContext = HttpContext.class)
+@AutoService(introspector = HttpContextBeanIntrospector.class, requiresContext = HttpContext.class)
 public interface HttpContext extends Context<WebExtension> {
 
     SessionContext session();
@@ -36,11 +35,10 @@ public interface HttpContext extends Context<WebExtension> {
     HttpResponse response();
 }
 
-final class HttpContextBeanIntrospector extends BaseExtensionBeanIntrospector {
+final class HttpContextBeanIntrospector extends BeanIntrospector<WebExtension> {
 
-    /** {@inheritDoc} */
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
+    public void onAutoService(Key<?> key, OnAutoService service) {
         service.binder().bindContext(HttpContext.class);
     }
 }

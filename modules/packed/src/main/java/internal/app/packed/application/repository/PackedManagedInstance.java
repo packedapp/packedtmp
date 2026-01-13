@@ -19,10 +19,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.application.containerdynamic.ManagedInstance;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifetimedynamic.ManagedInstance;
 import app.packed.util.Nullable;
 import sandbox.lifetime.external.ManagedLifetimeState;
 

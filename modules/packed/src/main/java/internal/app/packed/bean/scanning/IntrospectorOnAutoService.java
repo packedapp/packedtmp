@@ -17,7 +17,7 @@ package internal.app.packed.bean.scanning;
 
 import java.util.Set;
 
-import app.packed.bean.BeanIntrospector.OnContextService;
+import app.packed.bean.BeanIntrospector.OnAutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import internal.app.packed.bean.BeanSetup;
@@ -26,8 +26,8 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public record IntrospectorOnContextService(Key<?> key, Class<?> baseClass, Set<Class<? extends Context<?>>> contexts, IntrospectorOnVariableUnwrapped binder)
-        implements OnContextService {
+public record IntrospectorOnAutoService(Key<?> key, Class<?> baseClass, Set<Class<? extends Context<?>>> contexts, IntrospectorOnVariableUnwrapped binder)
+        implements OnAutoService {
 
     public OperationSetup operation() {
         return binder.var().operation;
