@@ -16,7 +16,6 @@
 package app.packed.concurrent.job;
 
 import java.io.IOException;
-import java.util.ServiceLoader;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -54,7 +53,7 @@ public class ScTest2 extends BaseAssembly {
     protected void build() {
 
         link(assembly().finder().findOne("foo.bar"));
-        assembly().finder().findAll(ServiceLoader.load(BaseAssembly.class)).forEach(e -> link(e));
+        assembly().finder().serviceLoader(BaseAssembly.class).forEach(e -> link(e));
 
         provideInstance("asdasd");
         install(MuB.class);

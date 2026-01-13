@@ -16,7 +16,8 @@
   <modules>
     <module>packed</module>
     <module>packed-micro</module>
-    <module>packed-module-tests</module>
+    <module>packed-modulepath-tests</module>
+    <module>packed-classpath-tests</module>
     <module>packed-incubator</module>
   </modules>
   

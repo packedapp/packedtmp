@@ -1,4 +1,4 @@
-module app.packed.module.tests {
+module app.packed.modulepath.tests {
     requires app.packed;
     //  requires jdk.incubator.concurrent; // Sometimes test
 

@@ -17,7 +17,9 @@ package internal.app.packed.assembly;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.module.Configuration;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleFinder;
@@ -34,7 +36,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import app.packed.assembly.Assembly;
-import app.packed.assembly.sandbox.AssemblyModulepathFinder;
+import app.packed.assembly.AssemblyModulepathFinder;
 import app.packed.build.BuildException;
 
 /**
@@ -60,7 +62,7 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
      * @param lookup
      *            the lookup object
      */
-    public PackedAssemblyModulepathFinder(MethodHandles.Lookup lookup) {
+   public PackedAssemblyModulepathFinder(MethodHandles.Lookup lookup) {
         this.lookup = requireNonNull(lookup);
         this.parentLayer = getModuleLayer(lookup);
         this.activeLayer = parentLayer; // initially same as parent
@@ -70,8 +72,7 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
     /**
      * Internal constructor with all fields.
      */
-    private PackedAssemblyModulepathFinder(MethodHandles.Lookup lookup, ModuleLayer parentLayer,
-            ModuleLayer activeLayer, ModuleFinder moduleFinder) {
+    private PackedAssemblyModulepathFinder(MethodHandles.Lookup lookup, ModuleLayer parentLayer, ModuleLayer activeLayer, ModuleFinder moduleFinder) {
         this.lookup = requireNonNull(lookup);
         this.parentLayer = requireNonNull(parentLayer);
         this.activeLayer = requireNonNull(activeLayer);
@@ -171,17 +172,13 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
             return Collections.emptySet();
         }
 
-        return moduleFinder.findAll().stream()
-            .map(ref -> ref.descriptor().name())
-            .collect(Collectors.toUnmodifiableSet());
+        return moduleFinder.findAll().stream().map(ref -> ref.descriptor().name()).collect(Collectors.toUnmodifiableSet());
     }
 
     /** {@inheritDoc} */
     @Override
     public Set<String> loadedModules() {
-        return activeLayer.modules().stream()
-            .map(Module::getName)
-            .collect(Collectors.toUnmodifiableSet());
+        return activeLayer.modules().stream().map(Module::getName).collect(Collectors.toUnmodifiableSet());
     }
 
     /** {@inheritDoc} */
@@ -191,21 +188,13 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
             return Collections.emptyMap();
         }
 
-        return moduleFinder.findAll().stream()
-            .collect(Collectors.toUnmodifiableMap(
-                ref -> ref.descriptor().name(),
-                ref -> ref.descriptor().version()
-            ));
+        return moduleFinder.findAll().stream().collect(Collectors.toUnmodifiableMap(ref -> ref.descriptor().name(), ref -> ref.descriptor().version()));
     }
 
     /** {@inheritDoc} */
     @Override
     public Map<String, Optional<ModuleDescriptor.Version>> loadedModuleVersions() {
-        return activeLayer.modules().stream()
-            .collect(Collectors.toUnmodifiableMap(
-                Module::getName,
-                module -> module.getDescriptor().version()
-            ));
+        return activeLayer.modules().stream().collect(Collectors.toUnmodifiableMap(Module::getName, module -> module.getDescriptor().version()));
     }
 
     /** {@inheritDoc} */
@@ -294,32 +283,23 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
     }
 
     /**
-     * Creates a child layer with the specified modules.
-     * The new layer is created as a child of activeLayer, so it can see previously loaded modules.
+     * Creates a child layer with the specified modules. The new layer is created as a child of activeLayer, so it can see
+     * previously loaded modules.
      */
     private ModuleLayer createChildLayer(Set<String> moduleNames) {
         try {
             // Resolve against activeLayer so new modules can see previously loaded modules
-            Configuration cf = activeLayer.configuration().resolve(
-                moduleFinder,
-                ModuleFinder.of(),
-                moduleNames
-            );
+            Configuration cf = activeLayer.configuration().resolve(moduleFinder, ModuleFinder.of(), moduleNames);
 
-            return ModuleLayer.defineModulesWithOneLoader(
-                cf,
-                List.of(activeLayer),
-                lookup.lookupClass().getClassLoader()
-            ).layer();
+            return ModuleLayer.defineModulesWithOneLoader(cf, List.of(activeLayer), lookup.lookupClass().getClassLoader()).layer();
         } catch (ResolutionException e) {
             throw new BuildException("Failed to resolve modules " + moduleNames + ": " + e.getMessage(), e);
         }
     }
 
     /**
-     * Resolves the module layer for loading a specific module.
-     * If the module is in the active layer (or its parents), uses that.
-     * Otherwise creates a new child layer of activeLayer.
+     * Resolves the module layer for loading a specific module. If the module is in the active layer (or its parents), uses
+     * that. Otherwise creates a new child layer of activeLayer.
      */
     private ModuleLayer resolveLayerForModule(String moduleName) {
         // Check if already in active layer or any parent layer
@@ -330,8 +310,7 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
 
         // Module not loaded - need to create a child layer of activeLayer
         if (moduleFinder == null) {
-            throw new BuildException("Module not found: " + moduleName +
-                ". Use withPaths() to configure paths if the module is external.");
+            throw new BuildException("Module not found: " + moduleName + ". Use withPaths() to configure paths if the module is external.");
         }
 
         if (moduleFinder.find(moduleName).isEmpty()) {
@@ -356,7 +335,7 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
     }
 
     /**
-     * Validates that the class is an Assembly and instantiates it.
+     * Validates that the class is an Assembly and instantiates it using the lookup for proper module access.
      */
     private Assembly instantiateAndValidate(Class<?> clazz) {
         if (!Assembly.class.isAssignableFrom(clazz)) {
@@ -364,10 +343,11 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
         }
 
         try {
-            return (Assembly) clazz.getDeclaredConstructor().newInstance();
+            MethodHandle constructor = lookup.findConstructor(clazz, MethodType.methodType(void.class));
+            return (Assembly) constructor.invoke();
         } catch (NoSuchMethodException e) {
             throw new BuildException("Assembly class has no public no-argument constructor: " + clazz.getName(), e);
-        } catch (ReflectiveOperationException e) {
+        } catch (Throwable e) {
             throw new BuildException("Failed to instantiate assembly: " + clazz.getName(), e);
         }
     }

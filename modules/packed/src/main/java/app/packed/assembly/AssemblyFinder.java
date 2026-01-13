@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.assembly.sandbox;
+package app.packed.assembly;
 
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.assembly.Assembly;
 import internal.app.packed.assembly.PackedAssemblyClasspathFinder;
 
 /**
@@ -50,7 +49,7 @@ import internal.app.packed.assembly.PackedAssemblyClasspathFinder;
  *
  * @see AssemblyModulepathFinder
  */
-public interface AssemblyFinder {
+public sealed interface AssemblyFinder permits PackedAssemblyClasspathFinder, AssemblyModulepathFinder {
 
     /**
      * Finds and instantiates an assembly by its fully qualified class name.
@@ -144,8 +143,6 @@ public interface AssemblyFinder {
      *         if paths is null or contains null elements
      */
     AssemblyFinder withPaths(Path... paths);
-
-    // ===== Static Factory Methods =====
 
     /**
      * Creates a new assembly finder that operates on the classpath.

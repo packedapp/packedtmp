@@ -7,10 +7,10 @@
     <version>0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
-  <artifactId>packed-module-tests</artifactId>
+  <artifactId>packed-classpath-tests</artifactId>
   <packaging>jar</packaging>
-  <name>Packed-Module-Tests</name>
-  <description>Tests for Packed Modules</description>
+  <name>Packed-Classpath-Tests</name>
+  <description>Tests for Packed on the Classpath</description>
 
   <dependencies>
     <dependency>

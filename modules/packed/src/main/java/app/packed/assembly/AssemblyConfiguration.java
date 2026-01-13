@@ -25,7 +25,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.util.TreeView;
 import internal.app.packed.assembly.AssemblySetup;
-import internal.app.packed.assembly.PackedAssemblyFinder;
 import internal.app.packed.util.PackedTreeView;
 
 /**
@@ -53,14 +52,33 @@ public final class AssemblyConfiguration {
     }
 
     /**
-     * {@return an assembly finder that can be used to find assemblies on the class- or module-path.}
+     * {@return an assembly finder that can be used to find assemblies.}
      * <p>
-     * If this assembly is on the modulepath the assembly finder will search for assemblies on the modulepath.
-     * Otherwise the classpath will be searched.
+     * The returned finder type depends on whether this assembly is on the classpath or modulepath:
+     * <ul>
+     *   <li><b>Classpath:</b> Returns a classpath-based finder using the assembly's class loader</li>
+     *   <li><b>Modulepath:</b> Returns a modulepath-based finder using the assembly's module layer</li>
+     * </ul>
+     *
+     * @see AssemblyFinder#ofClasspath(ClassLoader)
+     * @see AssemblyModulepathFinder
      */
-    public OldAssemblyFinder finder() {
-        return new PackedAssemblyFinder(getClass(), assembly);
+    public AssemblyFinder finder() {
+        return assembly.finder();
     }
+
+    /**
+     * {@return a modulepath-based assembly finder for this assembly.}
+     * <p>
+     * Use this when you need modulepath-specific functionality like loading modules
+     * from external paths or accessing module layer information.
+     *
+     * @see AssemblyModulepathFinder
+     */
+    public AssemblyModulepathFinder moduleFinder() {
+        return assembly.moduleFinder();
+    }
+
 
     public ApplicationConfiguration application() {
         return assembly.container.application.handle().configuration();
@@ -101,6 +119,7 @@ public final class AssemblyConfiguration {
     // I think maybe allow null to revert back to Assembly Based lookup
     public void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
+        assembly.lookup(lookup);
     }
 }
 

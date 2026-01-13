@@ -13,30 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.assembly;
+package app.packed.moduletests.isopen;
 
-import app.packed.application.App;
+import app.packed.assembly.BaseAssembly;
 
-/**
- *
- */
-public abstract class MainAssembly extends BaseAssembly {
+/** A simple test assembly with a no-arg constructor for finder tests. */
+public class SimpleTestAssembly extends BaseAssembly {
 
-    // Hah, vi kan ikke se applikationen i stack tracet
-    // Totalt ubrugligt
-    public void cli(String[] args) {
-//        Boot.run(this);
-
-  //      Cli.run.
-        //        Boot.run()
-//        Cli.run()
-//        Run.cli(
-//        App.launcherOf(this).args(args).run();
-        // Problemet er vel lidt imaged....
-        // Skal vi saa ogsaa have en cliImage???
-        // Maaske have en
-        // Cli.imageOf
-        // Cli.run
-        App.run(this);
+    @Override
+    protected void build() {
+        // Empty assembly for testing
     }
 }

@@ -15,8 +15,11 @@
  */
 package usage.container;
 
+import java.lang.invoke.MethodHandles;
+import java.nio.file.Path;
+
 import app.packed.application.App;
-import app.packed.assembly.OldAssemblyFinder;
+import app.packed.assembly.AssemblyModulepathFinder;
 import app.packed.assembly.BaseAssembly;
 
 /**
@@ -27,13 +30,10 @@ public class AssemblyFinderUsage extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-
-//        assemblyFinder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin").linkOne("app.packed.usage",
-//                "app.packed.application.usage.HelloWorldAssembly");
-        // beanFinder
-        // Maybe it should be used standalone here
-        OldAssemblyFinder f = assembly().finder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin");
-        link(f.findOne("app.packed.usage", "app.packed.application.usage.HelloWorldAssembly"), "child");
+        // Use AssemblyModulepathFinder to find assemblies from external module paths
+        AssemblyModulepathFinder finder = AssemblyModulepathFinder.of(MethodHandles.lookup())
+                .withPaths(Path.of("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin"));
+        link(finder.findOne("app.packed.usage", "app.packed.application.usage.HelloWorldAssembly"), "child");
     }
 
     public static void main(String[] args) {

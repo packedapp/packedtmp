@@ -15,14 +15,18 @@
  */
 package internal.app.packed.assembly;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
 import app.packed.assembly.Assembly;
+import app.packed.assembly.AssemblyFinder;
 import app.packed.assembly.AssemblyMirror;
+import app.packed.assembly.AssemblyModulepathFinder;
 import app.packed.assembly.DelegatingAssembly;
+import app.packed.build.BuildException;
 import app.packed.component.ComponentRealm;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
@@ -128,6 +132,52 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
      */
     public void lookup(@Nullable Lookup lookup) {
         this.customLookup = lookup;// requireNonNull(lookup, "lookup is null");
+    }
+
+    /**
+     * Gets a lookup object suitable for the AssemblyFinder.
+     * Uses customLookup if set, otherwise uses privateLookupIn to get access to the assembly class.
+     *
+     * @return a lookup with access to the assembly class
+     * @throws BuildException if the assembly's package is not open to app.packed and no custom lookup was provided
+     */
+    private Lookup lookupForFinder() {
+        if (customLookup != null) {
+            return customLookup;
+        }
+        try {
+            return MethodHandles.privateLookupIn(assembly.getClass(), MethodHandles.lookup());
+        } catch (IllegalAccessException e) {
+            throw new BuildException("Cannot access assembly class. Ensure package is open to app.packed or provide a lookup via assembly.lookup()", e);
+        }
+    }
+
+    /**
+     * Creates an assembly finder appropriate for this assembly.
+     * Returns a classpath-based finder if on classpath, or a modulepath-based finder if on modulepath.
+     *
+     * @return an assembly finder
+     */
+    public AssemblyFinder finder() {
+        Class<?> assemblyClass = assembly.getClass();
+        Module module = assemblyClass.getModule();
+
+        if (module.getLayer() == null) {
+            // Classpath: unnamed module, no layer
+            return new PackedAssemblyClasspathFinder(assemblyClass.getClassLoader());
+        } else {
+            return moduleFinder();
+        }
+    }
+
+    /**
+     * Creates a modulepath-based assembly finder for this assembly.
+     *
+     * @return a modulepath finder
+     */
+    public AssemblyModulepathFinder moduleFinder() {
+        Lookup lookup = lookupForFinder();
+        return new PackedAssemblyModulepathFinder(lookup);
     }
 
     /** {@return a mirror for this assembly.} */

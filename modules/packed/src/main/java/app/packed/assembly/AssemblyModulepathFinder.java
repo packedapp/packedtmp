@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.assembly.sandbox;
+package app.packed.assembly;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.module.ModuleDescriptor;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import app.packed.assembly.Assembly;
 import internal.app.packed.assembly.PackedAssemblyModulepathFinder;
 
 /**
@@ -74,7 +72,7 @@ import internal.app.packed.assembly.PackedAssemblyModulepathFinder;
  * @see ServiceLoader
  * @see ModuleLayer
  */
-public interface AssemblyModulepathFinder extends AssemblyFinder {
+public sealed interface AssemblyModulepathFinder extends AssemblyFinder permits PackedAssemblyModulepathFinder {
 
     @Override
     /**
@@ -405,7 +403,6 @@ public interface AssemblyModulepathFinder extends AssemblyFinder {
      *         if caller is null
      */
     static AssemblyModulepathFinder of(MethodHandles.Lookup caller) {
-        Objects.requireNonNull(caller, "caller is null");
         return new PackedAssemblyModulepathFinder(caller);
     }
 }

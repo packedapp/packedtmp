@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import app.packed.assembly.Assembly;
-import app.packed.assembly.sandbox.AssemblyFinder;
+import app.packed.assembly.AssemblyFinder;
 import app.packed.build.BuildException;
 
 /**
@@ -112,9 +112,7 @@ public final class PackedAssemblyClasspathFinder implements AssemblyFinder {
         }
 
         // Convert paths to URLs
-        URL[] urls = Arrays.stream(paths)
-                .map(PackedAssemblyClasspathFinder::pathToUrl)
-                .toArray(URL[]::new);
+        URL[] urls = Arrays.stream(paths).map(PackedAssemblyClasspathFinder::pathToUrl).toArray(URL[]::new);
 
         // Create child classloader with current classloader as parent
         ClassLoader childLoader = new URLClassLoader(urls, classLoader);
