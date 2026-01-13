@@ -70,7 +70,7 @@ import internal.app.packed.assembly.PackedAssemblyModulepathFinder;
  * <p>The child layer can access modules from parent layers, but not vice versa.
  *
  * @see AssemblyFinder
- * @see AssemblyClasspathFinder
+ * @see AssemblyFinder#ofClasspath(ClassLoader)
  * @see ServiceLoader
  * @see ModuleLayer
  */

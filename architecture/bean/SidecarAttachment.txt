@@ -7,7 +7,6 @@ Sidecar (Scannes som en bean)                [Per Bean Instance]
 
 
 Attachments er en slags runtime storage (Stable Value)
-  Det er ikke en constant eftersom vi saa bare kunne gemme den direkte et eller andet sted
   Fx LocalDateTime for hvornaar beanen er instantieret. 
 
 

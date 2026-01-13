@@ -16,34 +16,38 @@
 package app.packed.assembly.sandbox;
 
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.assembly.Assembly;
+import internal.app.packed.assembly.PackedAssemblyClasspathFinder;
 
 /**
- * Common interface for discovering and instantiating {@link Assembly assemblies}.
+ * Interface for discovering and instantiating {@link Assembly assemblies}.
  *
- * <p>This is the base interface for assembly finders. Two implementations are provided:
+ * <p>Assembly finders can operate on either the classpath or modulepath:
  * <ul>
- *   <li>{@link AssemblyClasspathFinder} - for classpath-based discovery using {@link ClassLoader}</li>
+ *   <li>{@link #ofClasspath(ClassLoader)} - for classpath-based discovery using {@link ClassLoader}</li>
  *   <li>{@link AssemblyModulepathFinder} - for modulepath-based discovery using {@link ModuleLayer}</li>
  * </ul>
  *
- * <p>This interface defines the common operations available on both finder types,
- * allowing code to work polymorphically with either implementation.
+ * <p><b>Example - classpath usage:</b>
+ * {@snippet :
+ * AssemblyFinder finder = AssemblyFinder.ofClasspath(getClass().getClassLoader());
+ * finder.serviceLoader(PluginAssembly.class).forEach(this::link);
+ * finder.findOptional("com.example.OptionalPlugin").ifPresent(this::link);
+ * }
  *
  * <p><b>Example - generic assembly loading:</b>
  * {@snippet :
  * void loadPlugins(AssemblyFinder finder) {
  *     // Works with either classpath or modulepath finder
  *     finder.serviceLoader(PluginAssembly.class).forEach(this::link);
- *
  *     finder.findOptional("com.example.OptionalPlugin").ifPresent(this::link);
  * }
  * }
  *
- * @see AssemblyClasspathFinder
  * @see AssemblyModulepathFinder
  */
 public interface AssemblyFinder {
@@ -140,4 +144,34 @@ public interface AssemblyFinder {
      *         if paths is null or contains null elements
      */
     AssemblyFinder withPaths(Path... paths);
+
+    // ===== Static Factory Methods =====
+
+    /**
+     * Creates a new assembly finder that operates on the classpath.
+     *
+     * <p>The returned finder uses the specified {@link ClassLoader} to locate and
+     * load assembly classes. Assemblies can be discovered via:
+     * <ul>
+     *   <li>{@link #findOne(String)} / {@link #findOptional(String)} - by class name</li>
+     *   <li>{@link #serviceLoader(Class)} - via {@code META-INF/services} registration</li>
+     * </ul>
+     *
+     * <p><b>Example:</b>
+     * {@snippet :
+     * AssemblyFinder finder = AssemblyFinder.ofClasspath(getClass().getClassLoader());
+     * Assembly assembly = finder.findOne("com.example.MyAssembly");
+     * App.run(assembly);
+     * }
+     *
+     * @param classLoader
+     *        the class loader to use for loading assembly classes
+     * @return a new classpath-based assembly finder
+     * @throws NullPointerException
+     *         if classLoader is null
+     */
+    static AssemblyFinder ofClasspath(ClassLoader classLoader) {
+        Objects.requireNonNull(classLoader, "classLoader is null");
+        return new PackedAssemblyClasspathFinder(classLoader);
+    }
 }

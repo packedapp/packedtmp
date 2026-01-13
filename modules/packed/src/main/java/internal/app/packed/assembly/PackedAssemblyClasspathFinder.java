@@ -28,13 +28,13 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import app.packed.assembly.Assembly;
-import app.packed.assembly.sandbox.AssemblyClasspathFinder;
+import app.packed.assembly.sandbox.AssemblyFinder;
 import app.packed.build.BuildException;
 
 /**
- * Implementation of {@link AssemblyClasspathFinder}.
+ * Classpath-based implementation of {@link AssemblyFinder}.
  */
-public final class PackedAssemblyClasspathFinder implements AssemblyClasspathFinder {
+public final class PackedAssemblyClasspathFinder implements AssemblyFinder {
 
     /** The class loader used to load assembly classes. */
     private final ClassLoader classLoader;
@@ -104,7 +104,7 @@ public final class PackedAssemblyClasspathFinder implements AssemblyClasspathFin
 
     /** {@inheritDoc} */
     @Override
-    public AssemblyClasspathFinder withPaths(Path... paths) {
+    public AssemblyFinder withPaths(Path... paths) {
         requireNonNull(paths, "paths is null");
 
         if (paths.length == 0) {
