@@ -17,11 +17,11 @@ package app.packed.web;
 
 import java.io.IOException;
 
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoInject;
 import app.packed.binding.Key;
+import app.packed.extension.BaseExtension;
 import app.packed.operation.Op1;
-import internal.app.packed.bean.scanning.IntrospectorOnContextService;
-import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
  * Represents an HTTP response.
@@ -42,11 +42,11 @@ public interface HttpResponse {
     void write(String body, String contentType) throws IOException;
 }
 
-final class HttpResponseBeanIntrospector extends BaseExtensionBeanIntrospector {
+final class HttpResponseBeanIntrospector extends BeanIntrospector<BaseExtension> {
 
     /** {@inheritDoc} */
     @Override
-    public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        service.binder().bindOp(new Op1<HttpContext, HttpResponse>(f->f.response()) {});
+    public void onExtensionService(Key<?> key, OnContextService service) {
+        service.binder().bindOp(new Op1<>(HttpContext::response) {});
     }
 }

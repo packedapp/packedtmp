@@ -27,13 +27,14 @@ import com.sun.net.httpserver.HttpExchange;
 import app.packed.web.HttpContext;
 import app.packed.web.HttpRequest;
 import app.packed.web.HttpResponse;
+import app.packed.web.session.SessionContext;
 
 /**
  * Implementation of HttpContext wrapping a HttpExchange.
  */
 public final class PackedHttpContext implements HttpContext {
 
-    private final HttpExchange exchange;
+    final HttpExchange exchange;
     private final PackedHttpRequest request;
     private final PackedHttpResponse response;
 
@@ -146,5 +147,11 @@ public final class PackedHttpContext implements HttpContext {
             }
             headersSent = true;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public SessionContext session() {
+        return new SessionContext() {};
     }
 }

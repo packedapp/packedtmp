@@ -18,6 +18,7 @@ package app.packed.web;
 import java.io.IOException;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 
 /**
@@ -43,8 +44,17 @@ public class WebTest extends BaseAssembly {
 
     public static class Handlers {
 
+        Handlers(ApplicationMirror am) {
+            am.operations().forEach(c -> {
+                if (c instanceof WebOperationMirror wom) {
+                    System.out.println(wom.urlPattern() + wom.contexts());
+                }
+            });
+        }
+
         @WebGet(url = "/json")
-        public void json(HttpResponse ctx) throws IOException {
+        public void json(HttpResponse ctx, HttpRequest request) throws IOException {
+            //System.out.println(sc.getClass());
             ctx.write("{\"status\":\"ok\"}", "application/json");
         }
     }

@@ -56,6 +56,6 @@ final class HttpRequestBeanIntrospector extends BaseExtensionBeanIntrospector {
     /** {@inheritDoc} */
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnContextService service) {
-        service.binder().bindOp(new Op1<HttpContext, HttpRequest>(f->f.request()) {});
+        service.binder().bindOp(new Op1<>(HttpContext::request) {});
     }
 }

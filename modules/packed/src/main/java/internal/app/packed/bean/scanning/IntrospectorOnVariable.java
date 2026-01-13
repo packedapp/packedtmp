@@ -31,7 +31,7 @@ import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.context.Context;
-import app.packed.context.UnavilableContextException;
+import app.packed.context.ContextNotAvailableException;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
@@ -164,7 +164,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
         if (context != ExtensionContext.class) {
             ContextSetup findContext = operation.findContext(context);
             if (findContext == null) {
-                throw new UnavilableContextException("Context " + context.getSimpleName() + " not available for " + operation.target );
+                throw new ContextNotAvailableException("Context " + context.getSimpleName() + " not available for " + operation.target );
             }
         }
         MethodType mt = operation.template.invocationType();

@@ -23,6 +23,7 @@ import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
 import app.packed.web.HttpContext;
 import app.packed.web.WebGet;
+import app.packed.web.WebOperationMirror;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;
 
 /**
@@ -40,6 +41,11 @@ public final class WebGetOperationHandle extends BaseExtensionOperationHandle<Op
     @Override
     protected OperationConfiguration newOperationConfiguration() {
         return new OperationConfiguration(this);
+    }
+
+    @Override
+    public WebOperationMirror newOperationMirror() {
+        return new WebOperationMirror(this);
     }
 
     /**

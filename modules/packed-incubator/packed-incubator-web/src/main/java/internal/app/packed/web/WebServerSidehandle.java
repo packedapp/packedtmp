@@ -28,20 +28,15 @@ import app.packed.component.SidehandleBinding.Kind;
 import app.packed.lifecycle.Start;
 import app.packed.lifecycle.Stop;
 import app.packed.web.HttpContext;
-import app.packed.web.HttpRequest;
-import app.packed.web.HttpResponse;
 
 /**
  * Per-operation sidehandle that manages HTTP handler registration.
  */
-public final class WebServerSidehandle implements HttpContext {
+public final class WebServerSidehandle {
 
     private final String urlPattern;
     private final WebHandlerInvoker invoker;
     private final WebServerManager serverManager;
-
-    /** Thread-local to hold current context during request handling. */
-    private static final ThreadLocal<PackedHttpContext> currentContext = new ThreadLocal<>();
 
     public WebServerSidehandle(
             @SidehandleBinding(Kind.CONSTANT) String urlPattern,
@@ -64,10 +59,10 @@ public final class WebServerSidehandle implements HttpContext {
 
     private void handleRequest(HttpExchange exchange) {
         PackedHttpContext ctx = new PackedHttpContext(exchange);
-        currentContext.set(ctx);
         try {
-            invoker.invoke(this);
+            invoker.invoke(ctx);
         } catch (Throwable e) {
+            e.printStackTrace();
             try {
                 String error = "Internal Server Error: " + e.getMessage();
                 byte[] bytes = error.getBytes(StandardCharsets.UTF_8);
@@ -79,25 +74,12 @@ public final class WebServerSidehandle implements HttpContext {
                 // Ignore if we can't send error response
             }
         } finally {
-            currentContext.remove();
             exchange.close();
         }
     }
 
-    @Override
-    public HttpRequest request() {
-        PackedHttpContext ctx = currentContext.get();
-        return ctx != null ? ctx.request() : null;
-    }
-
-    @Override
-    public HttpResponse response() {
-        PackedHttpContext ctx = currentContext.get();
-        return ctx != null ? ctx.response() : null;
-    }
-
     /** Interface for invoking the handler method. */
     public interface WebHandlerInvoker {
-        void invoke(WebServerSidehandle context) throws Throwable;
+        void invoke(HttpContext context) throws Throwable;
     }
 }

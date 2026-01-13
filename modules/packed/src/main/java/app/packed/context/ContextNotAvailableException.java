@@ -38,14 +38,14 @@ import app.packed.build.BuildException;
 //NotInContextException
 
 // Hvad med generic ting der ikke passer
-public class UnavilableContextException extends BuildException {
+public class ContextNotAvailableException extends BuildException {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * @param message
      */
-    public UnavilableContextException(String message) {
+    public ContextNotAvailableException(String message) {
         super(message);
     }
 }

@@ -21,7 +21,7 @@ import java.util.Set;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.context.Context;
-import app.packed.context.UnavilableContextException;
+import app.packed.context.ContextNotAvailableException;
 import app.packed.service.sandbox.ServiceResolver;
 import internal.app.packed.bean.scanning.BeanTriggerModel.ParameterAnnotatedCache;
 import internal.app.packed.bean.scanning.BeanTriggerModel.ParameterTypeCache;
@@ -67,7 +67,7 @@ final class BeanScannerOnVariable {
             for (Class<? extends Context<?>> cla : hook.requiredContexts()) {
                 ContextSetup context = operation.findContext(cla);
                 if (context == null)  {
-                    throw new UnavilableContextException(operation.target + " must be in context " + cla + ". In order to resolve " + k);
+                    throw new ContextNotAvailableException(operation.target + " must be in context " + cla.getCanonicalName() + ". In order to resolve " + k);
                 }
             }
             IntrospectorOnContextService pcs = new IntrospectorOnContextService(k, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(), contexts,
