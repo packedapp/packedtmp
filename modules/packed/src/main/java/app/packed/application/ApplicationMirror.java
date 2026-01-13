@@ -226,7 +226,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
                 sb.append(os.mirror());
                 sb.append("\n");
             }
-            System.out.print(sb.toString());
+            IO.print(sb.toString());
         }
     }
 

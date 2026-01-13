@@ -199,7 +199,6 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
         // Nested operation get the same arguments as this operation, but with op return type
         PackedOperationTemplate template = operation.template.withReturnType(pop.type().returnRawType());
 
-        debug(bindingExtension);
         // Create the nested operation
         OperationSetup os = pop
                 .newOperationSetup(new NewOperation(operation.bean, operation.installedByExtension, template, OperationHandle::new, new EmbeddedIntoOperation(operation, index), pop.getComposedMethodHandle()));
