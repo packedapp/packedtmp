@@ -182,7 +182,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkIsOpen();
+        checkNotFinalized();
         operation.bean.container.application.componentTags.addComponentTags(operation, tags);
     }
 
@@ -234,7 +234,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** {@inheritDoc} */
     public final void named(String name) {
         requireNonNull(name, "name is null");
-        checkIsOpen();
+        checkNotFinalized();
         operation.namePrefix = name;
     }
 
@@ -287,7 +287,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
     // Maybe we need both??? We have it for Extension, onAssemblyClose, onApplicationClose
     // As a okay you cannot do anything else
-    protected void onClose() {}
+    protected void onFinalized() {}
 
     protected void onInstall() {}
 
@@ -310,7 +310,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         }
 
         if (isClose) {
-            onClose();
+            onFinalized();
             state = PackedComponentState.FINALIZED;
         }
     }

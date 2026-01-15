@@ -47,7 +47,7 @@ final class ApplicationRegistryBeanHandle<I, H extends ApplicationHandle<I, ?>> 
 
     /** {@inheritDoc} */
     @Override
-    protected void onClose() {
+    protected void onFinalized() {
         bindConstant(BuildApplicationRepository.class, repository);
         BeanSetup.crack(this).container.application.childApplications.add(repository);
     }

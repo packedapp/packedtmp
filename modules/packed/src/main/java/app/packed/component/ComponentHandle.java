@@ -37,12 +37,12 @@ public sealed abstract class ComponentHandle permits ApplicationHandle, Containe
      * @throws IllegalStateException
      *             if this handle is no longer configurable
      */
-    protected final void checkIsOpen() {
+    protected final void checkNotFinalized() {
         if (!isOpen()) {
             // could also go compo
             // Should probably throw InternalExtensionException
             // No because, ApplicationHandle can actually be defined by the user
-            throw new IllegalStateException("The " + componentPath().componentKind().name() + " is been closed");
+            throw new IllegalStateException("The " + componentPath().componentKind().name() + " has been finalized");
         }
     }
 

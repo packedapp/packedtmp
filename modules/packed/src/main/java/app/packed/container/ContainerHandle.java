@@ -64,7 +64,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkIsOpen();
+        checkNotFinalized();
         container.application.componentTags.addComponentTags(container, tags);
     }
 

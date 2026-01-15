@@ -86,7 +86,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
      *
      */
     public final void allowMultiClass() {
-        checkIsOpen();
+        checkNotFinalized();
         bean.multiInstall = bean.multiInstall | 1 << 31;
     }
 
@@ -119,7 +119,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
     // Is lazy, or eager?
     // Eager_never_fail, Eager_fail_if_not_used, Lazy_whenFirstUsed, LazyFailIfNotUsed, Some default for the container?
     public final <K> void bindComputedConstant(Key<K> key, Supplier<? extends K> supplier) {
-        checkIsOpen();
+        checkNotFinalized();
         bean.bindComputedConstant(key, supplier);
     }
 
@@ -141,7 +141,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkIsOpen();
+        checkNotFinalized();
         bean.container.application.componentTags.addComponentTags(bean, tags);
     }
 
@@ -187,7 +187,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
      * @see #serviceProvideAs(Key)
      */
     public final void exportAs(Key<?> key) {
-        checkIsOpen();
+        checkNotFinalized();
         OperationSetup operation = OperationSetup.crack(instanceProvideOperation());
         bean.serviceNamespace().export(key, operation);
     }
@@ -249,7 +249,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
      *             if another bean with the specified name already exists
      */
     public final void named(String name) {
-        checkIsOpen();
+        checkNotFinalized();
         bean.named(name);
     }
 
@@ -288,7 +288,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
      *
      * @see #isConfigurable()
      */
-    protected void onClose() {}
+    protected void onFinalized() {}
 
     /**
      * Invoked after the bean is no longer configurable by the owner of the bean.
@@ -311,7 +311,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
 
         if (isClose) {
             int i = onStateChange(0, isClose);
-            onClose();
+            onFinalized();
             onStateChange(i, isClose);
             state = PackedComponentState.FINALIZED;
         }
@@ -331,12 +331,12 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
         }
 
         if (isClose) {
-            onClose();
+            onFinalized();
             state = PackedComponentState.FINALIZED;
         }
         if (isClose) {
             int i = onStateChange(0, isClose);
-            onClose();
+            onFinalized();
             onStateChange(i, isClose);
             state = PackedComponentState.FINALIZED;
         } else {
@@ -381,7 +381,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
      */
     public final void provideAs(Key<?> key) {
         Key<?> k = InternalServiceUtil.checkKey(bean.bean.beanClass, key);
-        checkIsOpen();
+        checkNotFinalized();
 //        if (beanKind() != BeanKind.CONTAINER || beanKind() != BeanKind.LAZY) {
 //            // throw new UnsupportedOperationException("This method can only be called on beans of kind " + BeanKind.CONTAINER + "
 //            // or " + BeanKind.LAZY);

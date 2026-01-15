@@ -102,7 +102,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkIsOpen();
+        checkNotFinalized();
         application.componentTags.addComponentTags(application, tags);
     }
 

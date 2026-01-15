@@ -71,7 +71,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkIsOpen();
+        checkNotFinalized();
         namespace.container().application.componentTags.addComponentTags(namespace, tags);
     }
 
