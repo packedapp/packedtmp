@@ -22,13 +22,13 @@ import java.util.function.Function;
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.registry.ApplicationTemplate;
 import app.packed.bean.Bean;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.LifecycleKind;
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
+import sandbox.app.packed.application.registry.ApplicationTemplate;
 
 /** Implementation of {@link ApplicationTemplate}. */
 public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(LifecycleKind lifecycleKind, Bean<?> bean, Class<? super H> handleClass,

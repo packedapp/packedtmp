@@ -25,8 +25,6 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.registry.ApplicationRegistry;
-import app.packed.application.registry.LaunchableApplication;
 import app.packed.build.BuildGoal;
 import app.packed.lifecycle.LifecycleKind;
 import internal.app.packed.ValueBased;
@@ -35,6 +33,8 @@ import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
+import sandbox.app.packed.application.registry.ApplicationRegistry;
+import sandbox.app.packed.application.registry.LaunchableApplication;
 
 /** Implementation of {@link ApplicationRepository}. */
 @ValueBased

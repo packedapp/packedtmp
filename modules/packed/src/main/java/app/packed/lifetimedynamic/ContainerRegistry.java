@@ -18,7 +18,7 @@ package app.packed.lifetimedynamic;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.application.registry.LaunchableApplication.Launcher;
+import sandbox.app.packed.application.registry.LaunchableApplication.Launcher;
 
 // Den er jo super general...
 // Instance Manager

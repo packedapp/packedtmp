@@ -3,8 +3,6 @@ package app.packed.application;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.App.Launcher;
-import app.packed.application.graph.ApplicationBeanConfiguration;
-import app.packed.application.registry.ApplicationRegistryExtension;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.container.Wirelet;
@@ -220,10 +218,10 @@ public interface App extends AutoCloseable, ApplicationInterface {
         PackedApp.BOOTSTRAP_APP.verify(assembly, wirelets);
     }
 
-    @SuppressWarnings("exports")
-    static ApplicationBeanConfiguration<App> installChild(ApplicationRegistryExtension extension, Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+//    @SuppressWarnings("exports")
+//    static ApplicationBeanConfiguration<App> installChild(ApplicationRegistryExtension extension, Assembly assembly, Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Represents a pre-built application image that can be used to launch application instances.

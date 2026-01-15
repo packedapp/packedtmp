@@ -84,13 +84,9 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
     public Assembly findOne(String className) {
         requireNonNull(className, "className is null");
 
-        // Use a classloader from the active layer
-        ClassLoader loader = getActiveClassLoader();
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(className, true, loader);
-        } catch (ClassNotFoundException e) {
-            throw new BuildException("Assembly class not found: " + className, e);
+        Class<?> clazz = loadClass(className);
+        if (clazz == null) {
+            throw new BuildException("Assembly class not found: " + className);
         }
 
         return instantiateAndValidate(clazz);
@@ -101,11 +97,8 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
     public Optional<Assembly> findOptional(String className) {
         requireNonNull(className, "className is null");
 
-        ClassLoader loader = getActiveClassLoader();
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(className, true, loader);
-        } catch (ClassNotFoundException e) {
+        Class<?> clazz = loadClass(className);
+        if (clazz == null) {
             return Optional.empty();
         }
 
@@ -322,16 +315,31 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
     }
 
     /**
-     * Gets a classloader for the active layer.
+     * Loads a class by name, trying multiple classloaders to handle module system complexities.
+     * Returns null if the class cannot be found.
      */
-    private ClassLoader getActiveClassLoader() {
-        // If we have modules loaded, use one of their classloaders
-        // Otherwise fall back to the lookup class's classloader
-        Set<Module> modules = activeLayer.modules();
-        if (!modules.isEmpty()) {
-            return modules.iterator().next().getClassLoader();
+    private Class<?> loadClass(String className) {
+        // Try the lookup class's classloader first (handles test scenarios where
+        // lookup is from test code that can see both test and main classes)
+        try {
+            return Class.forName(className, true, lookup.lookupClass().getClassLoader());
+        } catch (ClassNotFoundException e) {
+            // Continue to try other classloaders
         }
-        return lookup.lookupClass().getClassLoader();
+
+        // Try classloaders from modules in the active layer
+        for (Module module : activeLayer.modules()) {
+            ClassLoader loader = module.getClassLoader();
+            if (loader != null) {
+                try {
+                    return Class.forName(className, true, loader);
+                } catch (ClassNotFoundException e) {
+                    // Continue to next module
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
