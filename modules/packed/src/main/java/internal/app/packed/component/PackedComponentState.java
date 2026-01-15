@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sandbox;
+package internal.app.packed.component;
 
-/**
- *
- */
-// Represents the bean after transformations...
-// Tror maaske det er mere debug?? IDK
-// Tror ikke det er super let at mappe
-interface BeanClassMirror {
+/** The build state of a component. */
+public enum PackedComponentState {
 
-    Class<?> beanClass();
+    /** The component can be configured by its owner. */
+    CONFIGURABLE,
 
-    // Has there been any transformations??
-    boolean isTransformed();
+    /**
+     * The component can no longer be configured by its owner, but the extension handling the component can still configure
+     * it via its handle.
+     */
+    FINALIZING,
 
+    /** The component can no longer be configured by its owner or the extension handling the component. */
+    FINALIZED;
 }
-
-// Transformed ->
-// BeanProxy

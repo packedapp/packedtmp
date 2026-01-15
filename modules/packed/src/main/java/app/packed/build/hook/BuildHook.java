@@ -15,6 +15,7 @@
  */
 package app.packed.build.hook;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -83,6 +84,31 @@ public sealed abstract class BuildHook implements BuildCodeSource
      */
     public static Assembly apply(Assembly assembly, Consumer<? super Applicator> transformer) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Registers a lookup object for this BuildHook class, allowing the framework to instantiate it without requiring an
+     * open package in module-info.
+     *
+     * <p>
+     * This method should be called from a static initializer in a BuildHook subclass: <pre>{@code
+     * public class MyBuildHook extends AssemblyBuildHook {
+     *     static {
+     *         BuildHook.openToFramework(MethodHandles.lookup());
+     *     }
+     * }
+     * }</pre>
+     *
+     * @param lookup
+     *            a lookup created in the BuildHook subclass
+     * @throws IllegalArgumentException
+     *             if the lookup class is not a BuildHook subclass
+     * @throws IllegalStateException
+     *             if a lookup is already registered for this class. The intention is to call it exactly once from the class
+     *             itself
+     */
+    public static void openToFramework(MethodHandles.Lookup lookup) {
+        internal.app.packed.build.hook.BuildHookModuleSupport.registerLookup(lookup);
     }
 
     // Wirelet transformers are run before any other wirelets

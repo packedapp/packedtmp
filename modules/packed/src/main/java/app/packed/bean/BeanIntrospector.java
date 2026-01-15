@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal.Accessor;
-import app.packed.bean.sandbox.AttachmentConfiguration;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
@@ -58,6 +57,7 @@ import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.util.accesshelper.AccessHelper;
 import internal.app.packed.util.accesshelper.BeanScanningAccessHandler;
+import sandbox.app.packed.bean.AttachmentConfiguration;
 
 /**
  * A bean introspector is the primary way for extensions are the primary way for extensions to interacts the

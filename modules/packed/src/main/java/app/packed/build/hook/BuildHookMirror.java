@@ -58,7 +58,6 @@ public non-sealed interface BuildHookMirror extends BuildCodeSourceMirror {
     public enum DeclarationSite {
         ASSEMBLY,
         BEAN,
-        WIRELET,
         DELEGATING_ASSEMBLY // BuildHook.Apply Maaske skal den i virkeligheden her hen
     }
 }

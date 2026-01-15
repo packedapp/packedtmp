@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sandbox;
+package sandbox.app.packed.bean;
 
 /**
  *
  */
-// Maaske er det mere en application annotation...
-// @ApplicationConf(laziness = Always)
-// Altsaa gaar udfra det er på applikations niveau vi gerne vil bestemme det
-@interface LazyBeans {
-
+public enum BeanRequirement {
+    MANAGED_BEAN, INSTANCE_BEAN, PROXIED;
 }

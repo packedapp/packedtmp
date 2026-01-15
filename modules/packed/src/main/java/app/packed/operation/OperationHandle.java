@@ -27,7 +27,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.Sidehandle;
 import app.packed.extension.Extension;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
-import internal.app.packed.component.ComponentBuildState;
+import internal.app.packed.component.PackedComponentState;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.util.accesshelper.AccessHelper;
@@ -106,7 +106,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     final OperationSetup operation;
 
     /** The state of this handle. */
-    private ComponentBuildState state = ComponentBuildState.CONFIGURABLE_AND_OPEN;
+    private PackedComponentState state = PackedComponentState.CONFIGURABLE;
 
     /**
      * Creates a new operation handle.
@@ -215,13 +215,13 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** {@inheritDoc} */
     @Override
     public final boolean isConfigurable() {
-        return state == ComponentBuildState.CONFIGURABLE_AND_OPEN;
+        return state == PackedComponentState.CONFIGURABLE;
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean isOpen() {
-        return state != ComponentBuildState.CLOSED;
+        return state != PackedComponentState.FINALIZED;
     }
 
     /** {@inheritDoc} */
@@ -304,14 +304,14 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /* package private */ final void onStateChange(boolean isClose) {
         // Logic in BeanHandle, only calls this method once (with isClose=true)
         // sometimes we run both onConfigured() and onClose();
-        if (state == ComponentBuildState.CONFIGURABLE_AND_OPEN) {
-            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
+        if (state == PackedComponentState.CONFIGURABLE) {
+            state = PackedComponentState.FINALIZING;
             onConfigured();
         }
 
         if (isClose) {
             onClose();
-            state = ComponentBuildState.CLOSED;
+            state = PackedComponentState.FINALIZED;
         }
     }
 

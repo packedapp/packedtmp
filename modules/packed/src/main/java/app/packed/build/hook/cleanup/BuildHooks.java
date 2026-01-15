@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sandbox;
-
-import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationHandle;
+package app.packed.build.hook.cleanup;
 
 /**
  *
  */
-public class AttachmentConfiguration<T> extends OperationConfiguration {
+public interface BuildHooks {
 
-    /**
-     * @param handle
-     */
-    public AttachmentConfiguration(OperationHandle<?> handle) {
-        super(handle);
+
+    // Mark all beans that can be lazy, lazy.
+    // Then have -> beanInfo.unlessTaggedWith("NotLazy")
+    // Maybe it is simply an applicationConfiguration.useLazy(Predicate<BeanInfo>.
+    public @interface LazyBeans {
+
     }
 }

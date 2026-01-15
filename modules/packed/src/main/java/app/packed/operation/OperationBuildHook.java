@@ -42,7 +42,7 @@ public non-sealed abstract class OperationBuildHook extends BuildHook {
      * @see AssemblyMirror#containers()
      */
     // I don't like verify, because we might just write some debug info
-    public void onBuildSuccess(OperationMirror mirror) {} // onBuild
+    public void onBuild(OperationMirror mirror) {} // onBuild
 
     // Hmm, not super nice name because it is actually just last chance
     public void onConfigured(OperationConfiguration configuration) {}

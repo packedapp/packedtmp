@@ -21,14 +21,14 @@ import app.packed.assembly.AssemblyConfiguration;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHook;
-import app.packed.build.hook.ApplyBuildHook;
+import app.packed.build.hook.UseBuildHooks;
 import app.packed.lifetime.Main;
 import internal.app.packed.build.hook.MyAss.MyBe;
 
 /**
  *
  */
-@ApplyBuildHook(hooks = MyBe.class)
+@UseBuildHooks(hooks = MyBe.class)
 public class MyAss extends BaseAssembly {
 
     @Override

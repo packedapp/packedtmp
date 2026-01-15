@@ -13,11 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sandbox;
+package sandbox.app.packed.bean;
 
 /**
  *
  */
-public enum BeanRequirement {
-    MANAGED_BEAN, INSTANCE_BEAN, PROXIED;
+// Represents the bean after transformations...
+// Tror maaske det er mere debug?? IDK
+// Tror ikke det er super let at mappe
+interface BeanClassMirror {
+
+    Class<?> beanClass();
+
+    // Has there been any transformations??
+    boolean isTransformed();
+
 }
+
+// Transformed ->
+// BeanProxy

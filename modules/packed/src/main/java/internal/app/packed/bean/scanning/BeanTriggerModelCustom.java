@@ -23,12 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.bean.sandbox.ForeignBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.assembly.AssemblyMetaHolder;
 import internal.app.packed.util.types.ClassUtil;
+import sandbox.app.packed.bean.ForeignBeanTrigger;
 
 /**
  * Ideen er lidt at vi kan have foreign triggers

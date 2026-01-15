@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface ApplyBuildHook {
+public @interface UseBuildHooks {
 
     // I think we have hooks (instead of value), because we hope to have functions in annotations some day
     Class<? extends BuildHook>[] hooks();

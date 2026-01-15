@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.build.hook;
-
-import app.packed.build.BuildException;
+package sandbox.app.packed.bean;
 
 /**
- * ContainerHook defined on Extension, or Bean.
+ *
  */
-@SuppressWarnings("serial")
-// Maybe just have a generic extension without the application IDK
-// Was InvalidBuildHookApplicationException
-public class BuildHookNotApplicableException extends BuildException {
+// Ideen var lidt vi kunne returnere noget ala
+// List<Map.Entry<Class<?>, BeanTriggerType, BindingElement(Unmodifiable)>> BeanProxy.triggeredBy()
 
-    /**
-     * @param message
-     */
-    public BuildHookNotApplicableException(String message) {
-        super(message);
-    }
+// Hmm, maaske bare annoteringstypen????
+
+// Maybe skip Inheritable... It is only source
+enum BeanTriggerKind {
+    ANNOTATED_CLASS, ANNOTATED_METHOD, ANNOTATED_FIELD, ANNOTATED_VARIABLE, AUTO_SERVICE, INHERITABLE_CONTEXTUAL_SERVICE
 }

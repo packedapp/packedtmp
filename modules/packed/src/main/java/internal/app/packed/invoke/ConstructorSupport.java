@@ -28,7 +28,7 @@ import java.util.Arrays;
 import app.packed.Framework;
 import app.packed.bean.BeanIntrospector;
 import app.packed.build.BuildException;
-import app.packed.build.hook.ApplyBuildHook;
+import app.packed.build.hook.UseBuildHooks;
 import app.packed.build.hook.BuildHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
@@ -46,27 +46,49 @@ import internal.app.packed.util.types.ClassUtil;
  */
 public class ConstructorSupport {
 
-    public static BuildHookFactory newBuildHookFactory(Class<?> assemblyClass, ApplyBuildHook applyHook, Class<? extends BuildHook> type) {
+    public static BuildHookFactory newBuildHookFactory(Class<?> targetClass, UseBuildHooks useHook, Class<? extends BuildHook> type) {
         MethodHandle constructor;
 
-        if (!AssemblyClassModel.class.getModule().canRead(type.getModule())) {
-            AssemblyClassModel.class.getModule().addReads(type.getModule());
+        Module thisModule = AssemblyClassModel.class.getModule();
+        Module typeModule = type.getModule();
+
+        if (!thisModule.canRead(typeModule)) {
+            thisModule.addReads(typeModule);
         }
 
         Lookup privateLookup;
-        try {
-            privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /* lookup */);
-        } catch (IllegalAccessException e1) {
-            throw new RuntimeException(e1);
+
+        // First check if a lookup was registered via BuildHook.openToFramework()
+        Lookup registeredLookup = internal.app.packed.build.hook.BuildHookModuleSupport.getLookupFor(type);
+        if (registeredLookup != null) {
+            try {
+                privateLookup = MethodHandles.privateLookupIn(type, registeredLookup);
+            } catch (IllegalAccessException e) {
+                throw new BuildException("Registered lookup for " + type.getName()
+                        + " does not have sufficient access", e);
+            }
+        } else if (typeModule.isOpen(type.getPackageName(), thisModule)) {
+            // Package is open via module-info
+            try {
+                privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup());
+            } catch (IllegalAccessException e) {
+                throw new BuildException("Cannot access BuildHook " + type.getName(), e);
+            }
+        } else {
+            // Neither registered nor open
+            throw new BuildException("BuildHook " + type.getName()
+                    + " is not accessible. Either call BuildHook.openToFramework(MethodHandles.lookup()) "
+                    + "in a static initializer, or add 'opens " + type.getPackageName()
+                    + " to " + thisModule.getName() + "' to your module-info.java");
         }
         // TODO fix visibility
         // Maybe common findConstructorMethod
         try {
             constructor = privateLookup.findConstructor(type, MethodType.methodType(void.class));
         } catch (NoSuchMethodException e) {
-            throw new BuildException("A container hook must provide an empty constructor, hook = " + applyHook, e);
+            throw new BuildException("A container hook must provide an empty constructor, hook = " + useHook, e);
         } catch (IllegalAccessException e) {
-            throw new BuildException("Can't see it sorry, hook = " + applyHook, e);
+            throw new BuildException("Can't see it sorry, hook = " + useHook, e);
         }
 
         // For consistency reasons we always tries to use invokeExact() even if not strictly needed

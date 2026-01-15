@@ -18,7 +18,7 @@ package app.packed.assembly;
 import java.util.List;
 
 import app.packed.build.BuildException;
-import app.packed.build.hook.ApplyBuildHook;
+import app.packed.build.hook.UseBuildHooks;
 import app.packed.build.hook.BuildHook;
 import app.packed.util.AnnotationList;
 
@@ -107,7 +107,7 @@ public non-sealed abstract class AssemblyBuildHook extends BuildHook {
 //  throw new UnsupportedOperationException();
 //}
 
-@ApplyBuildHook(hooks = MyCompanyAssembly.Max1Container.class)
+@UseBuildHooks(hooks = MyCompanyAssembly.Max1Container.class)
 abstract class MyCompanyAssembly extends BaseAssembly {
 
     static class Max1Container extends AssemblyBuildHook {

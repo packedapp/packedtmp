@@ -12,7 +12,7 @@ DELEGATING ASSEMBLY [Manually]
   We create a new (delegating) Assembly from another assembly
 
 TEST
-  We support it in someway with testing
+  We support it in someway with testingx
   
 ----- Not Supported
 Wirelet

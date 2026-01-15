@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.build.hook;
+package sandbox.app.packed.bean;
 
 /**
  *
  */
-public interface BuildHooks {
+// Maaske er det mere en application annotation...
+// @ApplicationConf(laziness = Always)
+// Altsaa gaar udfra det er på applikations niveau vi gerne vil bestemme det
+@interface LazyBeans {
 
-
-    // Mark all beans that can be lazy, lazy.
-    // Then have -> beanInfo.unlessTaggedWith("NotLazy")
-    // Maybe it is simply an applicationConfiguration.useLazy(Predicate<BeanInfo>.
-    public @interface LazyBeans {
-
-    }
 }

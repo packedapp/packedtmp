@@ -319,27 +319,54 @@ public final class PackedAssemblyModulepathFinder implements AssemblyModulepathF
      * Returns null if the class cannot be found.
      */
     private Class<?> loadClass(String className) {
-        // Try the lookup class's classloader first (handles test scenarios where
-        // lookup is from test code that can see both test and main classes)
-        try {
-            return Class.forName(className, true, lookup.lookupClass().getClassLoader());
-        } catch (ClassNotFoundException e) {
-            // Continue to try other classloaders
+        // Try the lookup class's classloader first
+        ClassLoader lookupLoader = lookup.lookupClass().getClassLoader();
+        Class<?> result = tryLoadClass(className, lookupLoader);
+        if (result != null) {
+            return result;
+        }
+
+        // Try thread context classloader
+        ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+        if (contextLoader != null && contextLoader != lookupLoader) {
+            result = tryLoadClass(className, contextLoader);
+            if (result != null) {
+                return result;
+            }
         }
 
         // Try classloaders from modules in the active layer
         for (Module module : activeLayer.modules()) {
             ClassLoader loader = module.getClassLoader();
-            if (loader != null) {
-                try {
-                    return Class.forName(className, true, loader);
-                } catch (ClassNotFoundException e) {
-                    // Continue to next module
+            if (loader != null && loader != lookupLoader && loader != contextLoader) {
+                result = tryLoadClass(className, loader);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+
+        // Try the layer's classloader for the lookup's module
+        Module lookupModule = lookup.lookupClass().getModule();
+        if (lookupModule.isNamed()) {
+            ClassLoader layerLoader = activeLayer.findLoader(lookupModule.getName());
+            if (layerLoader != null && layerLoader != lookupLoader) {
+                result = tryLoadClass(className, layerLoader);
+                if (result != null) {
+                    return result;
                 }
             }
         }
 
         return null;
+    }
+
+    private static Class<?> tryLoadClass(String className, ClassLoader loader) {
+        try {
+            return Class.forName(className, true, loader);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
     }
 
     /**

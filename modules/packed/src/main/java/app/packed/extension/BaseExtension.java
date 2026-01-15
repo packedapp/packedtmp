@@ -7,7 +7,6 @@ import app.packed.bean.Bean;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
-import app.packed.bean.sandbox.BeanSynthesizer;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
@@ -22,6 +21,7 @@ import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.service.util.PackedServiceLocator;
+import sandbox.app.packed.bean.BeanSynthesizer;
 
 /**
  * An extension that defines the foundational APIs for managing beans, services, containers and applications.

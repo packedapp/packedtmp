@@ -10,7 +10,7 @@ import app.packed.assembly.AssemblyBuildHook;
 import app.packed.assembly.AssemblyConfiguration;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
-import app.packed.build.hook.ApplyBuildHook;
+import app.packed.build.hook.UseBuildHooks;
 import app.packed.build.hook.BuildHook;
 import internal.app.packed.bean.scanning.BeanTriggerModelCustom;
 import internal.app.packed.build.hook.BuildHookMap;
@@ -28,7 +28,7 @@ public final /* primitive */ class AssemblyClassModel {
         protected AssemblyClassModel computeValue(Class<?> type) {
             HashMap<Class<? extends BuildHook>, List<BuildHook>> hookMap = new HashMap<>();
             for (Annotation a : type.getAnnotations()) {
-                if (a instanceof ApplyBuildHook h) {
+                if (a instanceof UseBuildHooks h) {
                     for (Class<? extends BuildHook> b : h.hooks()) {
                         Class<? extends BuildHook> hookType = BuildHookMap.classOf(b);
                         BuildHookFactory factory = ConstructorSupport.newBuildHookFactory(type, h, b);
@@ -40,7 +40,7 @@ public final /* primitive */ class AssemblyClassModel {
                 }
             }
             if (!hookMap.isEmpty() && DelegatingAssembly.class.isAssignableFrom(type)) {
-                throw new BuildException("Delegating assemblies cannot use @" + ApplyBuildHook.class.getSimpleName() + " annotations, assembly type =" + type);
+                throw new BuildException("Delegating assemblies cannot use @" + UseBuildHooks.class.getSimpleName() + " annotations, assembly type =" + type);
             }
             return new AssemblyClassModel(type, new StaticBuildHookMap(hookMap));
         }

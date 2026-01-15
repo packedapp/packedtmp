@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.component;
+package sandbox.app.packed.bean;
 
-/** The build state of a component. */
-public enum ComponentBuildState {
+import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationHandle;
 
-    /** The component can be configured by its owner. */
-    CONFIGURABLE_AND_OPEN,
+/**
+ *
+ */
+public class AttachmentConfiguration<T> extends OperationConfiguration {
 
     /**
-     * The component can no longer be configured by its owner, but the extension handling the component can still configure
-     * it.
+     * @param handle
      */
-    OPEN_BUT_NOT_CONFIGURABLE,
-
-    /** The component can no longer be configured by its owner or the extension handling the component. */
-    CLOSED;
+    public AttachmentConfiguration(OperationHandle<?> handle) {
+        super(handle);
+    }
 }

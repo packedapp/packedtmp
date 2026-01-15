@@ -18,12 +18,12 @@ package sandbox.extension.bean.pouch;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.sandbox.BeanSynthesizer;
 import app.packed.binding.Variable;
 import app.packed.container.ContainerBuildHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.lifecycle.Inject;
+import sandbox.app.packed.bean.BeanSynthesizer;
 
 /**
  *

@@ -36,7 +36,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.binding.BindingProvider.FromConstant;
-import internal.app.packed.component.ComponentBuildState;
+import internal.app.packed.component.PackedComponentState;
 import internal.app.packed.context.publish.ContextualizedElement;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTemplate;
@@ -70,7 +70,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
     private final Supplier<BeanMirror> mirror = StableValue.supplier(() -> newBeanMirror());
 
     /** The state of the bean. */
-    private ComponentBuildState state = ComponentBuildState.CONFIGURABLE_AND_OPEN;
+    private PackedComponentState state = PackedComponentState.CONFIGURABLE;
 
     /**
      * Create a new bean handle
@@ -202,13 +202,13 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
     /** {@inheritDoc} */
     @Override
     public final boolean isConfigurable() {
-        return state == ComponentBuildState.CONFIGURABLE_AND_OPEN;
+        return state == PackedComponentState.CONFIGURABLE;
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean isOpen() {
-        return state != ComponentBuildState.CLOSED;
+        return state != PackedComponentState.FINALIZED;
     }
 
     /**
@@ -304,8 +304,8 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
      * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle, boolean)
      */
     /* package private */ final void onStateChange(boolean isClose) {
-        if (state == ComponentBuildState.CONFIGURABLE_AND_OPEN) {
-            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
+        if (state == PackedComponentState.CONFIGURABLE) {
+            state = PackedComponentState.FINALIZING;
             onConfigured();
         }
 
@@ -313,16 +313,16 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
             int i = onStateChange(0, isClose);
             onClose();
             onStateChange(i, isClose);
-            state = ComponentBuildState.CLOSED;
+            state = PackedComponentState.FINALIZED;
         }
     }
 
     /* package private */ final void onStateChange2(boolean isClose) {
-        if (state == ComponentBuildState.CONFIGURABLE_AND_OPEN) {
+        if (state == PackedComponentState.CONFIGURABLE) {
             // OperationHandle.onConfigured could technically add operation to the bean
             // So make sure we use .size() comparison to catch stragglers
             int i = onStateChange(0, false);
-            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
+            state = PackedComponentState.FINALIZING;
             onConfigured();
             // Catch any operations added in OnConfigure
             // Hmm, IDK we add operations at any time now...
@@ -332,15 +332,15 @@ public non-sealed class BeanHandle<C extends BeanConfiguration<?>> extends Compo
 
         if (isClose) {
             onClose();
-            state = ComponentBuildState.CLOSED;
+            state = PackedComponentState.FINALIZED;
         }
         if (isClose) {
             int i = onStateChange(0, isClose);
             onClose();
             onStateChange(i, isClose);
-            state = ComponentBuildState.CLOSED;
+            state = PackedComponentState.FINALIZED;
         } else {
-            state = ComponentBuildState.OPEN_BUT_NOT_CONFIGURABLE;
+            state = PackedComponentState.FINALIZING;
 
             onConfigured();
         }

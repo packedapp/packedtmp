@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.sandbox;
+package sandbox.app.packed.bean;
 
 /**
  *
  */
-// Or BeanMirror Map<User, Map<Key, Class<?>> attachments()
-public class BeanAttachmentMirror {
-    // Owner
-    // Key
+// Not used now, but can be used to get the bean instance of the primary bean injected
+interface PrimaryBeanInstance<T> {
+    T get();
 }
