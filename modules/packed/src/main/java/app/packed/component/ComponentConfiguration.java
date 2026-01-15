@@ -62,7 +62,7 @@ public abstract sealed class ComponentConfiguration
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object obj) {
-        return obj instanceof ComponentConfiguration cc && handle().equals(cc.handle());
+        return obj instanceof ComponentConfiguration cc && handle() == cc.handle();
     }
 
     /** {@return the underlying handle of this component} */

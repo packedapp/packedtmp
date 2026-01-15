@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.binding.sandbox;
+package sandbox.packed.binding.sandbox;
 
 /**
  *
  */
-public interface InjectableToken<T> {
+// Ideen er at vi kan definere records vi saa kan injecte med alle parametrene
+// Ag
+public @interface RecordAggregator {}
 
-}
+// Paa en record, der saa samle info
+// Dvs vi faar nok en fjerde Hook, Manual, Key, InjectProvide

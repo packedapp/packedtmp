@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.build.action;
+package app.packed.lifecycle;
+
+import app.packed.build.BuildException;
 
 /**
- * <p>
- * Instances of this interface should never be exposed to the user that was responsible for initiating the action.
+ *
  */
-// Could have 2 version, one closeable and with spawn.
-// Issue with closeable is that it is a minimum of 3 lines...
-public interface BuildAction {
+// ClosableContainerRequiredException
+public class ManagedLifecycleRequiredException extends BuildException {
 
-    // Who is calling... BuildTransformer, Assembly, ect
+    private static final long serialVersionUID = 1L;
 
-    // Logging???
+    /**
+     * @param message
+     */
+    public ManagedLifecycleRequiredException(String message) {
+        super(message);
+    }
 
-    // Used the default configured log level for the template
-    BuildAction log(String message, Object... args);
-
-    BuildAction logTrace(String message, Object... args);
 }

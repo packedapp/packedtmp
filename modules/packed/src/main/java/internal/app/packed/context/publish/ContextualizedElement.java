@@ -24,6 +24,7 @@ import app.packed.context.Context;
 /**
  * All methods on this interface is only for informational purposes.
  */
+// Not crazy about all these methods
 public interface ContextualizedElement {
 
     /** {@return a set of the contexts available for this bean.} */

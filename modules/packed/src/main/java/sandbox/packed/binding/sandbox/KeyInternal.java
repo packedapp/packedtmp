@@ -1,4 +1,4 @@
-package app.packed.binding.sandbox;
+package sandbox.packed.binding.sandbox;
 
 import java.lang.reflect.Type;
 import java.util.Optional;

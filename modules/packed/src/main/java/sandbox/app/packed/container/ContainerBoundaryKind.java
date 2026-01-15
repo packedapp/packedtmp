@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.binding.sandbox;
+package sandbox.app.packed.container;
 
 /**
  *
  */
-// Ideen er at vi kan definere records vi saa kan injecte med alle parametrene
-// Ag
-public @interface RecordAggregator {}
 
-// Paa en record, der saa samle info
-// Dvs vi faar nok en fjerde Hook, Manual, Key, InjectProvide
+// Maaske er det ikke en enum..
+// Maaske har har vi ogsaa Transactional,...
+// Og brugere kan lave deres egen
+
+public enum ContainerBoundaryKind {
+    ASSEMBLY,
+    APPLICATION, // Implies Assembly? IDK
+    DEPLOYMENT // Implies -> Assembly, Lifetime, Application
+}
+// Add Family maybe? If we have a generic ContainerReleationstip

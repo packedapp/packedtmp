@@ -54,6 +54,7 @@ public final class Framework {
     // Typically called from a static init of the class
 
     // Tror vi skal have dem mere specifikke fx  Bean.openClass
+    // Or maybe BeanOpener
     @Deprecated
     public static void openClassToFramework(MethodHandles.Lookup lookup) {
         openClassToFramework(lookup, lookup.lookupClass());

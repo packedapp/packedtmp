@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.sandbox;
+package sandbox.app.packed.container;
 
 import app.packed.assembly.AssemblyDescriptor;
 

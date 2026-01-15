@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import internal.app.packed.extension.ExtensionSetup;
@@ -46,7 +45,6 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
 
     /** {@inheritDoc} */
     @Override
-    @BuildActionable("container.addTags")
     public ComponentConfiguration tag(String... tags) {
         checkIsConfigurable();
         handle.componentTag(tags);
@@ -113,7 +111,6 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      *             characters and '_', '-' or '.'
      * @see Wirelet#named(String)
      */
-    @BuildActionable("container.named")
     public ContainerConfiguration named(String name) {
         checkIsConfigurable();
         handle.container.named(name);
@@ -177,7 +174,6 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * @see #extensionsTypes()
      * @see BaseAssembly#use(Class)
      */
-    @BuildActionable("container.installExtension")
     public final <E extends Extension<?>> E use(Class<E> extensionClass) {
         ExtensionSetup extension = handle.container.useExtension(extensionClass, null);
         return extensionClass.cast(extension.instance());

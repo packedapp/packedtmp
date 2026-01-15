@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.binding.Key;
-import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentRealm;
 import app.packed.context.Context;
@@ -47,7 +46,6 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
      * @throws UnsupportedOperationException
      *             if called on a bean with void bean class
      */
-    @BuildActionable("bean.allowMultiClass")
     public BeanConfiguration<T> allowMultiClass() {
         checkIsConfigurable();
         handle.allowMultiClass();
@@ -102,7 +100,6 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
      * @see CodeGenerated
      * @see BindableVariable#bindGeneratedConstant(Supplier)
      */
-    @BuildActionable("bean.addCodeGenerator")
     public <K> void bindComputedConstant(Class<K> key, Supplier<? extends K> supplier) {
         checkIsConfigurable();
         bindComputedConstant(Key.of(key), supplier);
@@ -134,7 +131,6 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
      * @see ComputedConstant
      * @see BindableVariable#bindGeneratedConstant(Supplier)
      */
-    @BuildActionable("bean.addCodeGenerator")
     // ComputedService instead??? buildConstant??? IDK
     // Hmm, bliver vi noedt til at sige noget om hvornaar den bliver kaldt???
     // Den bliver jo tidligst kaldt som en del af build processen
@@ -235,7 +231,6 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
      *             if there is another bean with the same name in the container. Or if the container has a child container
      *             with the same name.
      */
-    @BuildActionable("bean.named")
     public BeanConfiguration<?> named(String name) {
         checkIsConfigurable();
         handle.named(name);
@@ -310,7 +305,6 @@ public non-sealed class BeanConfiguration<T> extends ComponentConfiguration impl
 
     /** {@inheritDoc} */
     @Override
-    @BuildActionable("component.addTags") // Hmm or bean.addTags
     public BeanConfiguration<T> tag(String... tags) {
         checkIsConfigurable();
         handle.componentTag(tags);

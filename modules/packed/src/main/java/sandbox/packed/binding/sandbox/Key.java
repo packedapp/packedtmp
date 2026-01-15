@@ -1,4 +1,4 @@
-package app.packed.binding.sandbox;
+package sandbox.packed.binding.sandbox;
 
 import static java.util.Objects.requireNonNull;
 
@@ -20,11 +20,6 @@ import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.binding.InvalidKeyException;
 import app.packed.binding.Qualifier;
 import app.packed.binding.Variable;
-import app.packed.binding.sandbox.KeySource.ClassSource;
-import app.packed.binding.sandbox.KeySource.FieldSource;
-import app.packed.binding.sandbox.KeySource.MethodReturnSource;
-import app.packed.binding.sandbox.KeySource.TypeCaptureSource;
-import app.packed.binding.sandbox.KeySource.VariableSource;
 import app.packed.util.AnnotationList;
 import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.util.PackedAnnotationList;
@@ -32,6 +27,11 @@ import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 import internal.app.packed.util.types.Types;
+import sandbox.packed.binding.sandbox.KeySource.ClassSource;
+import sandbox.packed.binding.sandbox.KeySource.FieldSource;
+import sandbox.packed.binding.sandbox.KeySource.MethodReturnSource;
+import sandbox.packed.binding.sandbox.KeySource.TypeCaptureSource;
+import sandbox.packed.binding.sandbox.KeySource.VariableSource;
 
 /**
  * A key defines a unique identifier with two parts: a {@link Type type} part and an optional list of special

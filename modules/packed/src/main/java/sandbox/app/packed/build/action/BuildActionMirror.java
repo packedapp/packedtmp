@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.build.action;
+package sandbox.app.packed.build.action;
 
 import java.lang.reflect.Method;
 import java.util.Map;

@@ -21,11 +21,11 @@ import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentRealm;
-import app.packed.container.sandbox.ContainerPropagator;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
+import sandbox.app.packed.container.ContainerPropagator;
 
 /**
  * The configuration of a namespace.

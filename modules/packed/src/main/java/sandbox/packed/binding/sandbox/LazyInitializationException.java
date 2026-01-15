@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import app.packed.build.BuildException;
+package sandbox.packed.binding.sandbox;
 
 /**
  *
  */
-// ClosableContainerRequiredException
-public class ManagedContainerRequiredException extends BuildException {
+public class LazyInitializationException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * @param message
-     */
-    public ManagedContainerRequiredException(String message) {
-        super(message);
-    }
 
 }

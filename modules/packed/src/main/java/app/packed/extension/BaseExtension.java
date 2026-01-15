@@ -8,7 +8,6 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.sandbox.BeanSynthesizer;
-import app.packed.build.action.BuildActionable;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
@@ -121,7 +120,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return the configuration of the bean
      * @see BaseAssembly#install(Class)
      */
-    @BuildActionable("bean.install")
     public <T> ProvidableBeanConfiguration<T> install(Class<T> implementation) {
         return install(Bean.of(implementation));
     }

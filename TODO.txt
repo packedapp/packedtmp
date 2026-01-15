@@ -1,7 +1,10 @@
 Major Architectual
   Hooks
   Namespaces/Extensions
-  Lifecycle
+  Lifetime
+
+Cleanup
+  Services (incl .provide)
   
 
 

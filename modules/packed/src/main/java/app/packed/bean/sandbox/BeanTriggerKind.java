@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.binding.sandbox;
-
-import app.packed.binding.Provider;
+package app.packed.bean.sandbox;
 
 /**
  *
  */
-public interface BindingTracer<T> extends Provider<T> {
+// Ideen var lidt vi kunne returnere noget ala
+// List<Map.Entry<Class<?>, BeanTriggerType, BindingElement(Unmodifiable)>> BeanProxy.triggeredBy()
 
-    boolean isBuildTimeBinding();
+// Hmm, maaske bare annoteringstypen????
+
+// Maybe skip Inheritable... It is only source
+enum BeanTriggerKind {
+    ANNOTATED_CLASS, ANNOTATED_METHOD, ANNOTATED_FIELD, ANNOTATED_VARIABLE, AUTO_SERVICE, INHERITABLE_CONTEXTUAL_SERVICE
 }

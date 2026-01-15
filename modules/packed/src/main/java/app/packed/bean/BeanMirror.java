@@ -16,7 +16,6 @@ import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanTrigger.AutoServiceInheritable;
 import app.packed.binding.Key;
 import app.packed.build.Mirror;
-import app.packed.build.action.BuildActionMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
@@ -147,10 +146,6 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     @Override
     public final int hashCode() {
         return handle.bean.hashCode();
-    }
-
-    BuildActionMirror installationAction() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@return the extension that installed the bean, typically BaseExtension} */

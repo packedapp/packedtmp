@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.DelegatingAssembly;
-import app.packed.binding.Key;
 import app.packed.build.hook.BuildHook;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerHandle;
@@ -84,11 +83,6 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     @Override
     protected ApplicationSetup application(ContainerSetup setup) {
         return setup.application;
-    }
-
-    @Override
-    public <T> ContainerInstaller<H> provideGuestConstant(Key<T> key, T constant) {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

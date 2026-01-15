@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.sandbox;
+package sandbox.app.packed.build.action;
 
 /**
- *
+ * <p>
+ * Instances of this interface should never be exposed to the user that was responsible for initiating the action.
  */
+// Could have 2 version, one closeable and with spawn.
+// Issue with closeable is that it is a minimum of 3 lines...
+public interface BuildAction {
 
-// Maaske er det ikke en enum..
-// Maaske har har vi ogsaa Transactional,...
-// Og brugere kan lave deres egen
+    // Who is calling... BuildTransformer, Assembly, ect
 
-public enum ContainerBoundaryKind {
-    ASSEMBLY,
-    LIFETIME,
-    APPLICATION, // Implies Assembly? IDK
-    DEPLOYMENT // Implies -> Assembly, Lifetime, Application
+    // Logging???
+
+    // Used the default configured log level for the template
+    BuildAction log(String message, Object... args);
+
+    BuildAction logTrace(String message, Object... args);
 }
-// Add Family maybe? If we have a generic ContainerReleationstip

@@ -7,7 +7,6 @@ module app.packed {
     exports app.packed.application;
     exports app.packed.assembly;
     exports app.packed.bean;
-    exports app.packed.lifecycle;
     exports app.packed.binding;
     exports app.packed.build;
     exports app.packed.component;
@@ -15,10 +14,11 @@ module app.packed {
     exports app.packed.context;
     exports app.packed.concurrent;
     exports app.packed.extension;
+    exports app.packed.lifecycle;
+    exports app.packed.lifecycle.runtime;  //IDK
     exports app.packed.lifetime;
     exports app.packed.namespace;
     exports app.packed.operation;
-    exports app.packed.lifecycle.runtime;  //IDK
     exports app.packed.service;
     exports app.packed.util;
 

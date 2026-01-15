@@ -21,8 +21,8 @@ import java.util.function.Supplier;
  *
  */
 // Modelled like Optional
-// Except that it throws ContextCouldNotLocatedException (Not a build time exception)
-public interface RuntimeContextLookup<T extends Context<?>> extends Supplier<T> {
+// Except that it throws ContextNotAvailableException (Not a build time exception)
+interface RuntimeContextLookup<T extends Context<?>> extends Supplier<T> {
 
     static <T extends Context<?>> RuntimeContextLookup<T> lookup(Class<T> context) {
         throw new UnsupportedOperationException();

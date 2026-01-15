@@ -62,7 +62,6 @@ final class StartRunner {
     }
 
     void start() {
-        System.out.println("STARTING " + Thread.currentThread());
         long start = System.currentTimeMillis();
 
         for (InvokableLifecycleOperationHandle<StartOperationHandle> h : operations) {

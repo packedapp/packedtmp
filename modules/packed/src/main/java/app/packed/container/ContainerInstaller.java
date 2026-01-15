@@ -16,7 +16,6 @@
 package app.packed.container;
 
 import app.packed.assembly.Assembly;
-import app.packed.binding.Key;
 import internal.app.packed.container.PackedContainerInstaller;
 
 /**
@@ -112,25 +111,6 @@ public sealed interface ContainerInstaller<H extends ContainerHandle<?>> permits
      * @return this builder
      */
     ContainerInstaller<H> named(String name);
-
-    /**
-     * Provides constants per Carrier Instance for this particular container builder
-     *
-     * @param <T>
-     * @param key
-     * @param arg
-     * @return
-     *
-     * @see ExtensionLink#ofConstant(Class, Object)
-     */
-    default <T> ContainerInstaller<H> provideGuestConstant(Class<T> key, T constant) {
-        return provideGuestConstant(Key.of(key), constant);
-    }
-
-    /**
-     * @see FromLifetimeChannel
-     */
-    <T> ContainerInstaller<H> provideGuestConstant(Key<T> key, T constant);
 
     /**
      * Sets the value of the specified container local for the container being built.
