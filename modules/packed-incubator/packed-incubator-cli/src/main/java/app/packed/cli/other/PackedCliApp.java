@@ -18,9 +18,9 @@ package app.packed.cli.other;
 import app.packed.application.App;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
-import app.packed.lifecycle.LifecycleKind;
 import app.packed.bean.Bean;
 import app.packed.container.Wirelet;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
 
 /**

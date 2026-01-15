@@ -45,7 +45,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnConstructor;

@@ -17,8 +17,9 @@ package app.packed.telemetry.span.impl;
 
 import static java.util.Objects.requireNonNull;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.telemetry.span.Span;
-import app.packed.util.Nullable;
 
 /**
  * Uhh

@@ -23,7 +23,7 @@ import app.packed.binding.BindingKind;
 import app.packed.binding.BindingMirror;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 

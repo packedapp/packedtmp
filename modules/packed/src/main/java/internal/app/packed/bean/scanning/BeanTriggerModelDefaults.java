@@ -25,7 +25,7 @@ import app.packed.bean.BeanTrigger.OnAnnotatedField;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
 import app.packed.extension.InternalExtensionException;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  *

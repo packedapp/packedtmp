@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /** The default implementation of {@link ApplicationPath}. */
 public final class PackedNamespacePath implements OldApplicationPath {

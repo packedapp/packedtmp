@@ -24,7 +24,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
 import internal.app.packed.container.wirelets.InternalBaseWirelet;

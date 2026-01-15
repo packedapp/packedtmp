@@ -41,7 +41,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.util.AnnotationList;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.invoke.ServiceSupport;
 import tck.AbstractAppTest.TestStore;

@@ -34,7 +34,7 @@ import app.packed.binding.Variable;
 import app.packed.lifecycle.runtime.errorhandling.ErrorProcessor;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.util.StringFormatter;
 

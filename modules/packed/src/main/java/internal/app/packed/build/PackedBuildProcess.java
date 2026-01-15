@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.build.BuildProcess;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 

@@ -35,7 +35,7 @@ import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.FrameworkExtension;
 import app.packed.extension.InternalExtensionException;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.invoke.ConstructorSupport;
 import internal.app.packed.invoke.ConstructorSupport.ExtensionFactory;
 import internal.app.packed.util.StringFormatter;

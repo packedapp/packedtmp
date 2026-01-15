@@ -23,7 +23,7 @@ import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.CompositeLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import app.packed.util.TreeView;
 import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 import internal.app.packed.container.ContainerSetup;

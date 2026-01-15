@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;

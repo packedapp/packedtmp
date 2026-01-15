@@ -28,7 +28,7 @@ import app.packed.assembly.AssemblyModulepathFinder;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
 import app.packed.component.ComponentRealm;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.build.AuthoritySetup;

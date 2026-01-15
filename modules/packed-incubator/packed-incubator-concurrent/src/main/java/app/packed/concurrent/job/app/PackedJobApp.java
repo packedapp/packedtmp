@@ -22,9 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
-import app.packed.lifecycle.LifecycleKind;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.lifecycle.runtime.StopOption;

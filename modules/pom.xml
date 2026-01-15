@@ -30,6 +30,7 @@
     <version.test.assertj>3.26.3</version.test.assertj>
     <version.test.junit>6.0.2</version.test.junit>
     <version.test.jmh>1.37</version.test.jmh>
+    <version.jspecify>1.0.0</version.jspecify>
     
     <!-- Pluging Versions -->
     <version.plugin.jacoco>0.8.12</version.plugin.jacoco>
@@ -49,6 +50,12 @@
         <groupId>app.packed</groupId>
         <artifactId>packed-devtools</artifactId>
         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jspecify</groupId>
+        <artifactId>jspecify</artifactId>
+        <version>${version.jspecify}</version>
       </dependency>
     
       <!-- Testing -->

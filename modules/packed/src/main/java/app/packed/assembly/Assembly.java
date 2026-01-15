@@ -18,7 +18,7 @@ package app.packed.assembly;
 import app.packed.application.ApplicationBuildLocal;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.build.BuildCodeSource;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;

@@ -25,7 +25,7 @@ import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
 import app.packed.service.ServiceNamespaceConfiguration;
 import app.packed.service.ServiceNamespaceMirror;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;

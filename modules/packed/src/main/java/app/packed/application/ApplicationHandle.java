@@ -22,7 +22,7 @@ import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.component.Sidehandle;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedBootstrapImage.ImageEager;

@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.bean.BeanSetup;

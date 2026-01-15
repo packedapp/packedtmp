@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.lifecycle.RunState;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import sandbox.lifetime.external.ManagedLifetimeState;
 
 // This is basically something thats wraps a state that is 100 Linear

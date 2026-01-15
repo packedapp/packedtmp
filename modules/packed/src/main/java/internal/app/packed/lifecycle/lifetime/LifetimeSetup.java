@@ -3,7 +3,7 @@ package internal.app.packed.lifecycle.lifetime;
 import java.util.List;
 
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.operation.OperationSetup;
 
 /** The internal configuration of a Lifetime. */

@@ -23,7 +23,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import app.packed.util.TreeView;
 
 /** Implementation of {@link TreeView}. */

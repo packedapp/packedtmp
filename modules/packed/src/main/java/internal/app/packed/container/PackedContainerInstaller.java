@@ -30,7 +30,7 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;

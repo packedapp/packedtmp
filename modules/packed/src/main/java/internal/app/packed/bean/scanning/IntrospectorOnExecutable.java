@@ -19,7 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Executable;
 
 import app.packed.operation.OperationType;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.util.PackedAnnotationList;
 
 /**

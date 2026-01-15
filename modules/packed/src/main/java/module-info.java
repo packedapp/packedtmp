@@ -1,6 +1,8 @@
 // is open because of Eclipse Junit
 module app.packed {
     requires transitive jdk.jfr;
+    requires transitive org.jspecify;
+
     requires jdk.httpserver;
     //  requires jdk.incubator.concurrent; // Sometimes test
 

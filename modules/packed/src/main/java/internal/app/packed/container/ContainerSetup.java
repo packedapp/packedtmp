@@ -35,7 +35,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.operation.OperationHandle;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.bean.BeanSetup;

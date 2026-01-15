@@ -32,7 +32,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.sidehandle.PackedSidehandle;

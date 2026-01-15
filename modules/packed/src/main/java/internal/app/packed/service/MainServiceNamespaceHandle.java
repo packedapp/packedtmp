@@ -24,7 +24,7 @@ import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionContext;

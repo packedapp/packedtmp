@@ -22,7 +22,7 @@ import app.packed.binding.Key;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.sandbox.ServiceProviderKind;
 import app.packed.service.sandbox.ServiceResolver;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.PackedBindingHandle;

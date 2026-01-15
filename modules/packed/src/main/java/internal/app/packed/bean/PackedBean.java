@@ -27,7 +27,7 @@ import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.operation.Op;
 import app.packed.util.AnnotationList;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.util.PackedAnnotationList;
 

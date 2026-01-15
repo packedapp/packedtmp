@@ -15,7 +15,7 @@
  */
 package internal.app.packed.util;
 
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A component path points to a single component in namespace (tree of named components) expressed as a string

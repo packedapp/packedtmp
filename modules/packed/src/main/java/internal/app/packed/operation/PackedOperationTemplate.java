@@ -10,7 +10,7 @@ import java.util.Map;
 
 import app.packed.context.Context;
 import app.packed.operation.OperationType;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.context.ContextModel;
 import internal.app.packed.extension.ExtensionContext;

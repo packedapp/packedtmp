@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.build.BuildLocal;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.PackedApplicationBuildLocal;
 import internal.app.packed.bean.PackedBeanBuildLocal;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;

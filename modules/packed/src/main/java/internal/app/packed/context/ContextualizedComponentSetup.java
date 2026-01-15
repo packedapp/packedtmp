@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 import app.packed.context.Context;
 import app.packed.context.ContextualizedElementMirror;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
 

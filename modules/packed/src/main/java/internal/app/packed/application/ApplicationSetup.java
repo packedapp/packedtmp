@@ -32,7 +32,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.Sidehandle;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceHandle;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.deployment.DeploymentSetup;
 import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.assembly.AssemblySetup;

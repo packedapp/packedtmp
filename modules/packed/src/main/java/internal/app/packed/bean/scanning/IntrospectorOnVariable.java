@@ -36,7 +36,7 @@ import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.util.AnnotationList;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanTriggerModel.OnAnnotatedVariableCache;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;

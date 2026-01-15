@@ -21,7 +21,7 @@ import java.util.Set;
 
 import app.packed.context.Context;
 import app.packed.extension.Extension;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.util.PackedAnnotationList;
 
 /**

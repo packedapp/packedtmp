@@ -15,11 +15,12 @@
  */
 package app.packed.concurrent.job2.impl;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.concurrent.oldscheduling.ScheduledOperationConfiguration;
 import app.packed.concurrent.oldscheduling.ScheduledOperationMirror;
 import app.packed.lifecycle.Initialize;
 import app.packed.operation.OperationInstaller;
-import app.packed.util.Nullable;
 import internal.app.packed.concurrent.ThreadNamespaceHandle;
 import internal.app.packed.concurrent.ThreadedOperationHandle;
 import internal.app.packed.concurrent.old.ScheduleImpl;

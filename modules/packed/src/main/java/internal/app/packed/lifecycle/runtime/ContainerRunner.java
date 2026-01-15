@@ -16,7 +16,7 @@
 package internal.app.packed.lifecycle.runtime;
 
 import app.packed.lifecycle.RunState;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionContext;

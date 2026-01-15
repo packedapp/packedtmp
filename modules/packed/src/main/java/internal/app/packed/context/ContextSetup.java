@@ -25,7 +25,7 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerTreeSetup;
 import internal.app.packed.operation.OperationSetup;

@@ -31,7 +31,7 @@ import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.lifecycle.runtime.StopOption;
 import app.packed.operation.Op1;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import sandbox.lifetime.external.ManagedLifetimeState;
 
 /**

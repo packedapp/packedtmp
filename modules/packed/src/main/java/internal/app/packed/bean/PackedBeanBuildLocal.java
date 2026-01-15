@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanLocal.Accessor;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
 

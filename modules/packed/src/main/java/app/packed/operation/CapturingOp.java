@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import app.packed.binding.Variable;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.binding.PackedDependency;
 import internal.app.packed.invoke.SamType;
 import internal.app.packed.operation.PackedOp;

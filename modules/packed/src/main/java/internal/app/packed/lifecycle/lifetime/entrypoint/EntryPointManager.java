@@ -24,7 +24,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.Main;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.IntrospectorOnMethod;
 

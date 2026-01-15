@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.component.ComponentRealm;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.service.ServiceBindingSetup;

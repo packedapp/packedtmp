@@ -17,7 +17,7 @@ package internal.app.packed.util;
 
 import java.util.HashMap;
 
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.container.ContainerSetup;
 
 /**

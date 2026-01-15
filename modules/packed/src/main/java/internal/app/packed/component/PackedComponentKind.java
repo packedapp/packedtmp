@@ -24,7 +24,7 @@ import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentPath.FragmentKind;
 import app.packed.extension.Extension;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.component.PackedComponentPath.SchemaFragment;
 
 /**

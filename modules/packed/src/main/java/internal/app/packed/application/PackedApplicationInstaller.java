@@ -27,7 +27,7 @@ import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.LifecycleKind;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.component.AbstractComponentInstaller;

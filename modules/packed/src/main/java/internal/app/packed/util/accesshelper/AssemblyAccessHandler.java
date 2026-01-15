@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;

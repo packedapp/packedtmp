@@ -29,7 +29,7 @@ import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.operation.Op;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
 import internal.app.packed.bean.sidehandle.PackedSidehandle;
 import internal.app.packed.binding.BindingProvider;

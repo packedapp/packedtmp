@@ -31,7 +31,7 @@ import app.packed.binding.Variable;
 import app.packed.build.BuildException;
 import app.packed.lifecycle.runtime.errorhandling.ErrorMessageBuilder;
 import app.packed.operation.OperationType;
-import app.packed.util.Nullable;
+import org.jspecify.annotations.Nullable;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.Types;
 
