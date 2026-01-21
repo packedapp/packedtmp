@@ -25,6 +25,7 @@ import app.packed.extension.Extension;
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
+import internal.app.packed.build.hooks.AssemblyBuildHook;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 

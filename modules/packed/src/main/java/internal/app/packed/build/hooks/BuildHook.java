@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.build.hook;
+package internal.app.packed.build.hooks;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationBuildHook;
 import app.packed.assembly.Assembly;
-import app.packed.assembly.AssemblyBuildHook;
 import app.packed.assembly.AssemblyPropagator;
-import app.packed.bean.BeanHook;
 import app.packed.build.BuildCodeSource;
 import app.packed.component.ComponentMirror;
-import app.packed.container.ContainerBuildHook;
-import app.packed.operation.OperationBuildHook;
 
 /**
  * Build hooks are used for ...
@@ -60,7 +55,7 @@ public sealed abstract class BuildHook implements BuildCodeSource
     // If the same (.getClass()) build hook is placed on annotation ignore it
     // other.getClass() == this.getClass()
     //
-    public boolean ignoreDuplicate(BuildHook other) {
+    public boolean ignoreDuplicateHookClass() {
         return true; // Maybe false or maybe True/False/Fail/Warn
     }
 
@@ -68,7 +63,7 @@ public sealed abstract class BuildHook implements BuildCodeSource
         return Set.of();
     }
 
-    // Naah vi kalder ind paa noget andet
+    // Naah vi kalder ind paa noget andetxx
     public static void checkTransforming() {}
 
     /**

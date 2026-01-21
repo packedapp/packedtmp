@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package internal.app.packed.build.hooks;
 
-import app.packed.build.hook.BuildHook;
+import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationType;
 
 /**
  * A build hook for operations.

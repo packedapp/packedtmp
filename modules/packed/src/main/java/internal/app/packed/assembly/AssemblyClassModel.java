@@ -6,15 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import app.packed.assembly.Assembly;
-import app.packed.assembly.AssemblyBuildHook;
 import app.packed.assembly.AssemblyConfiguration;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
-import app.packed.build.hook.UseBuildHooks;
-import app.packed.build.hook.BuildHook;
 import internal.app.packed.bean.scanning.BeanTriggerModelCustom;
 import internal.app.packed.build.hook.BuildHookMap;
 import internal.app.packed.build.hook.StaticBuildHookMap;
+import internal.app.packed.build.hooks.AssemblyBuildHook;
+import internal.app.packed.build.hooks.BuildHook;
+import internal.app.packed.build.hooks.UseBuildHooks;
 import internal.app.packed.invoke.ConstructorSupport;
 import internal.app.packed.invoke.ConstructorSupport.BuildHookFactory;
 

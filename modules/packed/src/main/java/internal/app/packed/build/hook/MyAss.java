@@ -16,14 +16,14 @@
 package internal.app.packed.build.hook;
 
 import app.packed.application.App;
-import app.packed.assembly.AssemblyBuildHook;
 import app.packed.assembly.AssemblyConfiguration;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanHook;
-import app.packed.build.hook.UseBuildHooks;
 import app.packed.lifetime.Main;
 import internal.app.packed.build.hook.MyAss.MyBe;
+import internal.app.packed.build.hooks.AssemblyBuildHook;
+import internal.app.packed.build.hooks.BeanHook;
+import internal.app.packed.build.hooks.UseBuildHooks;
 
 /**
  *
@@ -33,7 +33,6 @@ public class MyAss extends BaseAssembly {
 
     @Override
     protected void build() {
-        install(ExampleBean.class);
         install(ExampleBean.class);
     }
 
@@ -65,6 +64,5 @@ public class MyAss extends BaseAssembly {
         public void onNew(BeanConfiguration<?> configuration) {
             IO.println("Bean Added of type " + configuration.beanClass());
         }
-
     }
 }

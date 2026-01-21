@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.build.hook.cleanup;
+package internal.app.packed.build.hooks.cleanup;
 
 import java.util.List;
 
-import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
+import internal.app.packed.build.hooks.BuildHookMirror;
 
 /**
  *

@@ -16,8 +16,8 @@
 package app.packed.build;
 
 import app.packed.assembly.Assembly;
-import app.packed.build.hook.BuildHook;
 import app.packed.extension.Extension;
+import internal.app.packed.build.hooks.BuildHook;
 
 /**
  * A build source that is based on code. There are 3 different ways to configure an application in code.

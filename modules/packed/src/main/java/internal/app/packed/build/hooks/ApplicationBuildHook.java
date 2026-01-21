@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package internal.app.packed.build.hooks;
 
-import app.packed.assembly.Assembly;
-import app.packed.build.hook.BuildHook;
-import app.packed.container.ContainerMirror;
+import app.packed.application.ApplicationConfiguration;
 
 /**
  *
@@ -45,22 +43,4 @@ public non-sealed abstract class ApplicationBuildHook extends BuildHook {
     // Vil mene det er den sidste der bliver kaldt.
     // Den vil dog trigger fx BeanBuildHook.
     public void onClosing(ApplicationConfiguration configuration) {}
-}
-
-class MyA extends ApplicationBuildHook {
-    static final ApplicationBuildLocal<String> AS = ApplicationBuildLocal.of();
-
-    /** {@inheritDoc} */
-    @Override
-    public void onNew(ApplicationConfiguration configuration) {
-        AS.get(configuration);
-    }
-
-    public void onNew(ContainerMirror configuration) {
-        AS.get(configuration);
-    }
-
-    public void onNew(Assembly assembly) {
-        AS.get(assembly);
-    }
 }

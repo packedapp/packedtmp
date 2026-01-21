@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.DelegatingAssembly;
-import app.packed.build.hook.BuildHook;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
@@ -34,6 +33,7 @@ import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
+import internal.app.packed.build.hooks.BuildHook;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.container.wirelets.CompositeWirelet;
 import internal.app.packed.container.wirelets.InternalBaseWirelet;

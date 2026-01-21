@@ -16,8 +16,8 @@
 package app.packed.build;
 
 import app.packed.assembly.AssemblyMirror;
-import app.packed.build.hook.BuildHookMirror;
 import app.packed.extension.ExtensionMirror;
+import internal.app.packed.build.hooks.BuildHookMirror;
 
 /** A mirror for a {@link BuildCodeSource}. */
 public sealed interface BuildCodeSourceMirror extends Mirror permits AssemblyMirror, ExtensionMirror, BuildHookMirror {}

@@ -18,8 +18,8 @@ package internal.app.packed.build.hook;
 import java.util.List;
 import java.util.function.Consumer;
 
-import app.packed.assembly.AssemblyBuildHook;
-import app.packed.build.hook.BuildHook;
+import internal.app.packed.build.hooks.AssemblyBuildHook;
+import internal.app.packed.build.hooks.BuildHook;
 
 /**
  *

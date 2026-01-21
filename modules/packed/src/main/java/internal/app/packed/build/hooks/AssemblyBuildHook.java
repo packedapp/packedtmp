@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.assembly;
+package internal.app.packed.build.hooks;
 
 import java.util.List;
 
+import app.packed.assembly.AssemblyConfiguration;
+import app.packed.assembly.AssemblyDescriptor;
+import app.packed.assembly.AssemblyMirror;
+import app.packed.assembly.BaseAssembly;
 import app.packed.build.BuildException;
-import app.packed.build.hook.UseBuildHooks;
-import app.packed.build.hook.BuildHook;
 import app.packed.util.AnnotationList;
 
 /**

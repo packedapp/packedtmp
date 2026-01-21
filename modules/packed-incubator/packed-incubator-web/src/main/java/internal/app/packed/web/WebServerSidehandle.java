@@ -38,9 +38,7 @@ public final class WebServerSidehandle {
     private final WebHandlerInvoker invoker;
     private final WebServerManager serverManager;
 
-    public WebServerSidehandle(
-            @SidehandleBinding(Kind.CONSTANT) String urlPattern,
-            @SidehandleBinding(Kind.OPERATION_INVOKER) WebHandlerInvoker invoker,
+    public WebServerSidehandle(@SidehandleBinding(Kind.CONSTANT) String urlPattern, @SidehandleBinding(Kind.OPERATION_INVOKER) WebHandlerInvoker invoker,
             WebServerManager serverManager) {
         this.urlPattern = requireNonNull(urlPattern);
         this.invoker = requireNonNull(invoker);
@@ -79,7 +77,7 @@ public final class WebServerSidehandle {
     }
 
     /** Interface for invoking the handler method. */
-    public interface WebHandlerInvoker {
+    interface WebHandlerInvoker {
         void invoke(HttpContext context) throws Throwable;
     }
 }

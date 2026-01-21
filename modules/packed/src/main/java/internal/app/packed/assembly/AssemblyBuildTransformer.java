@@ -16,7 +16,7 @@
 package internal.app.packed.assembly;
 
 import app.packed.assembly.AssemblyPropagator;
-import app.packed.build.hook.BuildHook;
+import internal.app.packed.build.hooks.BuildHook;
 
 /**
  *

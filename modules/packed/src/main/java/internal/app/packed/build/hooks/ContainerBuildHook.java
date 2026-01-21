@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package internal.app.packed.build.hooks;
 
-import app.packed.build.hook.BuildHook;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 
 /**
@@ -52,7 +53,7 @@ public non-sealed abstract class ContainerBuildHook extends BuildHook {
      * @param extension
      *            the extension that was added
      */
-    public void onExtensionAdded(ContainerConfiguration configuration, Extension<?> extension) {}
+    public void onExtensionAdd(ContainerConfiguration configuration, Extension<?> extension) {}
 
     /**
      * Invoked immediately after a new container is created.

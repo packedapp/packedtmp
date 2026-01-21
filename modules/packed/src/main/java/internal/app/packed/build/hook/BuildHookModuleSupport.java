@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import app.packed.build.hook.BuildHook;
+import internal.app.packed.build.hooks.BuildHook;
 
 /**
  * Stores registered {@link Lookup} objects for BuildHook classes that have called

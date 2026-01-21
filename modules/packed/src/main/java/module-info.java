@@ -25,7 +25,7 @@ module app.packed {
     exports app.packed.util;
 
     // temporary sandbox thingies
-    exports app.packed.build.hook;
+    exports internal.app.packed.build.hooks;
     exports app.packed.service.mirror;
 
     /* Special support for packed-devtools */

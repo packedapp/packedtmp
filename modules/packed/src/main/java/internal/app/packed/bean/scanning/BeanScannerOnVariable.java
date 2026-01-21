@@ -67,7 +67,7 @@ final class BeanScannerOnVariable {
             for (Class<? extends Context<?>> cla : hook.requiredContexts()) {
                 ContextSetup context = operation.findContext(cla);
                 if (context == null)  {
-                    throw new ContextNotAvailableException(operation.target + " must be in context " + cla.getCanonicalName() + ". In order to resolve " + k);
+                    throw new ContextNotAvailableException(operation.target + " must be in context " + cla.getCanonicalName() + ". In order to resolve " + k.type());
                 }
             }
             IntrospectorOnAutoService pcs = new IntrospectorOnAutoService(k, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(), contexts,

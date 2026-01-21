@@ -67,10 +67,8 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
             int counter = 0;
             if (existingBean != null) {
                 if (!ContainerBeanStore.isMultiInstall(existingBean)) {
-                    // throw new BeanInstallationException("A bean of type [" + bean.beanClass + "] has already been added to " +
-                    // container.path());
-
-                    throw new BeanInstallationException("oops");
+                     throw new BeanInstallationException("A bean of type [" + bean.bean.beanClass + "] has already been added to " +
+                     bean.container.componentPath());
                 }
                 counter = ContainerBeanStore.multiInstallCounter(existingBean);
             }

@@ -18,9 +18,11 @@ package app.packed.assembly;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import org.jspecify.annotations.Nullable;
+
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.build.PackedBuildProcess;
+import internal.app.packed.build.hooks.AssemblyBuildHook;
 import internal.app.packed.container.PackedContainerInstaller;
 
 /**

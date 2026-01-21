@@ -15,7 +15,7 @@
  */
 package sandbox.service;
 
-import app.packed.assembly.AssemblyBuildHook;
+import internal.app.packed.build.hooks.AssemblyBuildHook;
 
 /**
  * Ideen er lidt at let kunne modificere en Assembly til lave sit eget service namespace

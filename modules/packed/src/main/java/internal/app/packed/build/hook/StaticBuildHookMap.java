@@ -19,13 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import app.packed.build.hook.BuildHook;
+import internal.app.packed.build.hooks.BuildHook;
 
 /**
  *
  */
 
-// Maybe we have parents??
 public class StaticBuildHookMap implements BuildHookMap {
 
     private final Map<Class<? extends BuildHook>, List<BuildHook>> hooks;

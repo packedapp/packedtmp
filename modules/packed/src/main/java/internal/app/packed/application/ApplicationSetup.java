@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import app.packed.application.ApplicationBuildHook;
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
@@ -38,6 +37,7 @@ import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
+import internal.app.packed.build.hooks.ApplicationBuildHook;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.ContainerSetup;

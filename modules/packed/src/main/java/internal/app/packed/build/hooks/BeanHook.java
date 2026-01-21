@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package internal.app.packed.build.hooks;
 
-import app.packed.build.hook.BuildHook;
+import app.packed.bean.Bean;
+import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanMirror;
 
 /**
  * A bean transformer

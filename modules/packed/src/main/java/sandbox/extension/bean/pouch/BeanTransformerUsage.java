@@ -19,10 +19,10 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.assembly.BaseAssembly;
 import app.packed.binding.Variable;
-import app.packed.container.ContainerBuildHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.lifecycle.Inject;
+import internal.app.packed.build.hooks.ContainerBuildHook;
 import sandbox.app.packed.bean.BeanSynthesizer;
 
 /**

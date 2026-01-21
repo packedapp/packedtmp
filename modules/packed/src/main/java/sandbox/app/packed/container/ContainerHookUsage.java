@@ -20,10 +20,10 @@ import app.packed.assembly.Assembly;
 import app.packed.assembly.BaseAssembly;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.bean.BeanLocal;
-import app.packed.build.hook.BuildHook;
-import app.packed.container.ContainerBuildHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.service.ProvidableBeanConfiguration;
+import internal.app.packed.build.hooks.BuildHook;
+import internal.app.packed.build.hooks.ContainerBuildHook;
 
 /**
  *

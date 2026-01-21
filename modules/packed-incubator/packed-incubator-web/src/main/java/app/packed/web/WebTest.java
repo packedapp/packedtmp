@@ -20,6 +20,7 @@ import java.io.IOException;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
+import app.packed.web.session.SessionContext;
 
 /**
  * Demo test for the web server functionality.
@@ -56,6 +57,11 @@ public class WebTest extends BaseAssembly {
         public void json(HttpResponse ctx, HttpRequest request) throws IOException {
             //System.out.println(sc.getClass());
             ctx.write("{\"status\":\"ok\"}", "application/json");
+        }
+
+        @WebGet(url = "/jsons")
+        public void json(SessionContext ctx) {
+           System.out.println(ctx.getClass());
         }
     }
 }
