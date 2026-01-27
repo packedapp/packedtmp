@@ -22,6 +22,15 @@ import app.packed.binding.Key;
 /**
  * Launches an application.
  */
+
+// Grunden til vi ikke gider koere abstract klasse, er at metoderne alligevel skal overrides.
+// Fordi vi koere method chanining. Subclasses skal ikke returnere ApplicationLauncher men
+// Subclass
+
+
+// Vi mangler to ting vil jeg mere
+/// 1) Noget med nogle options a.la. DEBUG all
+/// 2) Noget med Configs (naar det kommer)
 public interface ApplicationLauncher {
 
     default ApplicationLauncher args(String... args) {
@@ -41,11 +50,10 @@ public interface ApplicationLauncher {
 
     default ApplicationLauncher provide(Object instance) {
         requireNonNull(instance, "object cannot be null");
-        return provideCaptured(this, instance.getClass(), instance);
+        return provide(this, instance.getClass(), instance);
     }
 
-    private static <T> ApplicationLauncher provideCaptured(
-            ApplicationLauncher self, Class<T> type, Object instance) {
+    private static <T> ApplicationLauncher provide(ApplicationLauncher self, Class<T> type, Object instance) {
         return self.provide(type, type.cast(instance));
     }
 }

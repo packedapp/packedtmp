@@ -25,15 +25,17 @@ import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.lifecycle.LifecycleKind;
-import app.packed.lifecycle.RunState;
 import internal.app.packed.ValueBased;
+import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
+import internal.app.packed.application.PackedBootstrapImage.ImageEager;
+import internal.app.packed.application.PackedBootstrapImage.ImageNonReusable;
+import internal.app.packed.application.PackedBootstrapLauncher;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 import internal.app.packed.invoke.ServiceSupport;
-import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link BootstrapApp}. */
 @ValueBased
@@ -44,8 +46,8 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     // So beans do not uses hooks from various extensions
     // Or maybe we check this somewhere. I think SidehandleBinding is the only supported annotation + Lifecycle
     // Maybe all base extension actually.
-    private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE =
-            PackedApplicationTemplate.of(LifecycleKind.UNMANAGED, Bean.of(PackedBootstrapApp.class));
+    private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE = PackedApplicationTemplate.of(LifecycleKind.UNMANAGED,
+            Bean.of(PackedBootstrapApp.class));
 
     /** The application launcher. */
     private final ApplicationBaseLauncher launcher;
@@ -67,31 +69,30 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
     /** {@inheritDoc} */
     @Override
     public Image<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.IMAGE, launcher, wirelets);
+        PackedApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.IMAGE, launcher, wirelets);
 
         // Build the application
         H handle = installer.install(assembly);
 
-        // Returns an image for the application
-        return handle.image();
-    }
+        // Create an image for the application
+        BootstrapApp.Image<A> img = new ImageEager<>(handle);
+        if (!installer.optionBuildReusableImage) {
+            img = new ImageNonReusable<>(img);
+        }
 
-    /** {@inheritDoc} */
-    @Override
-    public A launch(RunState state, Assembly assembly, Wirelet... wirelets) {
-        ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.LAUNCH, launcher, wirelets);
-
-        // Build the application
-        H handle = installer.install(assembly);
-
-        // Create and return an instance of the application interface, wirelets have already been specified in the installer
-        return ApplicationLaunchContext.launch(handle, state);
+        return img;
     }
 
     /** {@inheritDoc} */
     @Override
     public Launcher<A> launcher(Assembly assembly, Wirelet... wirelets) {
-        return imageOf(assembly, wirelets);
+        ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.LAUNCH, launcher, wirelets);
+
+        // Build the application
+        H handle = installer.install(assembly);
+
+        // Returns an launcher for the application
+        return new PackedBootstrapLauncher<A>(handle);
     }
 
     /** {@inheritDoc} */

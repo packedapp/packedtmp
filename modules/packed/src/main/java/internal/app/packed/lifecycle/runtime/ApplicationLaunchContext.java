@@ -29,6 +29,7 @@ import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
+import internal.app.packed.application.PackedBootstrapLauncher;
 
 /**
  * A temporary context object that is created whenever we launch an application.
@@ -43,7 +44,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
     public final ContainerRunner runner;
 
-    public ApplicationLaunchContext(ContainerRunner runner, ApplicationSetup application) {
+    private ApplicationLaunchContext(ContainerRunner runner, ApplicationSetup application) {
         this.application = application;
         this.runner = runner;
     }
@@ -78,6 +79,10 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
 //    public static final <A> A checkedLaunch(ApplicationHandle<A, ?> handle, RunState state, Wirelet... wirelets) throws UnhandledApplicationException {
 //        return launch(handle, state, wirelets);
 //    }
+
+    public static <A> A launch(PackedBootstrapLauncher<A> launcher, ApplicationHandle<A, ?> handle, RunState state) {
+       return launch(handle, state);
+    }
 
     /**
      * Launches an instance of the application this handle represents.

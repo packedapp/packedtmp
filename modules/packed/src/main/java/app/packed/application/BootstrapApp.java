@@ -112,7 +112,9 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
      *             if the application threw an exception that could not be handled
      * @see App#run(Assembly, Wirelet...)
      */
-    I launch(RunState state, Assembly assembly, Wirelet... wirelets);
+    default I launch(RunState state, Assembly assembly, Wirelet... wirelets) {
+        return launcher(assembly, wirelets).launch(state);
+    }
 
     Launcher<I> launcher(Assembly assembly, Wirelet... wirelets);
 
@@ -161,33 +163,6 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
 
     // withExpectingResult
     BootstrapApp<I> withExpectsResult(Class<?> resultType);
-
-    /**
-     * Augment the driver with the specified wirelets, that will be processed when building or instantiating new
-     * applications.
-     * <p>
-     * For example, to : <pre> {@code
-     * BootstrapApp<App> app = ...;
-     * app = app.with(ApplicationWirelets.timeToRun(2, TimeUnit.MINUTES));
-     * }</pre>
-     *
-     * ApplicationW
-     * <p>
-     * This method will make no attempt of validating the specified wirelets.
-     *
-     * <p>
-     * Wirelets that were specified when creating the driver, or through previous invocation of this method. Will be
-     * processed before the specified wirelets.
-     *
-     * @param wirelets
-     *            the wirelets to add
-     * @return the new bootstrap app
-     */
-    // Before orAfter
-    default BootstrapApp<I> withWirelets(boolean before, Wirelet... wirelets) {
-        // Lad os ogsaa lige se med expectsResult, inde vi implementere det
-        throw new UnsupportedOperationException();
-    }
 
     static <A> BootstrapApp<A> of(LifecycleKind lifecycleKind, Bean<A> bean) {
         return PackedBootstrapApp.of(lifecycleKind, bean);
@@ -244,15 +219,6 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
     interface Launcher<A> extends ApplicationLauncher {
 
         /**
-         * Create a new instance of the application in the initialized state.
-         *
-         * @return
-         */
-        default A initialize() {
-            return launch(RunState.INITIALIZED);
-        }
-
-        /**
          * Launches an instance of the application that this image represents in the specified state.
          * <p>
          * What happens here is dependent on the underlying application template. The behaviour of this method is identical to
@@ -292,14 +258,6 @@ record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? exten
 
     /** {@inheritDoc} */
     @Override
-    public E launch(RunState state, Assembly assembly, Wirelet... wirelets) {
-        A result = app.launch(state, assembly, wirelets);
-        E e = mapper.apply(result);
-        return e;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return app.mirrorOf(assembly, wirelets);
     }
@@ -325,3 +283,31 @@ record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? exten
         throw new UnsupportedOperationException();
     }
 }
+
+///**
+//* Augment the driver with the specified wirelets, that will be processed when building or instantiating new
+//* applications.
+//* <p>
+//* For example, to : <pre> {@code
+//* BootstrapApp<App> app = ...;
+//* app = app.with(ApplicationWirelets.timeToRun(2, TimeUnit.MINUTES));
+//* }</pre>
+//*
+//* ApplicationW
+//* <p>
+//* This method will make no attempt of validating the specified wirelets.
+//*
+//* <p>
+//* Wirelets that were specified when creating the driver, or through previous invocation of this method. Will be
+//* processed before the specified wirelets.
+//*
+//* @param wirelets
+//*            the wirelets to add
+//* @return the new bootstrap app
+//*/
+//// Before orAfter <---- Just this question alone makes we want to not support it
+//@Deprecated
+//default BootstrapApp<I> withWirelets(boolean before, Wirelet... wirelets) {
+//  // Lad os ogsaa lige se med expectsResult, inde vi implementere det
+//  throw new UnsupportedOperationException();
+//}

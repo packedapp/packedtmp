@@ -29,7 +29,6 @@ import app.packed.application.ApplicationInterface;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
-import app.packed.lifecycle.LifecycleKind;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoService;
@@ -38,6 +37,7 @@ import app.packed.binding.Provider;
 import app.packed.component.SidehandleBinding;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
 import app.packed.operation.Op1;
 import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
@@ -387,7 +387,7 @@ public interface ServiceLocator extends ApplicationInterface {
 
         /** Creates a new service locator application from this image. */
         public ServiceLocator initialize() {
-            return image.initialize();
+            return image.launch(RunState.INITIALIZED);
         }
     }
 }

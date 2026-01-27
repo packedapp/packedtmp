@@ -110,13 +110,6 @@ public interface ManagedLifecycle {
     RunState currentState();
 
     boolean isFailed();
-    //
-//  default int entryPointId() {
-//      return -1;
-//  }
-
-    // Vs main?????
-    // Tror main er bl.a. propper det ind som et system image...
 
     /**
      * Starts and awaits the component if it has not already been started.
@@ -152,10 +145,6 @@ public interface ManagedLifecycle {
      */
     void stop(StopOption... options);
 
-    default Optional<StopInfo> stopInfo() {
-        return Optional.empty();
-    }
-
     default CompletableFuture<Void> stopAsync(StopOption... options) {
         return stopAsync(null, new StopOption[] {});
     }
@@ -176,6 +165,10 @@ public interface ManagedLifecycle {
      */
     // Does not take null. use StopAsync
     <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
+
+    default Optional<StopInfo> stopInfo() {
+        return Optional.empty();
+    }
 
     // Den er cool men sgu ikke super smart for forstaelsen
 //    static void run(Assembly  assembly, Wirelet... wirelets) {

@@ -17,12 +17,13 @@ package app.packed.application;
 
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.application.BootstrapApp.Image;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.component.Sidehandle;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedBootstrapImage.ImageEager;
@@ -118,26 +119,10 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
         return configuration.get();
     }
 
-    /**
-     * The image
-     *
-     * @return the base image for the application
-     * @throws IllegalStateException
-     *             if the application was build with {@link BuildGoal#IMAGE}.
-     */
-    // Tror jeg fjerner den her... BaseImage er kun noget man bruger ved rødder tænker jeg???
-    final BootstrapApp.Image<A> image() {
-        BootstrapApp.Image<A> i = image;
-        if (i == null) {
-            throw new IllegalStateException("The application must be installed with BuildImage, was " + application.goal);
-        }
-        return i;
-    }
-
     public final Sidehandle sidehandle() {
         Sidehandle sidehandle = application.sidehandle;
         if (sidehandle == null) {
-            throw new UnsupportedOperationException("Operation has not been attached to a sidehandle");
+            throw new UnsupportedOperationException("Application has not been attached to a sidehandle");
         }
         return sidehandle;
     }

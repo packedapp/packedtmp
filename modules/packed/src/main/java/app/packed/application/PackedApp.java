@@ -86,18 +86,6 @@ final class PackedApp implements App {
         public App start() {
             return image.launch(RunState.RUNNING);
         }
-//
-//        /** {@inheritDoc} */
-//        @Override
-//        public void checkedRun(Wirelet... wirelets) throws UnhandledApplicationException {
-//            image.checkedLaunch(RunState.TERMINATED, wirelets);
-//        }
-//
-//        /** {@inheritDoc} */
-//        @Override
-//        public App checkedStart(Wirelet... wirelets) throws UnhandledApplicationException {
-//            return image.checkedLaunch(RunState.RUNNING, wirelets);
-//        }
 
         /** {@inheritDoc} */
         @Override
@@ -118,6 +106,7 @@ final class PackedApp implements App {
         /** {@inheritDoc} */
         @Override
         public <T> AppLauncher provide(Key<? super T> key, T value) {
+            launcher.provide(key, value);
             return this;
         }
 

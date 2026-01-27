@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle.runtime;
+package app.packed.lifetime;
 
 /**
  *
  */
 // Ideen er lidt at dette er runtime Wirelet
+// Hvorfor ikke bare en Doo <--- required
 
 // Needs to be well integrated with application.properties
 public @interface LaunchArg {

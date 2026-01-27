@@ -100,17 +100,18 @@ public interface StopInfo {
         // Session Time Out (Maa vaere SESSION_TIMEOUT)
         public static final Trigger TIMEOUT = new Trigger("Timeout");
 
-        /** An entry-point completed normally. */
-        public static final Trigger ENTRY_POINT_COMPLETED = new Trigger("Normal");
-
         public static final Trigger NORMAL = new Trigger("Normal");
 
         public static final Trigger FAILED_INTERNALLY = new Trigger("Failed");
 
-        public static final Trigger RESTARTING = new Trigger("Restarting");
+        //public static final Trigger RESTARTING = new Trigger("Restarting");
 
         public static final Trigger UNKNOWN = new Trigger("Unknown");
 
+        @Override
+        public String toString() {
+            return trigger;
+        }
 //       WAS
         // NORMAL, EXECUTION_FAILED,
 //       PERSISTING,
