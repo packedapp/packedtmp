@@ -20,9 +20,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
-import app.packed.assembly.AssemblyPropagator;
 import app.packed.build.BuildCodeSource;
 import app.packed.component.ComponentMirror;
+import internal.app.packed.assembly.AssemblyPropagator;
 
 /**
  * Build hooks are used for ...

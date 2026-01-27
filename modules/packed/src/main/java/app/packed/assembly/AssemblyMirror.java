@@ -18,7 +18,6 @@ import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
-import internal.app.packed.build.hooks.BuildHookMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.util.PackedTreeView;
@@ -94,10 +93,10 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
         return Duration.ofNanos(Math.max(0, assembly.assemblyBuildFinishedTime - assembly.assemblyBuildStartedTime));
     }
 
-    /** {@return a stream of all build hooks that have been applied to the assembly} */
-    public Stream<BuildHookMirror> buildHooks() {
-        throw new UnsupportedOperationException();
-    }
+//    /** {@return a stream of all build hooks that have been applied to the assembly} */
+//    public Stream<BuildHookMirror> buildHooks() {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * {@return a stream of any child assemblies defined by this assembly.}
@@ -150,20 +149,20 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
         return new PackedTreeView<>(assembly.container, c -> c.assembly == assembly, c -> c.mirror());
     }
 
-    public Stream<BuildHookMirror> declaredBuildHooks() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * <p>
-     * This list only contains assembly build hooks that are left after
-     * {@link AssemblyBuildHook#transformBuildHooks(AssemblyDescriptor, List)} has been executed for all assembly hooks
-     *
-     * @return
-     */
-    public List<BuildHookMirror> declaredBuildHooks2() {
-        return List.of();
-    }
+//    public Stream<BuildHookMirror> declaredBuildHooks() {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    /**
+//     * <p>
+//     * This list only contains assembly build hooks that are left after
+//     * {@link AssemblyBuildHook#transformBuildHooks(AssemblyDescriptor, List)} has been executed for all assembly hooks
+//     *
+//     * @return
+//     */
+//    public List<BuildHookMirror> declaredBuildHooks2() {
+//        return List.of();
+//    }
 
     public List<Class<? extends DelegatingAssembly>> delegatedFrom() {
         return assembly.delegatingAssemblies;

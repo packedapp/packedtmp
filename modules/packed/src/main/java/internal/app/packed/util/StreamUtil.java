@@ -13,18 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package internal.app.packed.util;
 
-import java.lang.reflect.AnnotatedElement;
+import static java.util.Objects.requireNonNull;
+
+import java.util.stream.Gatherer;
 
 /**
  *
  */
+public class StreamUtil {
 
-// Maybe AnnotationList.Transformer
-// <T> <- Where T is the target? IDK
-public interface AnnotationListTransformer {
-    // I think we want something about the target...
-    // Target may have already been transformed... annotations contains the annotations that should be transformed
-    AnnotationList transform(AnnotatedElement target, AnnotationList annotations);
+    public static <T, R> Gatherer<T, ?, R> instanceOf(Class<R> type) {
+        requireNonNull(type, "type");
+        return Gatherer.of((_, element, downstream) -> {
+            if (type.isInstance(element)) {
+                return downstream.push(type.cast(element));
+            }
+            return true;
+        });
+    }
+
+  //  // Usage:
+    //Stream<Object> objectStream = ...;
+    //Stream<String> stringStream = objectStream.gather(instanceOf(String.class));
+
 }

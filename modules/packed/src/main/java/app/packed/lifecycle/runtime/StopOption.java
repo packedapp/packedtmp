@@ -31,6 +31,12 @@ import java.util.function.Supplier;
 // Hvis vi fx for en Tag() saa kan man jo kun bruge det naar man lukker ned foerste gang.
 // Ellers bliver de ignoreret. Kan jo ikke rigtig fejle, hvis lukker ned parallelt pga en fejl
 // Men okay det er jo det samme fail, o.s.v.
+
+// Alternativ -> StopOptions
+//  withXXX create new instances
+// have a .defaults() which is used
+
+
 public interface StopOption {
 
     static StopOption parentStopping() {

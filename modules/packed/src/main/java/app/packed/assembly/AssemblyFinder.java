@@ -15,8 +15,9 @@
  */
 package app.packed.assembly;
 
+import static java.util.Objects.requireNonNull;
+
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -65,8 +66,6 @@ public sealed interface AssemblyFinder permits PackedAssemblyClasspathFinder, As
      * @return a new instance of the assembly
      * @throws app.packed.build.BuildException
      *         if the class cannot be found, is not an Assembly subclass, or cannot be instantiated
-     * @throws NullPointerException
-     *         if className is null
      */
     Assembly findOne(String className);
 
@@ -90,8 +89,6 @@ public sealed interface AssemblyFinder permits PackedAssemblyClasspathFinder, As
      * @return an optional containing the assembly instance, or empty if the class was not found
      * @throws app.packed.build.BuildException
      *         if the class was found but is not an Assembly subclass or cannot be instantiated
-     * @throws NullPointerException
-     *         if className is null
      */
     Optional<Assembly> findOptional(String className);
 
@@ -118,8 +115,6 @@ public sealed interface AssemblyFinder permits PackedAssemblyClasspathFinder, As
      * @param assemblyType
      *        the service type (must be a subtype of {@link Assembly})
      * @return a stream of instantiated assemblies; may be empty if none found
-     * @throws NullPointerException
-     *         if assemblyType is null
      */
     <T extends Assembly> Stream<T> serviceLoader(Class<T> assemblyType);
 
@@ -139,8 +134,6 @@ public sealed interface AssemblyFinder permits PackedAssemblyClasspathFinder, As
      * @param paths
      *        paths to JAR files or directories to search
      * @return a new finder with the additional paths configured
-     * @throws NullPointerException
-     *         if paths is null or contains null elements
      */
     AssemblyFinder withPaths(Path... paths);
 
@@ -164,11 +157,9 @@ public sealed interface AssemblyFinder permits PackedAssemblyClasspathFinder, As
      * @param classLoader
      *        the class loader to use for loading assembly classes
      * @return a new classpath-based assembly finder
-     * @throws NullPointerException
-     *         if classLoader is null
      */
     static AssemblyFinder ofClasspath(ClassLoader classLoader) {
-        Objects.requireNonNull(classLoader, "classLoader is null");
+        requireNonNull(classLoader, "classLoader is null");
         return new PackedAssemblyClasspathFinder(classLoader);
     }
 }

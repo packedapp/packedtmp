@@ -16,7 +16,7 @@
 package sandbox.lifetime;
 
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.StopInfo.Reason;
+import app.packed.lifecycle.runtime.StopInfo.Trigger;
 
 /**
  * A context that is available to all lifecycle transition operations.
@@ -46,13 +46,13 @@ public interface LifecycleTransitionContext {
 
     boolean isNaturalOrder();
 
-    Reason startReason();
+    Trigger startReason();
 
     /**
      * @return
      * @throws UnsupportedOperationException
      *             if the current state is different from Stopping or Terminated
      */
-    Reason stopReason();
+    Trigger stopReason();
     // Something about stoppage?
 }

@@ -93,8 +93,6 @@ public sealed interface AssemblyModulepathFinder extends AssemblyFinder permits 
      * @return a new instance of the assembly
      * @throws app.packed.build.BuildException
      *         if the class cannot be found or instantiated
-     * @throws NullPointerException
-     *         if className is null
      */
     Assembly findOne(String className);
 
@@ -113,8 +111,6 @@ public sealed interface AssemblyModulepathFinder extends AssemblyFinder permits 
      * @return an optional containing the assembly instance, or empty if the class was not found
      * @throws app.packed.build.BuildException
      *         if the class was found but is not an Assembly subclass or cannot be instantiated
-     * @throws NullPointerException
-     *         if className is null
      */
     Optional<Assembly> findOptional(String className);
 
@@ -142,8 +138,6 @@ public sealed interface AssemblyModulepathFinder extends AssemblyFinder permits 
      * @return a new instance of the assembly
      * @throws app.packed.build.BuildException
      *         if the module or class cannot be found, or instantiation fails
-     * @throws NullPointerException
-     *         if moduleName or className is null
      */
     Assembly findOne(String moduleName, String className);
 
@@ -170,8 +164,6 @@ public sealed interface AssemblyModulepathFinder extends AssemblyFinder permits 
      * @throws app.packed.build.BuildException
      *         if the module and class were found but the class is not an Assembly
      *         subclass or cannot be instantiated
-     * @throws NullPointerException
-     *         if moduleName or className is null
      */
     Optional<Assembly> findOptional(String moduleName, String className);
 
@@ -275,8 +267,6 @@ public sealed interface AssemblyModulepathFinder extends AssemblyFinder permits 
      * @param assemblyType
      *        the service type (must be a subtype of {@link Assembly})
      * @return a stream of instantiated assemblies; may be empty if none found
-     * @throws NullPointerException
-     *         if assemblyType is null
      */
     <T extends Assembly> Stream<T> serviceLoader(Class<T> assemblyType);
 
@@ -314,8 +304,6 @@ public sealed interface AssemblyModulepathFinder extends AssemblyFinder permits 
      * @param paths
      *        paths to search for modules
      * @return a new finder with the additional paths configured
-     * @throws NullPointerException
-     *         if paths is null or contains null elements
      */
     AssemblyModulepathFinder withPaths(Path... paths);
 
@@ -363,8 +351,6 @@ public sealed interface AssemblyModulepathFinder extends AssemblyFinder permits 
      *         if any module cannot be found in the configured paths
      * @throws IllegalStateException
      *         if no paths have been configured via {@link #withPaths(Path...)}
-     * @throws NullPointerException
-     *         if moduleNames is null or contains null elements
      * @see #withAllModules()
      */
     AssemblyModulepathFinder withModules(String... moduleNames);
@@ -399,8 +385,6 @@ public sealed interface AssemblyModulepathFinder extends AssemblyFinder permits 
      * @param caller
      *        a lookup object from the calling module
      * @return a new modulepath finder
-     * @throws NullPointerException
-     *         if caller is null
      */
     static AssemblyModulepathFinder of(MethodHandles.Lookup caller) {
         return new PackedAssemblyModulepathFinder(caller);

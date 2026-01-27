@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.assembly;
+package internal.app.packed.assembly;
+
+import app.packed.assembly.AssemblyDescriptor;
 
 /**
  * Decided if some behaviour should be propagated between assemblies.

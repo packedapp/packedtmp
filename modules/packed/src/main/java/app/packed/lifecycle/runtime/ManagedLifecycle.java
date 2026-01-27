@@ -15,11 +15,13 @@
  */
 package app.packed.lifecycle.runtime;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.lifecycle.RunState;
 import org.jspecify.annotations.Nullable;
+
+import app.packed.lifecycle.RunState;
 import sandbox.lifetime.external.ManagedLifetimeState;
 
 // This is basically something thats wraps a state that is 100 Linear
@@ -149,6 +151,10 @@ public interface ManagedLifecycle {
      *             if any of the options are not supported
      */
     void stop(StopOption... options);
+
+    default Optional<StopInfo> stopInfo() {
+        return Optional.empty();
+    }
 
     default CompletableFuture<Void> stopAsync(StopOption... options) {
         return stopAsync(null, new StopOption[] {});

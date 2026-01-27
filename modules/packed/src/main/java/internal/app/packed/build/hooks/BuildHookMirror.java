@@ -22,12 +22,12 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
-import app.packed.assembly.AssemblyPropagator;
 import app.packed.build.BuildCodeSourceMirror;
 import app.packed.build.Mirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.util.TreeView;
+import internal.app.packed.assembly.AssemblyPropagator;
 
 /**
  * Represents a single instance of a {@link BuildTransformer build transformer}.

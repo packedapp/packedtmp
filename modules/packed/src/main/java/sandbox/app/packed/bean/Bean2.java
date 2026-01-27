@@ -16,6 +16,7 @@
 package sandbox.app.packed.bean;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.AnnotatedElement;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -23,7 +24,6 @@ import java.util.stream.Stream;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanLocal;
 import app.packed.util.AnnotationList;
-import app.packed.util.AnnotationListTransformer;
 
 /**
  *
@@ -102,4 +102,13 @@ interface Transformers<T> {
     Bean<T> transformAnnotations(Consumer<? super AnnotationListTransformer> transformer);
 
     Bean<T> transform(Consumer<? super BeanSynthesizer> action);
+}
+
+
+//Maybe AnnotationList.Transformer
+//<T> <- Where T is the target? IDK
+ interface AnnotationListTransformer {
+ // I think we want something about the target...
+ // Target may have already been transformed... annotations contains the annotations that should be transformed
+ AnnotationList transform(AnnotatedElement target, AnnotationList annotations);
 }

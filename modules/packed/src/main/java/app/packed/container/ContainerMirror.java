@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
@@ -22,10 +24,8 @@ import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.CompositeLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
-import org.jspecify.annotations.Nullable;
 import app.packed.util.TreeView;
 import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
-import internal.app.packed.build.hooks.BuildHookMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.extension.ExtensionSetup;
@@ -209,10 +209,10 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
         return "ContainerMirror (" + componentPath() + ")";
     }
 
-    /** {@return the transformers that has been applied to this container.} */
-    public Stream<BuildHookMirror> transformers() {
-        throw new UnsupportedOperationException();
-    }
+//    /** {@return the transformers that has been applied to this container.} */
+//    public Stream<BuildHookMirror> transformers() {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Returns an mirror of the specified type if the container is using the extension the mirror is a part of. Or throws

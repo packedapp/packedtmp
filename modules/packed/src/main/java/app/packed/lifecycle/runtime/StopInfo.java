@@ -65,7 +65,7 @@ public interface StopInfo {
     //// If the lifetime completed normally with a result
 
     /** {@return the reason for why the lifetime was stopped. */
-    Reason reason();
+    Trigger trigger();
 
     // isNormal, isExceptional
 
@@ -78,12 +78,12 @@ public interface StopInfo {
      * The framework comes with a number of pre-defined reasons. But users and extensions are free to define their own.
      */
     // De her skal jo altsaa shared mellem beans og containers...
-    public final class Reason {
+    public final class Trigger {
 
-        final String reason;
+        final String trigger;
 
-        private Reason(String reason) {
-            this.reason = requireNonNull(reason);
+        private Trigger(String trigger) {
+            this.trigger = requireNonNull(trigger);
         }
 
         /**
@@ -93,23 +93,23 @@ public interface StopInfo {
          * @see app.packed.application.ApplicationWirelets#shutdownHook(java.util.function.Function, StopOption...)
          * @see Runtime#addShutdownHook(Thread)
          */
-        public static final Reason SHUTDOWN_HOOK = new Reason("ShutdownHook");
+        public static final Trigger SHUTDOWN_HOOK = new Trigger("ShutdownHook");
 
         /** Indicates that lifetime has timed out. */
         // Vi har baade TimeToStart timeout, or entrypoint timeout, tror kun vi har en?
         // Session Time Out (Maa vaere SESSION_TIMEOUT)
-        public static final Reason TIMEOUT = new Reason("Timeout");
+        public static final Trigger TIMEOUT = new Trigger("Timeout");
 
         /** An entry-point completed normally. */
-        public static final Reason ENTRY_POINT_COMPLETED = new Reason("Normal");
+        public static final Trigger ENTRY_POINT_COMPLETED = new Trigger("Normal");
 
-        public static final Reason NORMAL = new Reason("Normal");
+        public static final Trigger NORMAL = new Trigger("Normal");
 
-        public static final Reason FAILED_INTERNALLY = new Reason("Failed");
+        public static final Trigger FAILED_INTERNALLY = new Trigger("Failed");
 
-        public static final Reason RESTARTING = new Reason("Restarting");
+        public static final Trigger RESTARTING = new Trigger("Restarting");
 
-        public static final Reason UNKNOWN = new Reason("Unknown");
+        public static final Trigger UNKNOWN = new Trigger("Unknown");
 
 //       WAS
         // NORMAL, EXECUTION_FAILED,
@@ -122,7 +122,7 @@ public interface StopInfo {
         // ApplicationRedeploy
     }
 
-    public enum WhatsNextDog {
+    public enum NextAction {
 
     }
 }
