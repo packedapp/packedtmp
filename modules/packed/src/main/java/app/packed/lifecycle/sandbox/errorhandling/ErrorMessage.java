@@ -13,12 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle.runtime.errorhandling;
+package app.packed.lifecycle.sandbox.errorhandling;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  *
  */
-// IDK hoere den til i Bean?
-public class BeanErrorHandling {
+public class ErrorMessage {
 
+    private final String message;
+
+    private ErrorMessage(String message) {
+        this.message = requireNonNull(message, "message is null");
+    }
+
+    public static ErrorMessage of(String message) {
+        return new ErrorMessage(message);
+    }
+
+    @Override
+    public String toString() {
+        return message;
+    }
 }

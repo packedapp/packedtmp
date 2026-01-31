@@ -69,6 +69,10 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHand
  * annotation. Services that not yet completed startup can be injected. It is up to the user to make sure that invoking
  * method on instances that injected this does not cause any problems. For example, calling a method on another service
  * that only works when the container is in the running phase.
+ * <p>
+ * If a bean has multiple methods annotated with {@code @Start}, the order in which they are invoked is undefined.
+ * If a specific invocation order is required, use a single {@code @Start} method that calls the other methods
+ * in the desired order.
  *
  * @see StartContext
  * @see StartOperationMirror
@@ -80,20 +84,6 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.StartOperationHand
 @Retention(RetentionPolicy.RUNTIME)
 @OnAnnotatedMethod(introspector = StartBeanIntrospector.class, requiresContext = StartContext.class, allowInvoke = true)
 public @interface Start {
-
-    /**
-     * If there are multiple methods with {@link OnStart} and the same {@link #order()} on a single bean. This attribute can
-     * be used to control the order in which they are invoked. With a higher bean order be invoked first for
-     * {@link OperationDependencyOrder#BEFORE_DEPENDENCIES}. And lower bean order be invoked first for
-     * {@link OperationDependencyOrder#AFTER_DEPENDENCIES}. If the bean order are identical the framework may invoke them in
-     * any order.
-     * <p>
-     * NOTE: This attribute cannot be used to control ordering with regards to other beans.
-     *
-     * @return the bean order
-     * @implNote current the framework will invoked them in the order returned by {@link Class#getMethods()}
-     */
-    byte beanInvocationOrder() default 0; // use -1 and, alternative before, after (String operation name)
 
     /**
      *
@@ -113,27 +103,71 @@ public @interface Start {
      */
     boolean interruptOnStopping() default true;
 
-    //String lifetime() default "bean"; // The lifetime the bean is in
-
     // forkMode
     // forkAsDaemon (keepRunning) = Mark the bean as keep running. Don't await
 
     /**
-     * Returns how this operation is ordered compared to other start operations.
+     * Controls the execution order of this start method relative to beans that depend on this bean.
+     * <p>
+     * The concept of "natural order" is borrowed from {@link java.util.Comparator#naturalOrder()}. Just as
+     * {@code Comparator.naturalOrder()} represents the default, expected ordering for comparable elements,
+     * {@code naturalOrder=true} represents the default, expected ordering for lifecycle operations.
+     * Setting {@code naturalOrder=false} reverses this order, similar to using {@code Comparator.reverseOrder()}.
+     * <p>
+     * <b>For {@code @Start}, natural order means:</b> This method runs <em>before</em> any beans that
+     * depend on this bean are started. This ensures that when a dependent bean starts, all of its
+     * dependencies are already running and available.
+     * <p>
+     * <b>Example with {@code naturalOrder=true} (default):</b> If Bean A depends on Bean B:
+     * <ol>
+     *   <li>Bean B's {@code @Start} method runs first</li>
+     *   <li>Bean A's {@code @Start} method runs second</li>
+     * </ol>
+     * <p>
+     * <b>Using {@code naturalOrder=false} (coordinator pattern):</b> Setting {@code naturalOrder=false}
+     * causes the method to run <em>after</em> all dependent beans have started. This is useful for
+     * coordinators that need to act once all their dependants are up and running.
+     * <p>
+     * <b>Example:</b> A task coordinator that dispatches work only after all workers are running:
+     * <pre>{@code
+     * class TaskCoordinator {
+     *     private List<Worker> workers = new ArrayList<>();
      *
-     * @return
+     *     public void addWorker(Worker w) { workers.add(w); }
+     *
+     *     @Start(naturalOrder = false)
+     *     void beginDispatching() {
+     *         // All workers are now started and ready
+     *         workers.forEach(Worker::enableTaskProcessing);
+     *     }
+     * }
+     *
+     * class DataWorker implements Worker {  // depends on TaskCoordinator
+     *     @Inject
+     *     void register(TaskCoordinator coordinator) {
+     *         coordinator.addWorker(this);
+     *     }
+     *
+     *     @Start
+     *     void start() { ... }
+     * }
+     * }</pre>
+     * <p>
+     * With this setup:
+     * <ol>
+     *   <li>All DataWorker instances start and are ready to process tasks</li>
+     *   <li>TaskCoordinator.beginDispatching() runs after all workers are started</li>
+     * </ol>
+     * <p>
+     * This attribute has no effect if no other beans depend on the targeted bean.
+     *
+     * @return {@code true} (default) to run before dependants start,
+     *         {@code false} to run after dependants start (coordinator pattern)
+     *
+     * @see Initialize#naturalOrder()
+     * @see Stop#naturalOrder()
      */
-    // Jeg tror after_dependencies kraever vi monitorer bean state...
-    // Fordi vi siger koer denne metode efter x-bean er started
-    // Maybe RUN_AFTER_DEPENDENCIES
     boolean naturalOrder() default true;
-
-    /**
-     * Whether or not the bean should be marked as failed to start if the method throws
-     *
-     * @return
-     */
-    boolean stopOnFailure() default true; // Class<? extends Throwable> stopOnFailure() default Throwable.class
 
     // String phase.
 

@@ -26,7 +26,7 @@ import app.packed.assembly.Assembly;
 import app.packed.build.BuildException;
 import app.packed.build.BuildProcess;
 import app.packed.component.ComponentConfiguration;
-import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifecycle.sandbox.StopOption;
 
 /**
  * The configuration of an application.

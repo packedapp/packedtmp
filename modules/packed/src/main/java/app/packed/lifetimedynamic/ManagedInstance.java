@@ -17,12 +17,12 @@ package app.packed.lifetimedynamic;
 
 import java.util.Optional;
 
-import app.packed.lifecycle.runtime.ManagedLifecycle;
+import app.packed.application.ManagedApplicationRuntime;
 
 // Kunne maaske ogssa shares med container
 // Maaske kan vi godt droppe denne...
 // Evt kan vi bede folk om at guesten skal implementere dette interface
-public interface ManagedInstance<G> extends ManagedLifecycle {
+public interface ManagedInstance<G> extends ManagedApplicationRuntime {
 
     Optional<G> get();
 

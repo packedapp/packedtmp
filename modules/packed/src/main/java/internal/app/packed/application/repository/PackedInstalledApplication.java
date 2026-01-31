@@ -23,8 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.lifetimedynamic.ManagedInstance;
 import internal.app.packed.lifecycle.runtime.ApplicationLaunchContext;
 import sandbox.app.packed.application.registry.LaunchableApplication;
@@ -96,7 +96,7 @@ public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, 
     public I startNew() {
         I i = ApplicationLaunchContext.launch(handle, RunState.STARTING);
         if (isManaged) {
-            instances.put(UUID.randomUUID().toString(), new PackedManagedInstance<I>((ManagedLifecycle) i));
+            instances.put(UUID.randomUUID().toString(), new PackedManagedInstance<I>((ManagedApplicationRuntime) i));
         }
         return i;
     }

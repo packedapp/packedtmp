@@ -17,7 +17,7 @@ package sandbox.typeconverter;
 
 import java.lang.reflect.Type;
 
-import app.packed.lifecycle.runtime.errorhandling.ErrorProcessor;
+import app.packed.lifecycle.sandbox.errorhandling.ErrorProcessor;
 
 /**
  *

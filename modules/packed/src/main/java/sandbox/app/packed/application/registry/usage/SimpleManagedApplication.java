@@ -23,34 +23,31 @@ import java.util.concurrent.TimeUnit;
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;
 import app.packed.lifecycle.Inject;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
-import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifecycle.sandbox.StopOption;
 import app.packed.operation.Op1;
-import org.jspecify.annotations.Nullable;
-
 import sandbox.app.packed.application.registry.ApplicationTemplate;
-import sandbox.lifetime.external.ManagedLifetimeState;
 
 /**
  *
  */
-public record SimpleManagedApplication(@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle {
+public record SimpleManagedApplication(@SidehandleBinding(FROM_CONTEXT) ManagedApplicationRuntime lifecycle, long nanoss) implements ManagedApplicationRuntime {
 
     // Problemet er vi skal definere en Handle Class... Der har <I> = ManagedLifecycle
     // Men syntes ogsaa det er fint at folk skal lave en guest bean
     public static final ApplicationTemplate<GuestApplicationHandle2> MANAGED = ApplicationTemplate.of(
-            Bean.<ManagedLifecycle>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle, ManagedLifecycle>(e -> e) {}), GuestApplicationHandle2.class,
+            Bean.<ManagedApplicationRuntime>of(new Op1<@SidehandleBinding(FROM_CONTEXT) ManagedApplicationRuntime, ManagedApplicationRuntime>(e -> e) {}), GuestApplicationHandle2.class,
             GuestApplicationHandle2::new);
 
     public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.of(Bean.of(SimpleManagedApplication.class),
             GuestApplicationHandle.class, GuestApplicationHandle::new);
 
     @Inject
-    public SimpleManagedApplication(@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle lifecyle) {
+    public SimpleManagedApplication(@SidehandleBinding(FROM_CONTEXT) ManagedApplicationRuntime lifecyle) {
         this(lifecyle, System.nanoTime());
     }
 
@@ -85,16 +82,6 @@ public record SimpleManagedApplication(@SidehandleBinding(FROM_CONTEXT) ManagedL
     }
 
     @Override
-    public <T> CompletableFuture<@Nullable T> startAsync(@Nullable T result) {
-        return lifecycle.startAsync(result);
-    }
-
-    @Override
-    public ManagedLifetimeState state() {
-        return lifecycle.state();
-    }
-
-    @Override
     public void stop(StopOption... options) {
         lifecycle.stop(options);
     }
@@ -102,11 +89,6 @@ public record SimpleManagedApplication(@SidehandleBinding(FROM_CONTEXT) ManagedL
     @Override
     public CompletableFuture<Void> stopAsync(StopOption... options) {
         return lifecycle.stopAsync(options);
-    }
-
-    @Override
-    public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
-        return lifecycle.stopAsync(result, options);
     }
 
     public static class GuestApplicationHandle extends ApplicationHandle<SimpleManagedApplication, ApplicationConfiguration> {
@@ -119,7 +101,7 @@ public record SimpleManagedApplication(@SidehandleBinding(FROM_CONTEXT) ManagedL
         }
     }
 
-    public static class GuestApplicationHandle2 extends ApplicationHandle<ManagedLifecycle, ApplicationConfiguration> {
+    public static class GuestApplicationHandle2 extends ApplicationHandle<ManagedApplicationRuntime, ApplicationConfiguration> {
 
         /**
          * @param installer

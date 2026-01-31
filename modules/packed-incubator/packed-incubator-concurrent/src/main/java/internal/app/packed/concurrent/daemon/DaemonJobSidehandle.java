@@ -82,10 +82,10 @@ public final class DaemonJobSidehandle implements DaemonJobContext {
     protected void onStop() {
         // Atomic transition to shutdown state
         if (isShutdown.compareAndSet(false, true)) {
-            // 1. Trigger the latch so awaitShutdown() returns false immediately
+            // Trigger the latch so awaitShutdown() returns false immediately
             shutdownLatch.countDown();
 
-            // 2. Interrupt the thread if the user wants to break out of blocking I/O
+            // Interrupt the thread if the user wants to break out of blocking I/O
             Thread t = thread;
             if (t != null && interruptOnShutdown) {
                 t.interrupt();

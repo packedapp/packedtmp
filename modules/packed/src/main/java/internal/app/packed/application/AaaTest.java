@@ -22,17 +22,17 @@ import java.util.concurrent.TimeUnit;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.assembly.BaseAssembly;
-import app.packed.lifecycle.LifecycleKind;
 import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
 import app.packed.lifecycle.Initialize;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.Start;
 import app.packed.lifecycle.Stop;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
-import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifecycle.sandbox.StopOption;
 
 /**
  *
@@ -80,9 +80,9 @@ public class AaaTest extends BaseAssembly {
         public static final BootstrapApp<AApp> BOOTSTRAP_APP = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(AApp.class));
 
         /** Manages the lifecycle of the app. */
-        private final ManagedLifecycle lifecycle;
+        private final ManagedApplicationRuntime lifecycle;
 
-        AApp(@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle lc, SidehandleContext context) {
+        AApp(@SidehandleBinding(FROM_CONTEXT) ManagedApplicationRuntime lc, SidehandleContext context) {
             this.lifecycle = lc;
         }
 
@@ -141,6 +141,11 @@ public class AaaTest extends BaseAssembly {
                 return image.name();
             }
 
+        }
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return null;
         }
     }
 }

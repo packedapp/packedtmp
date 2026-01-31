@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle.runtime.errorhandling;
+package app.packed.lifecycle.sandbox.errorhandling;
 
 /**
  *
  */
-public class Tester {
-
-    public static void main(String[] args) {
-    }
-
-    public static <T extends Throwable> double calc(int f, ErrorProcessor<T> ep) throws T {
-        if (f < 0) {
-            throw ep.onError("f must be positive");
-        }
-        return 3.0 / f;
-    }
+@FunctionalInterface
+public interface ErrorProcessor<T extends Throwable> {
+    T onError(String message);
 }

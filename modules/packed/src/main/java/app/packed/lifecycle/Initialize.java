@@ -60,8 +60,9 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.InitializeOperatio
  * Attempting to install a bean (that uses this annotation) that do not have a lifecycle, for example, a static bean.
  * Will fail with {@link UnavailableLifecycleException}.
  * <p>
- * If multiple methods uses this annotation on the same bean and have the same value for the {@link #order()} attribute.
- * The framework may choose to invoke them in any sequence.
+ * If a bean has multiple methods annotated with {@code @Initialize}, the order in which they are invoked is undefined.
+ * If a specific invocation order is required, use a single {@code @Initialize} method that calls the other methods
+ * in the desired order.
  *
  * @see Inject
  * @see OnStart
@@ -75,15 +76,65 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.InitializeOperatio
 public @interface Initialize {
 
     /**
-     * Controls the order in which beans in the same lifetime that depend on each other are initialized.
+     * Controls the execution order of this initialization method relative to beans that depend on this bean.
      * <p>
-     * The default order is to invoke the annotated method <strong>before</strong> any other beans that depends on the
-     * targeted bean are initialized.
+     * The concept of "natural order" is borrowed from {@link java.util.Comparator#naturalOrder()}. Just as
+     * {@code Comparator.naturalOrder()} represents the default, expected ordering for comparable elements,
+     * {@code naturalOrder=true} represents the default, expected ordering for lifecycle operations.
+     * Setting {@code naturalOrder=false} reverses this order, similar to using {@code Comparator.reverseOrder()}.
+     * <p>
+     * <b>For {@code @Initialize}, natural order means:</b> This method runs <em>before</em> any beans that
+     * depend on this bean are initialized. This ensures that when a dependent bean initializes, all of its
+     * dependencies are already fully initialized and ready to use.
+     * <p>
+     * <b>Example with {@code naturalOrder=true} (default):</b> If Bean A depends on Bean B:
+     * <ol>
+     *   <li>Bean B's {@code @Initialize} method runs first</li>
+     *   <li>Bean A's {@code @Initialize} method runs second</li>
+     * </ol>
+     * <p>
+     * <b>Using {@code naturalOrder=false} (coordinator pattern):</b> Setting {@code naturalOrder=false}
+     * causes the method to run <em>after</em> all dependent beans have been initialized. This is useful
+     * for coordinator or aggregator beans that need to act once all their dependants are ready.
+     * <p>
+     * <b>Example:</b> A plugin manager that validates all plugins after they initialize:
+     * <pre>{@code
+     * class PluginManager {
+     *     private List<Plugin> plugins = new ArrayList<>();
+     *
+     *     public void register(Plugin p) { plugins.add(p); }
+     *
+     *     @Initialize(naturalOrder = false)
+     *     void afterAllPluginsReady() {
+     *         // All plugins that registered themselves are now fully initialized
+     *         plugins.forEach(Plugin::validate);
+     *     }
+     * }
+     *
+     * class ImagePlugin implements Plugin {  // depends on PluginManager
+     *     @Inject
+     *     void register(PluginManager manager) {
+     *         manager.register(this);
+     *     }
+     *
+     *     @Initialize
+     *     void init() { ... }
+     * }
+     * }</pre>
+     * <p>
+     * With this setup:
+     * <ol>
+     *   <li>ImagePlugin (and other plugins) are constructed, injected, and initialized</li>
+     *   <li>PluginManager.afterAllPluginsReady() runs after all plugins are ready</li>
+     * </ol>
      * <p>
      * This attribute has no effect if no other beans depend on the targeted bean.
      *
-     * @return whether or not the annotated method should be run before or after dependent beans in the same lifetime are
-     *         initialized.
+     * @return {@code true} (default) to run before dependants initialize,
+     *         {@code false} to run after dependants initialize (coordinator pattern)
+     *
+     * @see Start#naturalOrder()
+     * @see Stop#naturalOrder()
      */
     boolean naturalOrder() default true;
 

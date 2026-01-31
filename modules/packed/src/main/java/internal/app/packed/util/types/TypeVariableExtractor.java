@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import app.packed.binding.Variable;
-import app.packed.lifecycle.runtime.errorhandling.ErrorProcessor;
+import app.packed.lifecycle.sandbox.errorhandling.ErrorProcessor;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import org.jspecify.annotations.Nullable;

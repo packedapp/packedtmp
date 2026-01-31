@@ -23,11 +23,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
-import app.packed.lifecycle.runtime.StopOption;
-import app.packed.lifecycle.runtime.errorhandling.UnhandledApplicationException;
+import app.packed.lifecycle.sandbox.StopOption;
+import app.packed.lifecycle.sandbox.errorhandling.UnhandledApplicationException;
 import internal.app.packed.lifecycle.lifetime.entrypoint.OldEntryPointSetup;
 
 /**
@@ -37,7 +37,7 @@ import internal.app.packed.lifecycle.lifetime.entrypoint.OldEntryPointSetup;
 /// current state + Mask Error bit (data =
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
-public final class RegionalManagedLifetime implements ManagedLifecycle {
+public final class RegionalManagedLifetime implements ManagedApplicationRuntime {
 
     /**
      * A lock used for lifecycle control of the component. If components are arranged in a hierarchy and multiple components
@@ -270,11 +270,8 @@ public final class RegionalManagedLifetime implements ManagedLifecycle {
 
     /** {@inheritDoc} */
     @Override
-    public <T> CompletableFuture<T> startAsync(T result) {
-        return CompletableFuture.supplyAsync(() -> {
-            start();
-            return result;
-        });
+    public CompletableFuture<Void> startAsync() {
+        return CompletableFuture.runAsync(this::start);
     }
 
     void startFailed(Throwable t) {
@@ -295,8 +292,8 @@ public final class RegionalManagedLifetime implements ManagedLifecycle {
 
     /** {@inheritDoc} */
     @Override
-    public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
-        return null;
+    public CompletableFuture<Void> stopAsync(StopOption... options) {
+        return CompletableFuture.runAsync(() -> stop(options));
     }
 
     // Tag T istedet for container...

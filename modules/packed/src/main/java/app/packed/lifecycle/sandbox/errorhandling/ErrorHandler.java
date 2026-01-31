@@ -13,27 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle.runtime.errorhandling;
+package app.packed.lifecycle.sandbox.errorhandling;
 
-import static java.util.Objects.requireNonNull;
+import app.packed.lifecycle.RunState;
+import app.packed.operation.OperationInfoOld;
 
 /**
  *
  */
-public class ErrorMessage {
+public interface ErrorHandler {
 
-    private final String message;
-
-    private ErrorMessage(String message) {
-        this.message = requireNonNull(message, "message is null");
-    }
-
-    public static ErrorMessage of(String message) {
-        return new ErrorMessage(message);
-    }
-
-    @Override
-    public String toString() {
-        return message;
-    }
+    // Probably also a message
+    // But I don't if lazy created
+    boolean handle(RunState state, OperationInfoOld operationSite, Exception cause);
 }

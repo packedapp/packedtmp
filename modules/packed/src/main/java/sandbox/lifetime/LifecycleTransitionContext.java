@@ -16,7 +16,7 @@
 package sandbox.lifetime;
 
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.StopInfo.Trigger;
+import app.packed.lifecycle.StopInfo.Trigger;
 
 /**
  * A context that is available to all lifecycle transition operations.

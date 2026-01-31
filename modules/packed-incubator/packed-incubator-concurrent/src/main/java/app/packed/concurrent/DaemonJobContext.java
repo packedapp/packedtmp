@@ -39,8 +39,8 @@ public sealed interface DaemonJobContext extends Context<BaseExtension> permits 
     boolean isShutdown();
 
     /**
-     * Blocks until the bean has been shutdown, or the timeout occurs, or the current thread is interrupted, whichever
-     * happens first.
+     * Blocks until the job has been stopped (for example, the application has been shutdown) , or the timeout occurs, or the current thread is interrupted, whichever happens
+     * first.
      *
      * @param timeout
      *            the maximum time to wait
@@ -50,6 +50,7 @@ public sealed interface DaemonJobContext extends Context<BaseExtension> permits 
      * @throws InterruptedException
      *             if interrupted while waiting
      */
+    // Maybe rename to sleep instead???
     boolean awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException;
 }
 

@@ -22,7 +22,7 @@ import app.packed.application.ApplicationHandle;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.Stop;
 import app.packed.lifecycle.StopContext;
-import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifecycle.sandbox.StopOption;
 import app.packed.lifetimedynamic.ManagedInstance;
 
 /**

@@ -21,13 +21,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.BootstrapApp;
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.bean.Bean;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
-import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifecycle.sandbox.StopOption;
 import internal.app.packed.ValueBased;
 
 /** The default implementation of {@link App}. */
@@ -41,9 +41,9 @@ final class PackedJobApp implements JobApp {
     public static final BootstrapApp<PackedJobApp> BOOTSTRAP_APP = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(PackedJobApp.class));
 
     /** Manages the lifecycle of the app. */
-    private final ManagedLifecycle lifecycle;
+    private final ManagedApplicationRuntime lifecycle;
 
-    PackedJobApp(@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle lc, @SidehandleBinding(FROM_CONTEXT) Future<?> result, SidehandleContext context) {
+    PackedJobApp(@SidehandleBinding(FROM_CONTEXT) ManagedApplicationRuntime lc, @SidehandleBinding(FROM_CONTEXT) Future<?> result, SidehandleContext context) {
         this.lifecycle = lc;
     }
 
@@ -111,6 +111,12 @@ final class PackedJobApp implements JobApp {
     /** {@inheritDoc} */
     @Override
     public void stop(StopOption... options) {}
+
+    /** {@inheritDoc} */
+    @Override
+    public String name() {
+        return null;
+    }
 }
 
 /// retur typer

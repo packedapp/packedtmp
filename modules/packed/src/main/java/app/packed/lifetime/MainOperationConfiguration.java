@@ -21,7 +21,6 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-// I don't know what it can do, but
 public class MainOperationConfiguration extends OperationConfiguration {
 
     /**

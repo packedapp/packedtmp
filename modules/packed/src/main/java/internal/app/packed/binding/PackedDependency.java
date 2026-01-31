@@ -29,7 +29,7 @@ import java.util.OptionalLong;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.build.BuildException;
-import app.packed.lifecycle.runtime.errorhandling.ErrorMessageBuilder;
+import app.packed.lifecycle.sandbox.errorhandling.ErrorMessageBuilder;
 import app.packed.operation.OperationType;
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.util.types.ClassUtil;

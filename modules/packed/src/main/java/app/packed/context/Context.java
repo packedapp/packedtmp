@@ -29,7 +29,8 @@ import app.packed.extension.Extension;
  */
 //Maybe rename to ComponentContext and put in .component.
 //
-public interface Context<E extends Extension<E>> {}
+public interface Context<E extends Extension<E>> {
+}
 
 //Check that if try to inject a a ContextImplementation
 //And it does not have a service provider annotation

@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.bean.Bean;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
@@ -13,7 +14,6 @@ import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.component.SidehandleContext;
 import app.packed.component.SidehandleTargetKind;
 import app.packed.container.ContainerInstaller;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.operation.Op;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
@@ -37,7 +37,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public static final OldContainerTemplateLink EXPORTED_SERVICE_LOCATOR = baseBuilder("ExportedServiceLocator")
             .localConsume(BaseExtension.FROM_LINKS, t -> t.exportServices = true).provideExpose(ServiceLocator.class).build();
 
-    public static final OldContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedLifecycle.class.getSimpleName()).provideExpose(ManagedLifecycle.class)
+    public static final OldContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedApplicationRuntime.class.getSimpleName()).provideExpose(ManagedApplicationRuntime.class)
             .build();
 
     /** Creates a new base extension point. */

@@ -19,13 +19,13 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
@@ -58,7 +58,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         return application.container().name();
     }
 
-    ManagedLifecycle runtime() {
+    ManagedApplicationRuntime runtime() {
         if (runner.runtime != null) {
             return runner.runtime;
         }

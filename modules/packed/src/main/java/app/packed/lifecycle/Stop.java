@@ -33,6 +33,10 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandl
  * {@link RunState#STOPPING} state.
  * <p>
  * Static methods annotated with OnStop are ignore.
+ * <p>
+ * If a bean has multiple methods annotated with {@code @Stop}, the order in which they are invoked is undefined.
+ * If a specific invocation order is required, use a single {@code @Stop} method that calls the other methods
+ * in the desired order.
  *
  * @see OnInitialize
  * @see OnStart
@@ -56,11 +60,62 @@ public @interface Stop {
     boolean fork() default false;
 
     /**
+     * Controls the execution order of this stop method relative to beans that depend on this bean.
      * <p>
-     * Notice that the default ordering is the opposite of the ordering from {@link OnInitialize} and {@link OnStart}. By
-     * default {@code OnStop} operations will be executed after on stop operations on dependencies.
+     * The concept of "natural order" is borrowed from {@link java.util.Comparator#naturalOrder()}. Just as
+     * {@code Comparator.naturalOrder()} represents the default, expected ordering for comparable elements,
+     * {@code naturalOrder=true} represents the default, expected ordering for lifecycle operations.
+     * Setting {@code naturalOrder=false} reverses this order, similar to using {@code Comparator.reverseOrder()}.
+     * <p>
+     * <b>For {@code @Stop}, natural order means:</b> This method runs <em>after</em> any beans that
+     * depend on this bean have stopped. This is the reverse of {@link Initialize} and {@link Start},
+     * reflecting the natural shutdown pattern: dependants should release their dependencies before
+     * the dependencies themselves shut down.
+     * <p>
+     * <b>Example with {@code naturalOrder=true} (default):</b> If Bean A depends on Bean B:
+     * <ol>
+     *   <li>Bean A's {@code @Stop} method runs first (the dependant stops first)</li>
+     *   <li>Bean B's {@code @Stop} method runs second (the dependency stops last)</li>
+     * </ol>
+     * <p>
+     * This mirrors how resources are typically managed: if A depends on B, then A must stop using B
+     * before B can safely shut down.
+     * <p>
+     * <b>Using {@code naturalOrder=false} (pre-notification pattern):</b> Setting {@code naturalOrder=false}
+     * causes the method to run <em>before</em> dependent beans have stopped. This is useful for
+     * broadcasting shutdown notifications while dependants are still active.
+     * <p>
+     * <b>Example:</b> A client that notifies users before its connection shuts down:
+     * <pre>{@code
+     * class ChatClient {  // depends on ConnectionPool
+     *     @Inject ConnectionPool pool;
      *
-     * @return
+     *     @Stop(naturalOrder = false)
+     *     void notifyShutdown() {
+     *         // ConnectionPool is still running, we can send messages
+     *         pool.broadcast("System shutting down");
+     *     }
+     * }
+     *
+     * class ConnectionPool {
+     *     @Stop
+     *     void closeConnections() { ... }
+     * }
+     * }</pre>
+     * <p>
+     * With this setup:
+     * <ol>
+     *   <li>ChatClient.notifyShutdown() runs while ConnectionPool is still active</li>
+     *   <li>ConnectionPool.closeConnections() runs after the notification is sent</li>
+     * </ol>
+     * <p>
+     * This attribute has no effect if no other beans depend on the targeted bean.
+     *
+     * @return {@code true} (default) to run after dependants stop,
+     *         {@code false} to run before dependants stop (pre-notification pattern)
+     *
+     * @see Initialize#naturalOrder()
+     * @see Start#naturalOrder()
      */
     boolean naturalOrder() default true;
 

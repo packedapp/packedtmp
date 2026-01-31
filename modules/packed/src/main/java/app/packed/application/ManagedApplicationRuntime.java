@@ -13,21 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle.runtime;
+package app.packed.application;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.jspecify.annotations.Nullable;
-
 import app.packed.lifecycle.RunState;
-import sandbox.lifetime.external.ManagedLifetimeState;
-
-// This is basically something thats wraps a state that is 100 Linear
-// It is not 100 % clean because of restarting... IDK about that
-
-// It can be used either standalone or injected into a guest bean.
+import app.packed.lifecycle.StopInfo;
+import app.packed.lifecycle.sandbox.StopOption;
 
 /**
  * Controls the lifecycle of a managed object. An application runtime is available for all runnable applications.
@@ -56,7 +50,7 @@ import sandbox.lifetime.external.ManagedLifetimeState;
 
 // this is lifecycle instead of lifetime because the lifetime already exists.
 
-public interface ManagedLifecycle {
+public interface ManagedApplicationRuntime {
 
     // Optional<Throwable> getFailure();
 
@@ -118,53 +112,33 @@ public interface ManagedLifecycle {
      * whenever it is needed. For example, invoking use will automatically start the component if it has not already been
      * started by another action.
      *
-     * @see #startAsync(Object)
      */
     void start();
 
-    default CompletableFuture<Void> startAsync() {
-        return startAsync(null);
-    }
-
-    <@Nullable T> CompletableFuture<T> startAsync(T result);
-
-    @SuppressWarnings("exports")
-    default ManagedLifetimeState state() {
-        throw new UnsupportedOperationException();
-    }
+    CompletableFuture<Void> startAsync();
 
     /**
      * Stops the component.
      *
      * @param options
      *            optional stop options
-     * @see #stopAsync(Object, StopOption...)
      *
      * @throws UnsupportedOperationException
      *             if any of the options are not supported
      */
     void stop(StopOption... options);
 
-    default CompletableFuture<Void> stopAsync(StopOption... options) {
-        return stopAsync(null, new StopOption[] {});
-    }
-
     /**
      * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
      * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
      *
-     * @param <T>
-     *            the type of result in case of success
-     * @param result
-     *            the result the completable future
      * @param options
-     *            optional guest stop options
+     *            optional stop options
      * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
      *         in the process of being shut down
      * @see #stop(StopOption...)
      */
-    // Does not take null. use StopAsync
-    <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
+    CompletableFuture<Void> stopAsync(StopOption... options);
 
     default Optional<StopInfo> stopInfo() {
         return Optional.empty();

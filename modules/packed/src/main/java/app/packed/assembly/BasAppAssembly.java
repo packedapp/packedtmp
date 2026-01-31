@@ -21,7 +21,7 @@ import app.packed.build.BuildProcess;
 /**
  *
  */
-public class Ffff extends BaseAssembly {
+public class BasAppAssembly extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
@@ -29,7 +29,7 @@ public class Ffff extends BaseAssembly {
         IO.println("OK " + BuildProcess.current().currentAssembly());
 
         // Maybe we have a RootAssembly and ChildAssembly
-        assembly().application().restrictUpdatesToThisAssembly();
+        //assembly().application().restrictUpdatesToThisAssembly();
         link(new Other(), "child");
     }
 
@@ -44,6 +44,7 @@ public class Ffff extends BaseAssembly {
         }
     }
     void main() {
-        App.mirrorOf(new Ffff());
+        App.mirrorOf(new BasAppAssembly());
+        System.out.println(App.start(new BasAppAssembly()).name());
     }
 }

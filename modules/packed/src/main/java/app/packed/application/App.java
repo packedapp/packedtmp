@@ -7,7 +7,7 @@ import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifecycle.sandbox.StopOption;
 
 /**
  * Represents the main entry point for executing and managing Packed applications. This interface provides methods for
@@ -73,6 +73,9 @@ public interface App extends AutoCloseable, ApplicationInterface {
      */
     @Override
     void close();
+
+    /** {@return the name of the application} */
+    String name();
 
     /**
      * Returns the current state of the application.
@@ -232,13 +235,11 @@ public interface App extends AutoCloseable, ApplicationInterface {
 
         // Config also
 
-
-        @Override
-        default <T> Launcher provide(Key<? super T> key, T value) {
-            return null;
+        default Launcher alwaysRestart() {
+            return this;
         }
 
-        default Launcher alwaysRestart() {
+        default Launcher ignoreAllExceptions() {
             return this;
         }
 
@@ -246,8 +247,9 @@ public interface App extends AutoCloseable, ApplicationInterface {
 
         // @LaunchArgument/@LaunchArg <--- Injectable
 
-        default Launcher ignoreAllExceptions() {
-            return this;
+        @Override
+        default <T> Launcher provide(Key<? super T> key, T value) {
+            return null;
         }
 
         /**

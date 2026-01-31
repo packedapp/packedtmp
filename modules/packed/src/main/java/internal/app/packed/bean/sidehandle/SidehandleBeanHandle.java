@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanInstaller;
@@ -37,7 +38,6 @@ import app.packed.component.Sidehandle;
 import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.component.SidehandleBinding;
 import app.packed.component.SidehandleContext;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationTemplate;
@@ -63,7 +63,7 @@ import internal.app.packed.service.util.ServiceMap;
 public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfiguration<T>> {
 
     // --- Fields from GuestBeanHandle ---
-    static final Set<Key<?>> KEYS = Set.of(Key.of(ApplicationMirror.class), Key.of(String.class), Key.of(ManagedLifecycle.class), Key.of(ServiceLocator.class));
+    static final Set<Key<?>> KEYS = Set.of(Key.of(ApplicationMirror.class), Key.of(String.class), Key.of(ManagedApplicationRuntime.class), Key.of(ServiceLocator.class));
 
     public static final PackedComponentHostContext DEFAULT = new PackedComponentHostContext(KEYS);
 
@@ -176,8 +176,8 @@ public class SidehandleBeanHandle<T> extends BeanHandle<SidehandleBeanConfigurat
             v.bindOp(new Op1<ApplicationLaunchContext, ApplicationMirror>(a -> a.mirror()) {});
         } else if (va.rawType().equals(String.class)) {
             v.bindOp(new Op1<ApplicationLaunchContext, String>(a -> a.name()) {});
-        } else if (va.rawType().equals(ManagedLifecycle.class)) {
-            v.bindOp(new Op1<ApplicationLaunchContext, ManagedLifecycle>(a -> a.runner.runtime) {});
+        } else if (va.rawType().equals(ManagedApplicationRuntime.class)) {
+            v.bindOp(new Op1<ApplicationLaunchContext, ManagedApplicationRuntime>(a -> a.runner.runtime) {});
         } else if (va.rawType().equals(ServiceLocator.class)) {
             v.bindOp(new Op1<ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});
         } else if (va.rawType().equals(SidehandleContext.class)) {

@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle.runtime.errorhandling;
-
-import app.packed.component.ComponentRealm;
-import app.packed.extension.BaseExtension;
-import app.packed.namespace.NamespaceConfiguration;
-import app.packed.namespace.NamespaceHandle;
+package app.packed.lifecycle.sandbox.errorhandling;
 
 /**
  *
  */
-public final class ErrorHandlingNamespaceConfiguration extends NamespaceConfiguration<BaseExtension> {
+public class Tester {
 
-    /**
-     * @param namespace
-     * @param extension
-     * @param actor
-     */
-    protected ErrorHandlingNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> namespace, BaseExtension extension, ComponentRealm actor) {
-        super(namespace, extension, actor);
+    public static void main(String[] args) {
     }
 
+    public static <T extends Throwable> double calc(int f, ErrorProcessor<T> ep) throws T {
+        if (f < 0) {
+            throw ep.onError("f must be positive");
+        }
+        return 3.0 / f;
+    }
 }

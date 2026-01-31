@@ -21,7 +21,7 @@ import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.StructuredTaskScope.Joiner;
 
 import app.packed.lifecycle.StopContext;
-import app.packed.lifecycle.runtime.StopInfo;
+import app.packed.lifecycle.StopInfo;
 import internal.app.packed.extension.ExtensionContext;
 import internal.app.packed.lifecycle.InvokableLifecycleOperationHandle;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.StopOperationHandle;
@@ -65,7 +65,7 @@ final class StopRunner {
                 }
 
                 @Override
-                public StopInfo info() {
+                public StopInfo stopInfo() {
                     return null;
                 }
 
@@ -124,7 +124,7 @@ final class StopRunner {
 
         /** {@inheritDoc} */
         @Override
-        public StopInfo info() {
+        public StopInfo stopInfo() {
             return null;
         }
 

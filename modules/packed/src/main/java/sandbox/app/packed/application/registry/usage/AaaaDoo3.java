@@ -16,9 +16,9 @@
 package sandbox.app.packed.application.registry.usage;
 
 import app.packed.application.App;
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.assembly.BaseAssembly;
 import app.packed.lifecycle.Start;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
 import sandbox.app.packed.application.registry.ApplicationRegistryExtension;
 import sandbox.app.packed.application.registry.LaunchableApplication;
 
@@ -38,7 +38,7 @@ public class AaaaDoo3 extends BaseAssembly {
         App.run(new AaaaDoo3());
     }
 
-    public record MyBean(LaunchableApplication<ManagedLifecycle> launcher) {
+    public record MyBean(LaunchableApplication<ManagedApplicationRuntime> launcher) {
 
         @Start
         public void oni() {

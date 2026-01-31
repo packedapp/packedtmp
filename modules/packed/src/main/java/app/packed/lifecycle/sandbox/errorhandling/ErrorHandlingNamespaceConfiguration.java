@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
+package app.packed.lifecycle.sandbox.errorhandling;
 
+import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
+import app.packed.namespace.NamespaceConfiguration;
+import app.packed.namespace.NamespaceHandle;
 
-// All operations are automatically in the global context.
-// However this is never mentioned when querying for context mirrors? Or maybe it is
-
-// Can you inject it? Why not
-
-// Maybe ApplicationContext?
-// Man specificere da bare Context.class
 /**
- * A special marker interface that can be used with {@link ServiceResolver#contexts()} to indicate that only services
- * with no context should be resolved.
+ *
  */
-interface ApplicationContext extends Context<BaseExtension> {
+public final class ErrorHandlingNamespaceConfiguration extends NamespaceConfiguration<BaseExtension> {
 
-    // void shutdownAsync(StopOption... );
+    /**
+     * @param namespace
+     * @param extension
+     * @param actor
+     */
+    protected ErrorHandlingNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> namespace, BaseExtension extension, ComponentRealm actor) {
+        super(namespace, extension, actor);
+    }
+
 }

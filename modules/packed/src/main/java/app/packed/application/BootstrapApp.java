@@ -164,6 +164,9 @@ public sealed interface BootstrapApp<I> extends ApplicationInterface permits Pac
     // withExpectingResult
     BootstrapApp<I> withExpectsResult(Class<?> resultType);
 
+    // Can have injected ApplicationName
+    // ManagedApplicationRuntime
+
     static <A> BootstrapApp<A> of(LifecycleKind lifecycleKind, Bean<A> bean) {
         return PackedBootstrapApp.of(lifecycleKind, bean);
     }

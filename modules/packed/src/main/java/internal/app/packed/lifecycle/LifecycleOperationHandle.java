@@ -161,12 +161,10 @@ public abstract sealed class LifecycleOperationHandle extends BaseExtensionOpera
 
         public boolean interruptOnStopping;
 
-        public boolean stopOnFailure;
 
         private StartOperationHandle(OperationInstaller installer, Start annotation) {
             PackedBeanLifecycleKind lifecycleKind = annotation.naturalOrder() ? PackedBeanLifecycleKind.START_PRE_ORDER
                     : PackedBeanLifecycleKind.START_POST_ORDER;
-            this.stopOnFailure = annotation.stopOnFailure();
             this.interruptOnStopping = annotation.interruptOnStopping();
             this.fork = annotation.fork();
 

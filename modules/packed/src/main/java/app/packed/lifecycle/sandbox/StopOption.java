@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle.runtime;
+package app.packed.lifecycle.sandbox;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;

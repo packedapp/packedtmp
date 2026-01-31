@@ -17,7 +17,7 @@ module app.packed {
     exports app.packed.concurrent;
     exports app.packed.extension;
     exports app.packed.lifecycle;
-    exports app.packed.lifecycle.runtime;  //IDK
+    exports app.packed.lifecycle.sandbox;  //IDK
     exports app.packed.lifetime;
     exports app.packed.namespace;
     exports app.packed.operation;

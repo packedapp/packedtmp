@@ -21,7 +21,6 @@ import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import app.packed.lifecycle.runtime.StopInfo;
 import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
@@ -31,16 +30,20 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 @AutoService(introspector = StopContextBeanIntrospector.class, requiresContext = StopContext.class)
 public interface StopContext extends Context<BaseExtension> {
 
+    // Hmm??
+    default void await(AwaitingTimeoutFunction f) {}
+
     /**
      * {@return whether or not the whole application is stopping or only the li
      */
+    // I don't think this should be on stopInfo
+    // Maybe return context
+    // What about Application stopping -> DaemonJobContext stopping???
+    // There should be some way to distinguish between these two situations
     boolean isApplicationStopping();
 
-    /** {@return Information about why the containing lifetime was stopped.} */
-    StopInfo info();
-    // isApplicationStopping();
-
-    default void await(AwaitingTimeoutFunction f) {}
+    /** {@return information about why the bean is being stopping} */
+    StopInfo stopInfo();
 
     @FunctionalInterface
     interface AwaitingTimeoutFunction {

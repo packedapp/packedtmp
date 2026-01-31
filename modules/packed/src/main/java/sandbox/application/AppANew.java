@@ -17,11 +17,11 @@ package sandbox.application;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
-import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifecycle.sandbox.StopOption;
 
 /**
  * Similar to App with the extra features that you can
@@ -49,7 +49,7 @@ public interface AppANew extends AutoCloseable {
      *
      * @return this application's host.
      */
-    ManagedLifecycle lifecycle();
+    ManagedApplicationRuntime lifecycle();
 
     // Maybe Options are per App type and then maps into something else???
     // Cancel makes no sense, for example, well maybe.

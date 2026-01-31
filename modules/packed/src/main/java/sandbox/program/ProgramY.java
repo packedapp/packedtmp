@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.assembly.Assembly;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.bean.Bean;
@@ -29,7 +30,6 @@ import app.packed.component.OldContainerTemplateLink;
 import app.packed.component.SidehandleBinding;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
 import app.packed.service.ServiceLocator;
 
 /**
@@ -58,7 +58,7 @@ interface ProgramY extends AutoCloseable {
      *
      * @return this application's host.
      */
-    ManagedLifecycle runtime();
+    ManagedApplicationRuntime runtime();
 
     /**
      * Returns this app's service locator.
@@ -160,7 +160,7 @@ interface ProgramY extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(@SidehandleBinding(FROM_CONTEXT) String name, @SidehandleBinding(FROM_CONTEXT) ServiceLocator services, @SidehandleBinding(FROM_CONTEXT) ManagedLifecycle runtime)
+record ProgramImplementation(@SidehandleBinding(FROM_CONTEXT) String name, @SidehandleBinding(FROM_CONTEXT) ServiceLocator services, @SidehandleBinding(FROM_CONTEXT) ManagedApplicationRuntime runtime)
         implements ProgramY {
 
     ProgramImplementation {

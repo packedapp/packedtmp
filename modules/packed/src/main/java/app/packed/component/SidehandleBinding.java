@@ -40,6 +40,7 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.AbstractInitializi
 @OnAnnotatedVariable(introspector = SidehandleBindingBeanIntrospector.class, requiresContext = SidehandleContext.class)
 public @interface SidehandleBinding {
 
+    // Maybe context is default
     Kind value();
 
     public enum Kind {
@@ -50,7 +51,14 @@ public @interface SidehandleBinding {
          * @see Sidehandle#bindConstant(Class, Object)
          * @see Sidehandle#bindConstant(app.packed.binding.Key, Object)
          */
-        CONSTANT, COMPUTED_CONSTANT, OPERATION_INVOKER, FROM_CONTEXT;
+        CONSTANT,
+
+        /**
+         *
+         * @see Sidehandle#bindComputedConstant(Class, java.util.function.Supplier)
+         * @see Sidehandle#bindComputedConstant(app.packed.binding.Key, java.util.function.Supplier)
+         */
+        COMPUTED_CONSTANT, OPERATION_INVOKER, FROM_CONTEXT;
     }
 }
 
@@ -67,7 +75,7 @@ final class SidehandleBindingBeanIntrospector extends BaseExtensionBeanIntrospec
         }
         if (v.operationHandle(AbstractInitializingOperationHandle.class).isEmpty()) {
             throw new BeanInstallationException(
-                    SidehandleBinding.class.getSimpleName() + " can only be used on Factory, Inject, Initialize methods" + beanClass());
+                    SidehandleBinding.class.getSimpleName() + " can only be used on Factory (Constructor), Inject, Initialize methods" + beanClass());
         }
 
         sideHandle.get().onInject(this, (SidehandleBinding) annotation, (IntrospectorOnVariable) v);

@@ -22,49 +22,40 @@ import java.util.concurrent.TimeUnit;
 import app.packed.bean.Bean;
 import app.packed.binding.Key;
 import app.packed.component.SidehandleBinding;
-import app.packed.component.SidehandleContext;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
-import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifecycle.sandbox.StopOption;
 import internal.app.packed.ValueBased;
 
 /** The default implementation of {@link App}. */
 @ValueBased
-final class PackedApp implements App {
+final record PackedApp(@SidehandleBinding(FROM_CONTEXT) ManagedApplicationRuntime runtime, @SidehandleBinding(FROM_CONTEXT) String name) implements App {
 
     /** The bootstrap app for this application. */
     static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(LifecycleKind.MANAGED, Bean.of(PackedApp.class));
 
-    /** Manages the lifecycle of the app. */
-    private final ManagedLifecycle lifecycle;
-
-    PackedApp(@SidehandleBinding(FROM_CONTEXT) ManagedLifecycle lc, SidehandleContext context) {
-        this.lifecycle = lc;
-    }
-
     /** {@inheritDoc} */
     @Override
     public boolean awaitState(RunState state, long timeout, TimeUnit unit) throws InterruptedException {
-        return lifecycle.await(state, timeout, unit);
+        return runtime.await(state, timeout, unit);
     }
 
     /** {@inheritDoc} */
     @Override
     public void close() {
-        lifecycle.stop();
+        runtime.stop();
     }
 
     /** {@inheritDoc} */
     @Override
     public RunState state() {
-        return lifecycle.currentState();
+        return runtime.currentState();
     }
 
     /** {@inheritDoc} */
     @Override
     public void stop(StopOption... options) {
-        lifecycle.stop(options);
+        runtime.stop(options);
     }
 
     @Override

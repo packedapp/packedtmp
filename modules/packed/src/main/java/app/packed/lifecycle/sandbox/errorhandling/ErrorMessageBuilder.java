@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle.runtime.errorhandling;
+package app.packed.lifecycle.sandbox.errorhandling;
 
 import static internal.app.packed.util.StringFormatter.format;
 

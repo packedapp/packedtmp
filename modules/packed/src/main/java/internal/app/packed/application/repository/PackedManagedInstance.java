@@ -19,17 +19,15 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import app.packed.application.ManagedApplicationRuntime;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.runtime.ManagedLifecycle;
-import app.packed.lifecycle.runtime.StopOption;
+import app.packed.lifecycle.sandbox.StopOption;
 import app.packed.lifetimedynamic.ManagedInstance;
-import org.jspecify.annotations.Nullable;
-import sandbox.lifetime.external.ManagedLifetimeState;
 
 /**
  *
  */
-public record PackedManagedInstance<I>(ManagedLifecycle i) implements ManagedInstance<I> {
+public record PackedManagedInstance<I>(ManagedApplicationRuntime i) implements ManagedInstance<I> {
 
     @Override
     public void await(RunState state) throws InterruptedException {
@@ -62,16 +60,6 @@ public record PackedManagedInstance<I>(ManagedLifecycle i) implements ManagedIns
     }
 
     @Override
-    public <T> CompletableFuture<@Nullable T> startAsync(@Nullable T result) {
-        return i.startAsync(result);
-    }
-
-    @Override
-    public ManagedLifetimeState state() {
-        return i.state();
-    }
-
-    @Override
     public void stop(StopOption... options) {
         i.stop(options);
     }
@@ -79,11 +67,6 @@ public record PackedManagedInstance<I>(ManagedLifecycle i) implements ManagedIns
     @Override
     public CompletableFuture<Void> stopAsync(StopOption... options) {
         return i.stopAsync(options);
-    }
-
-    @Override
-    public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
-        return i.stopAsync(result, options);
     }
 
     /** {@inheritDoc} */
