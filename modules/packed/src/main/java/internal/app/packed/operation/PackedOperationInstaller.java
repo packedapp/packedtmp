@@ -30,7 +30,7 @@ import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
+import internal.app.packed.bean.introspection.BeanIntrospectorSetup;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;

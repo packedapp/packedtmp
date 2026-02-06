@@ -18,7 +18,7 @@ package internal.app.packed.application.repository;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.lifetimedynamic.ManagedInstance;
+import sandbox.app.packed.lifetimedynamic.ManagedInstance;
 
 /**
  *

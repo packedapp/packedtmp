@@ -21,7 +21,7 @@ import app.packed.binding.InvalidKeyException;
 import app.packed.binding.Qualifier;
 import app.packed.binding.Variable;
 import app.packed.util.AnnotationList;
-import internal.app.packed.bean.scanning.IntrospectorOnVariable;
+import internal.app.packed.bean.introspection.IntrospectorOnVariable;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeUtil;

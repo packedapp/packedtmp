@@ -19,14 +19,13 @@ import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.lifetime.CompositeLifetimeMirror;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
+import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.operation.OperationSetup;
@@ -130,11 +129,11 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     public TreeView<ContainerMirror> containers() {
         return new PackedTreeView<>(handle.application.container(), null, c -> c.mirror());
     }
-
-    /** {@return a collection of all entry points the application may have.} */
-    public Stream<OperationMirror> entryPoints() {
-        return container().lifetime().entryPoints();
-    }
+//
+//    /** {@return a collection of all entry points the application may have.} */
+//    public Stream<OperationMirror> entryPoints() {
+//        return container().lifetime().entryPoints();
+//    }
 
     /** {@inheritDoc} */
     @Override
@@ -163,11 +162,11 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
         return container().isExtensionUsed(extensionClass);
     }
-
-    /** {@return the application's lifetime. Which is identical to the root container's.} */
-    public CompositeLifetimeMirror lifetime() {
-        return container().lifetime();
-    }
+//
+//    /** {@return the application's lifetime. Which is identical to the root container's.} */
+//    public CompositeLifetimeMirror lifetime() {
+//        return container().lifetime();
+//    }
 
     /**
      * Returns the name of the application.

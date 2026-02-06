@@ -18,15 +18,16 @@ package internal.app.packed.lifecycle.lifetime.entrypoint;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.packed.application.Main;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.lifetime.Main;
+
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.IntrospectorOnMethod;
+import internal.app.packed.bean.introspection.IntrospectorOnMethod;
 
 /** An instance of this class is shared between all entry point extensions for a single application. */
 public class EntryPointManager {

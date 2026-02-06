@@ -15,7 +15,6 @@
  */
 package app.packed.lifecycle;
 
-import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 
@@ -32,24 +31,23 @@ public sealed class LifecycleOperationMirror extends OperationMirror
     public LifecycleOperationMirror(OperationHandle<?> handle) {
         super(handle);
     }
-
-    /**
-     * The lifetime the operation is run in.
-     *
-     * @return
-     */
-    public LifetimeMirror lifetime() {
-        return bean().lifetime();
-    }
-
-    /** {@return the lifetime operation this operation is a part of.} */
-    // IDK, supportere vi Lifecycle events there ikke har en Lifetime operation???
-    // Saa er det ikke en lifetime. Fx restart
-    public LifecycleOperationMirror lifetimeOperation() {
-        throw new UnsupportedOperationException();
-    }
-
 }
+
+///**
+// * The lifetime the operation is run in.
+// *
+// * @return
+// */
+//public LifetimeMirror lifetime() {
+//    return bean().lifetime();
+//}
+//
+///** {@return the lifetime operation this operation is a part of.} */
+//// IDK, supportere vi Lifecycle events there ikke har en Lifetime operation???
+//// Saa er det ikke en lifetime. Fx restart
+//public LifecycleOperationMirror lifetimeOperation() {
+//    throw new UnsupportedOperationException();
+//}
 
 // Should we use Initializing or Initialized, Stopping or Stopped?
 // If   we need this method, it must be the transitioning runstate

@@ -21,8 +21,8 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.lifetimedynamic.ManagedInstance;
 import internal.app.packed.application.repository.AbstractApplicationRepository;
+import sandbox.app.packed.lifetimedynamic.ManagedInstance;
 
 /**
  * An application registry is used to manage installed applications at runtime.

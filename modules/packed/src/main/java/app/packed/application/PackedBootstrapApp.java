@@ -162,7 +162,6 @@ final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements 
             if (template.bean().beanSourceKind() == BeanSourceKind.SOURCELESS) {
                 return;
             }
-            // use(ApplicationExtension).installApp(bean, isManaged);
 
             // Get the internal configuration of BaseExtension
             ExtensionSetup es = ExtensionSetup.crack(assembly().containerRoot().use(BaseExtension.class));

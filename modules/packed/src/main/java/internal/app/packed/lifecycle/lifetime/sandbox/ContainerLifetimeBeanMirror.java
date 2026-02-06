@@ -15,15 +15,13 @@
  */
 package internal.app.packed.lifecycle.lifetime.sandbox;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanMirror;
 import app.packed.binding.BindingMirror;
-import app.packed.lifetime.LifetimeMirror;
-import sandbox.lifetime.LifetimeOperationMirror;
+import sandbox.lifetime2.LifetimeOperationMirror;
 
 // Why lifetime bean
 // Det startede lidt med problemet omkring Application "wrapper" objekter som AsyncApp/Injector osv.
@@ -74,6 +72,7 @@ class ContainerLifetimeBeanMirror extends BeanMirror {
     /**
      * @param handle
      */
+    @Deprecated
     public ContainerLifetimeBeanMirror(BeanHandle<?> handle) {
         super(handle);
     }
@@ -83,10 +82,10 @@ class ContainerLifetimeBeanMirror extends BeanMirror {
 
     // I virkeligheden er det jo ikke InjectorImpl der styre creation af den lifetime
     // Men Bootstrap appen. InjectorImpl holder bare noget info...
-    @Override
-    public Collection<LifetimeMirror> managesLifetimes() {
-        throw new UnsupportedOperationException();
-    }
+//    @Override
+//    public Collection<LifetimeMirror> managesLifetimes() {
+//        throw new UnsupportedOperationException();
+//    }
 
     ///// Resten er lidt ligegyldigt.
     /// Kan ikke se hvorfor man ikke kan managed lifetimes af forskellige typer
@@ -101,6 +100,7 @@ class ContainerLifetimeBeanMirror extends BeanMirror {
      *
      * @return a list of all lifetime management operations this bean provides
      */
+    @Deprecated
     public List<LifetimeOperationMirror> managementOperations() {
         throw new UnsupportedOperationException();
     }

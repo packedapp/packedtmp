@@ -9,7 +9,7 @@ import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyConfiguration;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
-import internal.app.packed.bean.scanning.BeanTriggerModelCustom;
+import internal.app.packed.bean.introspection.BeanTriggerModelCustom;
 import internal.app.packed.build.hook.BuildHookMap;
 import internal.app.packed.build.hook.StaticBuildHookMap;
 import internal.app.packed.build.hooks.AssemblyBuildHook;

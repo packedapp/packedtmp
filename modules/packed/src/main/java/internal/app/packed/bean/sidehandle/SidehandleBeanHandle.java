@@ -43,7 +43,7 @@ import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.bean.scanning.IntrospectorOnVariable;
+import internal.app.packed.bean.introspection.IntrospectorOnVariable;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.context.PackedComponentHostContext;
 import internal.app.packed.extension.ExtensionSetup;

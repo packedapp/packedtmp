@@ -20,8 +20,8 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.lifecycle.RunState;
-import app.packed.lifetimedynamic.ManagedInstance;
 import internal.app.packed.application.repository.PackedInstalledApplication;
+import sandbox.app.packed.lifetimedynamic.ManagedInstance;
 
 /**
  * A single application that has been installed into an {@link ApplicationRepository}. Either at build-time using, or at

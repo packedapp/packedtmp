@@ -31,12 +31,11 @@ import app.packed.lifecycle.InjectOperationMirror;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.StartOperationMirror;
 import app.packed.lifecycle.StopOperationMirror;
-import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirrorold.ServiceProviderIsThisUsefulMirror;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
+import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.lifecycle.LifecycleOperationHandle;
@@ -157,25 +156,20 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     public final Lifecycle lifecycle() {
         return new Lifecycle();
     }
-
-    /**
-     * Returns the bean's lifetime.
-     * <p>
-     * This is either a {@link ContainerLifetimeMirror} if a single instance of the bean is created together with the
-     * container instance. Or if a functional or static bean.
-     * <p>
-     * A lazy bean or prototype bean will return
-     *
-     * @return the bean's lifetime
-     */
-    public LifetimeMirror lifetime() {
-        return handle.bean.lifetime.mirror();
-    }
-
-    public Collection<LifetimeMirror> managesLifetimes() {
-        // Find LifetimeOperations->Unique on Lifetime
-        throw new UnsupportedOperationException();
-    }
+//
+//    /**
+//     * Returns the bean's lifetime.
+//     * <p>
+//     * This is either a {@link ContainerLifetimeMirror} if a single instance of the bean is created together with the
+//     * container instance. Or if a functional or static bean.
+//     * <p>
+//     * A lazy bean or prototype bean will return
+//     *
+//     * @return the bean's lifetime
+//     */
+//    public LifetimeMirror lifetime() {
+//        return handle.bean.lifetime.mirror();
+//    }
 
     /**
      * Returns the name of this bean.

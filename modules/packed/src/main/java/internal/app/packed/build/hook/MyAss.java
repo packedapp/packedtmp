@@ -16,10 +16,10 @@
 package internal.app.packed.build.hook;
 
 import app.packed.application.App;
+import app.packed.application.Main;
 import app.packed.assembly.AssemblyConfiguration;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanConfiguration;
-import app.packed.lifetime.Main;
 import internal.app.packed.build.hook.MyAss.MyBe;
 import internal.app.packed.build.hooks.AssemblyBuildHook;
 import internal.app.packed.build.hooks.BeanHook;

@@ -27,10 +27,6 @@ import internal.app.packed.application.PackedApplicationInstaller;
  */
 public sealed interface ApplicationInstaller<H extends ApplicationHandle<?, ?>> permits PackedApplicationInstaller {
 
-    default ApplicationInstaller<H> expectsResult(Class<?> resultType) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Add the specified tags to the application.
      *
@@ -45,6 +41,10 @@ public sealed interface ApplicationInstaller<H extends ApplicationHandle<?, ?>> 
      */
     ApplicationInstaller<H> componentTag(String... tags);
 
+    default ApplicationInstaller<H> expectsResult(Class<?> resultType) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Installs the new application represented by the specified assembly.
      * <p>
@@ -58,7 +58,13 @@ public sealed interface ApplicationInstaller<H extends ApplicationHandle<?, ?>> 
      */
     H install(Assembly assembly, Wirelet... wirelets);
 
-    // Yes naming, my friend
+    /**
+     * Sets the name of the application
+     *
+     * @param name
+     *            the name of the application
+     * @return this installer
+     */
     ApplicationInstaller<H> named(String name);
 
     /**

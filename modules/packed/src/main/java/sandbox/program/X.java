@@ -17,11 +17,11 @@ package sandbox.program;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.application.Main;
 import app.packed.assembly.BaseAssembly;
 import app.packed.lifecycle.Initialize;
 import app.packed.lifecycle.Start;
 import app.packed.lifecycle.Stop;
-import app.packed.lifetime.Main;
 
 /**
  *

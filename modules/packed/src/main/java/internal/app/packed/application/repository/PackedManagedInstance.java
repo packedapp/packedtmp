@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import app.packed.application.ManagedApplicationRuntime;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.sandbox.StopOption;
-import app.packed.lifetimedynamic.ManagedInstance;
+import sandbox.app.packed.lifetimedynamic.ManagedInstance;
 
 /**
  *

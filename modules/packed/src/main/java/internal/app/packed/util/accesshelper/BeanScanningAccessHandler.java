@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
+import internal.app.packed.bean.introspection.BeanIntrospectorSetup;
 
 /**
  * Access helper for BeanIntrospector and related classes in the bean.scanning package.

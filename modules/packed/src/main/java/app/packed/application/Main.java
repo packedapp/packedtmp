@@ -1,0 +1,69 @@
+/*
+ * Copyright (c) 2026 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package app.packed.application;
+
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
+import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
+
+// Maybe move to app.packed.application?
+// I don't know if it makes sense for pods
+
+// Cannot be mixed with CliCommand. Or ComputeJob in the ApplicationLifetime
+/**
+ *
+ * Trying to build an application with more than a single method annotated with this annotation will fail with
+ * {@link BuildException}.
+ * <p>
+ * Methods annotated with {@code @Main} must have a void return type.
+ * <p>
+ * If the application fails either while initializing or starting, the main method will not be invoked.
+ * <p>
+ * When the annotated method returns the container will automatically be stopped. If the annotated method fails with an
+ * unhandled exception the container will automatically be shutdown with the exception being the cause.
+ * <p>
+ * Annotated methods will never be invoked more than once??? Well if we have some retry mechanism
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@OnAnnotatedMethod(introspector = MainBeanIntrospector.class, allowInvoke = true)
+public @interface Main {}
+
+final class MainBeanIntrospector extends BaseExtensionBeanIntrospector {
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see app.packed.lifetime.Main
+     */
+    @Override
+    public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+        EntryPointManager.testMethodAnnotation(extension(), isInApplicationLifetime(), method, (Main) annotation);
+    }
+}
+//A single method. Will be executed.
+//and then shutdown container down again
+//Panic if it fails???? or do we not wrap exception??? I think we wrap...
+//We always wrap in container panic exception

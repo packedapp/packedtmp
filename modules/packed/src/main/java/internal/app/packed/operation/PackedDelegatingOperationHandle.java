@@ -25,7 +25,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.BeanScanner;
+import internal.app.packed.bean.introspection.BeanScanner;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionPointHandle;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;

@@ -17,10 +17,10 @@ package internal.app.packed.util.accesshelper;
 
 import java.util.function.Supplier;
 
-import app.packed.lifetime.BeanLifetimeMirror;
-import app.packed.lifetime.CompositeLifetimeMirror;
 import internal.app.packed.lifecycle.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
+import sandbox.app.packed.lifetime.BeanLifetimeMirror;
+import sandbox.app.packed.lifetime.CompositeLifetimeMirror;
 
 /**
  * Access helper for bean lifetime mirrors and related classes.

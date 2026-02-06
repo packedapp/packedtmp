@@ -28,7 +28,8 @@ import app.packed.extension.Extension;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.operation.Op;
 import org.jspecify.annotations.Nullable;
-import internal.app.packed.bean.scanning.BeanScanner;
+
+import internal.app.packed.bean.introspection.BeanScanner;
 import internal.app.packed.bean.sidehandle.PackedSidehandle;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromComputedConstant;

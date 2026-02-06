@@ -2,9 +2,9 @@ package internal.app.packed.lifecycle.lifetime;
 
 import java.util.List;
 
-import app.packed.lifetime.LifetimeMirror;
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.operation.OperationSetup;
+import sandbox.app.packed.lifetime.LifetimeMirror;
 
 /** The internal configuration of a Lifetime. */
 

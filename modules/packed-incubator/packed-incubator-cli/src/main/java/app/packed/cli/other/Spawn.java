@@ -23,7 +23,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
-import sandbox.lifetime.old.ApplicationConfiguration;
+import sandbox.lifetime2.old.ApplicationConfiguration;
 
 /**
  *

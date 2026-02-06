@@ -81,9 +81,7 @@ public interface ApplicationContext extends Context<BaseExtension> {
     /** {@return the desired state of the application.} */
     RunState desiredState();
 
-    /**
-     * @return
-     */
+    /** {@return whether or not the application is managed} */
     boolean isManaged();
 
     /**

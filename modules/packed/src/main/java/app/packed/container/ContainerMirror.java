@@ -21,11 +21,10 @@ import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.lifetime.CompositeLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.TreeView;
-import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
+import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.extension.ExtensionSetup;
@@ -174,11 +173,6 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
      */
     public final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return handle.container.isExtensionUsed(extensionType);
-    }
-
-    /** {@return the containers's lifetime.} */
-    public final CompositeLifetimeMirror lifetime() {
-        return handle.container.lifetime.mirror();
     }
 
     /**

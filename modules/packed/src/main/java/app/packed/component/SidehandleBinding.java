@@ -24,7 +24,7 @@ import java.util.Optional;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
-import internal.app.packed.bean.scanning.IntrospectorOnVariable;
+import internal.app.packed.bean.introspection.IntrospectorOnVariable;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.AbstractInitializingOperationHandle;

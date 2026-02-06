@@ -17,7 +17,7 @@ import app.packed.util.AnnotationList;
 import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.assembly.AssemblySetup;
-import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
+import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.util.PackedTreeView;

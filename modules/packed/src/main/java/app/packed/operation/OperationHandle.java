@@ -26,7 +26,7 @@ import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.component.Sidehandle;
 import app.packed.extension.Extension;
-import internal.app.packed.bean.scanning.IntrospectorOnVariable;
+import internal.app.packed.bean.introspection.IntrospectorOnVariable;
 import internal.app.packed.component.PackedComponentState;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;

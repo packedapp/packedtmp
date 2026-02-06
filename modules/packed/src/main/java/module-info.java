@@ -4,7 +4,6 @@ module app.packed {
     requires transitive org.jspecify;
 
     requires jdk.httpserver;
-    //  requires jdk.incubator.concurrent; // Sometimes test
 
     exports app.packed.application;
     exports app.packed.assembly;
@@ -18,7 +17,6 @@ module app.packed {
     exports app.packed.extension;
     exports app.packed.lifecycle;
     exports app.packed.lifecycle.sandbox;  //IDK
-    exports app.packed.lifetime;
     exports app.packed.namespace;
     exports app.packed.operation;
     exports app.packed.service;

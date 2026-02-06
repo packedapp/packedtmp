@@ -15,9 +15,9 @@
  */
 package internal.app.packed.lifecycle.lifetime;
 
-import app.packed.lifetime.BeanLifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.util.accesshelper.BeanLifetimeAccessHandler;
+import sandbox.app.packed.lifetime.BeanLifetimeMirror;
 
 /** The lifetime of a bean whose lifetime is independent of the lifecycle of other beans. */
 public final class BeanLifetimeSetup implements LifetimeSetup {

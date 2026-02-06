@@ -42,10 +42,9 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
-import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
 import app.packed.service.mirrorold.ServiceProviderIsThisUsefulMirror;
-import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
+import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
@@ -129,14 +128,6 @@ public non-sealed class OperationMirror
     @Override
     public final Map<Class<? extends Context<?>>, ContextMirror> contexts() {
         return ContextSetup.allMirrorsFor(handle.operation);
-    }
-
-    /**
-     * {@return any lifetime this operation is an entry point in. Or empty if this operation is not an entry point
-     * operation.}
-     */
-    public final Optional<LifetimeMirror> entryPointIn() {
-        return Optional.ofNullable(handle.operation.entryPoint).map(s -> s.lifetime.mirror());
     }
 
     /** {@inheritDoc} */
@@ -317,6 +308,17 @@ final class OperationMirrorBeanIntrospector extends BaseExtensionBeanIntrospecto
 //Does an operation always introduce a dependency between two beans???
 class ZandboxOM {
 
+    /**
+     * {@return any lifetime this operation is an entry point in. Or empty if this operation is not an entry point
+     * operation.}
+     */
+    public final Optional<Object> entryPointIn() {
+        return Optional.empty();
+//        return Optional.ofNullable(handle.operation.entryPoint).map(s -> s.lifetime.mirror());
+    }
+
+
+
 //  // The returned set of keys may contains key that result in a cycle.
 //  // For example, if a bean is provided as a service. Calling this method on any of the
 //  // operations on the bean will include the key under which the bean is being provided.
@@ -355,20 +357,20 @@ class ZandboxOM {
     // Det er vel ikke meget anderledes end all @Get beans i denne bean starter en ny container
     // Hvori foriøvrigt det kun er den ene bean der skal launches
     //
-
-    final Optional<LifetimeMirror> createsLifetime() {
-        // Hvad med en constructor??
-        //// Alt hvad der kalder en i user code kraever en operation
-
-        // Operation
-        // Factory
-        // Operation+Factory
-
-        // Jeg tror maaske Factory ikke er operations...
-        // Men saa er de irriterende i forbindelse med injection....
-
-        throw new UnsupportedOperationException();
-    }
+//
+//    final Optional<LifetimeMirror> createsLifetime() {
+//        // Hvad med en constructor??
+//        //// Alt hvad der kalder en i user code kraever en operation
+//
+//        // Operation
+//        // Factory
+//        // Operation+Factory
+//
+//        // Jeg tror maaske Factory ikke er operations...
+//        // Men saa er de irriterende i forbindelse med injection....
+//
+//        throw new UnsupportedOperationException();
+//    }
 
     // Synchronous/Asynchronous
     final boolean createsNewThread() {

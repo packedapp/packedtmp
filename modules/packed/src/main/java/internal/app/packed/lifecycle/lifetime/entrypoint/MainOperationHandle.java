@@ -15,8 +15,8 @@
  */
 package internal.app.packed.lifecycle.lifetime.entrypoint;
 
-import app.packed.lifetime.MainOperationConfiguration;
-import app.packed.lifetime.MainOperationMirror;
+import app.packed.application.MainOperationConfiguration;
+import app.packed.application.MainOperationMirror;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
 import internal.app.packed.extension.base.BaseExtensionOperationHandle;

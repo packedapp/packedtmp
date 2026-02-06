@@ -24,7 +24,7 @@ import java.util.Set;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.component.ComponentRealm;
-import app.packed.lifetime.CompositeLifetimeMirror;
+
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -40,7 +40,8 @@ import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.accesshelper.BeanLifetimeAccessHandler;
-import sandbox.lifetime.ManagedLifetime;
+import sandbox.app.packed.lifetime.CompositeLifetimeMirror;
+import sandbox.lifetime2.ManagedLifetime;
 
 /**
  * The lifetime of the root container in an application. Or a container whose lifetime is independent of its parent

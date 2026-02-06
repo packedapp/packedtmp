@@ -18,7 +18,7 @@ package internal.app.packed.extension.base;
 import app.packed.bean.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
+import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 
 /**
  *

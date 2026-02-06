@@ -27,7 +27,7 @@ import app.packed.build.Mirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.util.TreeView;
-import internal.app.packed.bean.scanning.IntrospectorOnAutoService;
+import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 
 /**
