@@ -19,9 +19,12 @@ import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 
 /**
+ * The configuration of a main application entry point.
  *
+ * @see Main
+ * @see MainOperationMirror
  */
-public class MainOperationConfiguration extends OperationConfiguration {
+public final class MainOperationConfiguration extends OperationConfiguration {
 
     /**
      * @param handle
@@ -29,6 +32,4 @@ public class MainOperationConfiguration extends OperationConfiguration {
     public MainOperationConfiguration(OperationHandle<?> handle) {
         super(handle);
     }
-
-    // Something about args
 }

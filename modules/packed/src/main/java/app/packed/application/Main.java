@@ -44,6 +44,9 @@ import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
  * unhandled exception the container will automatically be shutdown with the exception being the cause.
  * <p>
  * Annotated methods will never be invoked more than once??? Well if we have some retry mechanism
+ *
+ * @see MainOperationConfiguration
+ * @see MainOperationMirror
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

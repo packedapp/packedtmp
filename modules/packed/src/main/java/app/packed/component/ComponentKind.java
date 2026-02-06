@@ -49,8 +49,7 @@ public sealed interface ComponentKind permits PackedComponentKind {
 
     // Tror vi laver den om saa vi har Fx ServiceNamespace:...
     /** A component kind representing a binding. */
-    ComponentKind NAMESPACE = builder("Namespace").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean")
-            .requireFragmentString("operation").requireFragmentString("binding").build();
+    ComponentKind NAMESPACE = builder("Namespace").requireFragmentString("application").build();
 
     // We could always have one... Just make let BaseExtension own them..
     // And maybe skip base when printing the name
