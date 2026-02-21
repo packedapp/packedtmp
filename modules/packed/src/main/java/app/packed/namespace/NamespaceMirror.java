@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
@@ -46,6 +47,12 @@ public final class NamespaceMirror {
     public ApplicationMirror application() {
         return namespace.container.application.mirror();
     }
+
+    /** {@return the assembly wherein this container was defined.} */
+    public AssemblyMirror assembly() {
+        return namespace.container.assembly.mirror();
+    }
+
 
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
