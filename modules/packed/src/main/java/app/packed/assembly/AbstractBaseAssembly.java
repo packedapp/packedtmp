@@ -124,7 +124,6 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
      *            optional wirelets
      * @return a mirror of the container that was linked
      */
-    // Maybe have a link <- that takes the simple name of assembly
     protected final void link(Assembly assembly, String name, Wirelet... wirelets) {
         base().link(name, assembly, wirelets);
     }

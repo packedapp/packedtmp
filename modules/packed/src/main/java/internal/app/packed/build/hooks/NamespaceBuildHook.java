@@ -15,12 +15,12 @@
  */
 package internal.app.packed.build.hooks;
 
-import app.packed.namespace.NamespaceConfiguration;
+import app.packed.namespaceold.OldNamespaceConfiguration;
 
 /**
  *
  */
-public class NamespaceBuildHook<C extends NamespaceConfiguration<?>> {
+public class NamespaceBuildHook<C extends OldNamespaceConfiguration<?>> {
 
     // Lazy create main
     public void requestNamespace() {

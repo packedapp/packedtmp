@@ -21,7 +21,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
     /** The container we are configuring. */
     final ContainerHandle<?> handle;
 
-    public ContainerConfiguration(ContainerHandle<?> handle) {
+    ContainerConfiguration(ContainerHandle<?> handle) {
         this.handle = requireNonNull(handle);
     }
 
@@ -33,15 +33,14 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * @see ContainerMirror#beans()
      */
     // We install using base(), but have beans here...
-    public final Stream<? extends BeanConfiguration<?>> beans() {
+    public Stream<? extends BeanConfiguration<?>> beans() {
         return handle.container.beans.stream().filter(b -> b.owner().isUserland()).map(b -> b.handle().configuration()).filter(c -> c != null);
     }
 
     @SuppressWarnings("unchecked")
-    public final <T extends BeanConfiguration<?>> Stream<T> beans(Class<? extends BeanConfiguration<?>> beanClass) {
+    public <T extends BeanConfiguration<?>> Stream<T> beans(Class<? extends BeanConfiguration<?>> beanClass) {
         return (Stream<T>) beans().filter(beanClass::isInstance);
     }
-
 
     /** {@inheritDoc} */
     @Override
@@ -53,7 +52,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
 
     /** {@inheritDoc} */
     @Override
-    public final Set<String> tags() {
+    public Set<String> tags() {
         return handle.componentTags();
     }
 
@@ -64,22 +63,22 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * @see BaseAssembly#extensionsTypes()
      * @see ContainerMirror#extensionsTypes()
      */
-    public final Set<Class<? extends Extension<?>>> extensionTypes() {
+    public Set<Class<? extends Extension<?>>> extensionTypes() {
         return handle.container.extensionTypes();
     }
 
     /** {@inheritDoc} */
     @Override
-    protected final ContainerHandle<?> handle() {
+    protected ContainerHandle<?> handle() {
         return handle;
     }
 
-    public final boolean isApplicationRoot() {
+    public boolean isApplicationRoot() {
         return handle.container.isApplicationRoot();
     }
 
-    public final boolean isAssemblyRoot() {
-        return handle.container.isAssemblyRoot();
+    public boolean isNamespaceRoot() {
+        return handle.container.isNamespaceRoot();
     }
 
     /**
@@ -92,7 +91,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * @implNote Packed does not perform detailed tracking on which extensions use other extensions. As a consequence it
      *           cannot give a more detailed answer about who is using a particular extension
      */
-    public final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return handle.container.isExtensionUsed(extensionType);
     }
 
@@ -174,7 +173,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * @see #extensionsTypes()
      * @see BaseAssembly#use(Class)
      */
-    public final <E extends Extension<?>> E use(Class<E> extensionClass) {
+    public <E extends Extension<?>> E use(Class<E> extensionClass) {
         ExtensionSetup extension = handle.container.useExtension(extensionClass, null);
         return extensionClass.cast(extension.instance());
     }

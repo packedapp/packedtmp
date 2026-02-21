@@ -81,7 +81,7 @@ public sealed interface ApplicationInstaller<H extends ApplicationHandle<?, ?>> 
      *            the value of the local
      * @return this installer
      */
-    <T> ApplicationInstaller<H> setLocal(ApplicationBuildLocal<T> local, T value);
+    <T> ApplicationInstaller<H> setLocal(ApplicationLocal<T> local, T value);
 }
 
 // Det er nok ikke her man skal installere det...

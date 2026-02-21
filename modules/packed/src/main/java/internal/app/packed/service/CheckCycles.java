@@ -15,17 +15,13 @@
  */
 package internal.app.packed.service;
 
-import java.util.Collection;
-
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanMirror;
-import app.packed.extension.BaseExtensionMirror;
 import app.packed.service.Export;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.Provide;
-import app.packed.service.mirrorold.ExportedServiceMirror;
 
 /**
  *
@@ -51,16 +47,16 @@ public class CheckCycles extends BaseAssembly {
         }
 
 //        Collection<ProvidedServiceMirror> c = am.use(BaseExtensionMirror.class).serviceProviders().values();
-
-        Collection<ExportedServiceMirror> ex = am.use(BaseExtensionMirror.class).serviceExports().values();
-
-        BeanMirror b = am.container().beans().iterator().next();
-
-        IO.println(b.componentPath() + " " + b.dependencies().extensions());
-
-       // c.forEach(e -> IO.println(e.bean().componentPath() + " provided by " + e.key()));
-
-        ex.forEach(e -> IO.println(e.bean().componentPath() + " exported by " + e.key()));
+//
+//        Collection<ExportedServiceMirror> ex = am.container().use(BaseExtensionMirror.class).serviceExports().values();
+//
+//        BeanMirror b = am.container().beans().iterator().next();
+//
+//        IO.println(b.componentPath() + " " + b.dependencies().extensions());
+//
+//       // c.forEach(e -> IO.println(e.bean().componentPath() + " provided by " + e.key()));
+//
+//        ex.forEach(e -> IO.println(e.bean().componentPath() + " exported by " + e.key()));
     }
 
     public record DD() {}

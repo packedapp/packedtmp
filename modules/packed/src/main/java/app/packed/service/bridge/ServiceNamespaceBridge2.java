@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionWirelet;
-import app.packed.namespace.bridge.NamespaceBridge;
+import app.packed.namespaceold.NamespaceBridge;
 import app.packed.service.ServiceContract;
 
 /**

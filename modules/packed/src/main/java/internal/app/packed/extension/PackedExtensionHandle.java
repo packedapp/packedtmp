@@ -27,13 +27,13 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
-import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceTemplate;
+import app.packed.namespaceold.OldNamespaceHandle;
+import app.packed.namespaceold.NamespaceTemplate;
 import app.packed.util.TreeView;
 import internal.app.packed.ValueBased;
-import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
-import internal.app.packed.namespace.PackedNamespaceInstaller;
-import internal.app.packed.namespace.PackedNamespaceTemplate;
+import internal.app.packed.oldnamespace.PackedNamespaceInstaller;
+import internal.app.packed.oldnamespace.PackedNamespaceTemplate;
+import internal.app.packed.oldnamespace.OldNamespaceSetup.NamespaceKey;
 import internal.app.packed.util.PackedTreeView;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.accesshelper.ExtensionAccessHandler;
@@ -120,14 +120,14 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
 
     @Override
     @SuppressWarnings("unchecked")
-    public <H extends NamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, ComponentRealm realm) {
+    public <H extends OldNamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, ComponentRealm realm) {
         NamespaceKey nk = new NamespaceKey(template.handleClass(), realm);
 
-        Map<NamespaceKey, NamespaceHandle<?, ?>> m = extension.container.application.namespaces;
+        Map<NamespaceKey, OldNamespaceHandle<?, ?>> m = extension.container.application.namespaces;
 
         PackedNamespaceTemplate<H> t = (PackedNamespaceTemplate<H>) template;
         // cannot use computeIfAbsent, as we want to store the handle before the install method returns
-        NamespaceHandle<?, ?> namespaceHandle = m.get(nk);
+        OldNamespaceHandle<?, ?> namespaceHandle = m.get(nk);
         if (namespaceHandle == null) {
             PackedNamespaceInstaller<H> installer = new PackedNamespaceInstaller<>((PackedNamespaceTemplate<H>) template, extension, extension, nk);
 

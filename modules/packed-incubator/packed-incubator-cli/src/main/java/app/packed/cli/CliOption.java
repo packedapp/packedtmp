@@ -19,12 +19,10 @@ import java.lang.annotation.Annotation;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedVariable;
-import app.packed.namespace.sandbox.NamespaceOperation;
 
 /**
  *
  */
-@NamespaceOperation
 @OnAnnotatedVariable(introspector = CliOptionBeanIntrospector.class)
 public @interface CliOption {}
 

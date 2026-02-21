@@ -3,7 +3,6 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -71,6 +70,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
     }
 
     /** {@return a stream containing all beans defined by the container including beans that are declared by extensions.} */
+    // Hmm, giver det kun mening at have den paa application????
     public final Stream<BeanMirror> allBeans() {
         return handle.container.beans.stream().map(b -> b.mirror());
     }
@@ -95,7 +95,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
     }
 
     /** {@return the assembly wherein this container was defined.} */
-    public AssemblyMirror assembly() {
+    public final AssemblyMirror assembly() {
         return handle.container.assembly.mirror();
     }
 
@@ -131,11 +131,6 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
     public final Set<Class<? extends Extension<?>>> extensionTypes() {
         return handle.container.extensionTypes();
     }
-
-//    /** {@return the deployment this container is a part of.} */
-//    public DeploymentMirror deployment() {
-//        return container.application.deployment.mirror();
-//    }
 
     /**
      * <p>
@@ -187,9 +182,9 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
         return handle.container.name();
     }
 
-    /** {@return all the namespaces this container operates within.} */
-    public final Stream<NamespaceMirror<?>> namespaces() {
-        throw new UnsupportedOperationException();
+    /** {@return the namespace this container is a part of} */
+    public final NamespaceMirror namespace() {
+        return handle.container.namespace.mirror();
     }
 
     /** {@return a stream of all of the operations declared on beans in the container owned by the user} */
@@ -207,29 +202,6 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
 //    public Stream<BuildHookMirror> transformers() {
 //        throw new UnsupportedOperationException();
 //    }
-
-    /**
-     * Returns an mirror of the specified type if the container is using the extension the mirror is a part of. Or throws
-     * {@link NoSuchElementException} if the container does not use the specified extension type.
-     *
-     * @param <T>
-     *            the type of mirror
-     * @param extensionMirrorType
-     *            the type of mirror to return
-     * @return a mirror of the specified type
-     * @see ContainerConfiguration#use(Class)
-     * @see ApplicationMirror#use(Class)
-     * @see #findExtension(Class)
-     * @throws NoSuchElementException
-     *             if the mirror's extension is not in use by the container
-     */
-    public <T extends ExtensionMirror<?>> T use(Class<T> extensionMirrorType) {
-        Optional<T> op = findExtension(extensionMirrorType);
-        if (op.isEmpty()) {
-            throw new NoSuchElementException(extensionMirrorType + " is not present in this container");
-        }
-        return op.get();
-    }
 
     public List<WireletMirror> wirelets() {
         // On runtime we would need to add runtime wirelets
@@ -297,7 +269,7 @@ final class ContainerMirrorBeanIntrospector extends BaseExtensionBeanIntrospecto
 //}
 
 //
-///** {@return a set of all boundaries to this container's parent. Or empty if family root.} */
+/// ** {@return a set of all boundaries to this container's parent. Or empty if family root.} * /
 //public EnumSet<ContainerBoundaryKind> bondariesToParent() {
 //  ContainerSetup parent = handle.container.treeParent;
 //  if (parent != null) {
@@ -328,8 +300,7 @@ final class ContainerMirrorBeanIntrospector extends BaseExtensionBeanIntrospecto
 //
 //}
 
-//// MAYBE MAYBE, but need some use cases
-///** {@return a node representing this container within an application.} */
+//// MAYBE MAYBE, but need some use cases ** {@return a node representing this container within an application.} * /
 
 // maybe nodeInApplication();
 // nodeInAssembly();
@@ -353,11 +324,9 @@ final class ContainerMirrorBeanIntrospector extends BaseExtensionBeanIntrospecto
 // */
 //ComponentMirrorStream stream(ComponentMirrorStream.Option... options);
 
-///** {@return a {@link Set} view of every extension that have been used in the container.} */
-//// return Map<Class<Ext>, Mirror> instead???
-//// Altsaa hvad vil bruge metoden til???
-//// Kan ikke lige umiddelbart se nogle use cases
-//// Maaske bare fjerne den
+/// ** {@return a {@link Set} view of every extension that have been used in the container.} */ return Map<Class<Ext>,
+/// Mirror> instead??? Altsaa hvad vil bruge metoden til??? Kan ikke lige umiddelbart se nogle use cases Maaske bare
+/// fjerne den
 //public Set<ExtensionDescriptor> extensions() {
 //    HashSet<ExtensionDescriptor> result = new HashSet<>();
 //    for (ExtensionSetup extension : container.extensions.values()) {
@@ -376,10 +345,8 @@ final class ContainerMirrorBeanIntrospector extends BaseExtensionBeanIntrospecto
 // * @param action
 // *            oops
 // */
-//// We want to take some options I think. But not as a options
-//// Well it is more or less the same options....
-//// Tror vi laver options om til en klasse. Og saa har to metoder.
-//// Og dropper varargs..
+//// We want to take some options I think. But not as a options Well it is more or less the same options.... Tror vi
+/// laver options om til en klasse. Og saa har to metoder. Og dropper varargs..
 //default void traverse(Consumer<? super ComponentMirror> action) {
 //    stream(Option.maxDepth(1)).forEach(action);
 //}

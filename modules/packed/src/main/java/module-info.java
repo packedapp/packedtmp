@@ -18,6 +18,7 @@ module app.packed {
     exports app.packed.lifecycle;
     exports app.packed.lifecycle.sandbox;  //IDK
     exports app.packed.namespace;
+    exports app.packed.namespaceold;
     exports app.packed.operation;
     exports app.packed.service;
     exports app.packed.util;

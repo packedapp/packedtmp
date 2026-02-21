@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.v2;
+package app.packed.namespaceold;
 
-import app.packed.component.ComponentRealm;
+import internal.app.packed.oldnamespace.PackedNamespaceInstaller;
 
 /**
- *
+ * A installer for a namespace.
  */
-public class NewExtensionHandle<E extends NewExtension> {
+public sealed interface NamespaceInstaller<H extends OldNamespaceHandle<?, ?>> permits PackedNamespaceInstaller {
 
-
-    protected E extension(ComponentRealm actor) {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Installs the namespace
+     *
+     * @return a handle for the new namespace as configured in the underlying {@link NamespaceTemplate} used
+     */
+    H install();
 }

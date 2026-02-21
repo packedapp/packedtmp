@@ -65,7 +65,7 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
      * Attempting to use any of the methods on this class from the constructor of a subclass, will result in an
      * {@link IllegalStateException} being thrown.
      */
-    protected ExtensionMirror(ExtensionHandle<E> handle) {
+     ExtensionMirror(ExtensionHandle<E> handle) {
         this.handle = (PackedExtensionHandle<E>) requireNonNull(handle);
     }
 

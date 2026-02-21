@@ -20,13 +20,13 @@ import java.util.Set;
 import app.packed.application.ApplicationHandle;
 import app.packed.bean.BeanHandle;
 import app.packed.container.ContainerHandle;
-import app.packed.namespace.NamespaceHandle;
+import app.packed.namespaceold.OldNamespaceHandle;
 import app.packed.operation.OperationHandle;
 
 /**
  * Tror den ryger... Maaske bliver den intern
  */
-public sealed abstract class ComponentHandle permits ApplicationHandle, ContainerHandle, BeanHandle, OperationHandle, NamespaceHandle {
+public sealed abstract class ComponentHandle permits ApplicationHandle, ContainerHandle, BeanHandle, OperationHandle, OldNamespaceHandle {
 
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException} if not

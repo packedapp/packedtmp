@@ -17,17 +17,16 @@ package internal.app.packed.concurrent.daemon;
 
 import app.packed.component.ComponentRealm;
 import app.packed.concurrent.ThreadNamespaceConfiguration;
-import app.packed.concurrent.ThreadNamespaceMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionHandle;
-import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceInstaller;
-import app.packed.namespace.NamespaceTemplate;
+import app.packed.namespaceold.NamespaceInstaller;
+import app.packed.namespaceold.NamespaceTemplate;
+import app.packed.namespaceold.OldNamespaceHandle;
 
 /**
  * A namespace for the thread management in Packed.
  */
-public final class JobNamespaceHandle extends NamespaceHandle<BaseExtension, ThreadNamespaceConfiguration> {
+public final class JobNamespaceHandle extends OldNamespaceHandle<BaseExtension, ThreadNamespaceConfiguration> {
 
     /** The default thread namespace template. */
     public static final NamespaceTemplate<JobNamespaceHandle> TEMPLATE = NamespaceTemplate.of(JobNamespaceHandle.class, JobNamespaceHandle::new);
@@ -46,12 +45,6 @@ public final class JobNamespaceHandle extends NamespaceHandle<BaseExtension, Thr
     @Override
     protected ThreadNamespaceConfiguration newNamespaceConfiguration(BaseExtension e, ComponentRealm actor) {
         return new ThreadNamespaceConfiguration(this, e, actor);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected ThreadNamespaceMirror newNamespaceMirror() {
-        return new ThreadNamespaceMirror(this);
     }
 
     public static JobNamespaceHandle mainHandle(ExtensionHandle<BaseExtension> handle) {

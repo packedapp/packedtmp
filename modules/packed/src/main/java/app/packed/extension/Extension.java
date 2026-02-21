@@ -34,8 +34,8 @@ import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerHandle;
 import app.packed.extension.Extension.ExtensionProperty;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
-import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceTemplate;
+import app.packed.namespaceold.NamespaceTemplate;
+import app.packed.namespaceold.OldNamespaceHandle;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
@@ -85,6 +85,46 @@ import internal.app.packed.util.accesshelper.ExtensionAccessHandler;
 // We also need to have this fucker on Extension. Or maybe allow no customization on extension beans
 // ContainerLocalSource?
 public non-sealed abstract class Extension<E extends Extension<E>> implements BuildCodeSource {
+
+    static {
+        AccessHelper.initHandler(ExtensionAccessHandler.class, new ExtensionAccessHandler() {
+
+            @Override
+            public ExtensionSetup get_Extension_ExtensionSetup(Extension<?> extension) {
+                return extension.extension;
+            }
+
+            @Override
+            public PackedExtensionPointHandle get_ExtensionPoint_PackedExtensionPointHandle(ExtensionPoint<?> extensionPoint) {
+                return extensionPoint.handle;
+            }
+
+            @Override
+            public ExtensionMirror<?> invoke_Extension_NewExtensionMirror(Extension<?> extension) {
+                return extension.newExtensionMirror();
+            }
+
+            @Override
+            public ExtensionPoint<?> invoke_Extension_NewExtensionPoint(Extension<?> extension, ExtensionPointHandle usesite) {
+                return extension.newExtensionPoint(usesite);
+            }
+
+            @Override
+            public void invoke_Extension_OnApplicationClose(Extension<?> extension) {
+                extension.onClose();
+            }
+
+            @Override
+            public void invoke_Extension_OnAssemblyClose(Extension<?> extension) {
+                extension.onConfigured();
+            }
+
+            @Override
+            public void invoke_Extension_OnNew(Extension<?> extension) {
+                extension.onNew();
+            }
+        });
+    }
 
     /** The internal configuration of the extension. */
     final ExtensionSetup extension;
@@ -187,7 +227,11 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
 
     /** {@return whether or not this extension's container is the root container in the application.} */
     protected final boolean isApplicationRoot() {
-        return extension.treeParent == null;
+        return extension.container.isApplicationRoot();
+    }
+
+    protected final boolean isNamespaceRoot() {
+        return extension.container.isNamespaceRoot();
     }
 
     /**
@@ -204,10 +248,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     // Her er det jo root container vi skal teste
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return handle.isExtensionUsed(extensionType);
-    }
-
-    protected final boolean isInApplicationLifetime() {
-        return lifetimeRoot() == applicationRoot();
     }
 
     /** {@return whether or not this container is the root of its lifetime.} */
@@ -233,11 +273,11 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         return (E) s.instance();
     }
 
-    protected final <H extends NamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template) {
+    protected final <H extends OldNamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template) {
         return handle.namespaceLazy(template, ComponentRealm.userland());
     }
 
-    protected final <H extends NamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, ComponentRealm realm) {
+    protected final <H extends OldNamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, ComponentRealm realm) {
         return handle.namespaceLazy(template, realm);
     }
 
@@ -352,22 +392,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     }
 
     /**
-     * Registers a action to run doing the code generation phase of the application.
-     * <p>
-     * If the application has no code generation phase. For example, if building a {@link BuildGoal#MIRROR}. The specified
-     * action will not be executed.
-     *
-     * @param action
-     *            the action to run
-     * @throws IllegalStateException
-     *             if the extension is no longer configurable
-     * @see BuildGoal#isCodeGenerating()
-     */
-    protected final void runOnCodegen(Runnable action) {
-        handle.runOnCodegen(action);
-    }
-
-    /**
      * Returns a selection of all wirelets of the specified type.
      * <p>
      * If this extension defines any runtime wirelet. A check must also be made at runtime, you must remember to check if
@@ -407,6 +431,22 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
 //
 //        return extension.container.selectWireletsUnsafe(wireletClass);
 //    }
+
+    /**
+     * Registers a action to run doing the code generation phase of the application.
+     * <p>
+     * If the application has no code generation phase. For example, if building a {@link BuildGoal#MIRROR}. The specified
+     * action will not be executed.
+     *
+     * @param action
+     *            the action to run
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable
+     * @see BuildGoal#isCodeGenerating()
+     */
+    protected final void runOnCodegen(Runnable action) {
+        handle.runOnCodegen(action);
+    }
 
     /**
      * Returns an extension point of the specified type.
@@ -512,46 +552,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
             /** An array of property declarations. */
             ExtensionProperty[] value();
         }
-    }
-
-    static {
-        AccessHelper.initHandler(ExtensionAccessHandler.class, new ExtensionAccessHandler() {
-
-            @Override
-            public ExtensionSetup get_Extension_ExtensionSetup(Extension<?> extension) {
-                return extension.extension;
-            }
-
-            @Override
-            public PackedExtensionPointHandle get_ExtensionPoint_PackedExtensionPointHandle(ExtensionPoint<?> extensionPoint) {
-                return extensionPoint.handle;
-            }
-
-            @Override
-            public ExtensionMirror<?> invoke_Extension_NewExtensionMirror(Extension<?> extension) {
-                return extension.newExtensionMirror();
-            }
-
-            @Override
-            public void invoke_Extension_OnApplicationClose(Extension<?> extension) {
-                extension.onClose();
-            }
-
-            @Override
-            public void invoke_Extension_OnAssemblyClose(Extension<?> extension) {
-                extension.onConfigured();
-            }
-
-            @Override
-            public void invoke_Extension_OnNew(Extension<?> extension) {
-                extension.onNew();
-            }
-
-            @Override
-            public ExtensionPoint<?> invoke_Extension_NewExtensionPoint(Extension<?> extension, ExtensionPointHandle usesite) {
-                return extension.newExtensionPoint(usesite);
-            }
-        });
     }
 }
 

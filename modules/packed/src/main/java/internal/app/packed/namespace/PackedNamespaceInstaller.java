@@ -15,45 +15,9 @@
  */
 package internal.app.packed.namespace;
 
-import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceInstaller;
-import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.build.AuthoritySetup;
-import internal.app.packed.component.AbstractComponentInstaller;
-import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
-
-/** Implementation of {@link NamespaceTemplate.Installer} */
-public final class PackedNamespaceInstaller<H extends NamespaceHandle<?, ?>> extends AbstractComponentInstaller<NamespaceSetup, PackedNamespaceInstaller<H>>
-        implements NamespaceInstaller<H> {
-
-    public NamespaceHandle<?, ?> handle;
-    final NamespaceKey nk;
-
-    final AuthoritySetup<?> owner;
-
-    final ExtensionSetup root;
-
-    /** The template for the new namespace. */
-    final PackedNamespaceTemplate<?> template;
-
-    public PackedNamespaceInstaller(PackedNamespaceTemplate<?> template, ExtensionSetup root, AuthoritySetup<?> owner, NamespaceKey nk) {
-        this.template = template;
-        this.root = root;
-        this.owner = owner;
-        this.nk = nk;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected ApplicationSetup application(NamespaceSetup component) {
-        return component.root.container.application;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public H install() {
-        return NamespaceSetup.newNamespace(this);
-    }
+/**
+ *
+ */
+public class PackedNamespaceInstaller {
 
 }

@@ -19,22 +19,14 @@ import java.util.stream.Stream;
 
 import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
-import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceMirror;
+import app.packed.namespaceold.OverviewMirror;
 
 /**
  * A mirror for a job namespace. All jobs within a
  *
  * @see JobNamespaceConfiguration
  */
-public class JobNamespaceMirror extends NamespaceMirror<BaseExtension> {
-
-    /**
-     * @param handle
-     */
-    public JobNamespaceMirror(NamespaceHandle<BaseExtension, ?> handle) {
-        super(handle);
-    }
+public class JobNamespaceMirror extends OverviewMirror<BaseExtension> {
 
     /** {@return a stream of all jobs that have been defined in the namespace or descendant namespaces} */
     public Stream<DaemonJobMirror> allDaemons() {

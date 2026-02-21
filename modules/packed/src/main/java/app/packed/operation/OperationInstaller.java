@@ -21,7 +21,7 @@ import java.util.function.Function;
 import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint;
-import app.packed.namespace.NamespaceHandle;
+import app.packed.namespaceold.OldNamespaceHandle;
 import internal.app.packed.operation.PackedOperationInstaller;
 
 /**
@@ -88,5 +88,5 @@ public sealed interface OperationInstaller permits PackedOperationInstaller {
      * @throws IllegalStateException
      *             if the installer has already been used
      */
-    <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super OperationInstaller, N, H> factory);
+    <H extends OperationHandle<?>, N extends OldNamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super OperationInstaller, N, H> factory);
 }

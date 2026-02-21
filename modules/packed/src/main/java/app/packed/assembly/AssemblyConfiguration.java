@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
+import app.packed.namespace.NamespaceConfiguration;
 import app.packed.util.TreeView;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.util.PackedTreeView;
@@ -56,8 +57,8 @@ public final class AssemblyConfiguration {
      * <p>
      * The returned finder type depends on whether this assembly is on the classpath or modulepath:
      * <ul>
-     *   <li><b>Classpath:</b> Returns a classpath-based finder using the assembly's class loader</li>
-     *   <li><b>Modulepath:</b> Returns a modulepath-based finder using the assembly's module layer</li>
+     * <li><b>Classpath:</b> Returns a classpath-based finder using the assembly's class loader</li>
+     * <li><b>Modulepath:</b> Returns a modulepath-based finder using the assembly's module layer</li>
      * </ul>
      *
      * @see AssemblyFinder#ofClasspath(ClassLoader)
@@ -70,8 +71,8 @@ public final class AssemblyConfiguration {
     /**
      * {@return a modulepath-based assembly finder for this assembly.}
      * <p>
-     * Use this when you need modulepath-specific functionality like loading modules
-     * from external paths or accessing module layer information.
+     * Use this when you need modulepath-specific functionality like loading modules from external paths or accessing module
+     * layer information.
      *
      * @see AssemblyModulepathFinder
      */
@@ -79,9 +80,14 @@ public final class AssemblyConfiguration {
         return assembly.moduleFinder();
     }
 
-
+    /** {@return the application's configuration */
     public ApplicationConfiguration application() {
         return assembly.container.application.handle().configuration();
+    }
+
+    /** {@return the namespaces's configuration */
+    public NamespaceConfiguration namespace() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the current state of the assembly.} */
@@ -123,8 +129,7 @@ public final class AssemblyConfiguration {
     }
 }
 
-//// Assembly mirrors cannot be specialized for now
-///**
+//// Assembly mirrors cannot be specialized for now **
 // * Specializes the {@link AssemblyMirror} that represents this assembly.
 // *
 // * @param supplier

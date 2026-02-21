@@ -18,13 +18,13 @@ package app.packed.cli;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentRealm;
-import app.packed.namespace.NamespaceConfiguration;
+import app.packed.namespaceold.OldNamespaceConfiguration;
 import internal.app.packed.build.hooks.NamespaceBuildHook;
 
 /**
  * A CLI namespace where all commands and general options are unique.
  */
-public final class CliNamespaceConfiguration extends NamespaceConfiguration<CliExtension> {
+public final class CliNamespaceConfiguration extends OldNamespaceConfiguration<CliExtension> {
 
     final CliNamespaceHandle handle;
 

@@ -18,19 +18,18 @@ package app.packed.cli;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.namespace.NamespaceMirror;
+import app.packed.namespaceold.OverviewMirror;
 import app.packed.operation.OperationMirror;
 
 /**
  * Represents a CLI namespace where {@link CliCommandMirror commands} and global {@link CliOption options} are unique.
  */
-public final class CliNamespaceMirror extends NamespaceMirror<CliExtension> {
+public final class CliOverviewMirror extends OverviewMirror<CliExtension> {
 
     /** The CLI namespace handle. */
     private final CliNamespaceHandle handle;
 
-    CliNamespaceMirror(CliNamespaceHandle handle) {
-        super(handle);
+    CliOverviewMirror(CliNamespaceHandle handle) {
         this.handle = handle;
     }
 

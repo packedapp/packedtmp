@@ -28,7 +28,7 @@ public non-sealed abstract class WrappingWirelet extends FrameworkWirelet {
     protected WrappingWirelet(Wirelet wirelet) {
         this.wirelet = requireNonNull(wirelet);
     }
-    
+
     static Wirelet ignoreUnconsumed(Wirelet wirelet) {
 
         class IgnoreUnconsumedWirelet extends WrappingWirelet {
@@ -45,6 +45,8 @@ public non-sealed abstract class WrappingWirelet extends FrameworkWirelet {
         } else if (wirelet instanceof CompositeWirelet cw) {
             throw new UnsupportedOperationException("" + cw);
             // If composite wirelet.. Unwrap all. Call ignoreComposite. Create new Composite
+            // Yes we should support this
+            // At construction site we might even take Wirelet...
         }
 
         // There are some issues about flags...

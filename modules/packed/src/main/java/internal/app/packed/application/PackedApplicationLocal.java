@@ -19,37 +19,38 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationBuildLocal;
+import org.jspecify.annotations.Nullable;
+
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationLocal;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.Assembly;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.Wirelet;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
 import internal.app.packed.container.PackedContainerBuildLocal;
 
 /** Implementation of {@link ApplicationLocal}. */
-public final class PackedApplicationBuildLocal<T> extends PackedBuildLocal<ApplicationBuildLocal.Accessor, T> implements ApplicationBuildLocal<T> {
+public final class PackedApplicationLocal<T> extends PackedBuildLocal<ApplicationLocal.Accessor, T> implements ApplicationLocal<T> {
 
     /**
      * @param initialValueSupplier
      */
-    protected PackedApplicationBuildLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
+    protected PackedApplicationLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
         super(initialValueSupplier);
     }
 
     /** {@inheritDoc} */
     @Override
     public Wirelet wireletSetter(T value) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    protected BuildLocalSource extract(ApplicationBuildLocal.Accessor accessor) {
+    protected BuildLocalSource extract(ApplicationLocal.Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return switch (accessor) {
         case ApplicationConfiguration a -> ApplicationSetup.crack(a);
@@ -58,7 +59,5 @@ public final class PackedApplicationBuildLocal<T> extends PackedBuildLocal<Appli
         case Assembly _ -> throw new UnsupportedOperationException();
         case ContainerBuildLocal.Accessor b -> PackedContainerBuildLocal.crack(b).application;
         };
-
-//        return ApplicationSetup.crack(accessor);
     }
 }

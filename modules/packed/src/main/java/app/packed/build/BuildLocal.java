@@ -18,10 +18,9 @@ package app.packed.build;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationBuildLocal;
+import app.packed.application.ApplicationLocal;
 import app.packed.bean.BeanLocal;
 import app.packed.container.ContainerBuildLocal;
-import internal.app.packed.build.PackedBuildLocal;
 
 /**
  * Build locals
@@ -55,9 +54,7 @@ import internal.app.packed.build.PackedBuildLocal;
 // The others are maybe okay.
 // Probably ContainerLocal mostly for communication
 // Alternative BuildLocal.OfApplication
-public sealed interface BuildLocal<A, T> permits PackedBuildLocal, ApplicationBuildLocal, ContainerBuildLocal, BeanLocal {
-
-    // orCompute
+public sealed interface BuildLocal<A, T> permits ApplicationLocal, ContainerBuildLocal, BeanLocal {
 
     /**
      * Returns the current value of this local for the entity represented by the specified accessor.

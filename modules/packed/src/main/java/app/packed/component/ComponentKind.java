@@ -37,6 +37,9 @@ public sealed interface ComponentKind permits PackedComponentKind {
     /** A component kind representing an application. */
     ComponentKind APPLICATION = builder("Application", BaseExtension.class, "Application").requireFragmentString("application").build();
 
+    /** A component kind representing a binding. */
+    ComponentKind NAMESPACE = builder("Namespace").requireFragmentString("application").build();
+
     /** A component kind representing a container. */
     ComponentKind CONTAINER = builder("Container").requireFragmentString("application").requireFragmentPath("containerPath").build();
 
@@ -47,9 +50,7 @@ public sealed interface ComponentKind permits PackedComponentKind {
     ComponentKind OPERATION = builder("Operation").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean")
             .requireFragmentString("operation").build();
 
-    // Tror vi laver den om saa vi har Fx ServiceNamespace:...
-    /** A component kind representing a binding. */
-    ComponentKind NAMESPACE = builder("Namespace").requireFragmentString("application").build();
+
 
     // We could always have one... Just make let BaseExtension own them..
     // And maybe skip base when printing the name

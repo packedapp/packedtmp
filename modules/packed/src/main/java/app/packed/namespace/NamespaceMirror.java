@@ -17,95 +17,62 @@ package app.packed.namespace;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Set;
 import java.util.stream.Stream;
 
+import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentPath;
-import app.packed.component.ComponentRealm;
+import app.packed.bean.BeanTrigger.AutoService;
+import app.packed.binding.Key;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import app.packed.util.TreeView;
+import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
+import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
+import internal.app.packed.namespace.NamespaceSetup;
+import internal.app.packed.util.PackedTreeView;
 
-/** A mirror of a namespace. */
-public non-sealed class NamespaceMirror<E extends Extension<E>> implements ComponentMirror {
+/**
+ * A mirror representing a namespace.
+ */
+@AutoService(introspector = NamespaceMirrorBeanIntrospector.class)
+public final class NamespaceMirror {
 
-    /** The namespace configuration. */
-    private final NamespaceHandle<E, ?> handle;
+    private final NamespaceSetup namespace;
 
-    /**
-     * Create a new namespace mirror.
-     *
-     * @param handle
-     *            the namespace's handle
-     */
-    public NamespaceMirror(NamespaceHandle<E, ?> handle) {
-        this.handle = requireNonNull(handle);
+    NamespaceMirror(NamespaceSetup namespace) {
+        this.namespace = requireNonNull(namespace);
     }
 
-    /** {@inheritDoc} */
+    public ApplicationMirror application() {
+        return namespace.container.application.mirror();
+    }
+
+    /** {@return a mirror of the root container in the application.} */
+    public ContainerMirror container() {
+        return namespace.container.mirror();
+    }
+
+    /** {@return a container tree mirror representing all the containers defined within the application.} */
+    public TreeView<ContainerMirror> containers() {
+        return new PackedTreeView<>(namespace.container, c -> c.namespace == namespace, c -> c.mirror());
+    }
+
+    /** {@return a stream of all of the bean declared by the user in the application.} */
+    public Stream<BeanMirror> beans() {
+        return containers().stream().flatMap(ContainerMirror::beans);
+    }
+
+    /** {@return a stream of all of the operations on beans owned by the user in the application.} */
+    // I think non-synthetic should also be filtered
+    public OperationMirror.OfStream<OperationMirror> operations() {
+        return OperationMirror.OfStream.of(beans().flatMap(BeanMirror::operations));
+    }
+}
+
+final class NamespaceMirrorBeanIntrospector extends BaseExtensionBeanIntrospector {
+
     @Override
-    public final ComponentPath componentPath() {
-        return handle.componentPath();
-    }
-
-    public final ComponentRealm componentOwner() {
-        return handle.componentOwner();
-    }
-
-    @Override
-    public final Set<String> componentTags() {
-        return handle.componentTags();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean equals(Object other) {
-        return other instanceof NamespaceMirror m && getClass() == m.getClass() && handle.namespace == m.handle.namespace;
-    }
-
-    /** {@return the root extension in the namespace} */
-    @SuppressWarnings("unchecked")
-    protected final E extensionRoot() {
-        return (E) handle.namespace.root.instance();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final int hashCode() {
-        return handle.namespace.hashCode();
-    }
-
-    // Noget med alle de beans der bruger namespace
-    public final Stream<BeanMirror> namespaceActiveBeans() {
-        throw new UnsupportedOperationException();
-    }
-
-    // All containers that are active, are containers that use the namespace in some way
-    // PartialTreeView
-    // Er det bare containers med bean der er aktive
-    public final Stream<ContainerMirror> namespaceActiveContainers() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return the root container of the namespace.} */
-    public final ContainerMirror namespaceRoot() {
-        return handle.namespace.root.container.mirror();
-    }
-
-    /** {@return a tree containing every container where this namespace instance is present.} */
-    // And this is where I think we have 2 things.
-    // One where it is available, and one where it is active. And by used I mean???
-    // Hmm, A reference to one of its elements?? Hmm. Maybe where it is used it not very well defined
-    // I think Available is the right thing to return
-    public final TreeView<ContainerMirror> namespaceScope() {
-        throw new UnsupportedOperationException();
-    }
-
-    // Public???? In that case, we probably need both
-    protected final OperationMirror.OfStream<OperationMirror> operations() {
-        return OperationMirror.OfStream.of(handle.namespace.operations.stream().map(e -> e.mirror()));
+    public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
+        service.binder().bindConstant(service.bean().container.namespace.mirror());
     }
 }

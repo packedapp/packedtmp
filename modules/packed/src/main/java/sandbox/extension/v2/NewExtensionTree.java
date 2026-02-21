@@ -13,27 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent;
-
-import app.packed.extension.BaseExtension;
-import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceMirror;
+package sandbox.extension.v2;
 
 /**
- * A mirror for a thread namespace.
- * <p>
- * A application
+ *
  */
-// We must have one per extension...
-// I mean we have a service namespace per extension.
-// So would probably be strange to share one for extensions?
-public class ThreadNamespaceMirror extends NamespaceMirror<BaseExtension> {
-
-    /**
-     * @param handle
-     */
-    public ThreadNamespaceMirror(NamespaceHandle<BaseExtension, ?> handle) {
-        super(handle);
-    }
+public abstract class NewExtensionTree {
 
 }

@@ -24,6 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
@@ -35,7 +37,6 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.operation.OperationHandle;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.bean.BeanSetup;
@@ -47,6 +48,7 @@ import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
 import internal.app.packed.util.accesshelper.BeanAccessHandler;
@@ -75,6 +77,8 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     /** The container's handle. */
     @Nullable
     private ContainerHandle<?> handle;
+
+    public final NamespaceSetup namespace = null;
 
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
@@ -188,6 +192,13 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     /** {@return whether or not this container is the root of its lifetime.} */
     public boolean isLifetimeRoot() {
         return this == lifetime.container;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isNamespaceRoot() {
+        return namespace.container == this;
     }
 
     /**

@@ -21,8 +21,8 @@ import app.packed.binding.DublicateKeyProvisionException;
 import app.packed.binding.Key;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
-import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceInstaller;
+import app.packed.namespaceold.OldNamespaceHandle;
+import app.packed.namespaceold.NamespaceInstaller;
 import app.packed.service.ServiceNamespaceConfiguration;
 import app.packed.service.ServiceNamespaceMirror;
 import org.jspecify.annotations.Nullable;
@@ -40,7 +40,7 @@ import internal.app.packed.util.accesshelper.ServiceAccessHandler;
 /**
  *
  */
-public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtension, ServiceNamespaceConfiguration> {
+public abstract class ServiceNamespaceHandle extends OldNamespaceHandle<BaseExtension, ServiceNamespaceConfiguration> {
 
     /** All service providers in the namespace. */
     final ServiceMap<NamespaceServiceProviderHandle> providers = new ServiceMap<>();

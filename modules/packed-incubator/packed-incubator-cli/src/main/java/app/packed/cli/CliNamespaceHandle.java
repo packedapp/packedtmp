@@ -23,14 +23,14 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.component.ComponentRealm;
-import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceInstaller;
-import app.packed.namespace.NamespaceTemplate;
+import app.packed.namespaceold.NamespaceInstaller;
+import app.packed.namespaceold.NamespaceTemplate;
+import app.packed.namespaceold.OldNamespaceHandle;
 
 /**
  * A CLI domain is a domain where all CLI commands are unique. Typically there is never more than one per application.
  */
-final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespaceConfiguration> {
+final class CliNamespaceHandle extends OldNamespaceHandle<CliExtension, CliNamespaceConfiguration> {
 
     /** The default namespace template. */
     static final NamespaceTemplate<CliNamespaceHandle> TEMPLATE = NamespaceTemplate.of(CliNamespaceHandle.class, CliNamespaceHandle::new);
@@ -47,12 +47,6 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
     @Override
     protected CliNamespaceConfiguration newNamespaceConfiguration(CliExtension e, ComponentRealm actor) {
         return new CliNamespaceConfiguration(this, e, actor);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected CliNamespaceMirror newNamespaceMirror() {
-        return new CliNamespaceMirror(this);
     }
 
     void process(CliExtension extension, CliCommand c, BeanIntrospector.OnMethod method) {

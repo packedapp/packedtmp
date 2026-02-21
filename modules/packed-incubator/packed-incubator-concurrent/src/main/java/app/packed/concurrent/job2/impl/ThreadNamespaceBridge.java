@@ -16,7 +16,7 @@
 package app.packed.concurrent.job2.impl;
 
 import app.packed.concurrent.JobExtension;
-import app.packed.namespace.bridge.NamespaceBridge;
+import app.packed.namespaceold.NamespaceBridge;
 
 /**
  *

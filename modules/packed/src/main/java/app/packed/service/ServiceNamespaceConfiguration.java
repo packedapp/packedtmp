@@ -27,7 +27,7 @@ import app.packed.binding.Provider;
 import app.packed.component.ComponentRealm;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
-import app.packed.namespace.NamespaceConfiguration;
+import app.packed.namespaceold.OldNamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
 import app.packed.service.bridge.old.ServiceOutgoingTransformer;
 import internal.app.packed.invoke.MethodHandleUtil;
@@ -41,7 +41,7 @@ import internal.app.packed.util.accesshelper.ServiceAccessHandler;
  * A service namespace represents a namespace where every provided service in the service has a unique {@link Key key}.
  * And where multiple bindings may exist to each provided service.
  */
-public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<BaseExtension> {
+public final class ServiceNamespaceConfiguration extends OldNamespaceConfiguration<BaseExtension> {
 
     /**
      * Creates a new service namespace configuration.

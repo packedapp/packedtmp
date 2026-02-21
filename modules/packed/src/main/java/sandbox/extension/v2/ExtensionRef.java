@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.namespace;
+package sandbox.extension.v2;
 
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationMirror;
+import app.packed.extension.Extension;
 
 /**
- * An operation within a namespace.
+ *
  */
+// RuntimeExtension?
+// Ideen er at ditch alt omkring extension classes on runtime
+// Saa vi fjerne dem via condensing
+// Alternativt, gemme interfaces og saa strip alle metoder fra det
+// Og permitted implementation
+class ExtensionRef {
+    String className;
 
-// Hmm, how is this different from a resource????????????????
-// Im not sure this class exists have this here...
-// Instead we have
-
-// Yes, er vi altid tilknyttet en bean???
-// Maske er operation Optional
-@Deprecated
-abstract class NamespaceOperationMirror extends OperationMirror {
-
-    /**
-     * @param handle
-     */
-    public NamespaceOperationMirror(OperationHandle<?> handle) {
-        super(handle);
+    public Class<Extension<?>> resolve(ClassLoader classLoader) {
+        //classLoader.loadClass(className);
+        throw new UnsupportedOperationException();
     }
-
-    public abstract NamespaceMirror<?> namespace();
 }

@@ -21,7 +21,7 @@ import java.util.Deque;
 
 import app.packed.extension.Extension;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.namespace.NamespaceSetup;
+import internal.app.packed.oldnamespace.OldNamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /** A single instance of this class exists per extension per application. */
@@ -41,7 +41,7 @@ public final class ExtensionInstanceTree {
 
     public final String name;
 
-    public final Deque<NamespaceSetup> namespacesToClose = new ArrayDeque<>();
+    public final Deque<OldNamespaceSetup> namespacesToClose = new ArrayDeque<>();
 
     /**
      * Extensions resolver services when the application closes. The main argument is that they should very rarely fail to resolve.

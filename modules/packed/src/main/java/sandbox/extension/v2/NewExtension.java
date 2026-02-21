@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.v2;
+package sandbox.extension.v2;
 
 /**
  *
  */
-// Does not extend Extension, only specific implementations should do it
-public abstract class AbstractExtension {
-
-}
+public interface NewExtension {}

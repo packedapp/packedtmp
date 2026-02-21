@@ -35,9 +35,4 @@ public class CliCommandMirror extends OperationMirror {
     public List<String> names() {
         return Collections.unmodifiableList(handle.names);
     }
-
-    /** {@return the namespace this command is part of.} */
-    public CliNamespaceMirror namespace() {
-        return handle.namespace.newNamespaceMirror();
-    }
 }

@@ -21,13 +21,12 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import app.packed.build.BuildLocal;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.build.PackedBuildLocal;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.namespace.PackedNamespaceInstaller;
+import internal.app.packed.oldnamespace.PackedNamespaceInstaller;
 import internal.app.packed.operation.PackedOperationInstaller;
 
 /**
@@ -94,9 +93,9 @@ public sealed abstract class AbstractComponentInstaller<C extends ComponentSetup
     }
 
     @SuppressWarnings("unchecked")
-    public <T> I setLocal(BuildLocal<?, T> local, T value) {
+    public <T> I setLocal(PackedBuildLocal<?, T> local, T value) {
         checkNotUsed();
-        this.locals.put((PackedBuildLocal<?, ?>) requireNonNull(local, "local is null"), requireNonNull(value, "value is null"));
+        this.locals.put( requireNonNull(local, "local is null"), requireNonNull(value, "value is null"));
         return (I) this;
     }
 

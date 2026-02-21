@@ -15,7 +15,6 @@
  */
 package app.packed.concurrent.job2.impl;
 
-import app.packed.concurrent.ThreadNamespaceMirror;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.concurrent.ThreadedOperationHandle;
@@ -34,9 +33,5 @@ public abstract class ThreadOperationMirror extends OperationMirror {
     ThreadOperationMirror(OperationHandle<?> handle) {
         super(handle);
         this.handle = (ThreadedOperationHandle<?>) handle;
-    }
-
-    public final ThreadNamespaceMirror namespace() {
-        return (ThreadNamespaceMirror) handle.namespace.mirror();
     }
 }

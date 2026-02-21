@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.assembly.Assembly;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.container.ContainerBuildLocal;
@@ -29,7 +31,6 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
@@ -172,6 +173,6 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     /** {@inheritDoc} */
     @Override
     public <T> PackedContainerInstaller<H> setLocal(ContainerBuildLocal<T> local, T value) {
-        return super.setLocal(local, value);
+        return super.setLocal((PackedContainerBuildLocal<T>) local, value);
     }
 }

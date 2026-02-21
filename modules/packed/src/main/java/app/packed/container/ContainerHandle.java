@@ -35,7 +35,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     /** The lazy generated container configuration. */
     private final Supplier<C> configuration = StableValue.supplier(() -> newContainerConfiguration());
 
-    /** The handle's container */
+    /** The handle's container. */
     final ContainerSetup container;
 
     /** Whether or not the container if configurable. {@link #doClose()} marks it as non-configurable. */

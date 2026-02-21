@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.namespace.sandbox;
+package app.packed.concurrent;
+
+import app.packed.extension.BaseExtension;
+import app.packed.namespaceold.OverviewMirror;
 
 /**
- *
+ * A mirror for a thread namespace.
+ * <p>
+ * A application
  */
-// A collection of build permissions and where to apply them
-// Should be composable.
+// We must have one per extension...
+// I mean we have a service namespace per extension.
+// So would probably be strange to share one for extensions?
+public class ThreadOverviewMirror extends OverviewMirror<BaseExtension> {
 
-// BuildPermission cannot take mirrors. It must take something that is constant
-// For example, a bean can be renamed. Maybe it implies for every renaming. IDK
-public interface BuildRuleset {
 
 }

@@ -17,7 +17,7 @@ package app.packed.container;
 
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationBuildLocal;
+import app.packed.application.ApplicationLocal;
 import app.packed.build.BuildLocal;
 import internal.app.packed.container.PackedContainerBuildLocal;
 
@@ -67,7 +67,7 @@ public sealed interface ContainerBuildLocal<T> extends BuildLocal<ContainerBuild
 
     /** An accessor where {@link ContainerLocal container local} values can be stored and retrieved. */
     // Extension?
-    public sealed interface Accessor extends ApplicationBuildLocal.Accessor permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
+    public sealed interface Accessor extends ApplicationLocal.Accessor permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
 
     // En god maade at traekke sig selv ud...
     // ContainerLocal<FooExtension> myLocal = FooExtension.local();

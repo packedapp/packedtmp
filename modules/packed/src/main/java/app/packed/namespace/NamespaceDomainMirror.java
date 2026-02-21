@@ -13,23 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.v2;
-
-import app.packed.extension.Extension;
+package app.packed.namespace;
 
 /**
  *
  */
-// RuntimeExtension?
-// Ideen er at ditch alt omkring extension classes on runtime
-// Saa vi fjerne dem via condensing
-// Alternativt, gemme interfaces og saa strip alle metoder fra det
-// Og permitted implementation
-class ExtensionRef {
-    String className;
+public class NamespaceDomainMirror {
 
-    public Class<Extension<?>> resolve(ClassLoader classLoader) {
-        //classLoader.loadClass(className);
-        throw new UnsupportedOperationException();
-    }
 }

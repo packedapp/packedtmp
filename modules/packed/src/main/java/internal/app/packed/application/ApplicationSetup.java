@@ -30,7 +30,8 @@ import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.component.Sidehandle;
 import app.packed.extension.Extension;
-import app.packed.namespace.NamespaceHandle;
+import app.packed.namespaceold.OldNamespaceHandle;
+
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.deployment.DeploymentSetup;
 import internal.app.packed.application.repository.BuildApplicationRepository;
@@ -42,7 +43,7 @@ import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
-import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
+import internal.app.packed.oldnamespace.OldNamespaceSetup.NamespaceKey;
 import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
 
 /** The internal configuration of an application. */
@@ -98,7 +99,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     private final BuildLocalMap locals = new BuildLocalMap();
 
     // Maybe move to container?? Or maybe a DomainManager class? IDK
-    public final HashMap<NamespaceKey, NamespaceHandle<?, ?>> namespaces = new HashMap<>();
+    public final HashMap<NamespaceKey, OldNamespaceHandle<?, ?>> namespaces = new HashMap<>();
 
     /** The current phase of the application's build process. */
     public ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;

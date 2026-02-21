@@ -18,90 +18,48 @@ package internal.app.packed.namespace;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
+import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
-import app.packed.component.ComponentRealm;
-import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
-import internal.app.packed.build.AuthoritySetup;
-import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.util.accesshelper.NamespaceAccessHandler;
+import internal.app.packed.util.AbstractNamedTreeNode;
 
 /**
  *
  */
-// Is an application a namespace for Components??? My brain just fried
-@SuppressWarnings("rawtypes")
-public final class NamespaceSetup implements ComponentSetup {
+public final class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> {
 
-    /** The handle of the namespace must be read through {@link #handle()}. */
-    private NamespaceHandle handle;
+    public final ContainerSetup container;
 
-    // Must search up until root to find local names
-    final Map<ContainerSetup, String> localNames = new HashMap<>();
-
-    /** All operations defined in this namespace. */
-    public final ArrayList<OperationSetup> operations = new ArrayList<>();
-
-    /** The owner of the name space. */
-    public final AuthoritySetup owner;
-
-    /** The extension and root container of the namespace. */
-    public final ExtensionSetup root;
-
-    /** The namespace template */
-    public final PackedNamespaceTemplate template;
-
-    private NamespaceSetup(PackedNamespaceInstaller installer) {
-        this.template = installer.template;
-        this.root = installer.root;
-        this.owner = installer.owner;
+    NamespaceSetup(ContainerSetup container, PackedNamespaceInstaller installer) {
+        super(null);
+        this.container = requireNonNull(container);
     }
 
-    public ContainerSetup container() {
-        return root.container;
-    }
 
     /** {@inheritDoc} */
-    @Override
     public ComponentPath componentPath() {
+        List<String> path = new ArrayList<>();
+        NamespaceSetup currentNode = this;
+
+        while (currentNode != null) {
+            path.add(currentNode.name); // Add the current node's name
+            currentNode = currentNode.treeParent; // Move to the parent
+        }
+
+        Collections.reverse(path);
+
+        return ComponentKind.NAMESPACE.pathNew(container.application.componentPath(), path);
+    }
+
+
+    /**
+     * @return
+     */
+    public NamespaceMirror mirror() {
         throw new UnsupportedOperationException();
     }
-
-    /** { @return the handle of the namespace} */
-    @Override
-    public NamespaceHandle handle() {
-        return requireNonNull(handle);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public NamespaceMirror<?> mirror() {
-        return handle().mirror();
-    }
-
-    public static NamespaceSetup crack(NamespaceHandle<?, ?> handle) {
-        return NamespaceAccessHandler.instance().getNamespaceHandleNamespace(handle);
-    }
-
-    /** {@inheritDoc} */
-    static <H extends NamespaceHandle<?, ?>> H newNamespace(PackedNamespaceInstaller<H> installer) {
-        NamespaceSetup namespace = installer.install(new NamespaceSetup(installer));
-
-        @SuppressWarnings("unchecked")
-        H handle = (H) installer.template.newHandle().apply(installer);
-        namespace.handle = handle;
-
-        installer.root.container.application.namespaces.put(installer.nk, handle);
-        installer.handle = handle;
-        installer.root.tree.namespacesToClose.add(namespace);
-        return handle;
-    }
-
-    public record NamespaceKey(Class<? extends NamespaceHandle<?, ?>> handleClass, ComponentRealm realm) {}
 }

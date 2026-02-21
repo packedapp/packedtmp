@@ -21,9 +21,10 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import app.packed.build.BuildLocal;
 import org.jspecify.annotations.Nullable;
-import internal.app.packed.application.PackedApplicationBuildLocal;
+
+import app.packed.build.BuildLocal;
+import internal.app.packed.application.PackedApplicationLocal;
 import internal.app.packed.bean.PackedBeanBuildLocal;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.container.PackedContainerBuildLocal;
@@ -34,7 +35,7 @@ import internal.app.packed.extension.PackedExtensionLocal;
  * @implNote this class should be a value class as we rely on the identity of it
  */
 public abstract sealed class PackedBuildLocal<A, T>
-        implements BuildLocal<A, T> permits PackedApplicationBuildLocal, PackedContainerBuildLocal, PackedBeanBuildLocal, PackedExtensionLocal {
+        permits PackedApplicationLocal, PackedContainerBuildLocal, PackedBeanBuildLocal, PackedExtensionLocal {
 
     /** An optional supplier that can provide initial values for a bean local. */
     final @Nullable Supplier<? extends T> initialValueSupplier;
@@ -46,27 +47,23 @@ public abstract sealed class PackedBuildLocal<A, T>
     protected abstract BuildLocalSource extract(A accessor);
 
     /** {@inheritDoc} */
-    @Override
     public final T get(A accessor) {
         BuildLocalSource kas = extract(accessor);
         return kas.locals().get(this, kas);
     }
 
     /** {@inheritDoc} */
-    @Override
     public final boolean isBound(A accessor) {
         BuildLocalSource bean = extract(accessor);
         return bean.locals().isBound(this, bean);
     }
 
     /** {@inheritDoc} */
-    @Override
     public final T orElse(A accessor, T other) {
         BuildLocalSource bean = extract(accessor);
         return bean.locals().orElse(this, bean, other);
     }
 
-    @Override
     public final <X extends Throwable> T orElseThrow(A accessor, Supplier<? extends X> exceptionSupplier) throws X {
         BuildLocalSource bean = extract(accessor);
         return bean.locals().orElseThrow(this, bean, exceptionSupplier);
@@ -74,13 +71,11 @@ public abstract sealed class PackedBuildLocal<A, T>
 
     // I think these are nice. We can use use for transformers. Add something for pre-transform.
     // Remove them for post, no need to keep them around
-    @Override
     public final T remove(A accessor) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
-    @Override
     public final void set(A accessor, T value) {
         BuildLocalSource bean = extract(accessor);
         bean.locals().set(this, bean, value);

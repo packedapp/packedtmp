@@ -13,22 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.namespace;
-
-import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationHandle;
+package app.packed.namespaceold;
 
 /**
  *
  */
-//Could do runtime checks that NamespaceOperationConfiguration implies
-// That a namespace has been set when installing the operation
-public class NamespaceOperationConfiguration extends OperationConfiguration {
+// A collection of build permissions and where to apply them
+// Should be composable.
 
-    /**
-     * @param handle
-     */
-    public NamespaceOperationConfiguration(NamespaceHandle<?, ?> namespace, OperationHandle<?> installer) {
-        super(installer);
-    }
+// BuildPermission cannot take mirrors. It must take something that is constant
+// For example, a bean can be renamed. Maybe it implies for every renaming. IDK
+public interface BuildRuleset {
+
 }

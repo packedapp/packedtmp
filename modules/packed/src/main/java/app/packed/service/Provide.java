@@ -29,7 +29,6 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTrigger.OnAnnotatedField;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
 import app.packed.build.BuildException;
-import app.packed.namespace.sandbox.NamespaceMetaAnnotation;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.service.ServiceProvideOperationHandle;
 
@@ -61,7 +60,6 @@ import internal.app.packed.service.ServiceProvideOperationHandle;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@NamespaceMetaAnnotation
 @OnAnnotatedMethod(introspector = ProvideBeanIntrospector.class, allowInvoke = true)
 @OnAnnotatedField(introspector = ProvideBeanIntrospector.class, allowGet = true)
 // Hvis vi laver meta annoteringen, skal vi jo naesten lave den om til en repeatable..

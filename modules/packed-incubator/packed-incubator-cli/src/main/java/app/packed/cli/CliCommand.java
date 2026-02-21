@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
-import app.packed.namespace.sandbox.NamespaceOperation;
 
 /**
  *
@@ -32,7 +31,6 @@ import app.packed.namespace.sandbox.NamespaceOperation;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@NamespaceOperation
 @OnAnnotatedMethod(introspector = CliCommandBeanIntrospector.class)
 public @interface CliCommand {
 

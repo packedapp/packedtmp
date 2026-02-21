@@ -21,7 +21,7 @@ import java.util.Set;
 
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
-import app.packed.namespace.NamespaceMirror;
+import app.packed.namespaceold.OldNamespaceMirror;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
 import internal.app.packed.service.ServiceNamespaceHandle;
@@ -29,7 +29,7 @@ import internal.app.packed.service.ServiceNamespaceHandle;
 /**
  * A mirror for a service namespace.
  */
-public final class ServiceNamespaceMirror extends NamespaceMirror<BaseExtension> {
+public final class ServiceNamespaceMirror extends OldNamespaceMirror<BaseExtension> {
 
     /**
      * Creates a new service namespace mirror.

@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.namespace;
+package app.packed.namespaceold;
 
 import java.util.function.Function;
 
-import app.packed.namespace.sandbox.BuildPermission;
-import internal.app.packed.namespace.PackedNamespaceTemplate;
+import internal.app.packed.oldnamespace.PackedNamespaceTemplate;
 
 /**
  * <p>
@@ -26,12 +25,12 @@ import internal.app.packed.namespace.PackedNamespaceTemplate;
  */
 
 // A default domain is applicationWide...
-public sealed interface NamespaceTemplate<H extends NamespaceHandle<?, ?>> permits PackedNamespaceTemplate {
+public sealed interface NamespaceTemplate<H extends OldNamespaceHandle<?, ?>> permits PackedNamespaceTemplate {
 
     // Er ikke sikker paa vi har behov for handler klassen...
-    Class<? extends NamespaceHandle<?, ?>> handleClass();
+    Class<? extends OldNamespaceHandle<?, ?>> handleClass();
 
-    static <H extends NamespaceHandle<?, ?>> NamespaceTemplate<H> of(Class<? extends NamespaceHandle<?, ?>> handleClass,
+    static <H extends OldNamespaceHandle<?, ?>> NamespaceTemplate<H> of(Class<? extends OldNamespaceHandle<?, ?>> handleClass,
             Function<? super NamespaceInstaller<?>, H> newHandle) {
         return new PackedNamespaceTemplate<>(handleClass, newHandle);
     }
@@ -58,7 +57,6 @@ public sealed interface NamespaceTemplate<H extends NamespaceHandle<?, ?>> permi
     // a)
     // void addConfigure(Function<Object, NamespaceConfiguration<?>> a);
 
-    @SuppressWarnings("exports")
     default void addPermission(BuildPermission permissions) {
         // Default values??? for example, root only
     }

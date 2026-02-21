@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.namespace;
+package app.packed.namespaceold;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,8 +28,8 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.util.TreeView;
-import internal.app.packed.namespace.NamespaceSetup;
-import internal.app.packed.namespace.PackedNamespaceInstaller;
+import internal.app.packed.oldnamespace.OldNamespaceSetup;
+import internal.app.packed.oldnamespace.PackedNamespaceInstaller;
 import internal.app.packed.util.accesshelper.AccessHelper;
 import internal.app.packed.util.accesshelper.NamespaceAccessHandler;
 
@@ -37,18 +37,18 @@ import internal.app.packed.util.accesshelper.NamespaceAccessHandler;
  *
  * Instances of this class should never be exposed to non-trusted code.
  */
-public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C extends NamespaceConfiguration<E>> extends ComponentHandle {
+public abstract non-sealed class OldNamespaceHandle<E extends Extension<E>, C extends OldNamespaceConfiguration<E>> extends ComponentHandle {
 
     /** A cache of all namespace configurations, currently do not support namespaces uses by extensions. */
     private HashMap<E, C> configurations = new HashMap<>();
 
     /** The lazy generated namespace mirror. */
-    private final Supplier<NamespaceMirror<E>> mirror = StableValue.supplier(() -> newNamespaceMirror());
+    private final Supplier<OldNamespaceMirror<E>> mirror = StableValue.supplier(() -> newNamespaceMirror());
 
     /** The namespace configuration. */
-    final NamespaceSetup namespace;
+    final OldNamespaceSetup namespace;
 
-    protected NamespaceHandle(NamespaceInstaller<?> installer) {
+    protected OldNamespaceHandle(NamespaceInstaller<?> installer) {
         this.namespace = requireNonNull(((PackedNamespaceInstaller<?>) installer).toSetup());
     }
 
@@ -114,7 +114,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
 
     /** {@inheritDoc} */
     @Override
-    public final NamespaceMirror<E> mirror() {
+    public final OldNamespaceMirror<E> mirror() {
         return mirror.get();
     }
 
@@ -128,8 +128,8 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
      *
      * @return the new mirror
      */
-    protected NamespaceMirror<E> newNamespaceMirror() {
-        return new NamespaceMirror<E>(this);
+    protected OldNamespaceMirror<E> newNamespaceMirror() {
+        return new OldNamespaceMirror<E>(this);
     }
 
     protected void onClose() {}
@@ -165,12 +165,12 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         AccessHelper.initHandler(NamespaceAccessHandler.class, new NamespaceAccessHandler() {
 
             @Override
-            public void invokeNamespaceOnNamespaceClose(NamespaceHandle<?, ?> handle) {
+            public void invokeNamespaceOnNamespaceClose(OldNamespaceHandle<?, ?> handle) {
                 handle.onClose();
             }
 
             @Override
-            public NamespaceSetup getNamespaceHandleNamespace(NamespaceHandle<?, ?> handle) {
+            public OldNamespaceSetup getNamespaceHandleNamespace(OldNamespaceHandle<?, ?> handle) {
                 return handle.namespace;
             }
         });

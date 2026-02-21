@@ -15,7 +15,7 @@
  */
 package app.packed.assembly;
 
-import app.packed.application.ApplicationBuildLocal;
+import app.packed.application.ApplicationLocal;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.build.BuildCodeSource;
 import org.jspecify.annotations.Nullable;
@@ -57,7 +57,7 @@ import internal.app.packed.util.accesshelper.AssemblyAccessHandler;
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
 @AssemblySecurityPolicy(AssemblySecurityPolicy.Default.class)
-public sealed abstract class Assembly implements BuildCodeSource, ApplicationBuildLocal.Accessor
+public sealed abstract class Assembly implements BuildCodeSource, ApplicationLocal.Accessor
         permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**

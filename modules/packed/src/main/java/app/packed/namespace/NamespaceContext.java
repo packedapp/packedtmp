@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.v2;
+package app.packed.namespace;
+
+import java.util.Set;
+
+import app.packed.component.ComponentPath;
 
 /**
  *
  */
-public class NewExtensionMirror {
+// Giver denne mening, hvis mn ikke har nogle controller metoder???
+// Maaske bare namespace info
+public interface NamespaceContext {
 
+    /** {@return the component path of the namespace} */
+    ComponentPath componentPath();
+
+    Set<String> componentTags();
+
+    /** {@return the name of the namespace} */
+    String name();
 }

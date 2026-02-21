@@ -34,7 +34,7 @@ import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
 /**
  * An application handle represents a fully built application.
  */
-public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration> extends ComponentHandle implements ApplicationBuildLocal.Accessor {
+public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration> extends ComponentHandle implements ApplicationLocal.Accessor {
 
     /** The applications's setup. */
     final ApplicationSetup application;

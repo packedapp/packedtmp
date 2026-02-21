@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.namespace;
+package internal.app.packed.oldnamespace;
 
-import internal.app.packed.namespace.PackedNamespaceInstaller;
+import java.util.function.Function;
+
+import app.packed.namespaceold.OldNamespaceHandle;
+import app.packed.namespaceold.NamespaceInstaller;
+import app.packed.namespaceold.NamespaceTemplate;
 
 /**
- * A installer for a namespace.
+ *
  */
-public sealed interface NamespaceInstaller<H extends NamespaceHandle<?, ?>> permits PackedNamespaceInstaller {
 
-    /**
-     * Installs the namespace
-     *
-     * @return a handle for the new namespace as configured in the underlying {@link NamespaceTemplate} used
-     */
-    H install();
+public record PackedNamespaceTemplate<H extends OldNamespaceHandle<?, ?>>(Class<? extends OldNamespaceHandle<?, ?>> handleClass,
+        Function<? super NamespaceInstaller<?>, H> newHandle) implements NamespaceTemplate<H> {
+
 }

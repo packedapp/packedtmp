@@ -20,6 +20,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Supplier;
+
+import org.jspecify.annotations.Nullable;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyFinder;
@@ -28,7 +31,6 @@ import app.packed.assembly.AssemblyModulepathFinder;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
 import app.packed.component.ComponentRealm;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.build.AuthoritySetup;
@@ -37,7 +39,7 @@ import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.namespace.NamespaceSetup;
+import internal.app.packed.oldnamespace.OldNamespaceSetup;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.accesshelper.AssemblyAccessHandler;
 import internal.app.packed.util.accesshelper.NamespaceAccessHandler;
@@ -78,8 +80,8 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
     /** Whether or not this assembly is available for configuration. */
     private boolean isConfigurable = true; // Kind of like a state I would say
 
-    /** A mirror for the assembly. */
-    private AssemblyMirror mirror;
+    /** The lazy generated assembly mirror. */
+    private final Supplier<AssemblyMirror> mirror = StableValue.supplier(() -> AssemblyAccessHandler.instance().newAssemblyMirror(this));
 
     /** A model of the assembly. */
     public final AssemblyClassModel model;
@@ -100,10 +102,22 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
         this.delegatingAssemblies = installer.delegatingAssemblies == null ? List.of() : List.copyOf(installer.delegatingAssemblies);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentRealm owner() {
-        return ComponentRealm.userland();
+    /**
+     * Creates an assembly finder appropriate for this assembly.
+     * Returns a classpath-based finder if on classpath, or a modulepath-based finder if on modulepath.
+     *
+     * @return an assembly finder
+     */
+    public AssemblyFinder finder() {
+        Class<?> assemblyClass = assembly.getClass();
+        Module module = assemblyClass.getModule();
+
+        if (module.getLayer() == null) {
+            // Classpath: unnamed module, no layer
+            return new PackedAssemblyClasspathFinder(assemblyClass.getClassLoader());
+        } else {
+            return moduleFinder();
+        }
     }
 
     /**
@@ -152,22 +166,9 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
         }
     }
 
-    /**
-     * Creates an assembly finder appropriate for this assembly.
-     * Returns a classpath-based finder if on classpath, or a modulepath-based finder if on modulepath.
-     *
-     * @return an assembly finder
-     */
-    public AssemblyFinder finder() {
-        Class<?> assemblyClass = assembly.getClass();
-        Module module = assemblyClass.getModule();
-
-        if (module.getLayer() == null) {
-            // Classpath: unnamed module, no layer
-            return new PackedAssemblyClasspathFinder(assemblyClass.getClassLoader());
-        } else {
-            return moduleFinder();
-        }
+    /** {@return a mirror for this assembly.} */
+    public AssemblyMirror mirror() {
+        return mirror.get();
     }
 
     /**
@@ -180,13 +181,10 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
         return new PackedAssemblyModulepathFinder(lookup);
     }
 
-    /** {@return a mirror for this assembly.} */
-    public AssemblyMirror mirror() {
-        AssemblyMirror m = mirror;
-        if (m == null) {
-            m = mirror = AssemblyAccessHandler.instance().newAssemblyMirror(this);
-        }
-        return m;
+    /** {@inheritDoc} */
+    @Override
+    public ComponentRealm owner() {
+        return ComponentRealm.userland();
     }
 
     /** Does post processing after we have called into the assembly to build. */
@@ -209,7 +207,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
                 }
                 list.add(e);
 
-                for (NamespaceSetup nss = e.tree.namespacesToClose.pollLast(); nss != null; nss = e.tree.namespacesToClose.pollLast()) {
+                for (OldNamespaceSetup nss = e.tree.namespacesToClose.pollLast(); nss != null; nss = e.tree.namespacesToClose.pollLast()) {
                     if (nss.root == e) {
                         NamespaceAccessHandler.instance().invokeNamespaceOnNamespaceClose(nss.handle());
                     }

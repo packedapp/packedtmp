@@ -21,11 +21,12 @@ import app.packed.application.ApplicationConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.namespace.NamespaceConfiguration;
+import app.packed.namespaceold.OldNamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
 
 /** Configuration of a component. */
 public abstract sealed class ComponentConfiguration
-        permits ApplicationConfiguration, BeanConfiguration, ContainerConfiguration, NamespaceConfiguration, OperationConfiguration {
+        permits ApplicationConfiguration, BeanConfiguration, ContainerConfiguration, OldNamespaceConfiguration, OperationConfiguration, NamespaceConfiguration {
 
     /**
      * Check that the component is still configurable by its owner.

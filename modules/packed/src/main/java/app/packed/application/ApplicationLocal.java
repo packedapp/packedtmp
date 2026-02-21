@@ -15,29 +15,37 @@
  */
 package app.packed.application;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildLocal;
+import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.Wirelet;
 
 /** A build local that has application scope. */
-public non-sealed interface ApplicationBuildLocal<T> extends BuildLocal<ApplicationBuildLocal.Accessor, T> {
+public non-sealed interface ApplicationLocal<T> extends BuildLocal<ApplicationLocal.Accessor, T> {
 
     /**
      * Returns a wirelet that can be used to set the value of this application local.
      * <p>
      * The wirelet can only applied to the application's root assembly. Attempting to use it on a non-application-root
      * assembly will result in a {@link app.packed.container.WireletException} being thrown.
-     * <p>
-     * Attempting to use the returned wirelet at runtime will result in a WireletException being thrown.
      *
      * @param value
      *            the value to set the local to
      * @return the new wirelet
      */
-    Wirelet wireletSetter(T value);
+    // no error message, Fx med namespace scope. Saa kan vi jo ikke sige noget som helt om hvilken type wirelet det er.
+    // Maaske kan man istedet have en constructor der tager den her local?
+    // Og saa kan man
+    // Men saa er der hele spoergsmaalet omkring consuming? Det goer vi saa ikkes
+    Wirelet wireletSetter(T value); // no error message
+
+    // Ideen er lidt vi kan share et object mellem flere wirelet typer
+    // Kan selvfoelige kun bruges med of(Supplier). Eller vi kan checke if bound
+    //Wirelet wireletCompute(Consumer<T> value);
 
     /**
      * Creates a new local with application scope.
@@ -48,7 +56,7 @@ public non-sealed interface ApplicationBuildLocal<T> extends BuildLocal<Applicat
      *            the type of values to store
      * @return the new application local
      */
-    static <T> ApplicationBuildLocal<T> of() {
+    static <T> ApplicationLocal<T> of() {
         throw new UnsupportedOperationException();
     }
 
@@ -59,7 +67,11 @@ public non-sealed interface ApplicationBuildLocal<T> extends BuildLocal<Applicat
      *            the type of value to store
      * @return a new application local
      */
-    static <T> ApplicationBuildLocal<T> of(Supplier<? extends T> initialValueSupplier) {
+    static <T> ApplicationLocal<T> of(Supplier<? extends T> initialValueSupplier) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <T> ApplicationLocal<T> of(Function<ComponentRealm, ? extends T> initialValueSupplier) {
         throw new UnsupportedOperationException();
     }
 

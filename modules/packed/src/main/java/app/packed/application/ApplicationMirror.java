@@ -2,9 +2,7 @@ package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
@@ -18,9 +16,8 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
-import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
+import app.packed.namespaceold.OverviewMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
@@ -44,7 +41,7 @@ import internal.app.packed.util.PackedTreeView;
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
 @AutoServiceInheritable(introspector = ApplicationMirrorIntrospector.class)
-public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationBuildLocal.Accessor {
+public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationLocal.Accessor {
 
     /** The application's handle. */
     final ApplicationHandle<?, ?> handle;
@@ -162,11 +159,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
         return container().isExtensionUsed(extensionClass);
     }
-//
-//    /** {@return the application's lifetime. Which is identical to the root container's.} */
-//    public CompositeLifetimeMirror lifetime() {
-//        return container().lifetime();
-//    }
 
     /**
      * Returns the name of the application.
@@ -180,22 +172,24 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return handle.application.container().name();
     }
 
-    // Application owned namespace...
-    // Optional???
-    public <N extends NamespaceMirror<?>> Optional<N> namespace(Class<N> type) {
-        for (NamespaceHandle<?, ?> n : handle.application.namespaces.values()) {
-                NamespaceMirror<?> m = n.mirror();
-                if (m.getClass() == type) {
-                    return Optional.of(type.cast(m));
-                }
-        }
-        return Optional.empty();
+    /** {@return a mirror of the root namespace in the application.} */
+    public NamespaceMirror namespace() {
+        return handle.application.container().namespace.mirror();
+    }
+
+    /** {@return a namespace tree mirror representing all the namespaces defined within the application.} */
+    public TreeView<NamespaceMirror> namespaces() {
+        return new PackedTreeView<>(handle.application.container().namespace, null, c -> c.mirror());
     }
 
     /** {@return a stream of all of the operations on beans owned by the user in the application.} */
     // I think non-synthetic should also be filtered
     public OperationMirror.OfStream<OperationMirror> operations() {
         return OperationMirror.OfStream.of(beans().flatMap(BeanMirror::operations));
+    }
+
+    public <O extends OverviewMirror<?>> O overview(Class<O> type) {
+        throw new UnsupportedOperationException();
     }
 
     public void print() {
@@ -246,26 +240,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     public String toString() {
         return "Application:" + name();
     }
-
-    /**
-     * Returns an extension mirror of the specified type. Or fails by throwing {@link UnsupportedOperationException}.
-     *
-     * @param <T>
-     *            The type of extension mirror
-     * @param type
-     *            The type of extension mirror
-     * @return an extension mirror of the specified type
-     *
-     * @see ContainerMirror#use(Class)
-     */
-    // Not super useful anymore
-    public <E extends ExtensionMirror<?>> E use(Class<E> type) {
-        return container().use(type);
-    }
-
-    public <E extends ExtensionMirror<?>> void useIfPresent(Class<E> type, Consumer<? super E> action) {
-        throw new UnsupportedOperationException();
-    }
 }
 
 final class ApplicationMirrorIntrospector extends BaseExtensionBeanIntrospector {
@@ -282,13 +256,12 @@ final class ApplicationMirrorIntrospector extends BaseExtensionBeanIntrospector 
 //  throw new UnsupportedOperationException();
 //}
 //
-///** {@return a mirror of the root assembly that defines the application.} */
-//// IDK if we want this or only assemblies
+/// ** {@return a mirror of the root assembly that defines the application.} */ IDK if we want this or only assemblies
 //public AssemblyMirror assembly() {
 //  return container().assembly();
 //}
 //
-///** {@return the deployment this application is a part of.} */
+/// ** {@return the deployment this application is a part of.} * /
 //public DeploymentMirror deployment() {
 //  return application.deployment.mirror();
 //}

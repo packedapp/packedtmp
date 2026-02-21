@@ -19,7 +19,7 @@ import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.cli.CliExtension;
-import app.packed.cli.CliNamespaceMirror;
+import app.packed.cli.CliOverviewMirror;
 
 /**
  *
@@ -41,7 +41,7 @@ public class Usage extends BaseAssembly {
 
     public static void main(String[] args) {
         ApplicationMirror m = App.mirrorOf(new Usage());
-        m.namespace(CliNamespaceMirror.class);
+        m.overview(CliOverviewMirror.class);
     }
 
 }

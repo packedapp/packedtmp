@@ -26,9 +26,8 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
-import app.packed.lifecycle.LifecycleKind;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BaseExtensionMirror;
+import app.packed.lifecycle.LifecycleKind;
 import tck.AppAppTest;
 import tck.TckAssemblies.HelloWorldAssembly;
 import tck.TckBeans.HelloMainBean;
@@ -58,7 +57,6 @@ public class ApplicationMirrorTest extends AppAppTest {
 
         // Only BaseExtension is used
         assertThat(m.extensionTypes()).containsExactly(BaseExtension.class);
-        assertThat(m.use(BaseExtensionMirror.class)).isNotNull();
 
         // Hashcode equals
         assertEquals(m, m.container().application());

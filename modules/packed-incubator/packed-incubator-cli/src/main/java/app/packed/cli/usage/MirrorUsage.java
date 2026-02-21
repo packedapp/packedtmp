@@ -17,8 +17,7 @@ package app.packed.cli.usage;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.cli.CliCommandMirror;
-import app.packed.cli.CliNamespaceMirror;
-import app.packed.service.ServiceNamespaceMirror;
+import app.packed.cli.CliOverviewMirror;
 
 /**
  *
@@ -26,16 +25,13 @@ import app.packed.service.ServiceNamespaceMirror;
 public class MirrorUsage {
 
     public static void main(ApplicationMirror m) {
-        CliNamespaceMirror cm = m.namespace(CliNamespaceMirror.class).get();
+        CliOverviewMirror cm = m.overview(CliOverviewMirror.class);
         for (CliCommandMirror c : cm.commands().toList()) {
             IO.println(c);
         }
 
         cm.commands().map(e -> e.bean().container()).distinct().toList();
 
-        ServiceNamespaceMirror sn = m.namespace(ServiceNamespaceMirror.class).get();
-
-        IO.println(sn);
     }
 
 

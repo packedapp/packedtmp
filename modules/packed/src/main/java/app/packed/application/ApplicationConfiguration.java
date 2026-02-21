@@ -40,7 +40,7 @@ import app.packed.lifecycle.sandbox.StopOption;
 
 // Per assembly, requires that we can create new application configurations.
 // when needed
-public non-sealed class ApplicationConfiguration extends ComponentConfiguration implements ApplicationBuildLocal.Accessor {
+public non-sealed class ApplicationConfiguration extends ComponentConfiguration implements ApplicationLocal.Accessor {
 
     List<Class<? extends Assembly>> allowedAssemblies = List.of();
     // matcher

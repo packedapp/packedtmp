@@ -11,7 +11,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.build.BuildCodeSourceMirror;
-import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.util.AnnotationList;
 import app.packed.util.TreeView;
@@ -131,12 +130,12 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
 //    }
 
     // do we need a allComponents() that includes not-developer components
-    public TreeView<ComponentMirror> components() {
-        // Ideen er vi itererer over alle componenter
-        // Men ApplicationMirror<-AssemblyMirror<-ContainerMirror
-        // AssemblyMirror er lidt dum... Maaske er det ikke et trae
-        throw new UnsupportedOperationException();
-    }
+//    public TreeView<ComponentMirror> components() {
+//        // Ideen er vi itererer over alle componenter
+//        // Men ApplicationMirror<-AssemblyMirror<-ContainerMirror
+//        // AssemblyMirror er lidt dum... Maaske er det ikke et trae
+//        throw new UnsupportedOperationException();
+//    }
 
     /** {@return the root container this assembly defines.} */
     // I think remove it from now, and replace with containers().root()
@@ -173,27 +172,18 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object other) {
-        return this == other || other instanceof AssemblyMirror m && assembly == m.assembly;
-    }
-
 //    /** {@return the deployment this assembly is a part of.} */
 //    public DeploymentMirror deployment() {
 //        return assembly.container.application.deployment.mirror();
 //    }
 
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return assembly.hashCode();
-    }
-
     /** @return true if this assembly is top assembly, otherwise false. */
-    // isApplicationRoot?
     public boolean isApplicationRoot() {
         return assembly.container.isApplicationRoot();
+    }
+
+    public boolean isNamespaceRoot() {
+        return assembly.container.isNamespaceRoot();
     }
 
     /** {@return the security model for the assembly} */

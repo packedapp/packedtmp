@@ -47,7 +47,7 @@ import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.OperationCodeGenerator;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointSetup;
-import internal.app.packed.namespace.NamespaceSetup;
+import internal.app.packed.oldnamespace.OldNamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
@@ -263,7 +263,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
 
         // Add the operation to any requested namespace
         if (installer.addToNamespace != null) {
-            NamespaceSetup ns = NamespaceSetup.crack(installer.addToNamespace);
+            OldNamespaceSetup ns = OldNamespaceSetup.crack(installer.addToNamespace);
             ns.operations.add(operation);
         }
 

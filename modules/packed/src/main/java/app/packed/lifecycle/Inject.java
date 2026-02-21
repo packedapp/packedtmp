@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger;
-import app.packed.namespace.sandbox.NamespaceOperation;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.lifecycle.LifecycleOperationHandle.InjectOperationHandle;
 
@@ -57,7 +56,6 @@ import internal.app.packed.lifecycle.LifecycleOperationHandle.InjectOperationHan
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@NamespaceOperation
 @BeanTrigger.OnAnnotatedField(introspector = InjectBeanIntrospector.class, allowSet = true)
 @BeanTrigger.OnAnnotatedMethod(introspector = InjectBeanIntrospector.class, allowInvoke = true)
 public @interface Inject {}

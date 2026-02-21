@@ -17,15 +17,15 @@ package internal.app.packed.util.accesshelper;
 
 import java.util.function.Supplier;
 
-import app.packed.namespace.NamespaceHandle;
-import internal.app.packed.namespace.NamespaceSetup;
+import app.packed.namespaceold.OldNamespaceHandle;
+import internal.app.packed.oldnamespace.OldNamespaceSetup;
 
 /**
  * Access helper for NamespaceHandle and related classes.
  */
 public abstract class NamespaceAccessHandler extends AccessHelper {
 
-    private static final Supplier<NamespaceAccessHandler> CONSTANT = StableValue.supplier(() -> init(NamespaceAccessHandler.class, NamespaceHandle.class));
+    private static final Supplier<NamespaceAccessHandler> CONSTANT = StableValue.supplier(() -> init(NamespaceAccessHandler.class, OldNamespaceHandle.class));
 
     public static NamespaceAccessHandler instance() {
         return CONSTANT.get();
@@ -36,7 +36,7 @@ public abstract class NamespaceAccessHandler extends AccessHelper {
      *
      * @param handle the handle
      */
-    public abstract void invokeNamespaceOnNamespaceClose(NamespaceHandle<?, ?> handle);
+    public abstract void invokeNamespaceOnNamespaceClose(OldNamespaceHandle<?, ?> handle);
 
     /**
      * Gets the NamespaceSetup from a NamespaceHandle.
@@ -44,5 +44,5 @@ public abstract class NamespaceAccessHandler extends AccessHelper {
      * @param handle the handle
      * @return the namespace setup
      */
-    public abstract NamespaceSetup getNamespaceHandleNamespace(NamespaceHandle<?, ?> handle);
+    public abstract OldNamespaceSetup getNamespaceHandleNamespace(OldNamespaceHandle<?, ?> handle);
 }

@@ -152,7 +152,7 @@ public final class PackedBeanInstaller extends AbstractComponentInstaller<BeanSe
     /** {@inheritDoc} */
     @Override
     public <T> PackedBeanInstaller setLocal(BeanLocal<T> local, T value) {
-        return super.setLocal(local, value);
+        return super.setLocal((PackedBeanBuildLocal<T>) local, value);
     }
 
     public static class ProvidableBeanHandle<T> extends BeanHandle<ProvidableBeanConfiguration<T>> {

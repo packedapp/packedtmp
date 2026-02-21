@@ -13,23 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.namespace.sandbox;
+package sandbox.extension.v2;
 
-import app.packed.container.Wirelet;
-import app.packed.namespace.NamespaceConfiguration;
+import app.packed.component.ComponentRealm;
 
 /**
  *
  */
-public class NamespaceWirelets {
+public class NewExtensionHandle<E extends NewExtension> {
 
-    public static Wirelet newNamespaces() {
+
+    protected E extension(ComponentRealm actor) {
         throw new UnsupportedOperationException();
     }
-
-    @SuppressWarnings("unchecked")
-    public static Wirelet newNamespaces(Class<? extends NamespaceConfiguration<?>>... namespaces) {
-        throw new UnsupportedOperationException();
-    }
-    // rename
 }

@@ -18,13 +18,14 @@ package internal.app.packed.service;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.binding.DublicateKeyProvisionException;
 import app.packed.binding.Key;
-import app.packed.namespace.NamespaceInstaller;
-import app.packed.namespace.NamespaceTemplate;
+import app.packed.namespaceold.NamespaceInstaller;
+import app.packed.namespaceold.NamespaceTemplate;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionContext;

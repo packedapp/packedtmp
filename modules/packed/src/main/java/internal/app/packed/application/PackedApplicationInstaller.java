@@ -20,14 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.lang.ScopedValue.Carrier;
 import java.util.UUID;
 
-import app.packed.application.ApplicationBuildLocal;
+import org.jspecify.annotations.Nullable;
+
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
+import app.packed.application.ApplicationLocal;
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.LifecycleKind;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.component.AbstractComponentInstaller;
@@ -114,7 +115,7 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
 
     /** {@inheritDoc} */
     @Override
-    public <T> PackedApplicationInstaller<H> setLocal(ApplicationBuildLocal<T> local, T value) {
-        return super.setLocal(local, value);
+    public <T> PackedApplicationInstaller<H> setLocal(ApplicationLocal<T> local, T value) {
+        return super.setLocal((PackedApplicationLocal<T>) local, value);
     }
 }
