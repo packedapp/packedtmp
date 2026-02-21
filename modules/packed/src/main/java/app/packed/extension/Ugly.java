@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent;
+package app.packed.extension;
 
-import app.packed.extension.BaseExtension;
-import app.packed.namespace.OverviewMirror;
+import app.packed.component.ComponentRealm;
+import app.packed.extension.Ugly.SomeN;
 
 /**
- * A mirror for a thread namespace.
- * <p>
- * A application
+ *
  */
-// We must have one per extension...
-// I mean we have a service namespace per extension.
-// So would probably be strange to share one for extensions?
-public class ThreadOverviewMirror extends OverviewMirror<BaseExtension> {
+abstract class Ugly<N extends SomeN, E extends Extension<E>> {
 
+    protected void onNewApplication() {}
+    protected void onNewNamespace(N namespace) {}
+    protected void onNewContainer(E extension) {}
 
+    protected void newOverview(Object overviewConfig) {}
+
+    static class SomeN {
+        ComponentRealm realm;
+    }
 }

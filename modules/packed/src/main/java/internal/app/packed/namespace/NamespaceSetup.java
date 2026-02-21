@@ -20,12 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.namespace.NamespaceMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.util.AbstractNamedTreeNode;
+import internal.app.packed.util.accesshelper.NamespaceMirrorAccessHandler;
 
 /**
  *
@@ -33,6 +35,9 @@ import internal.app.packed.util.AbstractNamedTreeNode;
 public final class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> {
 
     public final ContainerSetup container;
+
+    /** The lazy generated namespace mirror. */
+    private final Supplier<NamespaceMirror> mirror = StableValue.supplier(() -> NamespaceMirrorAccessHandler.instance().newNamespaceMirror(this));
 
     NamespaceSetup(ContainerSetup container, PackedNamespaceInstaller installer) {
         super(null);
@@ -60,6 +65,6 @@ public final class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> 
      * @return
      */
     public NamespaceMirror mirror() {
-        throw new UnsupportedOperationException();
+        return mirror.get();
     }
 }

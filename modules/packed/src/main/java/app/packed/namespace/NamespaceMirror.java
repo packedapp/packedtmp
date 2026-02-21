@@ -31,12 +31,23 @@ import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.util.PackedTreeView;
+import internal.app.packed.util.accesshelper.AccessHelper;
+import internal.app.packed.util.accesshelper.NamespaceMirrorAccessHandler;
 
 /**
  * A mirror representing a namespace.
  */
 @AutoService(introspector = NamespaceMirrorBeanIntrospector.class)
 public final class NamespaceMirror {
+
+    static {
+        AccessHelper.initHandler(NamespaceMirrorAccessHandler.class, new NamespaceMirrorAccessHandler() {
+            @Override
+            public NamespaceMirror newNamespaceMirror(NamespaceSetup namespace) {
+                return new NamespaceMirror(namespace);
+            }
+        });
+    }
 
     private final NamespaceSetup namespace;
 
@@ -54,6 +65,11 @@ public final class NamespaceMirror {
     }
 
 
+    /** {@return a stream of all of the bean declared by the user in the application.} */
+    public Stream<BeanMirror> beans() {
+        return containers().stream().flatMap(ContainerMirror::beans);
+    }
+
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
         return namespace.container.mirror();
@@ -62,11 +78,6 @@ public final class NamespaceMirror {
     /** {@return a container tree mirror representing all the containers defined within the application.} */
     public TreeView<ContainerMirror> containers() {
         return new PackedTreeView<>(namespace.container, c -> c.namespace == namespace, c -> c.mirror());
-    }
-
-    /** {@return a stream of all of the bean declared by the user in the application.} */
-    public Stream<BeanMirror> beans() {
-        return containers().stream().flatMap(ContainerMirror::beans);
     }
 
     /** {@return a stream of all of the operations on beans owned by the user in the application.} */

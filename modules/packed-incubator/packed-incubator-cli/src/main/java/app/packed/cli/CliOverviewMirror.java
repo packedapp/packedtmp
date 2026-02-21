@@ -18,7 +18,7 @@ package app.packed.cli;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.namespaceold.OverviewMirror;
+import app.packed.namespace.OverviewMirror;
 import app.packed.operation.OperationMirror;
 
 /**

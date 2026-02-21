@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
-import app.packed.namespaceold.OverviewMirror;
+import app.packed.namespace.OverviewMirror;
 
 /**
  * A mirror for a job namespace. All jobs within a

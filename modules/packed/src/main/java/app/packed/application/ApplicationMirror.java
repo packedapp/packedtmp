@@ -17,7 +17,7 @@ import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceMirror;
-import app.packed.namespaceold.OverviewMirror;
+import app.packed.namespace.OverviewMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
