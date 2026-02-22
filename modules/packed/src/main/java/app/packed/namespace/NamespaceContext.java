@@ -23,7 +23,7 @@ import app.packed.component.ComponentPath;
  *
  */
 // Giver denne mening, hvis mn ikke har nogle controller metoder???
-// Maaske bare namespace info
+// Maaske namespace info er nok
 public interface NamespaceContext {
 
     /** {@return the component path of the namespace} */

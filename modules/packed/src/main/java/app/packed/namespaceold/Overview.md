@@ -48,27 +48,3 @@ Usecases
 //// App-To-App
 // Yes we want to use the same WebServer, JDBC, EventBus, ConfigFileFragment, MetricsServer
 
-
-/// I use Domain X -> 
-
-
-- FileRealm :
-- NetRealm?
-
-FamilyRoot
-ApplicationRoot
-ContainerLifetimeRoot
-Container
-
-
-Scope
-Tror ikke man kan have andet en Application Scope
--- Fx NamespaceOperation.navigator() kan jo ikke inkludered andre applicationer
-   hvis de bliver bygget concurrently
-   
-   
-   
-   
-
-   
------- 

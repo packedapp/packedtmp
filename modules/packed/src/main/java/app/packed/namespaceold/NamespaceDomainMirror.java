@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.sandbox;
+package app.packed.namespaceold;
 
 /**
  *
  */
-public class ImplAp extends ApplicationExtensionPart<MyExtensionNamespace, MyExtension> {
-
-    /** {@inheritDoc} */
-    @Override
-    public MyExtensionNamespace newNamepace() {
-        throw new UnsupportedOperationException();
-       /// return new NamespaceImpl(this);
-    }
+public class NamespaceDomainMirror {
 
 }
