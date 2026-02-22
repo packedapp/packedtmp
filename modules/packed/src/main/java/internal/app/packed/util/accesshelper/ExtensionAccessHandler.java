@@ -17,10 +17,13 @@ package internal.app.packed.util.accesshelper;
 
 import java.util.function.Supplier;
 
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
+import internal.app.packed.extension.BaseExtensionNamespace;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionPointHandle;
 
@@ -84,6 +87,8 @@ public abstract class ExtensionAccessHandler extends AccessHelper {
      * @param extension the extension
      */
     public abstract void invoke_Extension_OnNew(Extension<?> extension);
+
+    public abstract BaseExtension create_BaseExtension(BaseExtensionNamespace namespace, ExtensionHandle<BaseExtension> handle);
 
     public static ExtensionAccessHandler instance() {
         return CONSTANT.get();

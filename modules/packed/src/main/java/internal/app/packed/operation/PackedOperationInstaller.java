@@ -18,7 +18,6 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.component.SidehandleBeanConfiguration;
@@ -88,13 +87,6 @@ public non-sealed class PackedOperationInstaller extends AbstractComponentInstal
     @Override
     public <H extends OperationHandle<?>> H install(Function<? super OperationInstaller, H> handleFactory) {
         return (H) newOperation((Function<? super OperationInstaller, OperationHandle<?>>) handleFactory).handle();
-    }
-
-    @Override
-    public <H extends OperationHandle<?>, N extends OldNamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super OperationInstaller, N, H> factory) {
-        checkNotUsed();
-        this.addToNamespace = requireNonNull(namespace);
-        return install(f -> factory.apply(f, namespace));
     }
 
     OperationSetup newOperation(Function<? super OperationInstaller, OperationHandle<?>> newHandle) {

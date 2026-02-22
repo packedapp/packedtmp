@@ -32,8 +32,8 @@ public class AbstractJobOperationHandle<T extends JobConfiguration> extends Thre
 
     public ThreadKind threadKind;
 
-    protected AbstractJobOperationHandle(OperationInstaller installer, ThreadNamespaceHandle namespace) {
-        super(installer, namespace);
+    protected AbstractJobOperationHandle(OperationInstaller installer) {
+        super(installer);
     }
 
     @Override

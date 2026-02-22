@@ -12,6 +12,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
+import app.packed.extension.Extension.Props;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.operation.Op;
 import app.packed.service.ProvidableBeanConfiguration;
@@ -20,6 +21,7 @@ import app.packed.service.ServiceNamespaceConfiguration;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.extension.BaseExtensionNamespace;
 import internal.app.packed.service.util.PackedServiceLocator;
 import sandbox.app.packed.bean.BeanSynthesizer;
 
@@ -47,20 +49,26 @@ import sandbox.app.packed.bean.BeanSynthesizer;
 // Service
 //// export require provide transform/rewrite??? depends on 1 or two interfaces
 
+@Props(extensionNamespace = BaseExtensionNamespace.class)
 public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     // We use an initial value for now, because we share FromLinks and the boolean fields
     // But right now we only have a single field
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
 
+    final BaseExtensionNamespace namespace;
+
     /**
      * All your base are belong to us.
      *
+     * @param namespace
+     *            the extension's namespace
      * @param handle
      *            the extension's handle
      */
-    BaseExtension(ExtensionHandle<BaseExtension> handle) {
+    BaseExtension(BaseExtensionNamespace namespace, ExtensionHandle<BaseExtension> handle) {
         super(handle);
+        this.namespace = namespace;
     }
 
     /**
@@ -295,16 +303,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** {@return the container's main service namespace} */
     public ServiceNamespaceConfiguration services() {
-        return services("main");
-    }
-
-    public ServiceNamespaceConfiguration services(String name) {
-        // Will automatically create one with default settings
         throw new UnsupportedOperationException();
-    }
-
-    protected ServiceNamespaceConfiguration services(String name, Consumer<?> newConfiguration) {
-        return services("main");
     }
 
     // transformAllBeans() <-- includes extension beans... (Must be open)

@@ -15,13 +15,11 @@
  */
 package app.packed.operation;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint;
-import app.packed.namespaceold.OldNamespaceHandle;
 import internal.app.packed.operation.PackedOperationInstaller;
 
 /**
@@ -71,22 +69,4 @@ public sealed interface OperationInstaller permits PackedOperationInstaller {
      *             if the extension does not have access to invoke the method
      */
     <H extends OperationHandle<?>> H install(Function<? super OperationInstaller, H> factory);
-
-    /**
-     * Creates the operation and installs it into the specified namespace.
-     *
-     * @param <H>
-     *            the type of operation handle to represent the operation
-     * @param <N>
-     *            the type of namespace we are installing the operation into
-     * @param namespace
-     *            the namespace we are installing the operation into
-     * @param factory
-     *            a factory responsible for creating the operation handle to represent the operation
-     * @return the operation handle for the operation
-     *
-     * @throws IllegalStateException
-     *             if the installer has already been used
-     */
-    <H extends OperationHandle<?>, N extends OldNamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super OperationInstaller, N, H> factory);
 }

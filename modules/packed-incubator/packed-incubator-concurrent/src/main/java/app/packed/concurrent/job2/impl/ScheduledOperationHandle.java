@@ -21,7 +21,6 @@ import app.packed.concurrent.oldscheduling.ScheduledOperationConfiguration;
 import app.packed.concurrent.oldscheduling.ScheduledOperationMirror;
 import app.packed.lifecycle.Initialize;
 import app.packed.operation.OperationInstaller;
-import internal.app.packed.concurrent.ThreadNamespaceHandle;
 import internal.app.packed.concurrent.ThreadedOperationHandle;
 import internal.app.packed.concurrent.old.ScheduleImpl;
 
@@ -36,8 +35,8 @@ public final class ScheduledOperationHandle extends ThreadedOperationHandle<Sche
     /**
      * @param installer
      */
-    public ScheduledOperationHandle(OperationInstaller installer, ThreadNamespaceHandle namespace) {
-        super(installer, namespace);
+    public ScheduledOperationHandle(OperationInstaller installer) {
+        super(installer);
     }
 
     @Override

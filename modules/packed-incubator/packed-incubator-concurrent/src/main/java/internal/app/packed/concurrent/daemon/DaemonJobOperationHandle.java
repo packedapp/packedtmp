@@ -25,15 +25,14 @@ import app.packed.concurrent.DaemonJobMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationInstaller;
 import internal.app.packed.concurrent.AbstractJobOperationHandle;
-import internal.app.packed.concurrent.ThreadNamespaceHandle;
 
 /** An operation handle for a daemon operation. */
 public final class DaemonJobOperationHandle extends AbstractJobOperationHandle<DaemonJobConfiguration> {
 
     public boolean restart;
 
-    private DaemonJobOperationHandle(OperationInstaller installer, ThreadNamespaceHandle namespace) {
-        super(installer, namespace);
+    private DaemonJobOperationHandle(OperationInstaller installer) {
+        super(installer);
     }
 
     /** {@inheritDoc} */
@@ -50,14 +49,13 @@ public final class DaemonJobOperationHandle extends AbstractJobOperationHandle<D
 
     public static void onDaemonJobAnnotation(BeanIntrospector<BaseExtension> introspector, BeanIntrospector.OnMethod method, DaemonJob annotation) {
         // Lazy install the sidehandle and runtime manager
-        SidehandleBeanConfiguration<DaemonJobSidehandle> sideBean = introspector.applicationBase().installSidebeanIfAbsent(DaemonJobSidehandle.class, SidehandleTargetKind.OPERATION, _ -> {
-            introspector.applicationBase().install(DaemonJobRuntimeManager.class).provide();
-        });
+        SidehandleBeanConfiguration<DaemonJobSidehandle> sideBean = introspector.applicationBase().installSidebeanIfAbsent(DaemonJobSidehandle.class,
+                SidehandleTargetKind.OPERATION, _ -> {
+                    introspector.applicationBase().install(DaemonJobRuntimeManager.class).provide();
+                });
 
-        ThreadNamespaceHandle namespace = ThreadNamespaceHandle.mainHandle(introspector.extensionHandle());
-
-        DaemonJobOperationHandle handle = method.newOperation().addContext(DaemonJobContext.class).attachToSidebean(sideBean).install(namespace,
-                DaemonJobOperationHandle::new);
+        DaemonJobOperationHandle handle = method.newOperation().addContext(DaemonJobContext.class).attachToSidebean(sideBean)
+                .install(DaemonJobOperationHandle::new);
         handle.threadKind = annotation.threadKind();
         handle.interruptOnStop = annotation.interruptOnStop();
     }

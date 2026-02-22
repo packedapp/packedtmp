@@ -39,6 +39,7 @@ import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.extension.BaseExtensionNamespace;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.extension.PackedExtensionPointHandle;
@@ -122,6 +123,11 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
             @Override
             public void invoke_Extension_OnNew(Extension<?> extension) {
                 extension.onNew();
+            }
+
+            @Override
+            public BaseExtension create_BaseExtension(BaseExtensionNamespace namespace, ExtensionHandle<BaseExtension> handle) {
+                return new BaseExtension(namespace, handle);
             }
         });
     }

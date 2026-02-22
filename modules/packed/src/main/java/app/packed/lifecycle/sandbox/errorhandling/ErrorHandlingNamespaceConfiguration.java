@@ -15,23 +15,9 @@
  */
 package app.packed.lifecycle.sandbox.errorhandling;
 
-import app.packed.component.ComponentRealm;
-import app.packed.extension.BaseExtension;
-import app.packed.namespaceold.OldNamespaceConfiguration;
-import app.packed.namespaceold.OldNamespaceHandle;
-
 /**
  *
  */
-public final class ErrorHandlingNamespaceConfiguration extends OldNamespaceConfiguration<BaseExtension> {
-
-    /**
-     * @param namespace
-     * @param extension
-     * @param actor
-     */
-    protected ErrorHandlingNamespaceConfiguration(OldNamespaceHandle<BaseExtension, ?> namespace, BaseExtension extension, ComponentRealm actor) {
-        super(namespace, extension, actor);
-    }
+public final class ErrorHandlingNamespaceConfiguration  {
 
 }

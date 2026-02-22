@@ -15,12 +15,6 @@
  */
 package app.packed.concurrent;
 
-import app.packed.component.ComponentRealm;
-import app.packed.extension.BaseExtension;
-import app.packed.namespaceold.OldNamespaceConfiguration;
-import app.packed.namespaceold.OldNamespaceHandle;
-import internal.app.packed.concurrent.ThreadNamespaceHandle;
-
 /**
  * A thread namespace defines policies that used for all daemons and scheduled jobs defined within the same namespace.
  */
@@ -29,17 +23,7 @@ import internal.app.packed.concurrent.ThreadNamespaceHandle;
 // Fyldt med Thread factories/pools
 // Hvad med extensions??? Vi vil gerne kunne configure deres.
 // Maaske deler vi en enkelt. Maaske har vi noget hierrakisk hvor vi nedarver settings
-public final class ThreadNamespaceConfiguration extends OldNamespaceConfiguration<BaseExtension> {
-
-    final ThreadNamespaceHandle handle;
-
-    /**
-     * @param handle
-     */
-    public ThreadNamespaceConfiguration(OldNamespaceHandle<BaseExtension, ?> handle, BaseExtension extension, ComponentRealm actor) {
-        super(handle, extension, actor);
-        this.handle = (ThreadNamespaceHandle) handle;
-    }
+public final class ThreadNamespaceConfiguration {
 
 //    public DaemonOperationConfiguration addDaemon(Consumer<DaemonContext> action) {
 //        throw new UnsupportedOperationException();

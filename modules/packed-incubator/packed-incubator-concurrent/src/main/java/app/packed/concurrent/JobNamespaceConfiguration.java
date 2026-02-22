@@ -15,10 +15,6 @@
  */
 package app.packed.concurrent;
 
-import app.packed.component.ComponentRealm;
-import app.packed.extension.BaseExtension;
-import app.packed.namespaceold.OldNamespaceConfiguration;
-import app.packed.namespaceold.OldNamespaceHandle;
 import app.packed.service.ProvidableBeanConfiguration;
 
 /**
@@ -27,11 +23,7 @@ import app.packed.service.ProvidableBeanConfiguration;
 // Can you have more than 1 compute in a JobNamespace
 // Can you have multiple lifetimes in a JobNamespace? Or only 1?
 // I think multiple is fine. I mean we support transient jobs which is kind of limited lifetimes
-public class JobNamespaceConfiguration extends OldNamespaceConfiguration<BaseExtension> {
-
-    protected JobNamespaceConfiguration(OldNamespaceHandle<BaseExtension, ?> namespace, BaseExtension extension, ComponentRealm actor) {
-        super(namespace, extension, actor);
-    }
+public class JobNamespaceConfiguration  {
 
 
     // Ideen er vel at man kan injected det et sted
