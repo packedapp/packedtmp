@@ -97,9 +97,9 @@ public final class OldNamespaceSetup implements ComponentSetup {
         H handle = (H) installer.template.newHandle().apply(installer);
         namespace.handle = handle;
 
-        installer.root.container.application.namespaces.put(installer.nk, handle);
+        installer.root.container.application.oldNamespaces.put(installer.nk, handle);
         installer.handle = handle;
-        installer.root.tree.namespacesToClose.add(namespace);
+        installer.root.namespace.namespacesToClose.add(namespace);
         return handle;
     }
 

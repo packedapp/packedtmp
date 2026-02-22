@@ -123,7 +123,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
     public <H extends OldNamespaceHandle<E, ?>> H namespaceLazy(OldNamespaceTemplate<H> template, ComponentRealm realm) {
         NamespaceKey nk = new NamespaceKey(template.handleClass(), realm);
 
-        Map<NamespaceKey, OldNamespaceHandle<?, ?>> m = extension.container.application.namespaces;
+        Map<NamespaceKey, OldNamespaceHandle<?, ?>> m = extension.container.application.oldNamespaces;
 
         PackedNamespaceTemplate<H> t = (PackedNamespaceTemplate<H>) template;
         // cannot use computeIfAbsent, as we want to store the handle before the install method returns

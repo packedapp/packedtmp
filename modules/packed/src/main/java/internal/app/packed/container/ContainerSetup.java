@@ -198,7 +198,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
      * @return
      */
     public boolean isNamespaceRoot() {
-        return namespace.container == this;
+        return namespace.rootContainer == this;
     }
 
     /**

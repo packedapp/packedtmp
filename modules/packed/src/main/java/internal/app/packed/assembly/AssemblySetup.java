@@ -207,7 +207,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
                 }
                 list.add(e);
 
-                for (OldNamespaceSetup nss = e.tree.namespacesToClose.pollLast(); nss != null; nss = e.tree.namespacesToClose.pollLast()) {
+                for (OldNamespaceSetup nss = e.namespace.namespacesToClose.pollLast(); nss != null; nss = e.namespace.namespacesToClose.pollLast()) {
                     if (nss.root == e) {
                         NamespaceAccessHandler.instance().invokeNamespaceOnNamespaceClose(nss.handle());
                     }

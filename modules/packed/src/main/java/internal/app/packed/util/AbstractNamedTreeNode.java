@@ -18,7 +18,6 @@ package internal.app.packed.util;
 import java.util.HashMap;
 
 import org.jspecify.annotations.Nullable;
-import internal.app.packed.container.ContainerSetup;
 
 /**
  * A tree node with a name. It only checks that no children have identical names
@@ -28,7 +27,7 @@ public class AbstractNamedTreeNode<T extends AbstractNamedTreeNode<T>> extends A
     protected String name;
 
     /** Maintains unique names for child containers. */
-    protected final HashMap<String, ContainerSetup> treeChildren = new HashMap<>();
+    protected final HashMap<String, T> treeChildren = new HashMap<>();
 
     /**
      * @param treeParent

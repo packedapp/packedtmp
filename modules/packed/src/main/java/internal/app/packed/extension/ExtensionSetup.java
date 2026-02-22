@@ -2,6 +2,8 @@ package internal.app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -9,7 +11,6 @@ import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
@@ -43,8 +44,8 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     /** The extension's injection manager. */
     private MainServiceNamespaceHandle sm;
 
-    /** The extension realm this extension is a part of. */
-    public final ExtensionInstanceTree tree;
+    /** The extension's namespace. */
+    public final ExtensionNamespaceSetup namespace;
 
     /**
      * Creates a new extension setup.
@@ -57,26 +58,27 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
      *            the type of extension this setup class represents
      */
     private ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType) {
-        this(parent, container, extensionType, parent == null ? new ExtensionInstanceTree(container.application, extensionType) : parent.tree);
+        this(parent, container, extensionType, parent == null ? new ExtensionNamespaceSetup(container.application, extensionType) : parent.namespace);
     }
 
-    private ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType, ExtensionInstanceTree tree) {
-        super(parent, tree.servicesToResolve);
+    private ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType,
+            ExtensionNamespaceSetup namespace) {
+        super(parent, namespace.servicesToResolve);
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
-        this.tree = requireNonNull(tree);
-        this.model = requireNonNull(tree.model);
+        this.namespace = requireNonNull(namespace);
+        this.model = requireNonNull(namespace.model);
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentRealm owner() {
-        return tree.model.realm();
+        return namespace.model.realm();
     }
 
     public void closeApplication() {
         //ExtensionAccessHandler.instance().invoke_Extension_OnAssemblyClose(instance);
-        tree.isConfigurable = false;
+        namespace.isConfigurable = false;
         closeApplication0();
     }
 
@@ -113,7 +115,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
                 if (d == 0) {
                     // Same canonical name but different class loaders.
                     // sort in order of usage
-                    d = tree.applicationExtensionId - other.tree.applicationExtensionId;
+                    d = namespace.applicationExtensionId - other.namespace.applicationExtensionId;
                 }
             }
         }
@@ -144,7 +146,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     /** {@inheritDoc} */
     @Override
     public boolean isConfigurable() {
-        return tree.isConfigurable;
+        return namespace.isConfigurable;
     }
 
     /** {@return a map of locals for the bean} */

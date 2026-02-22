@@ -21,11 +21,12 @@ import java.util.Deque;
 
 import app.packed.extension.Extension;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.oldnamespace.OldNamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /** A single instance of this class exists per extension per application. */
-public final class ExtensionInstanceTree {
+public final class ExtensionNamespaceSetup extends NamespaceSetup {
 
     /**
      * The extension id. This id may be used when ordering extensions if there are multiple extensions with the same
@@ -39,12 +40,13 @@ public final class ExtensionInstanceTree {
     /** A model of the extension. */
     final ExtensionClassModel model;
 
-    public final String name;
+    public final String extensionName;
 
     public final Deque<OldNamespaceSetup> namespacesToClose = new ArrayDeque<>();
 
     /**
-     * Extensions resolver services when the application closes. The main argument is that they should very rarely fail to resolve.
+     * Extensions resolver services when the application closes. The main argument is that they should very rarely fail to
+     * resolve.
      */
     public ArrayList<ServiceBindingSetup> servicesToResolve = new ArrayList<>();
 
@@ -56,14 +58,18 @@ public final class ExtensionInstanceTree {
      * @param extensionType
      *            the type of extension
      */
-    ExtensionInstanceTree(ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
+    ExtensionNamespaceSetup(ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
+        super(application, extensionType);
         this.applicationExtensionId = application.extensionIdCounter++;
         this.model = ExtensionClassModel.of(extensionType);
         String name = model.name();
         int suffix = 1;
-        while (application.extensions.putIfAbsent(name, extensionType) != null) {
+        // TODO should be able to reuse the AbstractNode tree thingy here, instead of a seperate field
+        while (application.extensionNames.putIfAbsent(name, extensionType) != null) {
             name = model.name() + suffix++;
         }
-        this.name = name;
+        this.extensionName = name;
+        // TODO insert into tree propertly
+        super.name = "$" + name;
     }
 }

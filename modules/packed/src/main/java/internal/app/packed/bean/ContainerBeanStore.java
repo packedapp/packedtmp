@@ -102,7 +102,7 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
      */
     private String prefixExtension(BeanSetup bean, String newName) {
         if (bean.owner instanceof ExtensionSetup es) {
-            newName = es.tree.name + "#" + newName;
+            newName = es.namespace.extensionName + "#" + newName;
         }
         return newName;
     }

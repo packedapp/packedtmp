@@ -57,12 +57,12 @@ public final class NamespaceMirror {
     }
 
     public ApplicationMirror application() {
-        return namespace.container.application.mirror();
+        return namespace.rootContainer.application.mirror();
     }
 
     /** {@return the assembly wherein this container was defined.} */
     public AssemblyMirror assembly() {
-        return namespace.container.assembly.mirror();
+        return namespace.rootContainer.assembly.mirror();
     }
 
 
@@ -73,7 +73,7 @@ public final class NamespaceMirror {
 
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
-        return namespace.container.mirror();
+        return namespace.rootContainer.mirror();
     }
 
     public ComponentRealm owner() {
@@ -83,7 +83,7 @@ public final class NamespaceMirror {
     /** {@return a container tree mirror representing all the containers defined within the application.} */
     // For extensions, all the containers in which it is used!!!
     public TreeView<ContainerMirror> containers() {
-        return new PackedTreeView<>(namespace.container, c -> c.namespace == namespace, c -> c.mirror());
+        return new PackedTreeView<>(namespace.rootContainer, c -> c.namespace == namespace, c -> c.mirror());
     }
 
     /** {@return a stream of all of the operations on beans owned by the user in the application.} */

@@ -34,8 +34,8 @@ import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerHandle;
 import app.packed.extension.Extension.ExtensionProperty;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
-import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.namespaceold.OldNamespaceHandle;
+import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
@@ -197,7 +197,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      * @implNote Typically, by postfixing
      */
     protected final String extensionName() {
-        return extension.tree.name;
+        return extension.namespace.extensionName;
     }
 
     /**

@@ -25,7 +25,9 @@ import java.util.function.Supplier;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
+import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceMirror;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.util.AbstractNamedTreeNode;
 import internal.app.packed.util.accesshelper.NamespaceMirrorAccessHandler;
@@ -33,20 +35,26 @@ import internal.app.packed.util.accesshelper.NamespaceMirrorAccessHandler;
 /**
  *
  */
-public final class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> {
+public class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> {
 
-    public final ContainerSetup container;
+    public final ContainerSetup rootContainer;
 
     /** The lazy generated namespace mirror. */
     private final Supplier<NamespaceMirror> mirror = StableValue.supplier(() -> NamespaceMirrorAccessHandler.instance().newNamespaceMirror(this));
 
-    public final ComponentRealm owner = ComponentRealm.userland();
+    public final ComponentRealm owner;
 
     NamespaceSetup(ContainerSetup container, PackedNamespaceInstaller installer) {
         super(null);
-        this.container = requireNonNull(container);
+        this.rootContainer = requireNonNull(container);
+        this.owner = ComponentRealm.userland();
     }
 
+    protected NamespaceSetup(ApplicationSetup application, Class<? extends Extension<?>> extensionClass) {
+        super(application.container().namespace);
+        this.rootContainer = requireNonNull(application.container());
+        this.owner = ComponentRealm.extension(extensionClass);
+    }
 
     /** {@inheritDoc} */
     public ComponentPath componentPath() {
@@ -60,9 +68,8 @@ public final class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> 
 
         Collections.reverse(path);
 
-        return ComponentKind.NAMESPACE.pathNew(container.application.componentPath(), path);
+        return ComponentKind.NAMESPACE.pathNew(rootContainer.application.componentPath(), path);
     }
-
 
     /**
      * @return

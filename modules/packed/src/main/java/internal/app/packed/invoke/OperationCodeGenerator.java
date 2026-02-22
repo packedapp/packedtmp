@@ -23,10 +23,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.bean.BeanKind;
 import app.packed.binding.Key;
 import app.packed.binding.ProvisionException;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.sidehandle.PackedSidehandle;
 import internal.app.packed.bean.sidehandle.PackedSidehandle.OfOperation;
 import internal.app.packed.bean.sidehandle.PackedSidehandleBinding;

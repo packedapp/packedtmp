@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
@@ -31,8 +33,6 @@ import app.packed.component.ComponentPath;
 import app.packed.component.Sidehandle;
 import app.packed.extension.Extension;
 import app.packed.namespaceold.OldNamespaceHandle;
-
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.application.deployment.DeploymentSetup;
 import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.assembly.AssemblySetup;
@@ -63,7 +63,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
      * The root container of the application, is initialized in
      * {@link #newApplication(PackedApplicationInstaller, AssemblySetup)}.
      */
-    private ContainerSetup container;
+    private ContainerSetup rootContainer;
 
     /** The deployment the application is part of. */
     public final DeploymentSetup deployment;
@@ -83,7 +83,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
      * The only time where we might see collisions is if we load 2 extensions with same name, but with different class
      * loaders.
      */
-    public final Map<String, Class<? extends Extension<?>>> extensions = new HashMap<>();
+    public final Map<String, Class<? extends Extension<?>>> extensionNames = new HashMap<>();
 
     public final BuildGoal goal;
 
@@ -99,7 +99,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     private final BuildLocalMap locals = new BuildLocalMap();
 
     // Maybe move to container?? Or maybe a DomainManager class? IDK
-    public final HashMap<NamespaceKey, OldNamespaceHandle<?, ?>> namespaces = new HashMap<>();
+    public final HashMap<NamespaceKey, OldNamespaceHandle<?, ?>> oldNamespaces = new HashMap<>();
 
     /** The current phase of the application's build process. */
     public ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
@@ -186,11 +186,11 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     /** {@return the component path of the application} */
     @Override
     public ComponentPath componentPath() {
-        return ComponentKind.APPLICATION.pathNew(container.name());
+        return ComponentKind.APPLICATION.pathNew(rootContainer.name());
     }
 
     public ContainerSetup container() {
-        ContainerSetup c = container;
+        ContainerSetup c = rootContainer;
         if (c != null) {
             return c;
         }
@@ -243,7 +243,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
 //        }
 
         // Initialize the root container
-        application.container = ContainerSetup.newContainer(installer.containerInstaller, application, assembly);
+        application.rootContainer = ContainerSetup.newContainer(installer.containerInstaller, application, assembly);
         return application;
     }
 
