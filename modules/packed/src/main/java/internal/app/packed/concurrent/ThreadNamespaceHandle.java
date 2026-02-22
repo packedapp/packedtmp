@@ -20,7 +20,7 @@ import app.packed.concurrent.ThreadNamespaceConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.namespaceold.NamespaceInstaller;
-import app.packed.namespaceold.NamespaceTemplate;
+import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.namespaceold.OldNamespaceHandle;
 
 /**
@@ -29,7 +29,7 @@ import app.packed.namespaceold.OldNamespaceHandle;
 public final class ThreadNamespaceHandle extends OldNamespaceHandle<BaseExtension, ThreadNamespaceConfiguration> {
 
     /** The default thread namespace template. */
-    public static final NamespaceTemplate<ThreadNamespaceHandle> TEMPLATE = NamespaceTemplate.of(ThreadNamespaceHandle.class, ThreadNamespaceHandle::new);
+    public static final OldNamespaceTemplate<ThreadNamespaceHandle> TEMPLATE = OldNamespaceTemplate.of(ThreadNamespaceHandle.class, ThreadNamespaceHandle::new);
 
     /**
      * Create a new handle.

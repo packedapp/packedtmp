@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.namespace.NamespaceMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.util.AbstractNamedTreeNode;
@@ -38,6 +39,8 @@ public final class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> 
 
     /** The lazy generated namespace mirror. */
     private final Supplier<NamespaceMirror> mirror = StableValue.supplier(() -> NamespaceMirrorAccessHandler.instance().newNamespaceMirror(this));
+
+    public final ComponentRealm owner = ComponentRealm.userland();
 
     NamespaceSetup(ContainerSetup container, PackedNamespaceInstaller installer) {
         super(null);

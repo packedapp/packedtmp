@@ -56,6 +56,11 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         this.handle = requireNonNull(handle);
     }
 
+    // All namespaces including extensions
+    public TreeView<NamespaceMirror> allNamespaces() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * {@return a stream of all of the operations declared in the application}
      * <p>
@@ -172,12 +177,16 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return handle.application.container().name();
     }
 
-    /** {@return a mirror of the root namespace in the application.} */
+    public NamespaceMirror extensionNamespace(Class<? extends Extension<?>> extensionType) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return a mirror representing the root namespace in the application} */
     public NamespaceMirror namespace() {
         return handle.application.container().namespace.mirror();
     }
 
-    /** {@return a namespace tree mirror representing all the namespaces defined within the application.} */
+    /** {@return a tree mirror representing all the namespaces defined within the application} */
     public TreeView<NamespaceMirror> namespaces() {
         return new PackedTreeView<>(handle.application.container().namespace, null, c -> c.mirror());
     }
@@ -231,6 +240,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     /** {@return the service contract of this application.} */
+    // Maybe replaces with ServiceOverview services()
     public ServiceContract serviceContract() {
         return handle.application.container().servicesMain().newContract();
     }

@@ -35,6 +35,8 @@ import app.packed.operation.OperationMirror;
 // ApplicationMirrror.overview
 // NamespaceMirrror.overview
 // ?ContainerMirror.overview
+
+// Har vi lyst til at supportere noget for userland?
 public abstract class OverviewMirror<E extends Extension<E>> {
     // ComponentPath componentPath();
 

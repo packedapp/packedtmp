@@ -24,7 +24,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.OnVariable;
 import app.packed.component.ComponentRealm;
 import app.packed.namespaceold.NamespaceInstaller;
-import app.packed.namespaceold.NamespaceTemplate;
+import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.namespaceold.OldNamespaceHandle;
 
 /**
@@ -33,7 +33,7 @@ import app.packed.namespaceold.OldNamespaceHandle;
 final class CliNamespaceHandle extends OldNamespaceHandle<CliExtension, CliNamespaceConfiguration> {
 
     /** The default namespace template. */
-    static final NamespaceTemplate<CliNamespaceHandle> TEMPLATE = NamespaceTemplate.of(CliNamespaceHandle.class, CliNamespaceHandle::new);
+    static final OldNamespaceTemplate<CliNamespaceHandle> TEMPLATE = OldNamespaceTemplate.of(CliNamespaceHandle.class, CliNamespaceHandle::new);
 
     /** All the commands within the namespace. */
     final LinkedHashMap<String, CliCommandOperationHandle> commands = new LinkedHashMap<>();

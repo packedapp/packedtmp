@@ -28,7 +28,7 @@ import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
 import app.packed.namespaceold.OldNamespaceHandle;
-import app.packed.namespaceold.NamespaceTemplate;
+import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.util.TreeView;
 import internal.app.packed.ValueBased;
 import internal.app.packed.oldnamespace.PackedNamespaceInstaller;
@@ -120,7 +120,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
 
     @Override
     @SuppressWarnings("unchecked")
-    public <H extends OldNamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, ComponentRealm realm) {
+    public <H extends OldNamespaceHandle<E, ?>> H namespaceLazy(OldNamespaceTemplate<H> template, ComponentRealm realm) {
         NamespaceKey nk = new NamespaceKey(template.handleClass(), realm);
 
         Map<NamespaceKey, OldNamespaceHandle<?, ?>> m = extension.container.application.namespaces;

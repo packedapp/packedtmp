@@ -23,7 +23,7 @@ import org.jspecify.annotations.Nullable;
 import app.packed.binding.DublicateKeyProvisionException;
 import app.packed.binding.Key;
 import app.packed.namespaceold.NamespaceInstaller;
-import app.packed.namespaceold.NamespaceTemplate;
+import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.binding.BindingProvider;
@@ -40,7 +40,7 @@ import internal.app.packed.service.util.ServiceMap;
 public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
 
     /** The default namespace template used for the service namespace. */
-    public static NamespaceTemplate<MainServiceNamespaceHandle> TEMPLATE = NamespaceTemplate.of(MainServiceNamespaceHandle.class,
+    public static OldNamespaceTemplate<MainServiceNamespaceHandle> TEMPLATE = OldNamespaceTemplate.of(MainServiceNamespaceHandle.class,
             MainServiceNamespaceHandle::new);
 
     // All provided services are automatically exported

@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldnamespace;
+package app.packed.extension.sandbox;
 
-import java.util.function.Function;
-
-import app.packed.namespaceold.OldNamespaceHandle;
-import app.packed.namespaceold.NamespaceInstaller;
-import app.packed.namespaceold.OldNamespaceTemplate;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 
 /**
  *
  */
+public class ImplExtension extends Extension<ImplExtension> {
 
-public record PackedNamespaceTemplate<H extends OldNamespaceHandle<?, ?>>(Class<? extends OldNamespaceHandle<?, ?>> handleClass,
-        Function<? super NamespaceInstaller<?>, H> newHandle) implements OldNamespaceTemplate<H> {
+    final ImplEP implIP;
+
+    /**
+     * @param handle
+     */
+    ImplExtension(ImplEP implIP, ExtensionHandle<ImplExtension> handle) {
+        super(handle);
+        this.implIP = implIP;
+    }
 
 }

@@ -25,12 +25,12 @@ import internal.app.packed.oldnamespace.PackedNamespaceTemplate;
  */
 
 // A default domain is applicationWide...
-public sealed interface NamespaceTemplate<H extends OldNamespaceHandle<?, ?>> permits PackedNamespaceTemplate {
+public sealed interface OldNamespaceTemplate<H extends OldNamespaceHandle<?, ?>> permits PackedNamespaceTemplate {
 
     // Er ikke sikker paa vi har behov for handler klassen...
     Class<? extends OldNamespaceHandle<?, ?>> handleClass();
 
-    static <H extends OldNamespaceHandle<?, ?>> NamespaceTemplate<H> of(Class<? extends OldNamespaceHandle<?, ?>> handleClass,
+    static <H extends OldNamespaceHandle<?, ?>> OldNamespaceTemplate<H> of(Class<? extends OldNamespaceHandle<?, ?>> handleClass,
             Function<? super NamespaceInstaller<?>, H> newHandle) {
         return new PackedNamespaceTemplate<>(handleClass, newHandle);
     }
@@ -43,9 +43,9 @@ public sealed interface NamespaceTemplate<H extends OldNamespaceHandle<?, ?>> pe
     // Maaske ogsaa metrics. Men metrics er > 1.0
 
     // IDK maaske er namespaces der stadig.. Men er bare ikke enabled
-    default NamespaceTemplate<H> manualEnabled() {
-        return this;
-    }
+//    default NamespaceTemplate<H> manualEnabled() {
+//        return this;
+//    }
     // Taenker maaske man skal kunne foersporge paa det.
     // Give me all domains of typeX
 
@@ -57,7 +57,7 @@ public sealed interface NamespaceTemplate<H extends OldNamespaceHandle<?, ?>> pe
     // a)
     // void addConfigure(Function<Object, NamespaceConfiguration<?>> a);
 
-    default void addPermission(BuildPermission permissions) {
-        // Default values??? for example, root only
-    }
+//    default void addPermission(BuildPermission permissions) {
+//        // Default values??? for example, root only
+//    }
 }

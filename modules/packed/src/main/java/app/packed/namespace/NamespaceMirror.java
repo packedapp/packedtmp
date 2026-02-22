@@ -24,6 +24,7 @@ import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
+import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.TreeView;
@@ -75,7 +76,12 @@ public final class NamespaceMirror {
         return namespace.container.mirror();
     }
 
+    public ComponentRealm owner() {
+        return namespace.owner;
+    }
+
     /** {@return a container tree mirror representing all the containers defined within the application.} */
+    // For extensions, all the containers in which it is used!!!
     public TreeView<ContainerMirror> containers() {
         return new PackedTreeView<>(namespace.container, c -> c.namespace == namespace, c -> c.mirror());
     }

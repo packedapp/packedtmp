@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldnamespace;
+package app.packed.extension.sandbox;
 
-import java.util.function.Function;
-
-import app.packed.namespaceold.OldNamespaceHandle;
-import app.packed.namespaceold.NamespaceInstaller;
-import app.packed.namespaceold.OldNamespaceTemplate;
+import app.packed.extension.Extension;
 
 /**
  *
  */
+public abstract class ApplicationExtensionPart<N extends NamespaceExtensionPart<E>, E extends Extension<E>> {
 
-public record PackedNamespaceTemplate<H extends OldNamespaceHandle<?, ?>>(Class<? extends OldNamespaceHandle<?, ?>> handleClass,
-        Function<? super NamespaceInstaller<?>, H> newHandle) implements OldNamespaceTemplate<H> {
-
+    public abstract N newNamepace();
 }
