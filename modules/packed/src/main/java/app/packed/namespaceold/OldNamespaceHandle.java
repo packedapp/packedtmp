@@ -18,7 +18,6 @@ package app.packed.namespaceold;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentHandle;
@@ -41,9 +40,6 @@ public abstract non-sealed class OldNamespaceHandle<E extends Extension<E>, C ex
 
     /** A cache of all namespace configurations, currently do not support namespaces uses by extensions. */
     private HashMap<E, C> configurations = new HashMap<>();
-
-    /** The lazy generated namespace mirror. */
-    private final Supplier<OldNamespaceMirror<E>> mirror = StableValue.supplier(() -> newNamespaceMirror());
 
     /** The namespace configuration. */
     final OldNamespaceSetup namespace;
@@ -113,24 +109,7 @@ public abstract non-sealed class OldNamespaceHandle<E extends Extension<E>, C ex
     }
 
     /** {@inheritDoc} */
-    @Override
-    public final OldNamespaceMirror<E> mirror() {
-        return mirror.get();
-    }
-
-    /** {@inheritDoc} */
     protected abstract C newNamespaceConfiguration(E extension, ComponentRealm actor);
-
-    /**
-     * <p>
-     * Most namespace implementations will want to define a special namespace mirror. But it is fine to leave it alone when
-     * implementing the namespace.
-     *
-     * @return the new mirror
-     */
-    protected OldNamespaceMirror<E> newNamespaceMirror() {
-        return new OldNamespaceMirror<E>(this);
-    }
 
     protected void onClose() {}
 

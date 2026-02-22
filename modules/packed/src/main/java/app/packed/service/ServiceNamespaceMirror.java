@@ -20,29 +20,14 @@ import java.util.Map;
 import java.util.Set;
 
 import app.packed.binding.Key;
-import app.packed.extension.BaseExtension;
-import app.packed.namespaceold.OldNamespaceMirror;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
-import internal.app.packed.service.ServiceNamespaceHandle;
 
 /**
  * A mirror for a service namespace.
  */
-public final class ServiceNamespaceMirror extends OldNamespaceMirror<BaseExtension> {
+public final class ServiceNamespaceMirror {
 
-    /**
-     * Creates a new service namespace mirror.
-     *
-     * @param handle
-     *            the namespace's handle
-     *
-     * @implNote Invoked via
-     *           {@link internal.app.packed.handlers.ServiceHandlers#newServiceNamespaceMirror(ServiceNamespaceHandle)}
-     */
-    ServiceNamespaceMirror(ServiceNamespaceHandle handle) {
-        super(handle);
-    }
 
     /** {@return A map of all the bindings from providers in the namespace} */
     public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {

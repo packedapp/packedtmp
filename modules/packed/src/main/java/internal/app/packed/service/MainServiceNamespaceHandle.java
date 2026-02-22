@@ -22,6 +22,7 @@ import org.jspecify.annotations.Nullable;
 
 import app.packed.binding.DublicateKeyProvisionException;
 import app.packed.binding.Key;
+import app.packed.component.ComponentMirror;
 import app.packed.namespaceold.NamespaceInstaller;
 import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.service.ServiceContract;
@@ -139,5 +140,11 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
         if (exportAll) {
             export(key, operation);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentMirror mirror() {
+        return null;
     }
 }

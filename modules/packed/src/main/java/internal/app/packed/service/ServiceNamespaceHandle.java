@@ -17,15 +17,15 @@ package internal.app.packed.service;
 
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.binding.DublicateKeyProvisionException;
 import app.packed.binding.Key;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
-import app.packed.namespaceold.OldNamespaceHandle;
 import app.packed.namespaceold.NamespaceInstaller;
+import app.packed.namespaceold.OldNamespaceHandle;
 import app.packed.service.ServiceNamespaceConfiguration;
-import app.packed.service.ServiceNamespaceMirror;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
@@ -62,11 +62,11 @@ public abstract class ServiceNamespaceHandle extends OldNamespaceHandle<BaseExte
         return ServiceAccessHandler.instance().newServiceNamespaceConfiguration(this, e);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected final ServiceNamespaceMirror newNamespaceMirror() {
-        return ServiceAccessHandler.instance().newServiceNamespaceMirror(this);
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    protected final ServiceNamespaceMirror newNamespaceMirror() {
+//        return ServiceAccessHandler.instance().newServiceNamespaceMirror(this);
+//    }
 
     /**
      * Provides a service for the specified operation.

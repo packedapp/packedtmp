@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerMirror;
@@ -30,7 +29,7 @@ import app.packed.operation.OperationMirror;
 import app.packed.util.TreeView;
 
 /** A mirror of a namespace. */
-public non-sealed class OldNamespaceMirror<E extends Extension<E>> implements ComponentMirror {
+public class OverviewOldMirror<E extends Extension<E>>  {
 
     /** The namespace configuration. */
     private final OldNamespaceHandle<E, ?> handle;
@@ -41,12 +40,11 @@ public non-sealed class OldNamespaceMirror<E extends Extension<E>> implements Co
      * @param handle
      *            the namespace's handle
      */
-    public OldNamespaceMirror(OldNamespaceHandle<E, ?> handle) {
+    public OverviewOldMirror(OldNamespaceHandle<E, ?> handle) {
         this.handle = requireNonNull(handle);
     }
 
     /** {@inheritDoc} */
-    @Override
     public final ComponentPath componentPath() {
         return handle.componentPath();
     }
@@ -55,7 +53,6 @@ public non-sealed class OldNamespaceMirror<E extends Extension<E>> implements Co
         return handle.componentOwner();
     }
 
-    @Override
     public final Set<String> componentTags() {
         return handle.componentTags();
     }
@@ -63,7 +60,7 @@ public non-sealed class OldNamespaceMirror<E extends Extension<E>> implements Co
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return other instanceof OldNamespaceMirror m && getClass() == m.getClass() && handle.namespace == m.handle.namespace;
+        return other instanceof OverviewOldMirror m && getClass() == m.getClass() && handle.namespace == m.handle.namespace;
     }
 
     /** {@return the root extension in the namespace} */

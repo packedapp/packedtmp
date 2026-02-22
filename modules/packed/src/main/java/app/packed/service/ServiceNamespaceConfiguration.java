@@ -179,7 +179,7 @@ public final class ServiceNamespaceConfiguration extends OldNamespaceConfigurati
 
             @Override
             public ServiceNamespaceMirror newServiceNamespaceMirror(ServiceNamespaceHandle handle) {
-                return new ServiceNamespaceMirror(handle);
+                return new ServiceNamespaceMirror();
             }
         });
     }

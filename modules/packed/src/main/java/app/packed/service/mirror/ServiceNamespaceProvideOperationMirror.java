@@ -17,7 +17,6 @@ package app.packed.service.mirror;
 
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
-import app.packed.service.ServiceNamespaceMirror;
 
 /**
  *
@@ -30,11 +29,11 @@ public class ServiceNamespaceProvideOperationMirror extends OperationMirror {
     public ServiceNamespaceProvideOperationMirror(OperationHandle<?> handle) {
         super(handle);
     }
-
-    /** {@inheritDoc} */
-    public ServiceNamespaceMirror namespace() {
-        return null;
-    }
+//
+//    /** {@inheritDoc} */
+//    public ServiceNamespaceMirror namespace() {
+//        return null;
+//    }
 
     ServiceProviderMirror.FromNamespace providerMirror() {
         throw new UnsupportedOperationException();

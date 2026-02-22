@@ -22,7 +22,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.binding.Key;
 import app.packed.context.ContextMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.service.ServiceNamespaceMirror;
 
 /**
  *
@@ -67,7 +66,7 @@ public interface ServiceProviderMirror {
 
         ServiceNamespaceProvideOperationMirror providedVia();
 
-        ServiceNamespaceMirror namespace();
+       // ServiceNamespaceMirror namespace();
     }
 
     interface FromOperation extends ServiceProviderMirror {

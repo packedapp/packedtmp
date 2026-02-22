@@ -22,7 +22,6 @@ import app.packed.binding.Key;
 import app.packed.component.ComponentRealm;
 import app.packed.context.ContextMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.service.ServiceNamespaceMirror;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.sandbox.ServiceProviderKind;
 
@@ -79,7 +78,7 @@ public interface ServiceProviderMirror {
 
         OperationMirror providingOperation(); // IDK optional
 
-        ServiceNamespaceMirror namespace();
+     //   ServiceNamespaceMirror namespace();
     }
     // FromImportExportMappedStrangeThings, idk
 }

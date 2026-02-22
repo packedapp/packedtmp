@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
 import app.packed.namespaceold.OldNamespaceHandle;
-import app.packed.namespaceold.OldNamespaceMirror;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -79,12 +79,6 @@ public final class OldNamespaceSetup implements ComponentSetup {
         return requireNonNull(handle);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public OldNamespaceMirror<?> mirror() {
-        return handle().mirror();
-    }
-
     public static OldNamespaceSetup crack(OldNamespaceHandle<?, ?> handle) {
         return NamespaceAccessHandler.instance().getNamespaceHandleNamespace(handle);
     }
@@ -104,4 +98,10 @@ public final class OldNamespaceSetup implements ComponentSetup {
     }
 
     public record NamespaceKey(Class<? extends OldNamespaceHandle<?, ?>> handleClass, ComponentRealm realm) {}
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentMirror mirror() {
+        return null;
+    }
 }

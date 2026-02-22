@@ -21,7 +21,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.build.Mirror;
 import app.packed.container.ContainerMirror;
-import app.packed.namespaceold.OldNamespaceMirror;
 import app.packed.operation.OperationMirror;
 
 /**
@@ -30,7 +29,7 @@ import app.packed.operation.OperationMirror;
  * A component mirror is always defined either by the framework or by an extension. IDK would it make sense to have it
  * as a user??? Fx Importer...
  */
-public sealed interface ComponentMirror extends Mirror permits ApplicationMirror, BeanMirror, ContainerMirror, OldNamespaceMirror, OperationMirror {
+public sealed interface ComponentMirror extends Mirror permits ApplicationMirror, BeanMirror, ContainerMirror, OperationMirror {
 
     // BuildAction installedBy();?? Cute
 

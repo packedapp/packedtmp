@@ -18,7 +18,6 @@ package app.packed.service.mirrorold;
 import app.packed.binding.Key;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
-import app.packed.service.ServiceNamespaceMirror;
 import internal.app.packed.service.ExportedService;
 
 /**
@@ -43,11 +42,6 @@ public class ExportedServiceMirror extends OperationMirror {
     /** {@return the key that the service is exported with.} */
     public Key<?> key() {
         return es.key;
-    }
-
-    /** {@inheritDoc} */
-    public ServiceNamespaceMirror namespace() {
-        throw new UnsupportedOperationException();
     }
 
 //    // Hvad goer vi omvendt??? Returnere en liste??

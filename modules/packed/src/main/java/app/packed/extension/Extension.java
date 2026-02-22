@@ -30,12 +30,9 @@ import app.packed.BaseModuleNames;
 import app.packed.build.BuildCodeSource;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentPath;
-import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerHandle;
 import app.packed.extension.Extension.ExtensionProperty;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
-import app.packed.namespaceold.OldNamespaceHandle;
-import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
@@ -277,10 +274,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
             }
         }
         return (E) s.instance();
-    }
-
-    protected final <H extends OldNamespaceHandle<E, ?>> H namespaceLazy(OldNamespaceTemplate<H> template) {
-        return handle.namespaceLazy(template, ComponentRealm.userland());
     }
 
     /**

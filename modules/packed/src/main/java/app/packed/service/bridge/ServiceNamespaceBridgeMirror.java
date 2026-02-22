@@ -15,12 +15,10 @@
  */
 package app.packed.service.bridge;
 
-import app.packed.service.ServiceNamespaceMirror;
-
 /**
  *
  */
-public interface ServiceNamespaceBridgeMirror extends NamespaceBridgeMirror<ServiceNamespaceMirror> {
+public interface ServiceNamespaceBridgeMirror  {
     String ACTION_REMOVED = "removed";
 
     // remove [Key, Operation]

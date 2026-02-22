@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 import app.packed.binding.Key;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
-import app.packed.service.ServiceNamespaceMirror;
 import app.packed.service.mirror.ServiceBindingMirror;
 import internal.app.packed.service.ServiceProviderSetup;
 
@@ -65,10 +64,10 @@ public class ProvidedServiceMirror extends OperationMirror {
 //        return service.entry.useSiteMirrors();
     }
 
-    /** {@inheritDoc} */
-    public ServiceNamespaceMirror namespace() {
-        throw new UnsupportedOperationException();
-    }
+//    /** {@inheritDoc} */
+//    public ServiceNamespaceMirror namespace() {
+//        throw new UnsupportedOperationException();
+//    }
 }
 
 // provide(Doo.class) -> BeanOperation.element = BeanClass  (Kunne ogsaa vaere constructoren???)
