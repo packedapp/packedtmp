@@ -27,17 +27,20 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.Framework;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
+import app.packed.extension.Extension.Props;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.FrameworkExtension;
 import app.packed.extension.InternalExtensionException;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.invoke.ConstructorSupport;
 import internal.app.packed.invoke.ConstructorSupport.ExtensionFactory;
+import internal.app.packed.invoke.ConstructorSupport.ExtensionNamespaceFactory;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
@@ -81,6 +84,8 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
     /** A factory for creating new instances of {@link #extensionClass}. */
     final ExtensionFactory factory;
 
+    final ExtensionNamespaceFactory namespaceFactory;
+
     /** The (simple) name of the extension as returned by {@link Class#getSimpleName()}. */
     private final String name;
 
@@ -101,7 +106,14 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
     private ExtensionClassModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
         this.realm = ComponentRealm.extension(extensionClass);
-        this.factory = ConstructorSupport.findExtensionConstructor(extensionClass);
+        Props props = extensionClass.getAnnotation(Extension.Props.class);
+        if (props == null) {
+            this.factory = ConstructorSupport.findExtensionConstructor(extensionClass);
+            this.namespaceFactory = null;
+        } else {
+            this.factory = null;
+            this.namespaceFactory = ConstructorSupport.findExtensionNamespaceConstructor(props.extensionNamespace());
+        }
         this.orderingDepth = builder.depth;
         this.dependencies = Set.copyOf(builder.dependencies);
 
@@ -264,8 +276,7 @@ public final class ExtensionClassModel implements ExtensionDescriptor {
         return MODELS.get(extensionType);
     }
 
-    /** A builder of {@link ExtensionModel}. Public to allow bootstrapping from {@link Extension}. */
-    // I think we don't need to be public any more
+    /** A builder of {@link ExtensionModel}. */
     private static final class Builder {
 
         /** A set of extension this extension depends on (does not include transitive extensions). */

@@ -9,12 +9,15 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionMirror;
+import app.packed.extension.ExtensionNamespace;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.invoke.ConstructorSupport.ExtensionNamespaceFactory;
+import internal.app.packed.namespace.PackedExtensionNamespaceHandle;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.accesshelper.ExtensionAccessHandler;
 
@@ -41,11 +44,14 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     /** A static model of the extension. */
     public final ExtensionClassModel model;
 
+    /** The extension's namespace. */
+    public final ExtensionNamespaceSetup namespace;
+
     /** The extension's injection manager. */
     private MainServiceNamespaceHandle sm;
 
-    /** The extension's namespace. */
-    public final ExtensionNamespaceSetup namespace;
+    @Nullable
+    private ExtensionNamespace<?, ?> userlandNamespaceInstance;
 
     /**
      * Creates a new extension setup.
@@ -70,14 +76,8 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         this.model = requireNonNull(namespace.model);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentRealm owner() {
-        return namespace.model.realm();
-    }
-
     public void closeApplication() {
-        //ExtensionAccessHandler.instance().invoke_Extension_OnAssemblyClose(instance);
+        // ExtensionAccessHandler.instance().invoke_Extension_OnAssemblyClose(instance);
         namespace.isConfigurable = false;
         closeApplication0();
     }
@@ -169,6 +169,12 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         return mirror;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentRealm owner() {
+        return namespace.model.realm();
+    }
+
     public MainServiceNamespaceHandle services() {
         MainServiceNamespaceHandle s = sm;
         if (s == null) {
@@ -206,6 +212,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
      *            the extension that requested the extension or null if user
      * @return the new extension
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static ExtensionSetup newExtension(Class<? extends Extension<?>> extensionType, ContainerSetup container,
             @Nullable ExtensionSetup requestedByExtension) {
         // Install the extension recursively into all container ancestors in the same application (if not already installed)
@@ -215,7 +222,23 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
 
         // Create the new extension instance
-        Extension<?> instance = extension.instance = extension.model.factory.create(extension);
+        ExtensionNamespaceFactory nf = extension.model.namespaceFactory;
+        ExtensionHandle<?> handle = new PackedExtensionHandle<>(extension);
+        Extension<?> instance;
+        if (nf == null) {
+            instance = extension.model.factory.create(extension);
+        } else {
+            ExtensionNamespace<?, ?> namespaceInstance;
+            if (container.isNamespaceRoot()) {
+                namespaceInstance = nf.create(new PackedExtensionNamespaceHandle<>(container.namespace));
+            } else {
+                namespaceInstance = extensionParent.userlandNamespaceInstance;
+            }
+            extension.userlandNamespaceInstance = namespaceInstance;
+
+            instance = namespaceInstance.newExtension((ExtensionHandle) handle);
+        }
+        extension.instance = instance;
 
         // Add the extension to the container's map of extensions
         container.extensions.put(extensionType, extension);

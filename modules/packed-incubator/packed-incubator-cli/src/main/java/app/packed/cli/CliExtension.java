@@ -15,10 +15,13 @@
  */
 package app.packed.cli;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.FrameworkExtension;
@@ -31,14 +34,17 @@ import app.packed.extension.FrameworkExtension;
 // CliOption er ikke noget problem
 public class CliExtension extends FrameworkExtension<CliExtension> {
 
+    final CliExtensionNamespace userlandNamespace;
+
     /**
      * Creates a new CLI extension.
      *
      * @param handle
      *            the extension's handle
      */
-    CliExtension(ExtensionHandle<CliExtension> handle) {
+    CliExtension(CliExtensionNamespace userlandNamespace, ExtensionHandle<CliExtension> handle) {
         super(handle);
+        this.userlandNamespace = requireNonNull(userlandNamespace);
     }
 
     // Vi har 1 per application.. Vi kan fx stadig injecte globalle parameters i enhver lifetime.
@@ -48,7 +54,8 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
     /** No. */
 
     public CliCommandConfiguration addCliCommand(Consumer<CliCommandContext> action) {
-        return namespace().addCliCommand(action);
+        //return userlandNamespace.addCliCommand(action);
+        throw new UnsupportedOperationException();
     }
 
     // Must be application scoped (or same lifetime as the namespace, or prototype, idk)
@@ -66,13 +73,12 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
         throw new UnsupportedOperationException();
     }
 
-    CliNamespaceHandle namespaceHandle() {
-        return applicationRoot().namespaceLazy(CliNamespaceHandle.TEMPLATE);
+    void add(CliExtensionNamespace en) {
+
     }
 
-    public CliNamespaceConfiguration namespace() {
-        return namespaceHandle().configuration(this);
-    }
+
+
 
 //    private ContainerInstaller<?> newContainer() {
 //        if (isInApplicationLifetime()) {
@@ -96,8 +102,17 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     @Override
     protected void onClose() {
-        IO.println("Have commands for " + namespaceHandle().commands.keySet());
+        IO.println("Have commands for " + userlandNamespace.commands.keySet());
 
         super.onClose();
     }
+
+    /**
+     * @param namespace
+     * @param annotation
+     * @param method
+     */
+    public void process(CliExtensionNamespace namespace, CliCommand annotation, OnMethod method) {}
+
+
 }

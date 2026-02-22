@@ -130,13 +130,13 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
     /** {@inheritDoc} */
     @Override
     public final boolean isConfigurable() {
-        return application.container().assembly.isConfigurable();
+        return application.rootContainer().assembly.isConfigurable();
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean isOpen() {
-        return application.container().assembly.isConfigurable();
+        return application.rootContainer().assembly.isConfigurable();
     }
 
     /** {@return a mirror for the application} */
@@ -147,7 +147,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
 
     /** {@return the name of the application} */
     public final String name() {
-        return application.container().name();
+        return application.rootContainer().name();
     }
 
     /**

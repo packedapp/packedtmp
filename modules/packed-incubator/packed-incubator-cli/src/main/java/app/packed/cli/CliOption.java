@@ -31,6 +31,7 @@ final class CliOptionBeanIntrospector extends BeanIntrospector<CliExtension> {
     /** {@inheritDoc} */
     @Override
     public void onAnnotatedVariable(Annotation annotation, OnVariable onVariable) {
-        extension().namespaceHandle().onCliOptionAnnotation(extension(), (CliOption) annotation, onVariable);
+//        namespace(CliExtensionNamespace.class).dddd
+        extension().userlandNamespace.onCliOptionAnnotation(extension(), (CliOption) annotation, onVariable);
     }
 }

@@ -14,6 +14,7 @@ import app.packed.build.Mirror;
 import app.packed.build.MirrorPrinter;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceMirror;
@@ -24,6 +25,7 @@ import app.packed.util.TreeView;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.PackedTreeView;
@@ -56,11 +58,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         this.handle = requireNonNull(handle);
     }
 
-    // All namespaces including extensions
-    public TreeView<NamespaceMirror> allNamespaces() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * {@return a stream of all of the operations declared in the application}
      * <p>
@@ -68,6 +65,10 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
      */
     public Stream<BeanMirror> allBeans() {
         return containers().stream().flatMap(ContainerMirror::allBeans);
+    }
+
+    public TreeView<NamespaceMirror> allNamespaces() {
+        return new PackedTreeView<>(handle.application.rootNamespace(), null, c -> c.mirror());
     }
 
     /**
@@ -81,12 +82,12 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
 
     /** {@return a tree representing all the assemblies used for creating this application} */
     public TreeView<AssemblyMirror> assemblies() {
-        return new PackedTreeView<>(handle.application.container().assembly, null, c -> c.mirror());
+        return new PackedTreeView<>(handle.application.rootContainer().assembly, null, c -> c.mirror());
     }
 
     /** {@return a mirror of the (root) assembly that defines the application} */
     public AssemblyMirror assembly() {
-        return handle.application.container().assembly.mirror();
+        return handle.application.rootContainer().assembly.mirror();
     }
 
     /** {@return a stream of all of the bean declared by the user in the application.} */
@@ -124,12 +125,12 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
 
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
-        return handle.application.container().mirror();
+        return handle.application.rootContainer().mirror();
     }
 
     /** {@return a container tree mirror representing all the containers defined within the application.} */
     public TreeView<ContainerMirror> containers() {
-        return new PackedTreeView<>(handle.application.container(), null, c -> c.mirror());
+        return new PackedTreeView<>(handle.application.rootContainer(), null, c -> c.mirror());
     }
 //
 //    /** {@return a collection of all entry points the application may have.} */
@@ -141,6 +142,15 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     @Override
     public final boolean equals(Object other) {
         return this == other || other instanceof ApplicationMirror m && handle.application == m.handle.application;
+    }
+
+    public NamespaceMirror extensionNamespace(Class<? extends Extension<?>> extensionType) {
+        ExtensionSetup extension = handle.application.rootContainer().extensions.get(extensionType);
+        if (extension == null) {
+            throw new IllegalArgumentException("Extension has not been used, extensionType = " + extensionType);
+        } else {
+            return extension.namespace.mirror();
+        }
     }
 
     /** {@return an unmodifiable {@link Set} view of every extension type that has been used in the application.} */
@@ -174,21 +184,17 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
      * @see Wirelet#named(String)
      */
     public String name() {
-        return handle.application.container().name();
-    }
-
-    public NamespaceMirror extensionNamespace(Class<? extends Extension<?>> extensionType) {
-        throw new UnsupportedOperationException();
+        return handle.application.rootContainer().name();
     }
 
     /** {@return a mirror representing the root namespace in the application} */
     public NamespaceMirror namespace() {
-        return handle.application.container().namespace.mirror();
+        return handle.application.rootNamespace().mirror();
     }
 
     /** {@return a tree mirror representing all the namespaces defined within the application} */
     public TreeView<NamespaceMirror> namespaces() {
-        return new PackedTreeView<>(handle.application.container().namespace, null, c -> c.mirror());
+        return new PackedTreeView<>(handle.application.rootNamespace(), n -> n.owner == ComponentRealm.userland(), c -> c.mirror());
     }
 
     /** {@return a stream of all of the operations on beans owned by the user in the application.} */
@@ -206,7 +212,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         // to(PrintStream ps);
         // asJSON();
         // verbose();
-        print0(handle.application.container());
+        print0(handle.application.rootContainer());
     }
 
     public final void print(@SuppressWarnings("unchecked") Class<? extends Mirror>... mirrorTypes) {
@@ -242,7 +248,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     /** {@return the service contract of this application.} */
     // Maybe replaces with ServiceOverview services()
     public ServiceContract serviceContract() {
-        return handle.application.container().servicesMain().newContract();
+        return handle.application.rootContainer().servicesMain().newContract();
     }
 
     /** {@inheritDoc} */

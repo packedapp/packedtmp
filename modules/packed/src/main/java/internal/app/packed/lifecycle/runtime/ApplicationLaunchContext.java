@@ -55,7 +55,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
     /** {@return the name of the application} */
     public String name() {
-        return application.container().name();
+        return application.rootContainer().name();
     }
 
     ManagedApplicationRuntime runtime() {
@@ -72,7 +72,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
      * @return a service locator for the application
      */
     public ServiceLocator serviceLocator() {
-        return application.container().servicesMain().newExportedServiceLocator(runner.pool());
+        return application.rootContainer().servicesMain().newExportedServiceLocator(runner.pool());
     }
 
 //    @SuppressWarnings("unused")

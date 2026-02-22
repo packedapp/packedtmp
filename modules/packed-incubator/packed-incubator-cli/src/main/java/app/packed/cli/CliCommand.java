@@ -69,6 +69,6 @@ final class CliCommandBeanIntrospector extends BeanIntrospector<CliExtension> {
     /** {@inheritDoc} */
     @Override
     public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
-        extension().namespaceHandle().process(extension(), (CliCommand) annotation, method);
+        extension().process(namespace(), (CliCommand) annotation, method);
     }
 }

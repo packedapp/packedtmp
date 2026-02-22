@@ -78,6 +78,10 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         return handle;
     }
 
+    protected final <N extends ExtensionNamespace<N, E>> N namespace() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the extension instance that this extension point is a part of} */
     @SuppressWarnings("unchecked")
     protected final E extension() {
@@ -93,8 +97,8 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
      * A context object that can be injected into subclasses of {@link ExtensionPoint}.
      */
     // Inner class: UseSite
-    //// Er lidt underlig maaske med UseSite hvis man tager den som parameter
-    //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
+    //// Er lidt underlig maaske med UseSite hvis man tager den som parameter Men vil ikke mere hvor man skal tage
+    /// et ExtensionPointContext???
     public sealed interface ExtensionPointHandle permits PackedExtensionPointHandle {
         ComponentRealm author();
     }

@@ -58,6 +58,8 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
 
     public boolean isFromAssembly;
 
+    public boolean newNamespace;
+
     /** The name of the container. */
     String name;
 

@@ -13,29 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.sandbox;
+package app.packed.extension;
 
-import static java.util.Objects.requireNonNull;
-
-import app.packed.extension.ExtensionHandle;
+import app.packed.component.ComponentRealm;
+import internal.app.packed.namespace.PackedExtensionNamespaceHandle;
 
 /**
  *
  */
-public class ImplEP extends NamespaceExtensionPart<ImplExtension> {
-
-    final ImplAp implAp;
+public sealed interface ExtensionNamespaceHandle<N extends ExtensionNamespace<N, E>, E extends Extension<E>> permits PackedExtensionNamespaceHandle {
 
     /**
-     * @param implAp
+     *
      */
-    ImplEP(ImplAp implAp) {
-        this.implAp = requireNonNull(implAp);
-    }
+    ComponentRealm owner();
 
-    /** {@inheritDoc} */
-    @Override
-    public ImplExtension newExtension(ExtensionHandle<ImplExtension> extensionHandle) {
-        return new ImplExtension(this, extensionHandle);
-    }
 }

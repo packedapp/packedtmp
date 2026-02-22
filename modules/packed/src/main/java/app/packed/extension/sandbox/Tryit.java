@@ -15,16 +15,21 @@
  */
 package app.packed.extension.sandbox;
 
+import app.packed.application.App;
+import app.packed.assembly.BaseAssembly;
+
 /**
  *
  */
-public class ImplAp extends ApplicationExtensionPart<MyExtensionNamespace, MyExtension> {
+public class Tryit extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
-    public MyExtensionNamespace newNamepace() {
-        throw new UnsupportedOperationException();
-       /// return new NamespaceImpl(this);
+    protected void build() {
+        use(MyExtension.class);
     }
 
+    public static void main(String[] args) {
+        App.run(new Tryit());
+    }
 }

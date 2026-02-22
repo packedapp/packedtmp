@@ -30,6 +30,8 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.build.BuildException;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
+import app.packed.extension.ExtensionNamespace;
+import app.packed.extension.ExtensionNamespaceHandle;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.assembly.AssemblyClassModel;
 import internal.app.packed.build.hooks.BuildHook;
@@ -64,8 +66,7 @@ public class ConstructorSupport {
             try {
                 privateLookup = MethodHandles.privateLookupIn(type, registeredLookup);
             } catch (IllegalAccessException e) {
-                throw new BuildException("Registered lookup for " + type.getName()
-                        + " does not have sufficient access", e);
+                throw new BuildException("Registered lookup for " + type.getName() + " does not have sufficient access", e);
             }
         } else if (typeModule.isOpen(type.getPackageName(), thisModule)) {
             // Package is open via module-info
@@ -76,10 +77,8 @@ public class ConstructorSupport {
             }
         } else {
             // Neither registered nor open
-            throw new BuildException("BuildHook " + type.getName()
-                    + " is not accessible. Either call BuildHook.openToFramework(MethodHandles.lookup()) "
-                    + "in a static initializer, or add 'opens " + type.getPackageName()
-                    + " to " + thisModule.getName() + "' to your module-info.java");
+            throw new BuildException("BuildHook " + type.getName() + " is not accessible. Either call BuildHook.openToFramework(MethodHandles.lookup()) "
+                    + "in a static initializer, or add 'opens " + type.getPackageName() + " to " + thisModule.getName() + "' to your module-info.java");
         }
         // TODO fix visibility
         // Maybe common findConstructorMethod
@@ -177,6 +176,56 @@ public class ConstructorSupport {
         return new ExtensionFactory(mh);
     }
 
+    /**
+     * Finds a constructor on an extension.
+     *
+     * @param extensionClass
+     *            the extension class to find the constructor on.
+     * @return an extension factory for creating extension instances of the specified extension class type
+     *
+     * @throws InternalExtensionException
+     *             if a valid constructor could not be found
+     */
+    public static ExtensionNamespaceFactory findExtensionNamespaceConstructor(Class<? extends ExtensionNamespace<?, ?>> extensionNamespaceClass) {
+        if (Modifier.isAbstract(extensionNamespaceClass.getModifiers())) {
+            throw new InternalExtensionException("ExtensionNamespace " + StringFormatter.format(extensionNamespaceClass) + " cannot be an abstract class");
+        } else if (ClassUtil.isInnerOrLocal(extensionNamespaceClass)) {
+            throw new InternalExtensionException("ExtensionNamespace " + StringFormatter.format(extensionNamespaceClass) + " cannot be an an inner or local class");
+        }
+
+        // An extension must provide an empty constructor
+        Constructor<?>[] constructors = extensionNamespaceClass.getDeclaredConstructors();
+        if (constructors.length != 1) {
+            throw new InternalExtensionException(StringFormatter.format(extensionNamespaceClass) + " must declare exactly 1 constructor");
+        }
+
+        Constructor<?> constructor = constructors[0];
+        if (constructor.getParameterCount() != 1 || constructor.getParameterTypes()[0] != ExtensionNamespaceHandle.class) {
+            throw new InternalExtensionException(extensionNamespaceClass + " must provide a constructor taking ExtensionNamespaceHandle, but constructor required "
+                    + Arrays.toString(constructor.getParameters()));
+        }
+
+        // The constructor must be non-public
+        // Actually it would be okay if the class is not public
+        if (Modifier.isPublic(constructor.getModifiers())) {
+            throw new InternalExtensionException(extensionNamespaceClass + " cannot declare a public constructor");
+        }
+
+        // Create a MethodHandle for the constructor
+        MethodHandle mh;
+        try {
+            // Highly unlikely to fails since we have already loaded it
+            Lookup l = MethodHandles.privateLookupIn(extensionNamespaceClass, MethodHandles.lookup());
+            mh = l.unreflectConstructor(constructor);
+        } catch (IllegalAccessException e) {
+            throw new InternalExtensionException(illegalAccessExtensionMsg(extensionNamespaceClass), e);
+        }
+        // cast from (ExtensionClass) -> (Extension)
+        mh = MethodHandles.explicitCastArguments(mh, MethodType.methodType(ExtensionNamespace.class, ExtensionNamespaceHandle.class));
+        return new ExtensionNamespaceFactory(mh);
+    }
+
+
     public static void forceLoad(Class<? extends Extension<?>> extensionClass) {
         // Ensure that the class initializer of the extension has been run before we progress
         try {
@@ -210,6 +259,23 @@ public class ConstructorSupport {
                 return (Extension<?>) mh.invokeExact(handle);
             } catch (Throwable e) {
                 throw new InternalExtensionException("An instance of the extension " + extension.model.fullName() + " could not be created.", e);
+            }
+        }
+    }
+
+    /** A factory class for creating instances of {@link Extension} */
+    public static final class ExtensionNamespaceFactory {
+        private final MethodHandle mh; // (ExtensionHandle)Extension
+
+        public ExtensionNamespaceFactory(MethodHandle mh) {
+            this.mh = requireNonNull(mh);
+        }
+
+        public ExtensionNamespace<?, ?> create(ExtensionNamespaceHandle<?, ?> handle) {
+            try {
+                return (ExtensionNamespace<?, ?>) mh.invokeExact(handle);
+            } catch (Throwable e) {
+                throw new InternalExtensionException("An instance of the extension could not be created.", e);
             }
         }
     }

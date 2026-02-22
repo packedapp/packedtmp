@@ -37,7 +37,7 @@ public class ContainerRunner {
 
     public ContainerRunner(ApplicationSetup application) {
         this.runtime = new RegionalManagedLifetime(this);
-        this.container = application.container();
+        this.container = application.rootContainer();
         // application.goal.isLaunchable() && application.driver.lifetimeKind() == OldLifetimeKind.MANAGED ? new
         // PackedManagedLifetime(this) : null;
     }

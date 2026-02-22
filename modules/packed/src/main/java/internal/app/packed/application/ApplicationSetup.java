@@ -43,7 +43,7 @@ import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
-import internal.app.packed.namespace.NamespaceSetup;
+import internal.app.packed.namespace.UserlandNamespaceSetup;
 import internal.app.packed.oldnamespace.OldNamespaceSetup.NamespaceKey;
 import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
 
@@ -64,9 +64,9 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
      * The root container of the application, is initialized in
      * {@link #newApplication(PackedApplicationInstaller, AssemblySetup)}.
      */
-    private ContainerSetup rootContainer;
+    public ContainerSetup rootContainer;
 
-    private NamespaceSetup rootNamespace;
+    private UserlandNamespaceSetup rootNamespace;
 
     /** The deployment the application is part of. */
     public final DeploymentSetup deployment;
@@ -189,10 +189,19 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     /** {@return the component path of the application} */
     @Override
     public ComponentPath componentPath() {
-        return ComponentKind.APPLICATION.pathNew(rootContainer.name());
+        return ComponentKind.APPLICATION.pathNew(rootContainer().name());
     }
 
-    public ContainerSetup container() {
+    public UserlandNamespaceSetup rootNamespace() {
+        UserlandNamespaceSetup c = rootNamespace;
+        if (c != null) {
+            return c;
+        }
+        throw new IllegalStateException();
+    }
+
+
+    public ContainerSetup rootContainer() {
         ContainerSetup c = rootContainer;
         if (c != null) {
             return c;

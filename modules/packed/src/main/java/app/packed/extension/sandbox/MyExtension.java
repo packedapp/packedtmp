@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.extension.sandbox;
 
-import app.packed.component.ComponentRealm;
-import app.packed.extension.Ugly.SomeN;
+import app.packed.extension.Extension;
+import app.packed.extension.Extension.Props;
+import app.packed.extension.ExtensionHandle;
 
 /**
  *
  */
-abstract class Ugly<N extends SomeN, E extends Extension<E>> {
+@Props(extensionNamespace = MyExtensionNamespace.class)
+public class MyExtension extends Extension<MyExtension> {
 
-    protected void onNewApplication() {}
-    protected void onNewNamespace(N namespace) {}
-    protected void onNewContainer(E extension) {}
+    final MyExtensionNamespace implIP;
 
-    protected void newOverview(Object overviewConfig) {}
-
-    static class SomeN {
-        ComponentRealm realm;
+    /**
+     * @param handle
+     */
+    MyExtension(MyExtensionNamespace implIP, ExtensionHandle<MyExtension> handle) {
+        super(handle);
+        this.implIP = implIP;
     }
 }

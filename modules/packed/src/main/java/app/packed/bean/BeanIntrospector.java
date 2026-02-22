@@ -28,6 +28,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.bean.BeanLocal.Accessor;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
@@ -38,13 +40,13 @@ import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.ExtensionHandle;
+import app.packed.extension.ExtensionNamespace;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.introspection.BeanIntrospectorSetup;
 import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
@@ -156,6 +158,10 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         return bean().beanKind;
     }
 
+    protected final <N extends ExtensionNamespace<N, E>> N namespace() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the owner of the bean.} */
     public final ComponentRealm beanOwner() {
         return bean().owner();
@@ -217,7 +223,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
     /** {@return whether or not the bean is in same lifetime as the application.} */
     public final boolean isInApplicationLifetime() {
         BeanSetup b = bean();
-        return b.lifetime == b.container.application.container().lifetime;
+        return b.lifetime == b.container.application.rootContainer().lifetime;
     }
 
     /** {@return whether or not the bean is in same lifetime as its container.} */

@@ -270,7 +270,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
         AssemblySetup as = new AssemblySetup(installer, assembly);
         if (installer.parent == null) {
             // This method creates both the application setup and container setup
-            as.container = ApplicationSetup.newApplication(installer.applicationInstaller, as).container();
+            as.container = ApplicationSetup.newApplication(installer.applicationInstaller, as).rootContainer();
         } else {
             as.container = ContainerSetup.newContainer(installer, installer.parent.application, as);
         }

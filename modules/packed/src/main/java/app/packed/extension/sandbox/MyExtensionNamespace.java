@@ -15,14 +15,25 @@
  */
 package app.packed.extension.sandbox;
 
-import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
+import app.packed.extension.ExtensionNamespace;
+import app.packed.extension.ExtensionNamespaceHandle;
 
 /**
  *
  */
-public abstract class NamespaceExtensionPart<E extends Extension<E>> {
+public final class MyExtensionNamespace extends ExtensionNamespace<MyExtensionNamespace, MyExtension> {
 
-    public abstract E newExtension(ExtensionHandle<E> extensionHandle);
+    /**
+     * @param handle
+     */
+    protected MyExtensionNamespace(ExtensionNamespaceHandle<MyExtensionNamespace, MyExtension> handle) {
+        super(handle);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MyExtension newExtension(ExtensionHandle<MyExtension> extensionHandle) {
+        return new MyExtension(this, extensionHandle);
+    }
 }
-

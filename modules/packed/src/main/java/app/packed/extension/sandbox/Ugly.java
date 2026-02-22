@@ -15,16 +15,22 @@
  */
 package app.packed.extension.sandbox;
 
+import app.packed.component.ComponentRealm;
+import app.packed.extension.Extension;
+import app.packed.extension.sandbox.Ugly.SomeN;
+
 /**
  *
  */
-public class ImplAp extends ApplicationExtensionPart<MyExtensionNamespace, MyExtension> {
+abstract class Ugly<N extends SomeN, E extends Extension<E>> {
 
-    /** {@inheritDoc} */
-    @Override
-    public MyExtensionNamespace newNamepace() {
-        throw new UnsupportedOperationException();
-       /// return new NamespaceImpl(this);
+    protected void onNewApplication() {}
+    protected void onNewNamespace(N namespace) {}
+    protected void onNewContainer(E extension) {}
+
+    protected void newOverview(Object overviewConfig) {}
+
+    static class SomeN {
+        ComponentRealm realm;
     }
-
 }

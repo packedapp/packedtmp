@@ -16,11 +16,12 @@
 package app.packed.extension.sandbox;
 
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionNamespace;
 
 /**
  *
  */
-public abstract class ApplicationExtensionPart<N extends NamespaceExtensionPart<E>, E extends Extension<E>> {
+public abstract class ApplicationExtensionPart<N extends ExtensionNamespace<N, E>, E extends Extension<E>> {
 
     public abstract N newNamepace();
 }

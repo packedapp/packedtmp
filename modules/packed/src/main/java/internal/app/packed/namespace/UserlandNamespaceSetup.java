@@ -26,7 +26,7 @@ public class UserlandNamespaceSetup extends NamespaceSetup {
      * @param container
      * @param installer
      */
-    UserlandNamespaceSetup(ContainerSetup container, PackedNamespaceInstaller installer) {
+   public UserlandNamespaceSetup(ContainerSetup container, PackedNamespaceInstaller installer) {
         super(container, installer);
     }
 

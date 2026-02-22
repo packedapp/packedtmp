@@ -13,24 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.sandbox;
+package app.packed.concurrent;
 
-import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
+import app.packed.extension.ExtensionNamespace;
+import app.packed.extension.ExtensionNamespaceHandle;
 
 /**
  *
  */
-public class ImplExtension extends Extension<ImplExtension> {
-
-    final ImplEP implIP;
+class JobExtensionNamespace extends ExtensionNamespace<JobExtensionNamespace, JobExtension> {
 
     /**
      * @param handle
      */
-    ImplExtension(ImplEP implIP, ExtensionHandle<ImplExtension> handle) {
+    protected JobExtensionNamespace(ExtensionNamespaceHandle<JobExtensionNamespace, JobExtension> handle) {
         super(handle);
-        this.implIP = implIP;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public JobExtension newExtension(ExtensionHandle<JobExtension> extensionHandle) {
+        return new JobExtension(this, extensionHandle);
+    }
 }

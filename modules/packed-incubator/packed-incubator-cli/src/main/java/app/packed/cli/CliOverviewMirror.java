@@ -27,9 +27,9 @@ import app.packed.operation.OperationMirror;
 public final class CliOverviewMirror extends OverviewMirror<CliExtension> {
 
     /** The CLI namespace handle. */
-    private final CliNamespaceHandle handle;
+    private final CliExtensionNamespace handle;
 
-    CliOverviewMirror(CliNamespaceHandle handle) {
+    CliOverviewMirror(CliExtensionNamespace handle) {
         this.handle = handle;
     }
 

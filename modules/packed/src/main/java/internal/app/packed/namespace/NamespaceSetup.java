@@ -19,7 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.component.ComponentKind;
@@ -46,6 +48,8 @@ public abstract class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetu
 
     public final ComponentRealm owner;
 
+    public final Map<Class<? extends Extension<?>>, PackedExtensionNamespaceHandle<?, ?>> extensionNamespaceHandles = new HashMap<>();
+
     NamespaceSetup(ContainerSetup container, PackedNamespaceInstaller installer) {
         super(null);
         this.rootContainer = requireNonNull(container);
@@ -53,8 +57,8 @@ public abstract class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetu
     }
 
     protected NamespaceSetup(ApplicationSetup application, Class<? extends Extension<?>> extensionClass) {
-        super(application.container().namespace);
-        this.rootContainer = requireNonNull(application.container());
+        super(application.rootContainer().namespace);
+        this.rootContainer = requireNonNull(application.rootContainer());
         this.owner = ComponentRealm.extension(extensionClass);
     }
 

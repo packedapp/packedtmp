@@ -49,6 +49,8 @@ import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.namespace.NamespaceSetup;
+import internal.app.packed.namespace.PackedNamespaceInstaller;
+import internal.app.packed.namespace.UserlandNamespaceSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
 import internal.app.packed.util.accesshelper.BeanAccessHandler;
@@ -78,7 +80,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     @Nullable
     private ContainerHandle<?> handle;
 
-    public final NamespaceSetup namespace = null;
+    public final NamespaceSetup namespace;
 
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
@@ -115,6 +117,11 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
             this.lifetime = installer.parent.lifetime;
         } else {
             this.lifetime = new ContainerLifetimeSetup(installer, this, null);
+        }
+        if (installer.parent == null || installer.newNamespace) {
+            this.namespace = new UserlandNamespaceSetup(this, new PackedNamespaceInstaller());
+        } else {
+            this.namespace = installer.parent.namespace;
         }
 
         // If a name has been set using a wirelet, we ignore calls to #named(String)
@@ -425,6 +432,9 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
 
         // Create the new container using this installer
         ContainerSetup container = installer.install(new ContainerSetup(installer, application, assembly));
+        if (container.treeParent == null) {
+            container.application.rootContainer = container;
+        }
 
         container.nameNewContainer(installer);
 

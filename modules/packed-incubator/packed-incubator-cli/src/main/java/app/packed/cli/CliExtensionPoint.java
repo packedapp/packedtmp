@@ -29,7 +29,8 @@ public class CliExtensionPoint extends ExtensionPoint<CliExtension> {
         super(handle);
     }
 
-    public CliNamespaceConfiguration namespace() {
-        return extension().namespaceHandle().configuration(extension(), handle());
+    public void foo() {
+        namespace();
     }
+
 }

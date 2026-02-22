@@ -41,7 +41,7 @@ public abstract class BaseExtensionOperationHandle<C extends OperationConfigurat
     }
 
     public BaseExtensionPoint applicationRootBase() {
-        ExtensionSetup baseExtension = bean().container.application.container().baseExtension();
+        ExtensionSetup baseExtension = bean().container.application.rootContainer().baseExtension();
         return new PackedExtensionHandle<>(baseExtension).use(BaseExtensionPoint.class);
 
     }

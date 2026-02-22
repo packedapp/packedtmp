@@ -15,6 +15,7 @@
  */
 package app.packed.concurrent;
 
+import app.packed.extension.Extension.Props;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
@@ -43,7 +44,10 @@ import app.packed.extension.FrameworkExtension;
 
 // Maybe it is built-in..
 // Can't fanthom many applications not threads
+@Props(extensionNamespace = JobExtensionNamespace.class)
 public final class JobExtension extends FrameworkExtension<JobExtension> {
+
+    final JobExtensionNamespace jobExtensionNamespace;
 
     /**
      * Creates a new job extension.
@@ -51,8 +55,9 @@ public final class JobExtension extends FrameworkExtension<JobExtension> {
      * @param handle
      *            the extension's handle
      */
-    JobExtension(ExtensionHandle<JobExtension> handle) {
+    JobExtension(JobExtensionNamespace jobExtensionNamespace, ExtensionHandle<JobExtension> handle) {
         super(handle);
+        this.jobExtensionNamespace = jobExtensionNamespace;
     }
 
     /**

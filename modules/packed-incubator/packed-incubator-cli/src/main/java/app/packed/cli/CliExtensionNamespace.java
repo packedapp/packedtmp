@@ -22,32 +22,21 @@ import java.util.List;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.OnVariable;
-import app.packed.component.ComponentRealm;
-import app.packed.namespaceold.NamespaceInstaller;
-import app.packed.namespaceold.OldNamespaceTemplate;
-import app.packed.namespaceold.OldNamespaceHandle;
+import app.packed.extension.ExtensionHandle;
+import app.packed.extension.ExtensionNamespace;
+import app.packed.extension.ExtensionNamespaceHandle;
 
 /**
- * A CLI domain is a domain where all CLI commands are unique. Typically there is never more than one per application.
+ *
  */
-final class CliNamespaceHandle extends OldNamespaceHandle<CliExtension, CliNamespaceConfiguration> {
+public class CliExtensionNamespace extends ExtensionNamespace<CliExtensionNamespace, CliExtension> {
 
-    /** The default namespace template. */
-    static final OldNamespaceTemplate<CliNamespaceHandle> TEMPLATE = OldNamespaceTemplate.of(CliNamespaceHandle.class, CliNamespaceHandle::new);
 
     /** All the commands within the namespace. */
     final LinkedHashMap<String, CliCommandOperationHandle> commands = new LinkedHashMap<>();
 
     final List<CliOptionMirror> options = new ArrayList<>();
 
-    CliNamespaceHandle(NamespaceInstaller<?> installer) {
-        super(installer);
-    }
-
-    @Override
-    protected CliNamespaceConfiguration newNamespaceConfiguration(CliExtension e, ComponentRealm actor) {
-        return new CliNamespaceConfiguration(this, e, actor);
-    }
 
     void process(CliExtension extension, CliCommand c, BeanIntrospector.OnMethod method) {
         CliCommandOperationHandle h = null;
@@ -58,17 +47,17 @@ final class CliNamespaceHandle extends OldNamespaceHandle<CliExtension, CliNames
         }
 
         // For each name check that it doesn't exists in commands already
-        if (isInApplicationLifetime(extension)) {
-            h = method.newOperation().install(i -> new CliCommandOperationHandle(i, this));
+      //  if (isInApplicationLifetime(extension)) {
+            h = method.newOperation().install(i -> new CliCommandOperationHandle(i));
 
             // OperationTemplate.
             // h.namespace(this)
 
             // h.configuration -> CliCommandConfiguration
             // check Launched
-        } else {
-            // EntryPoint.LaunchLifetime
-        }
+//        } else {
+//            // EntryPoint.LaunchLifetime
+//        }
 
         // populate from annotation instead
        // h.command = c;
@@ -77,6 +66,19 @@ final class CliNamespaceHandle extends OldNamespaceHandle<CliExtension, CliNames
             throw new BeanInstallationException("Multiple cli commands with the same name, name = " + c.name());
         }
         // OT.DEFAULTS.entryPoint();
+    }
+
+    /**
+     * @param handle
+     */
+    protected CliExtensionNamespace(ExtensionNamespaceHandle<CliExtensionNamespace, CliExtension> handle) {
+        super(handle);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CliExtension newExtension(ExtensionHandle<CliExtension> extensionHandle) {
+        return new CliExtension(this, extensionHandle);
     }
 
     /**

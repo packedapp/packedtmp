@@ -523,6 +523,12 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         String[] optionally() default {};
     }
 
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Props {
+        Class<? extends ExtensionNamespace<?,?>>  extensionNamespace();
+    }
+
     // For extension properties, they are not validated before the extension is used together with extension defining the
     // property (potentially never)
     @Repeatable(ExtensionProperty.All.class)

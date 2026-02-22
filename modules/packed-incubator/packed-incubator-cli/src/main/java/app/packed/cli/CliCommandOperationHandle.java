@@ -15,8 +15,6 @@
  */
 package app.packed.cli;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,14 +28,11 @@ final class CliCommandOperationHandle extends OperationHandle<CliCommandConfigur
 
     final List<String> names = new ArrayList<>();
 
-    final CliNamespaceHandle namespace;
-
     /**
      * @param installer
      */
-    CliCommandOperationHandle(OperationInstaller installer, CliNamespaceHandle namespace) {
+    CliCommandOperationHandle(OperationInstaller installer) {
         super(installer);
-        this.namespace = requireNonNull(namespace);
     }
 
     /** {@inheritDoc} */

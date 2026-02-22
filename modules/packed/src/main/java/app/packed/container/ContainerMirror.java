@@ -91,7 +91,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
 
     /** {@return a node representing this container in a tree containing all containers in the application.} */
     public TreeView.Node<ContainerMirror> applicationNode() {
-        return new PackedTreeView<>(handle.container.application.container(), null, c -> c.mirror()).toNode(handle.container);
+        return new PackedTreeView<>(handle.container.application.rootContainer(), null, c -> c.mirror()).toNode(handle.container);
     }
 
     /** {@return the assembly wherein this container was defined.} */
