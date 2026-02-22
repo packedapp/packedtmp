@@ -35,8 +35,10 @@ import internal.app.packed.util.accesshelper.NamespaceMirrorAccessHandler;
 /**
  *
  */
-public class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> {
+public abstract class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> {
 
+    /** */
+    // In case of an extension namespace it is the application's root container.
     public final ContainerSetup rootContainer;
 
     /** The lazy generated namespace mirror. */

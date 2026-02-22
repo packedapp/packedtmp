@@ -43,6 +43,7 @@ import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
+import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.oldnamespace.OldNamespaceSetup.NamespaceKey;
 import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
 
@@ -64,6 +65,8 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
      * {@link #newApplication(PackedApplicationInstaller, AssemblySetup)}.
      */
     private ContainerSetup rootContainer;
+
+    private NamespaceSetup rootNamespace;
 
     /** The deployment the application is part of. */
     public final DeploymentSetup deployment;
