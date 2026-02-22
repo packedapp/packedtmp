@@ -31,7 +31,7 @@ public final /* primitive */ class AssemblyClassModel {
                 if (a instanceof UseBuildHooks h) {
                     for (Class<? extends BuildHook> b : h.hooks()) {
                         Class<? extends BuildHook> hookType = BuildHookMap.classOf(b);
-                        BuildHookFactory factory = ConstructorSupport.newBuildHookFactory(type, h, b);
+                        BuildHookFactory factory = ConstructorSupport.findBuildHookFactory(type, h, b);
                         // Would be great with some caching. But it is tricky, we need to take into account
                         // if the assembly can both see the constructor of the buildhook
                         BuildHook instance = factory.create();

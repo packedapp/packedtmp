@@ -28,7 +28,7 @@ import internal.app.packed.extension.ExtensionNamespaceSetup;
  */
 public final class PackedExtensionNamespaceHandle<N extends ExtensionNamespace<N, E>, E extends Extension<E>> implements ExtensionNamespaceHandle<N, E> {
 
-    final NamespaceSetup namespace;
+    private final NamespaceSetup namespace;
 
     // Don't know if needed
     ExtensionNamespaceSetup managedBy;
@@ -40,6 +40,12 @@ public final class PackedExtensionNamespaceHandle<N extends ExtensionNamespace<N
     /** {@inheritDoc} */
     @Override
     public ComponentRealm owner() {
-        return namespace.owner;
+        return namespace.owner();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isApplicationRoot() {
+        return namespace.isApplicationRoot();
     }
 }

@@ -49,7 +49,6 @@ import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.namespace.NamespaceSetup;
-import internal.app.packed.namespace.PackedNamespaceInstaller;
 import internal.app.packed.namespace.UserlandNamespaceSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
@@ -119,7 +118,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
             this.lifetime = new ContainerLifetimeSetup(installer, this, null);
         }
         if (installer.parent == null || installer.newNamespace) {
-            this.namespace = new UserlandNamespaceSetup(this, new PackedNamespaceInstaller());
+            this.namespace = new UserlandNamespaceSetup(null, this);
         } else {
             this.namespace = installer.parent.namespace;
         }

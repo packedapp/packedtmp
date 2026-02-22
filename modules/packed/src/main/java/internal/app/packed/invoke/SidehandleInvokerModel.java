@@ -145,7 +145,7 @@ public final class SidehandleInvokerModel {
                 Label handlerRethrow = cb.newLabel();
                 Label handlerWrap = cb.newLabel();
 
-                // 1. Define Exception Table
+                // Define Exception Table
                 List<ClassDesc> toPropagate = new ArrayList<>(List.of(CD_RuntimeException, CD_Error));
                 for (Class<?> ex : sam.getExceptionTypes()) {
                     toPropagate.add(ClassDesc.ofDescriptor(ex.descriptorString()));
@@ -156,7 +156,7 @@ public final class SidehandleInvokerModel {
                 }
                 cb.exceptionCatch(start, end, handlerWrap, CD_Throwable);
 
-                // 2. Method Body
+                // Method Body
                 cb.labelBinding(start);
                 cb.aload(0);
                 cb.getfield(cd, "mh", CD_MethodHandle);
@@ -175,7 +175,7 @@ public final class SidehandleInvokerModel {
                 cb.labelBinding(end);
                 cb.return_(TypeKind.from(sam.getReturnType()));
 
-                // 3. Exception Handlers
+                // Exception Handlers
 
                 // Rethrow: Just throw the exception that is already on the stack
                 cb.labelBinding(handlerRethrow);
@@ -214,7 +214,6 @@ public final class SidehandleInvokerModel {
 
     public static SidehandleInvokerModel of(Class<?> iface) {
         Method sam = findSamMethod(iface);
-        SidehandleInvokerModel sim = new SidehandleInvokerModel(iface, sam);
-        return sim;
+        return new SidehandleInvokerModel(iface, sam);
     }
 }

@@ -66,9 +66,9 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @param handle
      *            the extension's handle
      */
-    BaseExtension(BaseExtensionNamespace namespace, ExtensionHandle<BaseExtension> handle) {
+    BaseExtension(BaseExtensionNamespace userlandNamespace, ExtensionHandle<BaseExtension> handle) {
         super(handle);
-        this.userlandNamespace = namespace;
+        this.userlandNamespace = userlandNamespace;
     }
 
     /**

@@ -23,6 +23,8 @@ import internal.app.packed.namespace.PackedExtensionNamespaceHandle;
  */
 public sealed interface ExtensionNamespaceHandle<N extends ExtensionNamespace<N, E>, E extends Extension<E>> permits PackedExtensionNamespaceHandle {
 
+    boolean isApplicationRoot();
+
     /**
      *
      */

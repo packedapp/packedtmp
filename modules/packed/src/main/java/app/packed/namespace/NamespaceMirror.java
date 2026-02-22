@@ -77,7 +77,7 @@ public final class NamespaceMirror {
     }
 
     public ComponentRealm owner() {
-        return namespace.owner;
+        return namespace.owner();
     }
 
     /** {@return a container tree mirror representing all the containers defined within the application.} */
@@ -97,6 +97,6 @@ final class NamespaceMirrorBeanIntrospector extends BaseExtensionBeanIntrospecto
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
-        service.binder().bindConstant(service.bean().container.namespace.mirror());
+        service.binder().bindConstant(container().namespace.mirror());
     }
 }

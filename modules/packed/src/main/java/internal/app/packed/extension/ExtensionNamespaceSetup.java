@@ -19,6 +19,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 
+import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.namespace.NamespaceSetup;
@@ -27,12 +28,6 @@ import internal.app.packed.service.ServiceBindingSetup;
 
 /** A single instance of this class exists per extension per application. */
 public final class ExtensionNamespaceSetup extends NamespaceSetup {
-
-    /**
-     * The extension id. This id may be used when ordering extensions if there are multiple extensions with the same
-     * canonically name and extension depth.
-     */
-    final int applicationExtensionId;
 
     /** Whether or not this type of extension is still configurable. */
     boolean isConfigurable = true;
@@ -59,17 +54,24 @@ public final class ExtensionNamespaceSetup extends NamespaceSetup {
      *            the type of extension
      */
     ExtensionNamespaceSetup(ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
-        super(application, extensionType);
-        this.applicationExtensionId = application.extensionIdCounter++;
+        super(application.rootContainer(), extensionType);
         this.model = ExtensionClassModel.of(extensionType);
+
         String name = model.name();
+
         int suffix = 1;
-        // TODO should be able to reuse the AbstractNode tree thingy here, instead of a seperate field
         while (application.extensionNames.putIfAbsent(name, extensionType) != null) {
             name = model.name() + suffix++;
         }
         this.extensionName = name;
+        // TODO should be able to reuse the AbstractNode tree thingy here, instead of a seperate field
         // TODO insert into tree propertly
         super.name = "$" + name;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentRealm owner() {
+        return model.realm();
     }
 }

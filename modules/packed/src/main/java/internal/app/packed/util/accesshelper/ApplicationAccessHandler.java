@@ -55,5 +55,5 @@ public abstract class ApplicationAccessHandler extends AccessHelper {
      * @param mirror the mirror
      * @return the application handle
      */
-    public abstract ApplicationHandle<?, ?> getApplicationMirrorHandle(ApplicationMirror mirror);
+    public abstract ApplicationSetup getApplicationMirrorHandle(ApplicationMirror mirror);
 }

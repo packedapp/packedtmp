@@ -36,6 +36,26 @@ import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
  */
 public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration> extends ComponentHandle implements ApplicationLocal.Accessor {
 
+    static {
+        AccessHelper.initHandler(ApplicationAccessHandler.class, new ApplicationAccessHandler() {
+
+            @Override
+            public ApplicationHandle<?, ?> getApplicationConfigurationHandle(ApplicationConfiguration configuration) {
+                return configuration.handle();
+            }
+
+            @Override
+            public ApplicationSetup getApplicationHandleApplication(ApplicationHandle<?, ?> handle) {
+                return handle.application;
+            }
+
+            @Override
+            public ApplicationSetup getApplicationMirrorHandle(ApplicationMirror mirror) {
+                return mirror.application;
+            }
+        });
+    }
+
     /** The applications's setup. */
     final ApplicationSetup application;
 
@@ -48,6 +68,25 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
 
     /** A mirror for the application. */
     private final Supplier<ApplicationMirror> mirror = StableValue.supplier(() -> newApplicationMirror());
+
+//    /**
+//     * The image
+//     *
+//     * @return the base image for the application
+//     * @throws IllegalStateException
+//     *             if the application was build with {@link BuildGoal#IMAGE}.
+//     */
+//    // Tror jeg fjerner den her... BaseImage er kun noget man bruger ved rødder tænker jeg???
+//    public final BootstrapApp.Image<A> newImage() {
+//        if (buildGoal() != BuildGoal.IMAGE) {
+//            throw new IllegalStateException("The application must be installed with BuildImage, was " + application.goal);
+//        }
+//        BootstrapApp.Image<A> img = null;
+//        img = new ImageEager<>(this);
+//        if (!inst.optionBuildReusableImage) {
+//            img = new ImageNonReusable<>(img);
+//        }
+//    }
 
     /**
      * Creates a new application handle.
@@ -69,25 +108,6 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
         }
         this.image = img;
     }
-
-//    /**
-//     * The image
-//     *
-//     * @return the base image for the application
-//     * @throws IllegalStateException
-//     *             if the application was build with {@link BuildGoal#IMAGE}.
-//     */
-//    // Tror jeg fjerner den her... BaseImage er kun noget man bruger ved rødder tænker jeg???
-//    public final BootstrapApp.Image<A> newImage() {
-//        if (buildGoal() != BuildGoal.IMAGE) {
-//            throw new IllegalStateException("The application must be installed with BuildImage, was " + application.goal);
-//        }
-//        BootstrapApp.Image<A> img = null;
-//        img = new ImageEager<>(this);
-//        if (!inst.optionBuildReusableImage) {
-//            img = new ImageNonReusable<>(img);
-//        }
-//    }
 
     /** {@return the build goal that was used to build the application} */
     public final BuildGoal buildGoal() {
@@ -117,14 +137,6 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
      */
     public final C configuration() {
         return configuration.get();
-    }
-
-    public final Sidehandle sidehandle() {
-        Sidehandle sidehandle = application.sidehandle;
-        if (sidehandle == null) {
-            throw new UnsupportedOperationException("Application has not been attached to a sidehandle");
-        }
-        return sidehandle;
     }
 
     /** {@inheritDoc} */
@@ -179,23 +191,11 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
 //        return Optional.empty();
 //    }
 
-    static {
-        AccessHelper.initHandler(ApplicationAccessHandler.class, new ApplicationAccessHandler() {
-
-            @Override
-            public ApplicationHandle<?, ?> getApplicationConfigurationHandle(ApplicationConfiguration configuration) {
-                return configuration.handle();
-            }
-
-            @Override
-            public ApplicationSetup getApplicationHandleApplication(ApplicationHandle<?, ?> handle) {
-                return handle.application;
-            }
-
-            @Override
-            public ApplicationHandle<?, ?> getApplicationMirrorHandle(ApplicationMirror mirror) {
-                return mirror.handle;
-            }
-        });
+    public final Sidehandle sidehandle() {
+        Sidehandle sidehandle = application.sidehandle;
+        if (sidehandle == null) {
+            throw new UnsupportedOperationException("Application has not been attached to a sidehandle");
+        }
+        return sidehandle;
     }
 }

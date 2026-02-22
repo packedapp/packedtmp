@@ -24,46 +24,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceMirror;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.extension.ExtensionNamespaceSetup;
 import internal.app.packed.util.AbstractNamedTreeNode;
 import internal.app.packed.util.accesshelper.NamespaceMirrorAccessHandler;
 
 /**
  *
  */
-public abstract class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> {
+public sealed abstract class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetup> permits UserlandNamespaceSetup, ExtensionNamespaceSetup {
 
     /** */
     // In case of an extension namespace it is the application's root container.
     public final ContainerSetup rootContainer;
 
-    /** The lazy generated namespace mirror. */
+    /** Lazy generated namespace mirror. */
     private final Supplier<NamespaceMirror> mirror = StableValue.supplier(() -> NamespaceMirrorAccessHandler.instance().newNamespaceMirror(this));
-
-    public final ComponentRealm owner;
 
     public final Map<Class<? extends Extension<?>>, PackedExtensionNamespaceHandle<?, ?>> extensionNamespaceHandles = new HashMap<>();
 
-    NamespaceSetup(ContainerSetup container, PackedNamespaceInstaller installer) {
-        super(null);
-        this.rootContainer = requireNonNull(container);
-        this.owner = ComponentRealm.userland();
+    NamespaceSetup(@Nullable UserlandNamespaceSetup parent, ContainerSetup rootContainer) {
+        this.rootContainer = requireNonNull(rootContainer);
+        super(parent);
     }
 
-    protected NamespaceSetup(ApplicationSetup application, Class<? extends Extension<?>> extensionClass) {
-        super(application.rootContainer().namespace);
-        this.rootContainer = requireNonNull(application.rootContainer());
-        this.owner = ComponentRealm.extension(extensionClass);
+    protected NamespaceSetup(ContainerSetup rootContainer, Class<? extends Extension<?>> extensionClass) {
+        this.rootContainer = requireNonNull(rootContainer);
+        super(rootContainer.namespace);
     }
+
+    public abstract ComponentRealm owner();
 
     /** {@inheritDoc} */
-    public ComponentPath componentPath() {
+    public final ComponentPath componentPath() {
         List<String> path = new ArrayList<>();
         NamespaceSetup currentNode = this;
 
@@ -77,10 +77,13 @@ public abstract class NamespaceSetup extends AbstractNamedTreeNode<NamespaceSetu
         return ComponentKind.NAMESPACE.pathNew(rootContainer.application.componentPath(), path);
     }
 
-    /**
-     * @return
-     */
-    public NamespaceMirror mirror() {
+    /** {@return a mirror for the namespace} */
+    public final NamespaceMirror mirror() {
         return mirror.get();
+    }
+
+    /** {@return whether or not the namespace is the application root namespace} */
+    public final boolean isApplicationRoot() {
+        return rootContainer.application.rootNamespace() == this;
     }
 }

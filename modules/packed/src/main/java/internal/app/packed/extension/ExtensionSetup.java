@@ -111,12 +111,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
             d = model.name().compareTo(otherModel.name());
             if (d == 0) {
                 // Then the full name of the extension
-                d = model.fullName().compareTo(otherModel.fullName());
-                if (d == 0) {
-                    // Same canonical name but different class loaders.
-                    // sort in order of usage
-                    d = namespace.applicationExtensionId - other.namespace.applicationExtensionId;
-                }
+                d = namespace.extensionName.compareTo(other.namespace.extensionName);
             }
         }
         return d;
@@ -172,7 +167,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     /** {@inheritDoc} */
     @Override
     public ComponentRealm owner() {
-        return namespace.model.realm();
+        return namespace.owner();
     }
 
     public MainServiceNamespaceHandle services() {

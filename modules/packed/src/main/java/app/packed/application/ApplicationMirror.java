@@ -22,6 +22,7 @@ import app.packed.namespace.OverviewMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.container.ContainerSetup;
@@ -46,7 +47,7 @@ import internal.app.packed.util.PackedTreeView;
 public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationLocal.Accessor {
 
     /** The application's handle. */
-    final ApplicationHandle<?, ?> handle;
+    final ApplicationSetup application;
 
     /**
      * Create a new application mirror.
@@ -55,7 +56,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
      *            the application's handle
      */
     public ApplicationMirror(ApplicationHandle<?, ?> handle) {
-        this.handle = requireNonNull(handle);
+        this.application = requireNonNull(handle).application;
     }
 
     /**
@@ -67,8 +68,14 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return containers().stream().flatMap(ContainerMirror::allBeans);
     }
 
+    /**
+     * {@return a tree view of all namespaces in the application, including those owned by extensions}
+     *
+     * @see #namespace()
+     * @see #namespaces()
+     */
     public TreeView<NamespaceMirror> allNamespaces() {
-        return new PackedTreeView<>(handle.application.rootNamespace(), null, c -> c.mirror());
+        return new PackedTreeView<>(application.rootNamespace(), null, c -> c.mirror());
     }
 
     /**
@@ -82,32 +89,28 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
 
     /** {@return a tree representing all the assemblies used for creating this application} */
     public TreeView<AssemblyMirror> assemblies() {
-        return new PackedTreeView<>(handle.application.rootContainer().assembly, null, c -> c.mirror());
+        return new PackedTreeView<>(application.rootContainer().assembly, null, c -> c.mirror());
     }
 
-    /** {@return a mirror of the (root) assembly that defines the application} */
+    /** {@return a mirror of the (root) assembly defining xthe application} */
     public AssemblyMirror assembly() {
-        return handle.application.rootContainer().assembly.mirror();
+        return application.rootContainer().assembly.mirror();
     }
 
     /** {@return a stream of all of the bean declared by the user in the application.} */
     public Stream<BeanMirror> beans() {
         return containers().stream().flatMap(ContainerMirror::beans);
     }
-    // ApplicationMirror
-    // All namespaces with root container
-    // All namespaces in the whole application
-    // All namespaces with a non-user owner
 
     /** {@return the build goal that was used when building the application} */
     public BuildGoal buildGoal() {
-        return handle.application.deployment.goal;
+        return application.deployment.goal;
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentPath componentPath() {
-        return handle.application.componentPath();
+        return application.componentPath();
     }
 
     /**
@@ -120,17 +123,17 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
      **/
     @Override
     public Set<String> componentTags() {
-        return handle.componentTags();
+        throw new UnsupportedOperationException();
     }
 
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
-        return handle.application.rootContainer().mirror();
+        return application.rootContainer().mirror();
     }
 
     /** {@return a container tree mirror representing all the containers defined within the application.} */
     public TreeView<ContainerMirror> containers() {
-        return new PackedTreeView<>(handle.application.rootContainer(), null, c -> c.mirror());
+        return new PackedTreeView<>(application.rootContainer(), null, c -> c.mirror());
     }
 //
 //    /** {@return a collection of all entry points the application may have.} */
@@ -141,11 +144,11 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof ApplicationMirror m && handle.application == m.handle.application;
+        return this == other || other instanceof ApplicationMirror m && application == m.application;
     }
 
     public NamespaceMirror extensionNamespace(Class<? extends Extension<?>> extensionType) {
-        ExtensionSetup extension = handle.application.rootContainer().extensions.get(extensionType);
+        ExtensionSetup extension = application.rootContainer().extensions.get(extensionType);
         if (extension == null) {
             throw new IllegalArgumentException("Extension has not been used, extensionType = " + extensionType);
         } else {
@@ -161,7 +164,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return handle.application.hashCode();
+        return application.hashCode();
     }
 
     /**
@@ -184,17 +187,22 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
      * @see Wirelet#named(String)
      */
     public String name() {
-        return handle.application.rootContainer().name();
+        return application.rootContainer().name();
     }
 
     /** {@return a mirror representing the root namespace in the application} */
     public NamespaceMirror namespace() {
-        return handle.application.rootNamespace().mirror();
+        return container().namespace();
     }
 
-    /** {@return a tree mirror representing all the namespaces defined within the application} */
+    /**
+     * {@return a tree representing all the namespaces defined within the application}
+     *
+     * @see #namespace()
+     * @see #allNamespaces()
+     */
     public TreeView<NamespaceMirror> namespaces() {
-        return new PackedTreeView<>(handle.application.rootNamespace(), n -> n.owner == ComponentRealm.userland(), c -> c.mirror());
+        return new PackedTreeView<>(application.rootNamespace(), n -> n.owner() == ComponentRealm.userland(), c -> c.mirror());
     }
 
     /** {@return a stream of all of the operations on beans owned by the user in the application.} */
@@ -212,7 +220,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         // to(PrintStream ps);
         // asJSON();
         // verbose();
-        print0(handle.application.rootContainer());
+        print0(application.rootContainer());
     }
 
     public final void print(@SuppressWarnings("unchecked") Class<? extends Mirror>... mirrorTypes) {
@@ -248,7 +256,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     /** {@return the service contract of this application.} */
     // Maybe replaces with ServiceOverview services()
     public ServiceContract serviceContract() {
-        return handle.application.rootContainer().servicesMain().newContract();
+        return application.rootContainer().servicesMain().newContract();
     }
 
     /** {@inheritDoc} */
@@ -262,26 +270,12 @@ final class ApplicationMirrorIntrospector extends BaseExtensionBeanIntrospector 
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
-        service.binder().bindConstant(service.bean().container.application.mirror());
+        service.binder().bindConstant(container().application.mirror());
     }
 }
 
 //
 //// All mirrors "owned" by the user
 //public Stream<ComponentMirror> components() {
-//  throw new UnsupportedOperationException();
-//}
-//
-/// ** {@return a mirror of the root assembly that defines the application.} */ IDK if we want this or only assemblies
-//public AssemblyMirror assembly() {
-//  return container().assembly();
-//}
-//
-/// ** {@return the deployment this application is a part of.} * /
-//public DeploymentMirror deployment() {
-//  return application.deployment.mirror();
-//}
-//
-//public Node<ApplicationMirror> deploymentNode() {
 //  throw new UnsupportedOperationException();
 //}

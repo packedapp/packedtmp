@@ -71,14 +71,14 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     /** The deployment the application is part of. */
     public final DeploymentSetup deployment;
 
-    /**
-     * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
-     * extension with the same canonical name. Which may happen if different containers uses the "same" extension but
-     * defined in different class loaders. We then compare the extension id of the extensions as a last resort when sorting
-     * them.
-     */
-    // We actually have a unique name now, so maybe we can skip this counter
-    public int extensionIdCounter;
+//    /**
+//     * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
+//     * extension with the same canonical name. Which may happen if different containers uses the "same" extension but
+//     * defined in different class loaders. We then compare the extension id of the extensions as a last resort when sorting
+//     * them.
+//     */
+//    // We actually have a unique name now, so maybe we can skip this counter
+//    public int extensionIdCounter;
 
     /**
      * All extensions in the application, uniquely named.
@@ -235,7 +235,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     }
 
     public static ApplicationSetup crack(ApplicationMirror mirror) {
-        return crack(ApplicationAccessHandler.instance().getApplicationMirrorHandle(mirror));
+        return ApplicationAccessHandler.instance().getApplicationMirrorHandle(mirror);
     }
 
     /**

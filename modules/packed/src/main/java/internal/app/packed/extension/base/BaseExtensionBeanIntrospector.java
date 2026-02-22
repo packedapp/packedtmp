@@ -18,12 +18,22 @@ package internal.app.packed.extension.base;
 import app.packed.bean.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
+import internal.app.packed.container.ContainerSetup;
 
 /**
  *
  */
 public abstract class BaseExtensionBeanIntrospector extends BeanIntrospector<BaseExtension> {
+
+    public final BeanSetup bean() {
+        return BeanSetup.crack(this);
+    }
+
+    public final ContainerSetup container() {
+        return bean().container;
+    }
 
     @Override
     public final void onAutoService(Key<?> key, OnAutoService service) {

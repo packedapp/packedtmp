@@ -15,19 +15,28 @@
  */
 package internal.app.packed.namespace;
 
+import org.jspecify.annotations.Nullable;
+
+import app.packed.component.ComponentRealm;
 import internal.app.packed.container.ContainerSetup;
 
 /**
  *
  */
-public class UserlandNamespaceSetup extends NamespaceSetup {
+public final class UserlandNamespaceSetup extends NamespaceSetup {
 
     /**
      * @param container
      * @param installer
      */
-   public UserlandNamespaceSetup(ContainerSetup container, PackedNamespaceInstaller installer) {
-        super(container, installer);
+   public UserlandNamespaceSetup(@Nullable UserlandNamespaceSetup parent, ContainerSetup rootContainer) {
+        super(parent, rootContainer);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentRealm owner() {
+        return ComponentRealm.userland();
     }
 
 }

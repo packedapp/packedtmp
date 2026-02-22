@@ -203,7 +203,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
 //        throw new UnsupportedOperationException();
 //    }
 
-    public List<WireletMirror> wirelets() {
+    public final List<WireletMirror> wirelets() {
         // On runtime we would need to add runtime wirelets
         throw new UnsupportedOperationException();
     }
@@ -232,182 +232,14 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
             requireNonNull(mirror);
             // Should take an ExtensionHandle
         }
-
         return mirrorClass.cast(mirror);
     }
-
 }
 
 final class ContainerMirrorBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
-        service.binder().bindConstant(service.bean().container.mirror());
+        service.binder().bindConstant(container().mirror());
     }
 }
-//public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {
-//  return Assemblies.verify(assembly, ContainerMirror.class, verifier);
-//}
-
-// Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
-//
-
-// Vi skal have den fordi namespace simpelthen bliver noedt til at definere den
-// Vi har en main database der bruges i P og saa bruger vi den i C1, C2 bruger den under alias "NotMain", og definere
-// sin egen main.
-// C3 definere kun sig egen main
-//
-///**
-// * A view of all all of this containers beans that are in the same lifetime as the container itself.
-// * <p>
-// * If you need to include beans that are also owned by extension's use {@link #allBeans()}.
-// *
-// * @see #allBeans()
-// */
-//public Stream<BeanMirror> beansInContainerLifetime() {
-//    return handle.container.beans.stream().filter(b -> b.lifetime == handle.container.lifetime).map(b -> b.mirror());
-//}
-
-//
-/// ** {@return a set of all boundaries to this container's parent. Or empty if family root.} * /
-//public EnumSet<ContainerBoundaryKind> bondariesToParent() {
-//  ContainerSetup parent = handle.container.treeParent;
-//  if (parent != null) {
-//      ContainerSetup c = handle.container;
-//
-//      // Deployment has all
-//      if (parent.application.deployment != c.application.deployment) {
-//          return EnumSet.allOf(ContainerBoundaryKind.class);
-//      }
-//
-//      ArrayList<ContainerBoundaryKind> l = new ArrayList<>();
-//
-//      if (parent.application == c.application) {
-//          l.add(ContainerBoundaryKind.APPLICATION);
-//      }
-//      if (parent.lifetime == c.lifetime) {
-//          l.add(ContainerBoundaryKind.LIFETIME);
-//      }
-//      if (parent.assembly == c.assembly) {
-//          l.add(ContainerBoundaryKind.ASSEMBLY);
-//      }
-//
-//      if (!l.isEmpty()) {
-//          return EnumSet.copyOf(l);
-//      }
-//  }
-//  return EnumSet.noneOf(ContainerBoundaryKind.class);
-//
-//}
-
-//// MAYBE MAYBE, but need some use cases ** {@return a node representing this container within an application.} * /
-
-// maybe nodeInApplication();
-// nodeInAssembly();
-//public TreeView.Node<ContainerMirror> applicationNode() {
-//    throw new UnsupportedOperationException();
-//}
-
-//// Taken from ComponentMirror
-// Now that we have parents...
-// add Optional<Component> tryResolve(CharSequence path);
-// Syntes ikke vi skal have baade tryResolve or resolve...
-// ComponentMirror resolve(CharSequence path);
-
-///**
-// * Returns a stream consisting of this component and all of its descendants in any order.
-// *
-// * @param options
-// *            specifying the order and contents of the stream
-// *
-// * @return a component stream consisting of this component and all of its descendants in any order
-// */
-//ComponentMirrorStream stream(ComponentMirrorStream.Option... options);
-
-/// ** {@return a {@link Set} view of every extension that have been used in the container.} */ return Map<Class<Ext>,
-/// Mirror> instead??? Altsaa hvad vil bruge metoden til??? Kan ikke lige umiddelbart se nogle use cases Maaske bare
-/// fjerne den
-//public Set<ExtensionDescriptor> extensions() {
-//    HashSet<ExtensionDescriptor> result = new HashSet<>();
-//    for (ExtensionSetup extension : container.extensions.values()) {
-//        result.add(ExtensionDescriptor.of(extension.extensionType));
-//    }
-//    return Set.copyOf(result);
-//}
-
-///**
-// *
-// *
-// * <p>
-// * This operation does not allocate any objects internally.
-// *
-// * @implNote Implementations of this method should never generate object (which is a bit difficult
-// * @param action
-// *            oops
-// */
-//// We want to take some options I think. But not as a options Well it is more or less the same options.... Tror vi
-/// laver options om til en klasse. Og saa har to metoder. Og dropper varargs..
-//default void traverse(Consumer<? super ComponentMirror> action) {
-//    stream(Option.maxDepth(1)).forEach(action);
-//}
-
-//// The returned component is always a system component
-//default Component viewAs(Object options) {
-//    // F.eks. tage et system. Og saa sige vi kun vil
-//    // se paa den aktuelle container
-//
-//    // Ideen er lidt at vi kan taege en component
-//    // Og f.eks. lave den om til en rod...
-//    // IDK. F.eks. hvis jeg har guests app.
-//    // Saa vil jeg gerne kunne sige til brugere...
-//    // Her er en clean Guest... Og du kan ikke se hvad
-//    // der sker internt...
-//    throw new UnsupportedOperationException();
-//}
-
-//default Optional<ComponentMirror> tryResolve(CharSequence path) {
-//    throw new UnsupportedOperationException();
-//}
-
-// Taenker den er immutable...
-
-// Problemet er at vi vil have en snapshot...
-// Tager vi snapshot af attributer??? Nej det goer vi altsaa ikke...
-// Rimlig meget overhead
-
-// Tror topol
-
-// Vi skal ikke have noget live...
-// Maaske af det derfor
-
-// Special cases
-
-// Not In same system
-// -> distance = -1, inSameContainer=false, isStronglyBound=false, isWeaklyBound=false
-
-// Same component
-// -> distance = 0, inSameContainer=true, isStrongBound=?, isWeaklyBound=false
-
-// Teanker vi flytter den et andet sted end attributer...
-
-// Altsaa den walk man kan lave via Iterable... ville det vaere rart at kunne beskrive relationsship
-// for den.. Altsaa cr[4] er foraeldre til cr[3] og saa
-
-// A component in a runtime system is not the same as in the build time system.
-
-// I would say the restartable image of one system is not in the same system as
-// the same restartable image when we have restarted.
-
-// https://en.wikipedia.org/wiki/Path_(graph_theory)
-// ComponentConnection
-
-// A ComponentRelation is directed
-// Can we have attributes??
-// if (rel.inSameContainer())
-
-// En relation er jo mere end topology... Syntes
-
-// walkFromSource(); Syntes maaske ikke den skal extende Iteralble...
-// Maaske fromSourceIterator
-// https://en.wikipedia.org/wiki/Tree_structure
-// description()? -> Same, parent, child, descendend, ancestor,

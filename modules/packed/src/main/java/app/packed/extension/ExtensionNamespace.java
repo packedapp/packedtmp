@@ -32,6 +32,10 @@ public abstract class ExtensionNamespace<N extends ExtensionNamespace<N, E>, E e
         this.handle = requireNonNull(handle);
     }
 
+    public final boolean isApplicationRoot() {
+        return handle.isApplicationRoot();
+    }
+
     public final boolean isExtensionNamespace() {
         return owner().isExtension();
     }

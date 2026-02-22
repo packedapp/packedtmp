@@ -202,6 +202,6 @@ final class AssemblyMirrorBeanIntrospector extends BaseExtensionBeanIntrospector
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
-        service.binder().bindConstant(service.bean().container.assembly.mirror());
+        service.binder().bindConstant(container().assembly.mirror());
     }
 }

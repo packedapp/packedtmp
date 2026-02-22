@@ -405,7 +405,7 @@ final class BeanMirrorBeanIntrospector extends BaseExtensionBeanIntrospector {
 
     @Override
     public void onExtensionService(Key<?> key, IntrospectorOnAutoService service) {
-        service.binder().bindConstant(service.bean().mirror());
+        service.binder().bindConstant(bean().mirror());
     }
 }
 
