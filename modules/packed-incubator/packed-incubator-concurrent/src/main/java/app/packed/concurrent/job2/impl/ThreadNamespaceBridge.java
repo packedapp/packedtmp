@@ -15,13 +15,10 @@
  */
 package app.packed.concurrent.job2.impl;
 
-import app.packed.concurrent.JobExtension;
-import app.packed.namespaceold.NamespaceBridge;
-
 /**
  *
  */
 
-public class ThreadNamespaceBridge implements NamespaceBridge<JobExtension> {
+public class ThreadNamespaceBridge {
 
 }

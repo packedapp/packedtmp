@@ -23,13 +23,12 @@ import java.util.function.Consumer;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionWirelet;
-import app.packed.namespaceold.NamespaceBridge;
 import app.packed.service.ServiceContract;
 
 /**
  * A service bridge between two service namespaces.
  */
-public abstract class ServiceNamespaceBridge2 implements NamespaceBridge<BaseExtension> {
+public abstract class ServiceNamespaceBridge2  {
 
     public abstract ServiceBridge incoming();
 

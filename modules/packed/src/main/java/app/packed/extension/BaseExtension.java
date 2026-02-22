@@ -56,7 +56,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // But right now we only have a single field
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
 
-    final BaseExtensionNamespace namespace;
+    final BaseExtensionNamespace userlandNamespace;
 
     /**
      * All your base are belong to us.
@@ -68,7 +68,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     BaseExtension(BaseExtensionNamespace namespace, ExtensionHandle<BaseExtension> handle) {
         super(handle);
-        this.namespace = namespace;
+        this.userlandNamespace = namespace;
     }
 
     /**
