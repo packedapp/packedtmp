@@ -158,7 +158,7 @@ public non-sealed abstract class BeanIntrospector<E extends Extension<E>> implem
         return bean().beanKind;
     }
 
-    protected final <N extends ExtensionNamespace<N, E>> N namespace() {
+    public final <N extends ExtensionNamespace<N, E>> N namespace() {
         throw new UnsupportedOperationException();
     }
 

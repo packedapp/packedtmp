@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import org.jspecify.annotations.Nullable;
 
 import app.packed.component.ComponentRealm;
-import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionMirror;
@@ -132,6 +131,14 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         return e;
     }
 
+    public ExtensionNamespace<?, ?> userlandNamespaceInstance() {
+        ExtensionNamespace<?, ?> e = userlandNamespaceInstance;
+        if (e == null) {
+            throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
+        }
+        return e;
+    }
+
     /** Call {@link Extension#onAssemblyClose()}. */
     public void invokeExtensionOnAssemblyClose() {
         container.onAssemblyClose(this);
@@ -173,11 +180,19 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     public MainServiceNamespaceHandle services() {
         MainServiceNamespaceHandle s = sm;
         if (s == null) {
-            MainServiceNamespaceHandle par = treeParent == null ? null : treeParent.services();
-            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(container.baseExtension());
-
-            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, owner());
-            s.init(par, container);
+            s = namespace.base().services;
+//            ExtensionSetup base = container.baseExtension();
+//            base.n
+//
+//            namespace.servicesToResolve
+//
+////            MainServiceNamespaceHandle par = treeParent == null ? null : treeParent.services();
+////            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(container.baseExtension());
+////
+////            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, owner());
+////
+//
+//            s.init(null, container);
         }
         return s;
     }

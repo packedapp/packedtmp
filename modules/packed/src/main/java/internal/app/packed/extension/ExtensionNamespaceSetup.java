@@ -18,11 +18,17 @@ package internal.app.packed.extension;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 
 import app.packed.component.ComponentRealm;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionNamespace;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.invoke.ConstructorSupport.ExtensionNamespaceFactory;
 import internal.app.packed.namespace.NamespaceSetup;
+import internal.app.packed.namespace.PackedExtensionNamespaceHandle;
 import internal.app.packed.oldnamespace.OldNamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 
@@ -38,6 +44,16 @@ public final class ExtensionNamespaceSetup extends NamespaceSetup {
     public final String extensionName;
 
     public final Deque<OldNamespaceSetup> namespacesToClose = new ArrayDeque<>();
+
+    public final Map<Class<? extends Extension<?>>, ExtensionNamespace<?, ?>> extensionNamespaceInstances = new HashMap<>();
+
+    public BaseExtensionNamespace base() {
+        return (BaseExtensionNamespace) extensionNamespaceInstances.computeIfAbsent(BaseExtension.class, _ -> {
+            ExtensionNamespaceFactory nf = model.namespaceFactory;
+            return nf.create(new PackedExtensionNamespaceHandle<>(this));
+        });
+
+    }
 
     /**
      * Extensions resolver services when the application closes. The main argument is that they should very rarely fail to

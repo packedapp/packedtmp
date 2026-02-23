@@ -21,11 +21,6 @@ import org.jspecify.annotations.Nullable;
 
 import app.packed.binding.DublicateKeyProvisionException;
 import app.packed.binding.Key;
-import app.packed.component.ComponentRealm;
-import app.packed.extension.BaseExtension;
-import app.packed.namespaceold.NamespaceInstaller;
-import app.packed.namespaceold.OldNamespaceHandle;
-import app.packed.service.ServiceNamespaceConfiguration;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromEmbeddedOperation;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
@@ -35,37 +30,24 @@ import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.util.ServiceMap;
 import internal.app.packed.util.StringFormatter;
-import internal.app.packed.util.accesshelper.ServiceAccessHandler;
 
 /**
  *
  */
-public abstract class ServiceNamespaceHandle extends OldNamespaceHandle<BaseExtension, ServiceNamespaceConfiguration> {
+public abstract class ServiceNamespaceHandle {
 
     /** All service providers in the namespace. */
     final ServiceMap<NamespaceServiceProviderHandle> providers = new ServiceMap<>();
 
-    /**
-     * @param installer
-     */
-    protected ServiceNamespaceHandle(NamespaceInstaller<?> installer) {
-        super(installer);
-    }
 
     public final Set<Key<?>> keys() {
         return providers.keySet();
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected final ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e, ComponentRealm actor) {
-        return ServiceAccessHandler.instance().newServiceNamespaceConfiguration(this, e);
-    }
-
+//
 //    /** {@inheritDoc} */
 //    @Override
-//    protected final ServiceNamespaceMirror newNamespaceMirror() {
-//        return ServiceAccessHandler.instance().newServiceNamespaceMirror(this);
+//    protected final ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e, ComponentRealm actor) {
+//        return ServiceAccessHandler.instance().newServiceNamespaceConfiguration(this, e);
 //    }
 
     /**

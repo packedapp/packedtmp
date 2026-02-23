@@ -24,10 +24,7 @@ import java.util.function.Consumer;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import app.packed.component.ComponentRealm;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtension;
-import app.packed.namespaceold.OldNamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
 import app.packed.service.bridge.old.ServiceOutgoingTransformer;
 import internal.app.packed.invoke.MethodHandleUtil;
@@ -41,22 +38,8 @@ import internal.app.packed.util.accesshelper.ServiceAccessHandler;
  * A service namespace represents a namespace where every provided service in the service has a unique {@link Key key}.
  * And where multiple bindings may exist to each provided service.
  */
-public final class ServiceNamespaceConfiguration extends OldNamespaceConfiguration<BaseExtension> {
+public final class ServiceNamespaceConfiguration {
 
-    /**
-     * Creates a new service namespace configuration.
-     *
-     * @param handle
-     *            the namespace's handle
-     * @param extension
-     *            the base extension, which the service namespace belongs to
-     *
-     * @implNote invoked via
-     *           {@link internal.app.packed.handlers.ServiceHandlers#newServiceNamespaceConfiguration(ServiceNamespaceHandle, BaseExtension)}
-     */
-    ServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension, ComponentRealm actor) {
-        super(handle, extension, actor);
-    }
 
     // Hmm, specificere ved namespacet under provide?
     <T> OperationConfiguration provide(Class<T> key, Provider<? extends T> provider) {
@@ -92,6 +75,11 @@ public final class ServiceNamespaceConfiguration extends OldNamespaceConfigurati
         // extension().container.sm.provideAll(result);
         return result.keySet(); // can probably return something more clever?
     }
+
+    /**
+     *
+     */
+    private void checkIsConfigurable() {}
 
     /**
      * @param <T>
@@ -172,10 +160,10 @@ public final class ServiceNamespaceConfiguration extends OldNamespaceConfigurati
     static {
         AccessHelper.initHandler(ServiceAccessHandler.class, new ServiceAccessHandler() {
 
-            @Override
-            public ServiceNamespaceConfiguration newServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension) {
-                return new ServiceNamespaceConfiguration(handle, extension, ComponentRealm.userland());
-            }
+//            @Override
+//            public ServiceNamespaceConfiguration newServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension) {
+//                return new ServiceNamespaceConfiguration(handle, extension, ComponentRealm.userland());
+//            }
 
             @Override
             public ServiceNamespaceMirror newServiceNamespaceMirror(ServiceNamespaceHandle handle) {

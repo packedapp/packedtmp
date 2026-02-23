@@ -15,19 +15,11 @@
  */
 package internal.app.packed.extension;
 
-import java.util.Map;
-
-import org.jspecify.annotations.Nullable;
-
-import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionNamespace;
 import app.packed.extension.ExtensionNamespaceHandle;
-import internal.app.packed.invoke.MethodHandleInvoker.ExportedServiceWrapper;
-import internal.app.packed.service.ExportedService;
-import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
-import internal.app.packed.service.util.ServiceMap;
+import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.accesshelper.ExtensionAccessHandler;
 
 /**
@@ -35,18 +27,7 @@ import internal.app.packed.util.accesshelper.ExtensionAccessHandler;
  */
 public final class BaseExtensionNamespace extends ExtensionNamespace<BaseExtensionNamespace, BaseExtension> {
 
-    /** All service providers in the namespace. */
-    public final ServiceMap<NamespaceServiceProviderHandle> serviceProviders = new ServiceMap<>();
-
-    // All provided services are automatically exported
-    public boolean exportAll;
-
-    /** A map of exported service method method handles, must be computed. */
-    @Nullable
-    private Map<Key<?>, ExportedServiceWrapper> exportedServices;
-
-    /** Exported services from the container. */
-    public final ServiceMap<ExportedService> exports = new ServiceMap<>();
+    public MainServiceNamespaceHandle services;
 
     protected BaseExtensionNamespace(ExtensionNamespaceHandle<BaseExtensionNamespace, BaseExtension> handle) {
         super(handle);

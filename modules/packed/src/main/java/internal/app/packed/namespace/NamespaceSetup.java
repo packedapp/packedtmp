@@ -19,9 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
@@ -47,8 +45,6 @@ public sealed abstract class NamespaceSetup extends AbstractNamedTreeNode<Namesp
 
     /** Lazy generated namespace mirror. */
     private final Supplier<NamespaceMirror> mirror = StableValue.supplier(() -> NamespaceMirrorAccessHandler.instance().newNamespaceMirror(this));
-
-    public final Map<Class<? extends Extension<?>>, PackedExtensionNamespaceHandle<?, ?>> extensionNamespaceHandles = new HashMap<>();
 
     NamespaceSetup(@Nullable UserlandNamespaceSetup parent, ContainerSetup rootContainer) {
         this.rootContainer = requireNonNull(rootContainer);

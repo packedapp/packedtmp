@@ -35,7 +35,6 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionHandle;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.assembly.AssemblySetup;
@@ -45,8 +44,8 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
+import internal.app.packed.extension.BaseExtensionNamespace;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.namespace.UserlandNamespaceSetup;
@@ -333,9 +332,12 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     public MainServiceNamespaceHandle servicesMain() {
         MainServiceNamespaceHandle s = sm;
         if (s == null) {
-            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(baseExtension());
-            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE);
-            s.init(null, this);
+            BaseExtensionNamespace n = (BaseExtensionNamespace) baseExtension.userlandNamespaceInstance();
+            s = n.services;
+            if (s == null) {
+                s = n.services = new MainServiceNamespaceHandle();
+                s.init(null, this);
+            }
         }
         return s;
     }

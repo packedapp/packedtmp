@@ -29,4 +29,5 @@ import sandbox.app.packed.bean.ForeignBeanTrigger.JavaBaseSupport;
 //Open for testing?? Testing classes boer vaere i samme modul???
 // RootAssembly?? And ChildAssembly
 public abstract class BaseAssembly extends AbstractBaseAssembly {
+    //private BaseAssembly() {}
 }

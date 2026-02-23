@@ -23,7 +23,6 @@ import java.util.function.Function;
 import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
-import app.packed.namespaceold.OldNamespaceHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationType;
@@ -41,8 +40,6 @@ import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
  *
  */
 public non-sealed class PackedOperationInstaller extends AbstractComponentInstaller<OperationSetup, PackedOperationInstaller> implements OperationInstaller {
-
-    OldNamespaceHandle<?, ?> addToNamespace;
 
     /** The bean the operation is being installed into. */
     final BeanSetup bean;

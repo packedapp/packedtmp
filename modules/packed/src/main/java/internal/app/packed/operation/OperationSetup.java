@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.component.Sidehandle;
@@ -32,7 +34,6 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
-import org.jspecify.annotations.Nullable;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.sidehandle.PackedSidehandle;
@@ -47,7 +48,6 @@ import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.invoke.OperationCodeGenerator;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointSetup;
-import internal.app.packed.oldnamespace.OldNamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
@@ -260,12 +260,6 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
 
         // Add the operation to the bean
         installer.bean.operations.add(operation);
-
-        // Add the operation to any requested namespace
-        if (installer.addToNamespace != null) {
-            OldNamespaceSetup ns = OldNamespaceSetup.crack(installer.addToNamespace);
-            ns.operations.add(operation);
-        }
 
         // Create the operation's handle.
         OperationHandle<?> handle = operation.handle = handleFactory.apply(installer);

@@ -22,9 +22,6 @@ import org.jspecify.annotations.Nullable;
 
 import app.packed.binding.DublicateKeyProvisionException;
 import app.packed.binding.Key;
-import app.packed.component.ComponentMirror;
-import app.packed.namespaceold.NamespaceInstaller;
-import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.binding.BindingProvider;
@@ -40,10 +37,6 @@ import internal.app.packed.service.util.ServiceMap;
 /** Manages services in a single container. */
 public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
 
-    /** The default namespace template used for the service namespace. */
-    public static OldNamespaceTemplate<MainServiceNamespaceHandle> TEMPLATE = OldNamespaceTemplate.of(MainServiceNamespaceHandle.class,
-            MainServiceNamespaceHandle::new);
-
     // All provided services are automatically exported
     public boolean exportAll;
 
@@ -56,12 +49,6 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
 
     @Nullable
     MainServiceNamespaceHandle parent;
-
-    public MainServiceNamespaceHandle(NamespaceInstaller<?> installer) {
-        super(installer);
-        // For now we a ServiceLocator as the root of the application.
-        // Bridges
-    }
 
     public void init(@Nullable MainServiceNamespaceHandle parent, ContainerSetup container) {
         this.parent = parent;
@@ -140,11 +127,5 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
         if (exportAll) {
             export(key, operation);
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentMirror mirror() {
-        return null;
     }
 }

@@ -17,7 +17,6 @@ package internal.app.packed.util.accesshelper;
 
 import java.util.function.Supplier;
 
-import app.packed.extension.BaseExtension;
 import app.packed.service.ServiceNamespaceConfiguration;
 import app.packed.service.ServiceNamespaceMirror;
 import internal.app.packed.service.ServiceNamespaceHandle;
@@ -33,14 +32,14 @@ public abstract class ServiceAccessHandler extends AccessHelper {
         return CONSTANT.get();
     }
 
-    /**
-     * Creates a new ServiceNamespaceConfiguration.
-     *
-     * @param handle the service namespace handle
-     * @param extension the base extension
-     * @return the configuration
-     */
-    public abstract ServiceNamespaceConfiguration newServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension);
+//    /**
+//     * Creates a new ServiceNamespaceConfiguration.
+//     *
+//     * @param handle the service namespace handle
+//     * @param extension the base extension
+//     * @return the configuration
+//     */
+//    public abstract ServiceNamespaceConfiguration newServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension);
 
     /**
      * Creates a new ServiceNamespaceMirror.
