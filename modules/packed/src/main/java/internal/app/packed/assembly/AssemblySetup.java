@@ -39,10 +39,8 @@ import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.oldnamespace.OldNamespaceSetup;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.accesshelper.AssemblyAccessHandler;
-import internal.app.packed.util.accesshelper.NamespaceAccessHandler;
 
 /** The internal configuration of an assembly. */
 public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implements BuildLocalSource {
@@ -207,11 +205,11 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
                 }
                 list.add(e);
 
-                for (OldNamespaceSetup nss = e.namespace.namespacesToClose.pollLast(); nss != null; nss = e.namespace.namespacesToClose.pollLast()) {
-                    if (nss.root == e) {
-                        NamespaceAccessHandler.instance().invokeNamespaceOnNamespaceClose(nss.handle());
-                    }
-                }
+//                for (OldNamespaceSetup nss = e.namespace.namespacesToClose.pollLast(); nss != null; nss = e.namespace.namespacesToClose.pollLast()) {
+//                    if (nss.root == e) {
+//                        NamespaceAccessHandler.instance().invokeNamespaceOnNamespaceClose(nss.handle());
+//                    }
+//                }
 
                     // Resolve all service
 //

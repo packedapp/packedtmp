@@ -15,12 +15,10 @@
  */
 package internal.app.packed.build.hooks;
 
-import app.packed.namespaceold.OldNamespaceConfiguration;
-
 /**
  *
  */
-public class NamespaceBuildHook<C extends OldNamespaceConfiguration<?>> {
+public class NamespaceBuildHook  {
 
     // Lazy create main
     public void requestNamespace() {
@@ -28,7 +26,7 @@ public class NamespaceBuildHook<C extends OldNamespaceConfiguration<?>> {
     }
     // Force inherit this Namespace...
 
-    public void onNew(C configuration) {
+    public void onNew(Object configuration) {
 
     }
 }

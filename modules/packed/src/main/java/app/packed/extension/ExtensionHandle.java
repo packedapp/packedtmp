@@ -18,9 +18,6 @@ package app.packed.extension;
 import java.util.Optional;
 
 import app.packed.component.ComponentPath;
-import app.packed.component.ComponentRealm;
-import app.packed.namespaceold.OldNamespaceHandle;
-import app.packed.namespaceold.OldNamespaceTemplate;
 import app.packed.util.TreeView;
 import internal.app.packed.extension.PackedExtensionHandle;
 
@@ -50,12 +47,6 @@ public sealed interface ExtensionHandle<E extends Extension<E>> permits PackedEx
     ComponentPath containerPath();
 
     boolean isExtensionUsed(Class<? extends Extension<?>> extensionType);
-
-    default <H extends OldNamespaceHandle<E, ?>> H namespaceLazy(OldNamespaceTemplate<H> template) {
-        return namespaceLazy(template, ComponentRealm.userland());
-    }
-
-    <H extends OldNamespaceHandle<E, ?>> H namespaceLazy(OldNamespaceTemplate<H> template, ComponentRealm realm);
 
     /** {@return any parent extension this extension might have in the same application} */
     Optional<E> parent();

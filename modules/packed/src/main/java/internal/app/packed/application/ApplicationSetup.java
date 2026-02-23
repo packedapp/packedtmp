@@ -32,7 +32,6 @@ import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.component.Sidehandle;
 import app.packed.extension.Extension;
-import app.packed.namespaceold.OldNamespaceHandle;
 import internal.app.packed.application.deployment.DeploymentSetup;
 import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.assembly.AssemblySetup;
@@ -44,7 +43,6 @@ import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
 import internal.app.packed.namespace.UserlandNamespaceSetup;
-import internal.app.packed.oldnamespace.OldNamespaceSetup.NamespaceKey;
 import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
 
 /** The internal configuration of an application. */
@@ -100,9 +98,6 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
 
     /** This map maintains all locals for the entire application. */
     private final BuildLocalMap locals = new BuildLocalMap();
-
-    // Maybe move to container?? Or maybe a DomainManager class? IDK
-    public final HashMap<NamespaceKey, OldNamespaceHandle<?, ?>> oldNamespaces = new HashMap<>();
 
     /** The current phase of the application's build process. */
     public ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;

@@ -15,9 +15,7 @@
  */
 package internal.app.packed.extension;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +27,6 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.invoke.ConstructorSupport.ExtensionNamespaceFactory;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.namespace.PackedExtensionNamespaceHandle;
-import internal.app.packed.oldnamespace.OldNamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /** A single instance of this class exists per extension per application. */
@@ -42,8 +39,6 @@ public final class ExtensionNamespaceSetup extends NamespaceSetup {
     final ExtensionClassModel model;
 
     public final String extensionName;
-
-    public final Deque<OldNamespaceSetup> namespacesToClose = new ArrayDeque<>();
 
     public final Map<Class<? extends Extension<?>>, ExtensionNamespace<?, ?>> extensionNamespaceInstances = new HashMap<>();
 

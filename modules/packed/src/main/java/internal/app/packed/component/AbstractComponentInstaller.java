@@ -26,14 +26,13 @@ import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.build.PackedBuildLocal;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.oldnamespace.PackedNamespaceInstaller;
 import internal.app.packed.operation.PackedOperationInstaller;
 
 /**
  *
  */
 public sealed abstract class AbstractComponentInstaller<C extends ComponentSetup, I extends AbstractComponentInstaller<C, I>>
-        permits PackedApplicationInstaller, PackedContainerInstaller, PackedNamespaceInstaller, PackedBeanInstaller, PackedOperationInstaller {
+        permits PackedApplicationInstaller, PackedContainerInstaller, PackedBeanInstaller, PackedOperationInstaller {
 
     C componentSetup;
 
