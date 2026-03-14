@@ -3,11 +3,8 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import org.jspecify.annotations.Nullable;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
@@ -19,18 +16,12 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.TreeView;
 import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
-import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.extension.ExtensionClassModel;
-import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.util.PackedTreeView;
-import internal.app.packed.util.types.ClassUtil;
-import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
  * A mirror of a container.
@@ -42,19 +33,6 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  */
 @AutoServiceInheritable(introspector = ContainerMirrorBeanIntrospector.class)
 public non-sealed class ContainerMirror implements ComponentMirror, ContainerBuildLocal.Accessor {
-
-    /** Extract the (extension class) type variable from ExtensionMirror. */
-    private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
-
-        /** A type variable extractor. */
-        private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
-
-        /** {@inheritDoc} */
-        @Override
-        protected Class<? extends Extension<?>> computeValue(Class<?> type) {
-            return ExtensionClassModel.extractE(EXTRACTOR, type);
-        }
-    };
 
     /** The container we are mirroring. */
     final ContainerHandle<?> handle;
@@ -132,21 +110,6 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
         return handle.container.extensionTypes();
     }
 
-    /**
-     * <p>
-     * If you know for certain that extension is used in the container you can use {@link #use(Class)} instead.
-     *
-     * @param <T>
-     *            the type of mirror
-     * @param mirrorType
-     *            the mirror type
-     * @return a mirror of the specified type, or empty if the extension the mirror represents is not used in the container
-     */
-    public final <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
-        ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
-        return Optional.ofNullable(newMirrorOrNull(handle.container, mirrorType));
-    }
-
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
@@ -208,32 +171,6 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Creates a new mirror if an. Otherwise returns {@code null}
-     *
-     * @param container
-     *            the container to test for presence extension may be present
-     * @param mirrorClass
-     *            the type of mirror to return
-     * @return a mirror of the specified type or null if no extension of the matching type was used in the container
-     */
-    @Nullable
-    static <T extends ExtensionMirror<?>> T newMirrorOrNull(ContainerSetup container, Class<T> mirrorClass) {
-        // Extract <E> from ExtensionMirror<E extends Extension>
-        Class<? extends Extension<?>> extensionType = EXTENSION_TYPES.get(mirrorClass);
-
-        ExtensionMirror<?> mirror = null;
-
-        // See if the extension is in use.
-        ExtensionSetup extension = container.extensions.get(extensionType);
-        if (extension != null) {
-            // Call Extension#newExtensionMirror
-            mirror = extension.newExtensionMirror(mirrorClass);
-            requireNonNull(mirror);
-            // Should take an ExtensionHandle
-        }
-        return mirrorClass.cast(mirror);
-    }
 }
 
 final class ContainerMirrorBeanIntrospector extends BaseExtensionBeanIntrospector {

@@ -54,6 +54,11 @@ public abstract class OverviewMirror<E extends Extension<E>> {
         this.handle = (PackedOverviewHandle<E>) requireNonNull(overviewHandle);
     }
 
+    /** {@return the backing handle for this overview mirror} */
+    protected final OverviewHandle<E> handle() {
+        return handle;
+    }
+
     /**
      * {@return a stream of all operations within this overview's scope that were installed by extension {@code E}}
      * <p>

@@ -43,12 +43,6 @@ public abstract class ServiceNamespaceHandle {
     public final Set<Key<?>> keys() {
         return providers.keySet();
     }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    protected final ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e, ComponentRealm actor) {
-//        return ServiceAccessHandler.instance().newServiceNamespaceConfiguration(this, e);
-//    }
 
     /**
      * Provides a service for the specified operation.

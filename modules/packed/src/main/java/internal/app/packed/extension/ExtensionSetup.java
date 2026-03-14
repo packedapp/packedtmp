@@ -7,7 +7,6 @@ import org.jspecify.annotations.Nullable;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionNamespace;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
@@ -156,20 +155,6 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     @Override
     public BuildLocalMap locals() {
         return container.locals();
-    }
-
-    public ExtensionMirror<?> newExtensionMirror(Class<? extends ExtensionMirror<?>> mirrorClass) {
-        ExtensionMirror<?> mirror = ExtensionAccessHandler.instance().invoke_Extension_NewExtensionMirror(instance());
-        if (mirror == null) {
-            throw new InternalExtensionException("Extension " + model.fullName() + " returned null from " + model.name() + ".newExtensionMirror()");
-        }
-        // Check that the right extension mirror type was returned
-        if (!mirrorClass.isInstance(mirror)) {
-            throw new InternalExtensionException(extensionType.getSimpleName() + ".newExtensionMirror() was expected to return an instance of " + mirrorClass
-                    + ", but returned an instance of " + mirror.getClass());
-        }
-
-        return mirror;
     }
 
     /** {@inheritDoc} */

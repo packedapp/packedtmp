@@ -20,13 +20,22 @@ import java.util.Map;
 import java.util.Set;
 
 import app.packed.binding.Key;
+import app.packed.component.OverviewHandle;
+import app.packed.component.OverviewMirror;
+import app.packed.extension.BaseExtension;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
+import app.packed.service.mirrorold.ExportedServiceMirror;
+import internal.app.packed.extension.PackedExtensionHandle;
 
 /**
- * A mirror for a service namespace.
+ * An overview mirror for services provided by {@link BaseExtension}.
  */
-public final class ServiceOverviewMirror {
+public final class ServiceOverviewMirror extends OverviewMirror<BaseExtension> {
+
+    ServiceOverviewMirror(OverviewHandle<BaseExtension> handle) {
+        super(handle);
+    }
 
     /** {@return A map of all the bindings from providers in the namespace} */
     public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {
@@ -43,6 +52,23 @@ public final class ServiceOverviewMirror {
         throw new UnsupportedOperationException();
     }
 
-    // required? <- Incoming
-    // Det er services
+    /**
+     * {@return a service contract for the container}
+     * <p>
+     * If the configuration of the container has not been completed. This method return a contract on a best effort basis.
+     */
+    public ServiceContract serviceContract() {
+        return extensionHandle().extension().container.servicesMain().newContract();
+    }
+
+    /** {@return a map of all the services that are exported by the container.} */
+    @SuppressWarnings("exports")
+    public Map<Key<?>, ExportedServiceMirror> serviceExports() {
+        return extensionHandle().extension().container.servicesMain().exports.toUnmodifiableSequenceMap(e -> (ExportedServiceMirror) e.operation.mirror());
+    }
+
+    /** {@return the internal extension handle for accessing service internals.} */
+    private PackedExtensionHandle<BaseExtension> extensionHandle() {
+        return (PackedExtensionHandle<BaseExtension>) handle().applicationRootHandle();
+    }
 }

@@ -20,7 +20,6 @@ import java.util.function.Supplier;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import internal.app.packed.extension.BaseExtensionNamespace;
@@ -49,14 +48,6 @@ public abstract class ExtensionAccessHandler extends AccessHelper {
      * @return the packed extension use site
      */
     public abstract PackedExtensionPointHandle get_ExtensionPoint_PackedExtensionPointHandle(ExtensionPoint<?> extensionPoint);
-
-    /**
-     * Invokes the protected newExtensionMirror method on an Extension.
-     *
-     * @param extension the extension
-     * @return the extension mirror
-     */
-    public abstract ExtensionMirror<?> invoke_Extension_NewExtensionMirror(Extension<?> extension);
 
     /**
      * Invokes the protected newExtensionPoint method on an Extension.

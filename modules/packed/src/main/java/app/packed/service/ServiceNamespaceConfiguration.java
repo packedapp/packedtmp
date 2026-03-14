@@ -28,11 +28,8 @@ import app.packed.container.Wirelet;
 import app.packed.operation.OperationConfiguration;
 import app.packed.service.bridge.old.ServiceOutgoingTransformer;
 import internal.app.packed.invoke.MethodHandleUtil;
-import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.service.util.PackedServiceLocator;
 import internal.app.packed.util.CollectionUtil;
-import internal.app.packed.util.accesshelper.AccessHelper;
-import internal.app.packed.util.accesshelper.ServiceAccessHandler;
 
 /**
  * A service namespace represents a namespace where every provided service in the service has a unique {@link Key key}.
@@ -157,20 +154,6 @@ public final class ServiceNamespaceConfiguration {
         throw new UnsupportedOperationException();
     }
 
-    static {
-        AccessHelper.initHandler(ServiceAccessHandler.class, new ServiceAccessHandler() {
-
-//            @Override
-//            public ServiceNamespaceConfiguration newServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension) {
-//                return new ServiceNamespaceConfiguration(handle, extension, ComponentRealm.userland());
-//            }
-
-            @Override
-            public ServiceOverviewMirror newServiceNamespaceMirror(ServiceNamespaceHandle handle) {
-                return new ServiceOverviewMirror();
-            }
-        });
-    }
 }
 
 

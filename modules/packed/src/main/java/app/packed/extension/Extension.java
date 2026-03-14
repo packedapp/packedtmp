@@ -98,11 +98,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
             }
 
             @Override
-            public ExtensionMirror<?> invoke_Extension_NewExtensionMirror(Extension<?> extension) {
-                return extension.newExtensionMirror();
-            }
-
-            @Override
             public ExtensionPoint<?> invoke_Extension_NewExtensionPoint(Extension<?> extension, ExtensionPointHandle usesite) {
                 return extension.newExtensionPoint(usesite);
             }
@@ -274,20 +269,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
             }
         }
         return (E) s.instance();
-    }
-
-    /**
-     * This method can be overridden to provide a customized {@link ExtensionMirror mirror} for the extension. For example,
-     * {@link BaseExtension} overrides this method to provide an instance of {@link BaseExtensionMirror}.
-     * <p>
-     * This method should never return null.
-     *
-     * @return a customized mirror for the extension
-     * @throws InternalExtensionException
-     *             if the extension defines an extension mirror but does not override this method.
-     */
-    protected ExtensionMirror<E> newExtensionMirror() {
-        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
 
     /**

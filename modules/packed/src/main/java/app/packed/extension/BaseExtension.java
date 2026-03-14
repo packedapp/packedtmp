@@ -287,12 +287,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         return PackedBeanInstaller.newInstaller(lifetime, extension, extension);
     }
 
-    /** {@return a mirror for this extension.} */
-    @Override
-    protected BaseExtensionMirror newExtensionMirror() {
-        return new BaseExtensionMirror(handle());
-    }
-
     /** {@inheritDoc} */
     @Override
     protected BaseExtensionPoint newExtensionPoint(ExtensionPointHandle usesite) {

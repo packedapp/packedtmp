@@ -28,8 +28,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtensionMirror;
-
 /**
  * A service contract details of a contractee.
  *
@@ -253,7 +251,7 @@ public final class ServiceContract {
      */
     public static ServiceContract of(Assembly assembly, Wirelet... wirelets) {
         ApplicationMirror m = ServiceLocator.mirrorOf(assembly, wirelets);
-        return m.container().findExtension(BaseExtensionMirror.class).map(e -> e.serviceContract()).orElse(ServiceContract.EMPTY);
+        return m.overview(ServiceOverviewMirror.class).serviceContract();
     }
 
     /**
