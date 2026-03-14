@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
-import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.context.Context;
+import app.packed.extension.SidehandleBeanConfiguration;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;

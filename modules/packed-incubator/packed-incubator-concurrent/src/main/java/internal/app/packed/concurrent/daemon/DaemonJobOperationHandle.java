@@ -16,13 +16,13 @@
 package internal.app.packed.concurrent.daemon;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.component.SidehandleBeanConfiguration;
-import app.packed.component.SidehandleTargetKind;
 import app.packed.concurrent.DaemonJob;
 import app.packed.concurrent.DaemonJobConfiguration;
 import app.packed.concurrent.DaemonJobContext;
 import app.packed.concurrent.DaemonJobMirror;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.SidehandleBeanConfiguration;
+import app.packed.extension.SidehandleTargetKind;
 import app.packed.operation.OperationInstaller;
 import internal.app.packed.concurrent.AbstractJobOperationHandle;
 

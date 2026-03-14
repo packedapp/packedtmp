@@ -17,9 +17,9 @@ package app.packed.operation;
 
 import java.util.function.Function;
 
-import app.packed.component.SidehandleBeanConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint;
+import app.packed.extension.SidehandleBeanConfiguration;
 import internal.app.packed.operation.PackedOperationInstaller;
 
 /**

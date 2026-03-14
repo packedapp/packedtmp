@@ -15,7 +15,7 @@
  */
 package sandbox.app.packed.application.registry.usage;
 
-import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
+import static app.packed.extension.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +25,7 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ManagedApplicationRuntime;
 import app.packed.bean.Bean;
-import app.packed.component.SidehandleBinding;
+import app.packed.extension.SidehandleBinding;
 import app.packed.lifecycle.Inject;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.sandbox.StopOption;

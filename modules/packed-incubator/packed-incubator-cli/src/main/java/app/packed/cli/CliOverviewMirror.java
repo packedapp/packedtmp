@@ -18,8 +18,8 @@ package app.packed.cli;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.component.OverviewHandle;
-import app.packed.component.OverviewMirror;
+import app.packed.extension.OverviewHandle;
+import app.packed.extension.OverviewMirror;
 import app.packed.operation.OperationMirror;
 
 /**

@@ -15,13 +15,13 @@
  */
 package sandbox.application;
 
-import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
+import static app.packed.extension.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.Bean;
+import app.packed.extension.SidehandleBinding;
 import app.packed.lifecycle.LifecycleKind;
-import app.packed.component.SidehandleBinding;
 
 /**
  * Must have a main in a bean with application lifetime.

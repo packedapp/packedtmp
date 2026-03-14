@@ -15,9 +15,9 @@
  */
 package app.packed.concurrent;
 
-import app.packed.component.OverviewHandle;
-import app.packed.component.OverviewMirror;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.OverviewHandle;
+import app.packed.extension.OverviewMirror;
 
 /**
  * A mirror for a thread namespace.

@@ -21,8 +21,8 @@ public final class ExtensionMirror implements BuildCodeSourceMirror {
     /**
      * Create a new extension mirror.
      */
-    ExtensionMirror(ExtensionHandle<?> handle) {
-        this.handle = (PackedExtensionHandle<?>) requireNonNull(handle);
+    ExtensionMirror(PackedExtensionHandle<?> handle) {
+        this.handle = requireNonNull(handle);
     }
 
     /** {@return the container this extension is part of.} */

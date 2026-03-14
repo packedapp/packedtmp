@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.component.PackedOverviewHandle;
 

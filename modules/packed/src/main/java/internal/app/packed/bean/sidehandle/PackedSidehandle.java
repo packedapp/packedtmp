@@ -21,7 +21,8 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanHandle;
 import app.packed.binding.Key;
-import app.packed.component.Sidehandle;
+import app.packed.extension.Sidehandle;
+
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingProvider;

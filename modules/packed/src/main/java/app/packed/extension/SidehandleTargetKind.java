@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
-
-import app.packed.operation.OperationMirror;
+package app.packed.extension;
 
 /**
  *
  */
-public sealed interface SidehandleTargetMirror permits OperationMirror {}
+// For now we have all 6.
+// Application and Container and Namespace are probably not super important.
+// But maybe a special SidebeanLifecycle can be useful for better control of @Stop, @Start
+public enum SidehandleTargetKind {
+    APPLICATION,
+    CONTAINER,
+
+    // Altsaa den er jo en del anderledes. Eftersom jeg taenker vi kun laver den en gang.
+    // Eller hmm, Naar vi laver et request er del invoker.invoke(Req, Res)
+    LIFETIME,
+    NAMESPACE,
+    BEAN,
+
+    /** The target for a sidebean is an operation. */
+    OPERATION;
+}

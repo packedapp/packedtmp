@@ -16,8 +16,8 @@
 package internal.app.packed.web;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.component.SidehandleBeanConfiguration;
-import app.packed.component.SidehandleTargetKind;
+import app.packed.extension.SidehandleBeanConfiguration;
+import app.packed.extension.SidehandleTargetKind;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
 import app.packed.web.HttpContext;

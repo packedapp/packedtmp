@@ -21,7 +21,7 @@ import java.lang.invoke.MethodType;
 import java.util.Map;
 
 import app.packed.bean.BeanSourceKind;
-import app.packed.component.SidehandleContext;
+import app.packed.extension.SidehandleContext;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 import internal.app.packed.extension.ExtensionContext;

@@ -20,9 +20,9 @@ import java.util.Map;
 import java.util.Set;
 
 import app.packed.binding.Key;
-import app.packed.component.OverviewHandle;
-import app.packed.component.OverviewMirror;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.OverviewHandle;
+import app.packed.extension.OverviewMirror;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
 import app.packed.service.mirrorold.ExportedServiceMirror;

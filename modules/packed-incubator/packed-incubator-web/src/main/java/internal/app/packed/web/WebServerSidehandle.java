@@ -23,8 +23,8 @@ import java.nio.charset.StandardCharsets;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import app.packed.component.SidehandleBinding;
-import app.packed.component.SidehandleBinding.Kind;
+import app.packed.extension.SidehandleBinding;
+import app.packed.extension.SidehandleBinding.Kind;
 import app.packed.lifecycle.Start;
 import app.packed.lifecycle.Stop;
 import app.packed.web.HttpContext;

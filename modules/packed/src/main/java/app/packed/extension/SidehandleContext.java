@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.extension;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
 import app.packed.context.Context;
-import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 
 /**

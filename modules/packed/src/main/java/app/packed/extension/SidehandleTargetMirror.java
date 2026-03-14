@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.extension;
 
-import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanHandle;
+import app.packed.operation.OperationMirror;
 
 /**
- * A configuration object for aside bean.
+ *
  */
-public final class SidehandleBeanConfiguration<T> extends BeanConfiguration<T> {
-
-    public SidehandleBeanConfiguration(BeanHandle<?> handle) {
-        super(handle);
-    }
-
-    public void initOnly() {
-        // Ideen er egentlig at vi ikke beholder en instans af sidebeanen
-        // Men den kalder ind i en anden klasse med den som parameter
-        // Problemet er lidt af vi aldrig kan afregistrer den.
-
-        // Brugbart fx fra CLI
-    }
-
-}
+public sealed interface SidehandleTargetMirror permits OperationMirror {}

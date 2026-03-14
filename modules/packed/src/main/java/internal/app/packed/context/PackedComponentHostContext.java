@@ -5,7 +5,7 @@ import java.util.Set;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ManagedApplicationRuntime;
 import app.packed.binding.Key;
-import app.packed.component.SidehandleContext;
+import app.packed.extension.SidehandleContext;
 import app.packed.service.ServiceLocator;
 
 public record PackedComponentHostContext(Set<Key<?>> keys) implements SidehandleContext {

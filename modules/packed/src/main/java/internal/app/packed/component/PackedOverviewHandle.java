@@ -18,10 +18,10 @@ package internal.app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.component.OverviewHandle;
-import app.packed.component.OverviewMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
+import app.packed.extension.OverviewHandle;
+import app.packed.extension.OverviewMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.application.ApplicationSetup;

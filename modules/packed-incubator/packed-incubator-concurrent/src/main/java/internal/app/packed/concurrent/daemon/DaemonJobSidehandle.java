@@ -7,9 +7,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import app.packed.component.SidehandleBinding;
-import app.packed.component.SidehandleBinding.Kind;
 import app.packed.concurrent.DaemonJobContext;
+import app.packed.extension.SidehandleBinding;
+import app.packed.extension.SidehandleBinding.Kind;
 import app.packed.lifecycle.Start;
 import app.packed.lifecycle.Stop;
 
