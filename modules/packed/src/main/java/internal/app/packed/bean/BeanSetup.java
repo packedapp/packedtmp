@@ -11,6 +11,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
@@ -27,8 +29,6 @@ import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.operation.Op;
-import org.jspecify.annotations.Nullable;
-
 import internal.app.packed.bean.introspection.BeanScanner;
 import internal.app.packed.bean.sidehandle.PackedSidehandle;
 import internal.app.packed.binding.BindingProvider;

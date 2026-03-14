@@ -17,10 +17,10 @@ package app.packed.concurrent;
 
 import java.util.stream.Stream;
 
-import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.OverviewHandle;
 import app.packed.namespace.OverviewMirror;
+import app.packed.operation.OperationMirror;
 
 /**
  * A mirror for a job namespace. All jobs within a
@@ -43,21 +43,16 @@ public final class JobOverviewMirror extends OverviewMirror<BaseExtension> {
 
     /** {@return a stream of all jobs that have been defined in the namespace or descendant namespaces} */
     public Stream<JobMirror> allJobs() {
-        return Stream.of();
+        return operations(JobMirror.class).map(j -> j);
     }
 
     /** {@return a stream of all jobs that have been defined in the namespace} */
-    public Stream<DaemonJobMirror> daemons() {
-        return jobs().filter(DaemonJobMirror.class::isInstance).map(DaemonJobMirror.class::cast);
+    public OperationMirror.OfStream<DaemonJobMirror> daemons() {
+        return operations(DaemonJobMirror.class);
     }
 
     /** {@return a stream of all jobs that have been defined in the namespace} */
-    public Stream<JobMirror> jobs() {
-        return Stream.of();
-    }
-
-    /** {@return the owner of the namespace} */
-    public ComponentRealm owner() {
-        return ComponentRealm.userland();
+    public OperationMirror.OfStream<JobMirror> jobs() {
+        return operations(JobMirror.class);
     }
 }

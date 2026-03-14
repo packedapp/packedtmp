@@ -33,6 +33,8 @@ import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionNamespace;
 import app.packed.extension.ExtensionNamespaceHandle;
 import app.packed.extension.InternalExtensionException;
+import app.packed.namespace.OverviewHandle;
+import app.packed.namespace.OverviewMirror;
 import internal.app.packed.assembly.AssemblyClassModel;
 import internal.app.packed.build.hooks.BuildHook;
 import internal.app.packed.build.hooks.UseBuildHooks;
@@ -226,6 +228,38 @@ public class ConstructorSupport {
         return new ExtensionNamespaceFactory(mh);
     }
 
+    public static OverviewMirrorFactory findOverviewMirrorConstructor(Class<? extends OverviewMirror<?>> overviewMirrorClass) {
+        if (Modifier.isAbstract(overviewMirrorClass.getModifiers())) {
+            throw new InternalExtensionException("OverviewMirror " + StringFormatter.format(overviewMirrorClass) + " cannot be an abstract class");
+        } else if (ClassUtil.isInnerOrLocal(overviewMirrorClass)) {
+            throw new InternalExtensionException("OverviewMirror " + StringFormatter.format(overviewMirrorClass) + " cannot be an inner or local class");
+        }
+
+        // An OverviewMirror must provide exactly one constructor
+        Constructor<?>[] constructors = overviewMirrorClass.getDeclaredConstructors();
+        if (constructors.length != 1) {
+            throw new InternalExtensionException(StringFormatter.format(overviewMirrorClass) + " must declare exactly 1 constructor");
+        }
+
+        Constructor<?> constructor = constructors[0];
+        if (constructor.getParameterCount() != 1 || constructor.getParameterTypes()[0] != OverviewHandle.class) {
+            throw new InternalExtensionException(overviewMirrorClass
+                    + " must provide a constructor taking OverviewHandle, but constructor required " + Arrays.toString(constructor.getParameters()));
+        }
+
+        // Create a MethodHandle for the constructor
+        MethodHandle mh;
+        try {
+            Lookup l = MethodHandles.privateLookupIn(overviewMirrorClass, MethodHandles.lookup());
+            mh = l.unreflectConstructor(constructor);
+        } catch (IllegalAccessException e) {
+            throw new InternalExtensionException(illegalAccessExtensionMsg(overviewMirrorClass), e);
+        }
+        // cast from (ConcreteOverviewMirror) -> (OverviewMirror)
+        mh = MethodHandles.explicitCastArguments(mh, MethodType.methodType(OverviewMirror.class, OverviewHandle.class));
+        return new OverviewMirrorFactory(mh);
+    }
+
     public static void forceLoad(Class<? extends Extension<?>> extensionClass) {
         // Ensure that the class initializer of the extension has been run before we progress
         try {
@@ -292,6 +326,23 @@ public class ConstructorSupport {
                 return (Extension<?>) mh.invokeExact(handle);
             } catch (Throwable e) {
                 throw new InternalExtensionException("An instance of the extension " + extension.model.fullName() + " could not be created.", e);
+            }
+        }
+    }
+
+    /** A factory class for creating instances of {@link OverviewMirror} */
+    public static final class OverviewMirrorFactory {
+        private final MethodHandle mh; // (OverviewHandle)OverviewMirror
+
+        public OverviewMirrorFactory(MethodHandle mh) {
+            this.mh = requireNonNull(mh);
+        }
+
+        public OverviewMirror<?> create(OverviewHandle<?> handle) {
+            try {
+                return (OverviewMirror<?>) mh.invokeExact(handle);
+            } catch (Throwable e) {
+                throw new InternalExtensionException("An instance of the overview mirror could not be created.", e);
             }
         }
     }

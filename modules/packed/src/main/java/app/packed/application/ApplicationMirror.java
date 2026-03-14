@@ -25,6 +25,7 @@ import app.packed.util.TreeView;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
+import internal.app.packed.component.PackedOverviewHandle;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
@@ -212,7 +213,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     public <O extends OverviewMirror<?>> O overview(Class<O> type) {
-        throw new UnsupportedOperationException();
+        return PackedOverviewHandle.ofApplication(application, type);
     }
 
     public void print() {

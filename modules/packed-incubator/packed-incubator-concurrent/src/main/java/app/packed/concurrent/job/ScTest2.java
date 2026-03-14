@@ -24,6 +24,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.concurrent.DaemonJob;
 import app.packed.concurrent.DaemonJobContext;
+import app.packed.concurrent.JobOverviewMirror;
 import app.packed.lifecycle.Stop;
 import app.packed.web.HttpContext;
 import app.packed.web.WebGet;
@@ -34,12 +35,17 @@ import app.packed.web.WebGet;
 public class ScTest2 extends BaseAssembly {
 
     public static void main(String[] args) throws Exception {
-        // ApplicationMirror m = App.mirrorOf(new ScTest2());
+         ApplicationMirror m = App.mirrorOf(new ScTest2());
+
+         System.out.println(m.overview(JobOverviewMirror.class).allDaemons().toList());
+
 //        Optional<ThreadNamespaceMirror> o = m.namespace(ThreadNamespaceMirror.class);
 
 //        o.get().daemons().forEach(c -> {
 //            IO.println(c.name() + ":" + c.isInteruptAtStop());
 //        });
+
+
 
         App app = App.start(new ScTest2());
         Thread.sleep(30000);
@@ -52,8 +58,8 @@ public class ScTest2 extends BaseAssembly {
     @Override
     protected void build() {
 
-        link(assembly().finder().findOne("foo.bar"));
-        assembly().finder().serviceLoader(BaseAssembly.class).forEach(e -> link(e));
+//        link(assembly().finder().findOne("foo.bar"));
+//        assembly().finder().serviceLoader(BaseAssembly.class).forEach(e -> link(e));
 
         provideInstance("asdasd");
         install(MuB.class);

@@ -74,7 +74,7 @@ public final class ExtensionNamespaceSetup extends NamespaceSetup {
 
     public BaseExtensionNamespace base() {
         return (BaseExtensionNamespace) extensionNamespaceInstances.computeIfAbsent(BaseExtension.class, _ -> {
-            ExtensionNamespaceFactory nf = model.namespaceFactory;
+            ExtensionNamespaceFactory nf = ExtensionClassModel.of(BaseExtension.class).namespaceFactory;
             return nf.create(new PackedExtensionNamespaceHandle<>(this));
         });
     }

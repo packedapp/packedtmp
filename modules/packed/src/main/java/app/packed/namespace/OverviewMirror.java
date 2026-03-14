@@ -43,10 +43,10 @@ public abstract class OverviewMirror<E extends Extension<E>> {
     }
 
     protected final OperationMirror.OfStream<OperationMirror> operations() {
-        throw new UnsupportedOperationException();
+        return handle.operations();
     }
 
     protected final <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operations) {
-        throw new UnsupportedOperationException();
+        return handle.operations(operations);
     }
 }
