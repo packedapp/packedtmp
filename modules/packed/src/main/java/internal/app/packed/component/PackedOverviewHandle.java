@@ -21,19 +21,30 @@ import app.packed.application.ApplicationMirror;
 import app.packed.component.OverviewHandle;
 import app.packed.component.OverviewMirror;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.extension.ExtensionClassModel;
+import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.invoke.ConstructorSupport;
 import internal.app.packed.invoke.ConstructorSupport.OverviewMirrorFactory;
+import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
  *
  */
 public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implements OverviewHandle<E> {
+
+    private final ApplicationSetup application;
+    final Class<? extends Extension<?>> extensionType;
+
+    protected PackedOverviewHandle(ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
+        this.application = requireNonNull(application);
+        this.extensionType = requireNonNull(extensionType);
+    }
 
     /** Cache OverviewMirror constructor factories. */
     private static final ClassValue<OverviewMirrorFactory> CONSTRUCTORS = new ClassValue<>() {
@@ -57,6 +68,20 @@ public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implem
     };
 
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public E applicationRoot() {
+        ExtensionSetup es = application.rootContainer().extensions.get(extensionType);
+        return (E) es.instance();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public ExtensionHandle<E> applicationRootHandle() {
+        ExtensionSetup es = application.rootContainer().extensions.get(extensionType);
+        return (ExtensionHandle<E>) new PackedExtensionHandle<>(es);
+    }
+
     @Override
     public final <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operationType) {
         return (OperationMirror.OfStream<T>) operations().ofType(operationType);
@@ -69,7 +94,7 @@ public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implem
         Class<? extends Extension<?>> extensionType = EXTENSION_TYPES.get(type);
         OverviewMirrorFactory factory = CONSTRUCTORS.get(type);
 
-        PackedApplicationOverviewHandle<?> handle = new PackedApplicationOverviewHandle<>(application.mirror(), extensionType);
+        PackedApplicationOverviewHandle<?> handle = new PackedApplicationOverviewHandle<>(application, extensionType);
 
         return (O) factory.create(handle);
     }
@@ -94,7 +119,7 @@ public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implem
 
         OverviewMirrorFactory factory = CONSTRUCTORS.get(type);
 
-        PackedExtensionOverviewHandle<?> handle = new PackedExtensionOverviewHandle<>(application.mirror(), extensionType);
+        PackedExtensionOverviewHandle<?> handle = new PackedExtensionOverviewHandle<>(application, extensionType);
 
         return (O) factory.create(handle);
     }
@@ -106,7 +131,7 @@ public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implem
         Class<? extends Extension<?>> extensionType = EXTENSION_TYPES.get(type);
         OverviewMirrorFactory factory = CONSTRUCTORS.get(type);
 
-        PackedNamespaceOverviewHandle<?> handle = new PackedNamespaceOverviewHandle<>(namespace.mirror(), extensionType);
+        PackedNamespaceOverviewHandle<?> handle = new PackedNamespaceOverviewHandle<>(namespace.rootContainer.application, namespace.mirror(), extensionType);
 
         return (O) factory.create(handle);
     }
@@ -115,11 +140,9 @@ public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implem
 
         private final ApplicationMirror applicationMirror;
 
-        private final Class<? extends Extension<?>> extensionType;
-
-        public PackedApplicationOverviewHandle(ApplicationMirror applicationMirror, Class<? extends Extension<?>> extensionType) {
-            this.applicationMirror = requireNonNull(applicationMirror);
-            this.extensionType = requireNonNull(extensionType);
+        public PackedApplicationOverviewHandle(ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
+            super(application, extensionType);
+            this.applicationMirror = application.mirror();
         }
 
         @Override
@@ -127,22 +150,29 @@ public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implem
             return applicationMirror.operations().filter(op -> op.installedByExtension() == extensionType);
         }
 
+        @Override
+        public Type type() {
+            return Type.APPLICATION;
+        }
     }
 
     public static final class PackedExtensionOverviewHandle<E extends Extension<E>> extends PackedOverviewHandle<E> {
 
         private final ApplicationMirror applicationMirror;
 
-        private final Class<? extends Extension<?>> extensionType;
-
-        public PackedExtensionOverviewHandle(ApplicationMirror applicationMirror, Class<? extends Extension<?>> extensionType) {
-            this.applicationMirror = requireNonNull(applicationMirror);
-            this.extensionType = requireNonNull(extensionType);
+        public PackedExtensionOverviewHandle(ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
+            super(application, extensionType);
+            this.applicationMirror = application.mirror();
         }
 
         @Override
         public OperationMirror.OfStream<OperationMirror> operations() {
             return applicationMirror.allOperations().filter(op -> op.bean().owner().isExtension(extensionType));
+        }
+
+        @Override
+        public Type type() {
+            return Type.EXTENSION;
         }
     }
 
@@ -150,16 +180,19 @@ public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implem
 
         private final NamespaceMirror namespaceMirror;
 
-        private final Class<? extends Extension<?>> extensionType;
-
-        public PackedNamespaceOverviewHandle(NamespaceMirror namespaceMirror, Class<? extends Extension<?>> extensionType) {
+        public PackedNamespaceOverviewHandle(ApplicationSetup application, NamespaceMirror namespaceMirror, Class<? extends Extension<?>> extensionType) {
+            super(application, extensionType);
             this.namespaceMirror = requireNonNull(namespaceMirror);
-            this.extensionType = requireNonNull(extensionType);
         }
 
         @Override
         public OperationMirror.OfStream<OperationMirror> operations() {
             return namespaceMirror.operations().filter(op -> op.installedByExtension() == extensionType);
+        }
+
+        @Override
+        public Type type() {
+            return Type.NAMESPACE;
         }
     }
 }

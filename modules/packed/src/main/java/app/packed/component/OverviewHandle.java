@@ -16,6 +16,7 @@
 package app.packed.component;
 
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.component.PackedOverviewHandle;
 
@@ -31,6 +32,10 @@ import internal.app.packed.component.PackedOverviewHandle;
  * @see OverviewMirror
  */
 public sealed interface OverviewHandle<E extends Extension<E>> permits PackedOverviewHandle {
+
+    E applicationRoot();
+
+    ExtensionHandle<E> applicationRootHandle();
 
     /**
      * {@return a stream of all operations within the scope of this handle that were installed by the extension type {@code E}}
@@ -48,4 +53,10 @@ public sealed interface OverviewHandle<E extends Extension<E>> permits PackedOve
      * @return a stream of matching operations
      */
     <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operationType);
+
+    Type type();
+
+    enum Type {
+        APPLICATION, NAMESPACE, EXTENSION;
+    }
 }
