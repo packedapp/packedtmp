@@ -80,4 +80,8 @@ public abstract class OverviewMirror<E extends Extension<E>> {
     protected final <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operationType) {
         return handle.operations(operationType);
     }
+
+    public final OverviewHandle.Type overviewType() {
+        return handle.overviewType();
+    }
 }

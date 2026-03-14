@@ -24,9 +24,6 @@ import app.packed.extension.OverviewMirror;
  * <p>
  * A application
  */
-// We must have one per extension...
-// I mean we have a service namespace per extension.
-// So would probably be strange to share one for extensions?
 public final class ThreadOverviewMirror extends OverviewMirror<BaseExtension> {
 
     /**

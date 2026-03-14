@@ -151,7 +151,7 @@ public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implem
         }
 
         @Override
-        public Type type() {
+        public Type overviewType() {
             return Type.APPLICATION;
         }
     }
@@ -171,7 +171,7 @@ public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implem
         }
 
         @Override
-        public Type type() {
+        public Type overviewType() {
             return Type.EXTENSION;
         }
     }
@@ -191,7 +191,7 @@ public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implem
         }
 
         @Override
-        public Type type() {
+        public Type overviewType() {
             return Type.NAMESPACE;
         }
     }

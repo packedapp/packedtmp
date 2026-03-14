@@ -23,7 +23,7 @@ package app.packed.concurrent;
 // Fyldt med Thread factories/pools
 // Hvad med extensions??? Vi vil gerne kunne configure deres.
 // Maaske deler vi en enkelt. Maaske har vi noget hierrakisk hvor vi nedarver settings
-public final class ThreadNamespaceConfiguration {
+final class ThreadNamespaceConfiguration {
 
 //    public DaemonOperationConfiguration addDaemon(Consumer<DaemonContext> action) {
 //        throw new UnsupportedOperationException();
@@ -57,8 +57,7 @@ public final class ThreadNamespaceConfiguration {
 }
 //
 
-//// Hvad hvis vi har flere annoteringer??? Vi kan vel kun have en?
-//// Den giver ikke super mening..
+//// Hvad hvis vi har flere annoteringer??? Vi kan vel kun have en? Den giver ikke super mening..
 //public DaemonOperationConfiguration addDaemonApplication(Assembly assembly, Wirelet... wirelets) {
 //  throw new UnsupportedOperationException();
 //}

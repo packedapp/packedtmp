@@ -52,7 +52,7 @@ public sealed interface OverviewHandle<E extends Extension<E>> permits PackedOve
      */
     <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operationType);
 
-    Type type();
+    Type overviewType();
 
     enum Type {
         APPLICATION, NAMESPACE, EXTENSION;

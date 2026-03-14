@@ -22,9 +22,8 @@ import app.packed.component.ComponentPath;
 /**
  *
  */
-// Giver denne mening, hvis mn ikke har nogle controller metoder???
-// Maaske namespace info er nok
-public interface NamespaceContext {
+// Was NamespaceController, but we have no controller methods
+public interface NamespaceInfo {
 
     /** {@return the component path of the namespace} */
     ComponentPath componentPath();
