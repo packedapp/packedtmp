@@ -75,7 +75,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
      * @see #namespaces()
      */
     public TreeView<NamespaceMirror> allNamespaces() {
-        return new PackedTreeView<>(application.rootNamespace(), null, c -> c.mirror());
+        return new PackedTreeView<>(application.rootContainer.namespace, null, c -> c.mirror());
     }
 
     /**
@@ -202,7 +202,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
      * @see #allNamespaces()
      */
     public TreeView<NamespaceMirror> namespaces() {
-        return new PackedTreeView<>(application.rootNamespace(), n -> n.owner() == ComponentRealm.userland(), c -> c.mirror());
+        return new PackedTreeView<>(application.rootContainer.namespace, n -> n.owner() == ComponentRealm.userland(), c -> c.mirror());
     }
 
     /** {@return a stream of all of the operations on beans owned by the user in the application.} */

@@ -32,23 +32,15 @@ import internal.app.packed.service.ServiceBindingSetup;
 /** A single instance of this class exists per extension per application. */
 public final class ExtensionNamespaceSetup extends NamespaceSetup {
 
+    public final String extensionName;
+
+    public final Map<Class<? extends Extension<?>>, ExtensionNamespace<?, ?>> extensionNamespaceInstances = new HashMap<>();
+
     /** Whether or not this type of extension is still configurable. */
     boolean isConfigurable = true;
 
     /** A model of the extension. */
     final ExtensionClassModel model;
-
-    public final String extensionName;
-
-    public final Map<Class<? extends Extension<?>>, ExtensionNamespace<?, ?>> extensionNamespaceInstances = new HashMap<>();
-
-    public BaseExtensionNamespace base() {
-        return (BaseExtensionNamespace) extensionNamespaceInstances.computeIfAbsent(BaseExtension.class, _ -> {
-            ExtensionNamespaceFactory nf = model.namespaceFactory;
-            return nf.create(new PackedExtensionNamespaceHandle<>(this));
-        });
-
-    }
 
     /**
      * Extensions resolver services when the application closes. The main argument is that they should very rarely fail to
@@ -71,13 +63,20 @@ public final class ExtensionNamespaceSetup extends NamespaceSetup {
         String name = model.name();
 
         int suffix = 1;
-        while (application.extensionNames.putIfAbsent(name, extensionType) != null) {
+        while (application.uniqueExtensionNames.putIfAbsent(name, extensionType) != null) {
             name = model.name() + suffix++;
         }
         this.extensionName = name;
         // TODO should be able to reuse the AbstractNode tree thingy here, instead of a seperate field
         // TODO insert into tree propertly
         super.name = "$" + name;
+    }
+
+    public BaseExtensionNamespace base() {
+        return (BaseExtensionNamespace) extensionNamespaceInstances.computeIfAbsent(BaseExtension.class, _ -> {
+            ExtensionNamespaceFactory nf = model.namespaceFactory;
+            return nf.create(new PackedExtensionNamespaceHandle<>(this));
+        });
     }
 
     /** {@inheritDoc} */

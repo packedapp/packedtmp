@@ -17,7 +17,7 @@ package sandbox.app.packed.build.action;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import app.packed.namespaceold.BuildPermission;
+import sandbox.app.packed.namespaceold.BuildPermission;
 
 /**
  * Can output logging

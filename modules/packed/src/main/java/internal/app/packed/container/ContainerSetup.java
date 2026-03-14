@@ -47,7 +47,6 @@ import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.extension.BaseExtensionNamespace;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.namespace.UserlandNamespaceSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
@@ -78,7 +77,8 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     @Nullable
     private ContainerHandle<?> handle;
 
-    public final NamespaceSetup namespace;
+    /** The namespace this container is a part of. */
+    public final UserlandNamespaceSetup namespace;
 
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
@@ -89,10 +89,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
 
     /** The lifetime the container is a part of. */
     public final ContainerLifetimeSetup lifetime;
-
-    /** The container's service manager. */
-    // Maybe replace with ContainerServiceSetup. Where all the logic is.
-    private MainServiceNamespaceHandle sm;
 
     public final ArrayList<Wirelet> unprocessedWirelets;
 
@@ -116,6 +112,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         } else {
             this.lifetime = new ContainerLifetimeSetup(installer, this, null);
         }
+
         if (installer.parent == null || installer.newNamespace) {
             this.namespace = new UserlandNamespaceSetup(null, this);
         } else {
@@ -329,15 +326,16 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         }
     }
 
+    public BaseExtensionNamespace baseExtensionNamespace() {
+        return (BaseExtensionNamespace) baseExtension.userlandNamespaceInstance();
+    }
+
     public MainServiceNamespaceHandle servicesMain() {
-        MainServiceNamespaceHandle s = sm;
+        BaseExtensionNamespace n = baseExtensionNamespace();
+        MainServiceNamespaceHandle s = n.services;
         if (s == null) {
-            BaseExtensionNamespace n = (BaseExtensionNamespace) baseExtension.userlandNamespaceInstance();
-            s = n.services;
-            if (s == null) {
-                s = n.services = new MainServiceNamespaceHandle();
-                s.init(null, this);
-            }
+            s = n.services = new MainServiceNamespaceHandle();
+            s.init(null, this);
         }
         return s;
     }

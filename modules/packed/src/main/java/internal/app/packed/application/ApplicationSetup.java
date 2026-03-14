@@ -42,11 +42,13 @@ import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.invoke.MethodHandleInvoker.ApplicationBaseLauncher;
-import internal.app.packed.namespace.UserlandNamespaceSetup;
 import internal.app.packed.util.accesshelper.ApplicationAccessHandler;
 
 /** The internal configuration of an application. */
 public final class ApplicationSetup implements BuildLocalSource, ComponentSetup {
+
+    /** Any (statically defined) children this application has. */
+    public final ArrayList<BuildApplicationRepository> childApplications = new ArrayList<>();
 
     /**
      * A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled or
@@ -58,34 +60,10 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     /** Handles components tags for every components in the application. */
     public final ComponentTagHolder componentTags = new ComponentTagHolder();
 
-    /**
-     * The root container of the application, is initialized in
-     * {@link #newApplication(PackedApplicationInstaller, AssemblySetup)}.
-     */
-    public ContainerSetup rootContainer;
-
-    private UserlandNamespaceSetup rootNamespace;
-
     /** The deployment the application is part of. */
     public final DeploymentSetup deployment;
 
-//    /**
-//     * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
-//     * extension with the same canonical name. Which may happen if different containers uses the "same" extension but
-//     * defined in different class loaders. We then compare the extension id of the extensions as a last resort when sorting
-//     * them.
-//     */
-//    // We actually have a unique name now, so maybe we can skip this counter
-//    public int extensionIdCounter;
-
-    /**
-     * All extensions in the application, uniquely named.
-     * <p>
-     * The only time where we might see collisions is if we load 2 extensions with same name, but with different class
-     * loaders.
-     */
-    public final Map<String, Class<? extends Extension<?>>> extensionNames = new HashMap<>();
-
+    /** The build goal of the application. */
     public final BuildGoal goal;
 
     /** The application's handle, instantiated by {@link #newApplication(PackedApplicationInstaller, AssemblySetup)}. */
@@ -94,6 +72,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     /** All hooks applied on the application. */
     public final ArrayList<ApplicationBuildHook> hooks = new ArrayList<>();
 
+    /** A MethodHandle wrapper for launching the application. */
     public final ApplicationBaseLauncher launcher;
 
     /** This map maintains all locals for the entire application. */
@@ -102,15 +81,26 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     /** The current phase of the application's build process. */
     public ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
 
-    /** Any (statically defined) children this application has. */
-    public final ArrayList<BuildApplicationRepository> childApplications = new ArrayList<>();
-
-    /** The template used to create the application. */
-    public final PackedApplicationTemplate<?> template;
+    /**
+     * The root container of the application, is initialized in
+     * {@link #newApplication(PackedApplicationInstaller, AssemblySetup)}.
+     */
+    public ContainerSetup rootContainer;
 
     /** Any sidebean attached to the application. */
     @Nullable
     public Sidehandle sidehandle;
+
+    /** The template used to create the application. */
+    public final PackedApplicationTemplate<?> template;
+
+    /**
+     * All extensions in the application, uniquely named.
+     * <p>
+     * The only time where we might see collisions is if we load 2 extensions with same name, but with different class
+     * loaders.
+     */
+    public final Map<String, Class<? extends Extension<?>>> uniqueExtensionNames = new HashMap<>();
 
     /**
      * Create a new application.
@@ -158,10 +148,6 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
         }
     }
 
-    public boolean isAssembling() {
-        return phase == ApplicationBuildPhase.ASSEMBLE;
-    }
-
     /** The application has been successfully assembled. Now generate any required code. */
     public void close() {
         // Only generate code if needed
@@ -187,27 +173,15 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
         return ComponentKind.APPLICATION.pathNew(rootContainer().name());
     }
 
-    public UserlandNamespaceSetup rootNamespace() {
-        UserlandNamespaceSetup c = rootNamespace;
-        if (c != null) {
-            return c;
-        }
-        throw new IllegalStateException();
-    }
-
-
-    public ContainerSetup rootContainer() {
-        ContainerSetup c = rootContainer;
-        if (c != null) {
-            return c;
-        }
-        throw new IllegalStateException();
-    }
-
     @Override
     public ApplicationHandle<?, ?> handle() {
         return requireNonNull(handle);
     }
+
+    public boolean isAssembling() {
+        return phase == ApplicationBuildPhase.ASSEMBLE;
+    }
+
 
     /** {@inheritDoc} */
     @Override
@@ -219,6 +193,14 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     @Override
     public ApplicationMirror mirror() {
         return handle().mirror();
+    }
+
+    public ContainerSetup rootContainer() {
+        ContainerSetup c = rootContainer;
+        if (c != null) {
+            return c;
+        }
+        throw new IllegalStateException();
     }
 
     public static ApplicationSetup crack(ApplicationConfiguration configuration) {
@@ -256,6 +238,6 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
 
     /** The build phase of the application. */
     public enum ApplicationBuildPhase {
-        ASSEMBLE, CODEGEN, CLOSED, COMPLETED;
+        ASSEMBLE, CLOSED, CODEGEN, COMPLETED;
     }
 }

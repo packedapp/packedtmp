@@ -31,9 +31,7 @@ import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyFinder;
 import app.packed.build.BuildException;
 
-/**
- * Classpath-based implementation of {@link AssemblyFinder}.
- */
+/** Classpath-based implementation of {@link AssemblyFinder}. */
 public final class PackedAssemblyClasspathFinder implements AssemblyFinder {
 
     /** The class loader used to load assembly classes. */

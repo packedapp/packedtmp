@@ -18,7 +18,7 @@ package internal.app.packed.util.accesshelper;
 import java.util.function.Supplier;
 
 import app.packed.service.ServiceNamespaceConfiguration;
-import app.packed.service.ServiceNamespaceMirror;
+import app.packed.service.ServiceOverviewMirror;
 import internal.app.packed.service.ServiceNamespaceHandle;
 
 /**
@@ -47,5 +47,5 @@ public abstract class ServiceAccessHandler extends AccessHelper {
      * @param handle the service namespace handle
      * @return the mirror
      */
-    public abstract ServiceNamespaceMirror newServiceNamespaceMirror(ServiceNamespaceHandle handle);
+    public abstract ServiceOverviewMirror newServiceNamespaceMirror(ServiceNamespaceHandle handle);
 }

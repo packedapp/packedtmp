@@ -21,7 +21,6 @@ module app.packed {
     exports app.packed.util;
 
     // temporary
-    exports app.packed.namespaceold;
     exports app.packed.lifecycle.sandbox;
     exports app.packed.service.mirror;
 

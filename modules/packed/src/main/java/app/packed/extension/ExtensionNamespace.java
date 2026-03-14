@@ -32,10 +32,12 @@ public abstract class ExtensionNamespace<N extends ExtensionNamespace<N, E>, E e
         this.handle = requireNonNull(handle);
     }
 
+    /** {@return whether or not the namespace is the root namespace in the application} */
     public final boolean isApplicationRoot() {
         return handle.isApplicationRoot();
     }
 
+    /** {@return whether or not the namespace is owned by an extension} */
     public final boolean isExtensionNamespace() {
         return owner().isExtension();
     }
@@ -43,6 +45,7 @@ public abstract class ExtensionNamespace<N extends ExtensionNamespace<N, E>, E e
     // ExtensionNamespace created for extensions will never use this method
     public abstract E newExtension(ExtensionHandle<E> extensionHandle);
 
+    /** {@return the owner of the namespace} */
     public final ComponentRealm owner() {
         return handle.owner();
     }

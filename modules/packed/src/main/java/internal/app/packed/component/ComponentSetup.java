@@ -21,10 +21,11 @@ import app.packed.component.ComponentPath;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /** Internal configuration of a component. */
-public sealed interface ComponentSetup permits ApplicationSetup, ContainerSetup, BeanSetup, OperationSetup {
+public sealed interface ComponentSetup permits ApplicationSetup, ContainerSetup, NamespaceSetup, BeanSetup, OperationSetup {
 
     /** {@return the path of the component} */
     ComponentPath componentPath();

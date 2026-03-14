@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.namespaceold;
+package sandbox.app.packed.namespaceold;
 
 /**
  *
  */
-public class NamespaceDomainMirror {
+// A collection of build permissions and where to apply them
+// Should be composable.
+
+// BuildPermission cannot take mirrors. It must take something that is constant
+// For example, a bean can be renamed. Maybe it implies for every renaming. IDK
+public interface BuildRuleset {
 
 }

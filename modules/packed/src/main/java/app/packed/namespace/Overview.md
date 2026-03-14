@@ -31,6 +31,15 @@ A namespace has an id, a namespacetype, a name type, and an extend.
 
 // Namespace:Service:/:main
 
+
+HVORFOR fungere namespace bridge ikke
+
+// Den fungere ikke super godt. Problemet er at det er svaert at faa fat i namespace handles.
+// Med mindre vi laver en masse generics magi.
+// Meget lettere at lave sine egen wirelets.
+// Og metoder på NamespaceConfiguration
+
+
 Usecases
 - Cli : Application|No extension participants - Args all application, commands app lifetime or immediate 
 - Service : Container|Alle har deres egen + exports -

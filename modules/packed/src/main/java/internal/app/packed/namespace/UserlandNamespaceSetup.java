@@ -38,5 +38,4 @@ public final class UserlandNamespaceSetup extends NamespaceSetup {
     public ComponentRealm owner() {
         return ComponentRealm.userland();
     }
-
 }

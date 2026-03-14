@@ -23,11 +23,11 @@ import internal.app.packed.namespace.NamespaceSetup;
 /**
  * Access helper for NamespaceMirror.
  */
-public abstract class NamespaceMirrorAccessHandler extends AccessHelper {
+public abstract class NamespaceAccessHandler extends AccessHelper {
 
-    private static final Supplier<NamespaceMirrorAccessHandler> CONSTANT = StableValue.supplier(() -> init(NamespaceMirrorAccessHandler.class, NamespaceMirror.class));
+    private static final Supplier<NamespaceAccessHandler> CONSTANT = StableValue.supplier(() -> init(NamespaceAccessHandler.class, NamespaceMirror.class));
 
-    public static NamespaceMirrorAccessHandler instance() {
+    public static NamespaceAccessHandler instance() {
         return CONSTANT.get();
     }
 

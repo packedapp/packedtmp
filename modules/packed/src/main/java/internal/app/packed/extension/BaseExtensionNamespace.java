@@ -29,7 +29,7 @@ public final class BaseExtensionNamespace extends ExtensionNamespace<BaseExtensi
 
     public MainServiceNamespaceHandle services;
 
-    protected BaseExtensionNamespace(ExtensionNamespaceHandle<BaseExtensionNamespace, BaseExtension> handle) {
+    BaseExtensionNamespace(ExtensionNamespaceHandle<BaseExtensionNamespace, BaseExtension> handle) {
         super(handle);
     }
 

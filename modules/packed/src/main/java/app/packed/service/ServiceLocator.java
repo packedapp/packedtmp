@@ -233,7 +233,7 @@ public interface ServiceLocator extends ApplicationInterface {
     ServiceSelection<?> selectAll();
 
     /**
-     * Returns a service selection where the raw type of every service key is assignable to the specified type.
+     * Returns a service selection whewre the raw type of every service key is assignable to the specified type.
      * <p>
      * Unlike this method {@link #selectWithAnyQualifiers(Class)} this method will also select any
      *

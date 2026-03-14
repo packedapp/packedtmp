@@ -17,6 +17,7 @@ package app.packed.namespace;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
@@ -24,6 +25,8 @@ import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
@@ -33,16 +36,16 @@ import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.util.PackedTreeView;
 import internal.app.packed.util.accesshelper.AccessHelper;
-import internal.app.packed.util.accesshelper.NamespaceMirrorAccessHandler;
+import internal.app.packed.util.accesshelper.NamespaceAccessHandler;
 
 /**
  * A mirror representing a namespace.
  */
 @AutoService(introspector = NamespaceMirrorBeanIntrospector.class)
-public final class NamespaceMirror {
+public final class NamespaceMirror implements ComponentMirror {
 
     static {
-        AccessHelper.initHandler(NamespaceMirrorAccessHandler.class, new NamespaceMirrorAccessHandler() {
+        AccessHelper.initHandler(NamespaceAccessHandler.class, new NamespaceAccessHandler() {
             @Override
             public NamespaceMirror newNamespaceMirror(NamespaceSetup namespace) {
                 return new NamespaceMirror(namespace);
@@ -90,6 +93,18 @@ public final class NamespaceMirror {
     // I think non-synthetic should also be filtered
     public OperationMirror.OfStream<OperationMirror> operations() {
         return OperationMirror.OfStream.of(beans().flatMap(BeanMirror::operations));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return namespace.componentPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> componentTags() {
+        throw new UnsupportedOperationException();
     }
 }
 

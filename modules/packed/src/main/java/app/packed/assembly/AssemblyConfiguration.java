@@ -52,42 +52,9 @@ public final class AssemblyConfiguration {
         this.assembly = assembly;
     }
 
-    /**
-     * {@return an assembly finder that can be used to find assemblies.}
-     * <p>
-     * The returned finder type depends on whether this assembly is on the classpath or modulepath:
-     * <ul>
-     * <li><b>Classpath:</b> Returns a classpath-based finder using the assembly's class loader</li>
-     * <li><b>Modulepath:</b> Returns a modulepath-based finder using the assembly's module layer</li>
-     * </ul>
-     *
-     * @see AssemblyFinder#ofClasspath(ClassLoader)
-     * @see AssemblyModulepathFinder
-     */
-    public AssemblyFinder finder() {
-        return assembly.finder();
-    }
-
-    /**
-     * {@return a modulepath-based assembly finder for this assembly.}
-     * <p>
-     * Use this when you need modulepath-specific functionality like loading modules from external paths or accessing module
-     * layer information.
-     *
-     * @see AssemblyModulepathFinder
-     */
-    public AssemblyModulepathFinder moduleFinder() {
-        return assembly.moduleFinder();
-    }
-
     /** {@return the application's configuration */
     public ApplicationConfiguration application() {
         return assembly.container.application.handle().configuration();
-    }
-
-    /** {@return the namespaces's configuration */
-    public NamespaceConfiguration namespace() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@return the current state of the assembly.} */
@@ -113,6 +80,7 @@ public final class AssemblyConfiguration {
     }
 
     // Maybe just containers().root();
+    // TODO should mirror naming in ApplicationMirror
     public ContainerConfiguration containerRoot() {
         return assembly.container.configuration();
     }
@@ -122,10 +90,43 @@ public final class AssemblyConfiguration {
         return new PackedTreeView<>(assembly.container, c -> c.assembly == assembly, c -> c.configuration());
     }
 
+    /**
+     * {@return an assembly finder that can be used to find assemblies.}
+     * <p>
+     * The returned finder type depends on whether this assembly is on the classpath or modulepath:
+     * <ul>
+     * <li><b>Classpath:</b> Returns a classpath-based finder using the assembly's class loader</li>
+     * <li><b>Modulepath:</b> Returns a modulepath-based finder using the assembly's module layer</li>
+     * </ul>
+     *
+     * @see AssemblyFinder#ofClasspath(ClassLoader)
+     * @see AssemblyModulepathFinder
+     */
+    public AssemblyFinder finder() {
+        return assembly.finder();
+    }
+
     // I think maybe allow null to revert back to Assembly Based lookup
     public void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
         assembly.lookup(lookup);
+    }
+
+    /**
+     * {@return a modulepath-based assembly finder for this assembly.}
+     * <p>
+     * Use this when you need modulepath-specific functionality like loading modules from external paths or accessing module
+     * layer information.
+     *
+     * @see AssemblyModulepathFinder
+     */
+    public AssemblyModulepathFinder moduleFinder() {
+        return assembly.moduleFinder();
+    }
+
+    /** {@return the namespaces's configuration */
+    public NamespaceConfiguration namespace() {
+        return assembly.container.namespace.configuration();
     }
 }
 

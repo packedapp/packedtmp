@@ -43,14 +43,15 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     /** A static model of the extension. */
     public final ExtensionClassModel model;
 
-    /** The extension's namespace. */
+    /** The extension's namespace, shared between all extension instances in an application. */
     public final ExtensionNamespaceSetup namespace;
 
     /** The extension's injection manager. */
     private MainServiceNamespaceHandle sm;
 
+    /** */
     @Nullable
-    private ExtensionNamespace<?, ?> userlandNamespaceInstance;
+    private ExtensionNamespace<?, ?> userlandNamespace;
 
     /**
      * Creates a new extension setup.
@@ -132,7 +133,7 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
     }
 
     public ExtensionNamespace<?, ?> userlandNamespaceInstance() {
-        ExtensionNamespace<?, ?> e = userlandNamespaceInstance;
+        ExtensionNamespace<?, ?> e = userlandNamespace;
         if (e == null) {
             throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
         }
@@ -242,9 +243,9 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
             if (container.isNamespaceRoot()) {
                 namespaceInstance = nf.create(new PackedExtensionNamespaceHandle<>(container.namespace));
             } else {
-                namespaceInstance = extensionParent.userlandNamespaceInstance;
+                namespaceInstance = extensionParent.userlandNamespace;
             }
-            extension.userlandNamespaceInstance = namespaceInstance;
+            extension.userlandNamespace = namespaceInstance;
 
             instance = namespaceInstance.newExtension((ExtensionHandle) handle);
         }

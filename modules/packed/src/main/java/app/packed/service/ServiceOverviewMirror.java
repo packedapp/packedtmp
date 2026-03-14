@@ -26,8 +26,7 @@ import app.packed.service.mirror.ServiceProviderMirror;
 /**
  * A mirror for a service namespace.
  */
-public final class ServiceNamespaceMirror {
-
+public final class ServiceOverviewMirror {
 
     /** {@return A map of all the bindings from providers in the namespace} */
     public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {

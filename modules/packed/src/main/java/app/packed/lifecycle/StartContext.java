@@ -16,7 +16,6 @@
 package app.packed.lifecycle;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.StructuredTaskScope;
 
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
@@ -94,10 +93,10 @@ interface Sandbox {
     // Manual Join, vs AutoJoin
 
     // openTaskScope
-
-    default StructuredTaskScope<?, ?> openTaskScope() {
-        throw new UnsupportedOperationException();
-    }
+//
+//    default StructuredTaskScope<?, ?> openTaskScope() {
+//        throw new UnsupportedOperationException();
+//    }
 
     // Maaske har vi i virkeligheden two scopes her???
 

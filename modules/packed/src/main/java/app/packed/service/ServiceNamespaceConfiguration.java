@@ -38,8 +38,8 @@ import internal.app.packed.util.accesshelper.ServiceAccessHandler;
  * A service namespace represents a namespace where every provided service in the service has a unique {@link Key key}.
  * And where multiple bindings may exist to each provided service.
  */
+//TODO lav den om til et interface
 public final class ServiceNamespaceConfiguration {
-
 
     // Hmm, specificere ved namespacet under provide?
     <T> OperationConfiguration provide(Class<T> key, Provider<? extends T> provider) {
@@ -166,8 +166,8 @@ public final class ServiceNamespaceConfiguration {
 //            }
 
             @Override
-            public ServiceNamespaceMirror newServiceNamespaceMirror(ServiceNamespaceHandle handle) {
-                return new ServiceNamespaceMirror();
+            public ServiceOverviewMirror newServiceNamespaceMirror(ServiceNamespaceHandle handle) {
+                return new ServiceOverviewMirror();
             }
         });
     }

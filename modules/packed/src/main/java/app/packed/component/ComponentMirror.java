@@ -21,6 +21,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.build.Mirror;
 import app.packed.container.ContainerMirror;
+import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 
 /**
@@ -29,7 +30,7 @@ import app.packed.operation.OperationMirror;
  * A component mirror is always defined either by the framework or by an extension. IDK would it make sense to have it
  * as a user??? Fx Importer...
  */
-public sealed interface ComponentMirror extends Mirror permits ApplicationMirror, BeanMirror, ContainerMirror, OperationMirror {
+public sealed interface ComponentMirror extends Mirror permits ApplicationMirror, NamespaceMirror, ContainerMirror, BeanMirror, OperationMirror {
 
     // BuildAction installedBy();?? Cute
 
@@ -45,7 +46,7 @@ public sealed interface ComponentMirror extends Mirror permits ApplicationMirror
     /** {@return the path of the component} */
     // Giver mening hvis vi faar Applications.components();
     // IDK
-    //    default ComponentAuthor componentOwner() {
+    // default ComponentAuthor componentOwner() {
 //        throw new UnsupportedOperationException();
 //    }
 
@@ -53,7 +54,7 @@ public sealed interface ComponentMirror extends Mirror permits ApplicationMirror
     ComponentPath componentPath();
 
     /** {@return a set of any tags that have been set on the component} */
-     Set<String> componentTags();
+    Set<String> componentTags();
 
     /** {@return the build step that installed the component} */
     // Installation is a runtime concept... You don't install an extension, you add it

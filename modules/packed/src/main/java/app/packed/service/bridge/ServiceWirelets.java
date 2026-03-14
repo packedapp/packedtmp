@@ -75,9 +75,9 @@ public final class ServiceWirelets {
 
     // services().startNew();
 
-    public static Wirelet newServiceNamespace() {
-        return NewServiceNamespaceWirelet.INSTANCE;
-    }
+//    public static Wirelet newServiceNamespace() {
+//        return NewServiceNamespaceWirelet.INSTANCE;
+//    }
 
     /**
      * This method is similar to {@link #crack(Consumer)} but also provides the service of the child.
