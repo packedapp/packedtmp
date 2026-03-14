@@ -20,16 +20,32 @@ import app.packed.operation.OperationMirror;
 import internal.app.packed.component.PackedOverviewHandle;
 
 /**
+ * A handle that provides access to operations within a particular scope (such as an application or namespace) for a
+ * specific extension type. Overview handles are the backing implementation for {@link OverviewMirror} subclasses.
+ * <p>
+ * This interface is sealed and cannot be implemented directly by user code.
  *
+ * @param <E>
+ *            the type of extension whose operations are accessible through this handle
+ *
+ * @see OverviewMirror
  */
 public sealed interface OverviewHandle<E extends Extension<E>> permits PackedOverviewHandle {
 
+    /**
+     * {@return a stream of all operations within the scope of this handle that were installed by the extension type {@code E}}
+     */
     OperationMirror.OfStream<OperationMirror> operations();
 
-    <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operations);
-
-    // isOverviewForWholeApplication
-    // isOverviewForExtension
-    // IsOverviewForNamespace
-    // IsOverviewForSingleContainer <--- (not sure if we want to implement
+    /**
+     * Returns a stream of all operations within the scope of this handle that were installed by the extension type
+     * {@code E} and are of the specified mirror type.
+     *
+     * @param <T>
+     *            the type of operation mirror
+     * @param operationType
+     *            the class of the operation mirror type to filter by
+     * @return a stream of matching operations
+     */
+    <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operationType);
 }

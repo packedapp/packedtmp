@@ -22,31 +22,58 @@ import app.packed.operation.OperationMirror;
 import internal.app.packed.component.PackedOverviewHandle;
 
 /**
+ * A mirror that provides a read-only, extension-scoped view of operations within a particular scope such as an
+ * application, namespace, or container.
+ * <p>
+ * Subclasses are defined by extension authors to expose domain-specific queries over the operations that their
+ * extension installs. For example, a {@code JobOverviewMirror} might expose methods like {@code daemons()} or
+ * {@code jobs()} that filter and return extension-specific operation mirror types.
+ * <p>
+ * An overview mirror is obtained via {@link app.packed.application.ApplicationMirror#overview(Class)}.
+ * <p>
+ * Subclasses must declare exactly one constructor taking an {@link OverviewHandle} parameter.
  *
+ * @param <E>
+ *            the type of extension whose operations this overview provides access to
+ *
+ * @see OverviewHandle
+ * @see app.packed.application.ApplicationMirror#overview(Class)
  */
-// I don't think there is going to be any navigation, other than from
-
-// OverviewMirror.of(ApplicationMirror, ComponentPath, boolean includeExtensions)
-// ExtensionMirror.overview(SomeOverviewMirror.class)
-
-// ApplicationMirror.allOverview(xxx) <--
-
-// Options, includeExtensions?
-//// 99% of the time you are not interested in extensions Who cares about the extensions services, nevertheless,
-/// extension will find it interesting to find them in some way ServiceOverview Also
 public abstract class OverviewMirror<E extends Extension<E>> {
-    // ComponentPath componentPath();
+
+    /** The backing handle. */
     final PackedOverviewHandle<E> handle;
 
+    /**
+     * Creates a new overview mirror backed by the specified handle.
+     *
+     * @param overviewHandle
+     *            the handle providing access to operations
+     */
     protected OverviewMirror(OverviewHandle<E> overviewHandle) {
         this.handle = (PackedOverviewHandle<E>) requireNonNull(overviewHandle);
     }
 
+    /**
+     * {@return a stream of all operations within this overview's scope that were installed by extension {@code E}}
+     * <p>
+     * Only operations on userland beans are included; extension-owned beans are excluded.
+     */
     protected final OperationMirror.OfStream<OperationMirror> operations() {
         return handle.operations();
     }
 
-    protected final <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operations) {
-        return handle.operations(operations);
+    /**
+     * Returns a stream of operations within this overview's scope that were installed by extension {@code E} and match the
+     * specified mirror type.
+     *
+     * @param <T>
+     *            the type of operation mirror
+     * @param operationType
+     *            the class of the operation mirror type to filter by
+     * @return a stream of matching operations
+     */
+    protected final <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operationType) {
+        return handle.operations(operationType);
     }
 }

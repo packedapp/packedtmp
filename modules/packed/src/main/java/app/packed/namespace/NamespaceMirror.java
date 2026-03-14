@@ -33,6 +33,7 @@ import app.packed.operation.OperationMirror;
 import app.packed.util.TreeView;
 import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
+import internal.app.packed.component.PackedOverviewHandle;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.util.PackedTreeView;
 import internal.app.packed.util.accesshelper.AccessHelper;
@@ -105,6 +106,10 @@ public final class NamespaceMirror implements ComponentMirror {
     @Override
     public Set<String> componentTags() {
         throw new UnsupportedOperationException();
+    }
+
+    public <O extends OverviewMirror<?>> O overview(Class<O> type) {
+        return PackedOverviewHandle.ofNamespace(namespace, type);
     }
 }
 

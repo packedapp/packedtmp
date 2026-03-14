@@ -212,6 +212,10 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return OperationMirror.OfStream.of(beans().flatMap(BeanMirror::operations));
     }
 
+    public <O extends OverviewMirror<?>> O extensionOverview(Class<? extends Extension<?>> extensionType, Class<O> type) {
+        return PackedOverviewHandle.ofExtension(application, extensionType, type);
+    }
+
     public <O extends OverviewMirror<?>> O overview(Class<O> type) {
         return PackedOverviewHandle.ofApplication(application, type);
     }

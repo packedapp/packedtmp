@@ -33,7 +33,6 @@ import app.packed.component.ComponentPath;
 import app.packed.container.ContainerHandle;
 import app.packed.extension.Extension.ExtensionProperty;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;
-import app.packed.namespace.OverviewMirror;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
@@ -288,10 +287,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      *             if the extension defines an extension mirror but does not override this method.
      */
     protected ExtensionMirror<E> newExtensionMirror() {
-        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
-    }
-
-    protected OverviewMirror<E> newOverviewMirror() {
         throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
 
