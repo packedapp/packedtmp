@@ -17,9 +17,9 @@ package app.packed.concurrent;
 
 import java.util.stream.Stream;
 
+import app.packed.component.OverviewHandle;
+import app.packed.component.OverviewMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.namespace.OverviewHandle;
-import app.packed.namespace.OverviewMirror;
 import app.packed.operation.OperationMirror;
 
 /**

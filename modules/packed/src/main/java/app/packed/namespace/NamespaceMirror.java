@@ -28,6 +28,7 @@ import app.packed.binding.Key;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
+import app.packed.component.OverviewMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.TreeView;
