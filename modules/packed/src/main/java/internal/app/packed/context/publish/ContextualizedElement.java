@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import app.packed.component.ComponentRealm;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 
 /**
  * All methods on this interface is only for informational purposes.

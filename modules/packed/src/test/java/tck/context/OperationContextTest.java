@@ -23,7 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanMirror;
-import app.packed.context.ContextMirror;
+import app.packed.extension.ContextMirror;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import tck.AppAppTest;

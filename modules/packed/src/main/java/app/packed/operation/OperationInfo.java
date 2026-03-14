@@ -20,7 +20,7 @@ import java.util.Set;
 
 import app.packed.bean.BeanInfo;
 import app.packed.component.ComponentPath;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.util.AnnotationList;
 
 /**

@@ -18,7 +18,7 @@ package app.packed.web.session;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.operation.Op1;
 import app.packed.web.HttpContext;
 import app.packed.web.WebExtension;

@@ -18,7 +18,7 @@ package internal.app.packed.service;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.service.sandbox.ServiceProviderKind;
 import app.packed.service.sandbox.ServiceResolver;
 

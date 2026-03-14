@@ -18,7 +18,7 @@ package app.packed.container;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.lifecycle.sandbox.StopOption;
 import internal.app.packed.container.PackedContainerInstaller;

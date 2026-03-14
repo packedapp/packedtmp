@@ -15,7 +15,7 @@
  */
 package app.packed.cli;
 
-import app.packed.context.Context;
+import app.packed.extension.Context;
 
 /**
  *

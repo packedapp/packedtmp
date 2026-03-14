@@ -16,7 +16,7 @@
 package tck.context;
 
 import app.packed.bean.BeanTrigger.AutoService;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.operation.OperationHandle;
 import tck.AbstractBootstrapedAppTest;
 import tck.HookTestingExtension;

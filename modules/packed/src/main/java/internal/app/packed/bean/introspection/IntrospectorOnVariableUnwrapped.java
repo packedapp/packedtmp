@@ -25,7 +25,7 @@ import app.packed.bean.BeanIntrospector.OnVariableUnwrapped;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;

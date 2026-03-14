@@ -18,7 +18,6 @@ package app.packed.extension;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
-import app.packed.context.Context;
 import internal.app.packed.bean.sidehandle.SidehandleBeanHandle;
 
 /**

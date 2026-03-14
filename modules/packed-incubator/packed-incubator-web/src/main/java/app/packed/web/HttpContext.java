@@ -18,7 +18,7 @@ package app.packed.web;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.web.session.SessionContext;
 /**
  * Context providing access to the HTTP request and response.

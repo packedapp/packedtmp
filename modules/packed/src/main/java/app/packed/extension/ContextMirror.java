@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
+package app.packed.extension;
 
 import java.util.Collection;
 
 import app.packed.build.Mirror;
-import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 
 /**

@@ -18,8 +18,8 @@ package internal.app.packed.extension;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
-import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.Context;
 import internal.app.packed.lifecycle.runtime.PackedExtensionContext;
 
 /**

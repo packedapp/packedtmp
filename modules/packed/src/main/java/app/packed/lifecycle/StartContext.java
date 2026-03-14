@@ -19,8 +19,8 @@ import java.util.concurrent.Callable;
 
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
-import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.Context;
 import internal.app.packed.bean.introspection.IntrospectorOnAutoService;
 import internal.app.packed.extension.base.BaseExtensionBeanIntrospector;
 

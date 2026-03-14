@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.context.Context;
+import app.packed.extension.Context;
 
 /**
  * A bean trigger are simply properties of a bean that trigger some action.

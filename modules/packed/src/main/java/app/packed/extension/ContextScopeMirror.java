@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
+package app.packed.extension;
 
-import java.util.function.Supplier;
+import app.packed.bean.BeanMirror;
+import app.packed.operation.OperationMirror;
 
 /**
  *
  */
-// Modelled like Optional
-// Except that it throws ContextNotAvailableException (Not a build time exception)
-interface RuntimeContextLookup<T extends Context<?>> extends Supplier<T> {
-
-    static <T extends Context<?>> RuntimeContextLookup<T> lookup(Class<T> context) {
-        throw new UnsupportedOperationException();
-    }
-
-    static <T extends Context<?>> RuntimeContextLookup<T> ofMissing() {
-        throw new UnsupportedOperationException();
-    }
-}
+public sealed interface ContextScopeMirror permits OperationMirror, BeanMirror {}

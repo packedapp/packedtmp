@@ -19,7 +19,7 @@ import java.util.EnumSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import internal.app.packed.bean.PackedBeanInstaller;
 
 /**

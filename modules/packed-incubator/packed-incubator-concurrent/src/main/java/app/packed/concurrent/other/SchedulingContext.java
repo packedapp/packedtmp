@@ -3,8 +3,8 @@ package app.packed.concurrent.other;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
-import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.Context;
 
 @AutoService(introspector = SchedulingContextBeanIntrospector.class, requiresContext = SchedulingContext.class)
 public interface SchedulingContext extends Context<ScheduledJobExtension> /* extends AttributedElement */ {

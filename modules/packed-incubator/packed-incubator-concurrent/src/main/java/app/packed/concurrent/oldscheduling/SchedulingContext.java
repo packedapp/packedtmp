@@ -3,8 +3,8 @@ package app.packed.concurrent.oldscheduling;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AutoService;
 import app.packed.binding.Key;
-import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.Context;
 
 /**
  * A context object available for scheduling.

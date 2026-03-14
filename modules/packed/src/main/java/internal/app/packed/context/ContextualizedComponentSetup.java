@@ -17,9 +17,10 @@ package internal.app.packed.context;
 
 import java.util.function.Consumer;
 
-import app.packed.context.Context;
-import app.packed.context.ContextualizedElementMirror;
 import org.jspecify.annotations.Nullable;
+
+import app.packed.extension.Context;
+import app.packed.extension.ContextualizedElementMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
 

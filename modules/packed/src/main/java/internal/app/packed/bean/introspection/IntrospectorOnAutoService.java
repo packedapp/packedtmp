@@ -19,7 +19,7 @@ import java.util.Set;
 
 import app.packed.bean.BeanIntrospector.OnAutoService;
 import app.packed.binding.Key;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
 

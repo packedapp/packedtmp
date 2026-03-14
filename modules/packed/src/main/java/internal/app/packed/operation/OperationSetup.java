@@ -27,7 +27,7 @@ import org.jspecify.annotations.Nullable;
 
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.Sidehandle;
 import app.packed.operation.OperationHandle;

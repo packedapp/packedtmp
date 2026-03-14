@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
 import app.packed.binding.Key;
-import app.packed.context.ContextMirror;
+import app.packed.extension.ContextMirror;
 import app.packed.operation.OperationMirror;
 
 /**

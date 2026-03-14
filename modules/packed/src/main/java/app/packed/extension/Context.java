@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
-
-import app.packed.extension.Extension;
+package app.packed.extension;
 
 /**
  * A static context. By static we mean that is can be determined at runtime whether or not a given context is available

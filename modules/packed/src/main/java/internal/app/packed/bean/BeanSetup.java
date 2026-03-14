@@ -25,7 +25,7 @@ import app.packed.binding.Key;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRealm;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.extension.Extension;
 import app.packed.lifecycle.LifecycleKind;
 import app.packed.operation.Op;

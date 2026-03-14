@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import internal.app.packed.service.PackedServiceResolution;
 
 /**

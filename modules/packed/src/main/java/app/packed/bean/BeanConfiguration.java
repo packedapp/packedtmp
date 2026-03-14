@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import app.packed.binding.Key;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentRealm;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationConfiguration;
 

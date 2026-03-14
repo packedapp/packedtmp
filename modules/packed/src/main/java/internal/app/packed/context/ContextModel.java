@@ -15,7 +15,7 @@
  */
 package internal.app.packed.context;
 
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.extension.Extension;
 import internal.app.packed.extension.ExtensionClassModel;
 import internal.app.packed.util.types.TypeVariableExtractor;

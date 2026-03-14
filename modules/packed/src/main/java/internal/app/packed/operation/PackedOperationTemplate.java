@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.operation.OperationType;
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.bean.BeanSetup;

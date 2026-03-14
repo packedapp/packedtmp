@@ -17,8 +17,8 @@ package app.packed.application;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.Context;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.sandbox.StopOption;
 

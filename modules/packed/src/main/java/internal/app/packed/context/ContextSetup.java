@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import app.packed.context.Context;
-import app.packed.context.ContextMirror;
-import app.packed.context.ContextScopeMirror;
+import app.packed.extension.Context;
+import app.packed.extension.ContextMirror;
+import app.packed.extension.ContextScopeMirror;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import org.jspecify.annotations.Nullable;

@@ -15,7 +15,7 @@
  */
 package internal.app.packed.context;
 
-import app.packed.context.Context;
+import app.packed.extension.Context;
 
 /**
  *

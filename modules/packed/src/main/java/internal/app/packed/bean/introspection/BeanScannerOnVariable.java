@@ -20,8 +20,8 @@ import java.util.Set;
 
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
-import app.packed.context.Context;
-import app.packed.context.ContextNotAvailableException;
+import app.packed.extension.Context;
+import app.packed.extension.ContextNotAvailableException;
 import app.packed.service.sandbox.ServiceResolver;
 import internal.app.packed.bean.introspection.BeanTriggerModel.ParameterAnnotatedCache;
 import internal.app.packed.bean.introspection.BeanTriggerModel.ParameterTypeCache;

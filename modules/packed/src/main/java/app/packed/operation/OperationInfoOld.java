@@ -18,7 +18,7 @@ package app.packed.operation;
 import java.util.Set;
 
 import app.packed.component.ComponentPath;
-import app.packed.context.Context;
+import app.packed.extension.Context;
 
 /**
  * A operation site represents an operation on a bean at runtime.

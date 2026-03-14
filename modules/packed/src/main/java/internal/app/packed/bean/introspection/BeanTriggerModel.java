@@ -19,7 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Set;
 
-import app.packed.context.Context;
+import app.packed.extension.Context;
 import app.packed.extension.Extension;
 import org.jspecify.annotations.Nullable;
 import internal.app.packed.util.PackedAnnotationList;
