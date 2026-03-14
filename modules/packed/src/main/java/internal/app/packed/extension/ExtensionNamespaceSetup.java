@@ -79,6 +79,10 @@ public final class ExtensionNamespaceSetup extends NamespaceSetup {
         });
     }
 
+    public Class<? extends Extension<?>> ownerExtension() {
+        return model.type();
+    }
+
     /** {@inheritDoc} */
     @Override
     public ComponentRealm owner() {

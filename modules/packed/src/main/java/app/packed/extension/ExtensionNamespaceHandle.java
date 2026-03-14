@@ -15,6 +15,8 @@
  */
 package app.packed.extension;
 
+import java.util.Optional;
+
 import app.packed.component.ComponentRealm;
 import internal.app.packed.namespace.PackedExtensionNamespaceHandle;
 
@@ -26,9 +28,9 @@ public sealed interface ExtensionNamespaceHandle<N extends ExtensionNamespace<N,
     /** {@return whether or not the namespace is the root namespace in the application} */
     boolean isApplicationRoot();
 
-    /**
-     *
-     */
+    /** The owner of the namespace */
     ComponentRealm owner();
 
+    /** {@return a parent namespace if any} */
+    Optional<N> parent();
 }

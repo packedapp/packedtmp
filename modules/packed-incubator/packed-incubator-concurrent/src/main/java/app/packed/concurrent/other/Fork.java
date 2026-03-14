@@ -20,14 +20,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.concurrent.JobExtension;
+import app.packed.extension.BaseExtension;
 import sandbox.extension.sandbox.DependantOperator;
 
 /**
  *
  */
 // IDK? A dependent operation??
-@DependantOperator(extension = JobExtension.class)
+@DependantOperator(extension = BaseExtension.class)
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Fork {

@@ -18,6 +18,7 @@ package app.packed.cli;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import app.packed.namespace.OverviewHandle;
 import app.packed.namespace.OverviewMirror;
 import app.packed.operation.OperationMirror;
 
@@ -26,12 +27,16 @@ import app.packed.operation.OperationMirror;
  */
 public final class CliOverviewMirror extends OverviewMirror<CliExtension> {
 
-    /** The CLI namespace handle. */
-    private final CliExtensionNamespace handle;
-
-    CliOverviewMirror(CliExtensionNamespace handle) {
-        this.handle = handle;
+    /**
+     * @param overviewHandle
+     */
+    protected CliOverviewMirror(OverviewHandle<CliExtension> overviewHandle) {
+        super(overviewHandle);
     }
+
+    /** The CLI namespace handle. */
+    private CliExtensionNamespace handle;
+
 
     public Optional<CliCommandMirror> command(String name) {
         return Optional.ofNullable(handle.commands.get(name)).map(h -> (CliCommandMirror) h.mirror());

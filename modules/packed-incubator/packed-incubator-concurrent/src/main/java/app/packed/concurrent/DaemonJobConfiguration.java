@@ -58,7 +58,7 @@ public final class DaemonJobConfiguration extends JobConfiguration {
 
     // onProperty("blabla", DaemonJobConfiguration::restart);
     // onProperty("blabla", (v, j)->j.interruptOnStop(true));
-    public DaemonJobConfiguration onProperty(String value, BiConsumer<String, ? super DaemonJobConfiguration> consumer) {
+    DaemonJobConfiguration onProperty(String value, BiConsumer<String, ? super DaemonJobConfiguration> consumer) {
         return this;
     }
 

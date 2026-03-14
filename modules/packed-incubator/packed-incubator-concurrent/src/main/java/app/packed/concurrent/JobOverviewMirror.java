@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import app.packed.component.ComponentRealm;
 import app.packed.extension.BaseExtension;
+import app.packed.namespace.OverviewHandle;
 import app.packed.namespace.OverviewMirror;
 
 /**
@@ -26,7 +27,14 @@ import app.packed.namespace.OverviewMirror;
  *
  * @see JobNamespaceConfiguration
  */
-public class JobNamespaceMirror extends OverviewMirror<BaseExtension> {
+public final class JobOverviewMirror extends OverviewMirror<BaseExtension> {
+
+    /**
+     * @param overviewHandle
+     */
+    public JobOverviewMirror(OverviewHandle<BaseExtension> overviewHandle) {
+        super(overviewHandle);
+    }
 
     /** {@return a stream of all jobs that have been defined in the namespace or descendant namespaces} */
     public Stream<DaemonJobMirror> allDaemons() {

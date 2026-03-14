@@ -15,8 +15,11 @@
  */
 package app.packed.namespace;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
+import internal.app.packed.component.PackedOverviewHandle;
 
 /**
  *
@@ -31,17 +34,19 @@ import app.packed.operation.OperationMirror;
 // Options, includeExtensions?
 //// 99% of the time you are not interested in extensions Who cares about the extensions services, nevertheless,
 /// extension will find it interesting to find them in some way ServiceOverview Also
-
-// ApplicationMirrror.overview
-// NamespaceMirrror.overview
-// ?ContainerMirror.overview
-
-// Har vi lyst til at supportere noget for userland?
 public abstract class OverviewMirror<E extends Extension<E>> {
     // ComponentPath componentPath();
+    final PackedOverviewHandle<E> handle;
 
-    // Public???? In that case, we probably need both
+    protected OverviewMirror(OverviewHandle<E> overviewHandle) {
+        this.handle = (PackedOverviewHandle<E>) requireNonNull(overviewHandle);
+    }
+
     protected final OperationMirror.OfStream<OperationMirror> operations() {
+        throw new UnsupportedOperationException();
+    }
+
+    protected final <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operations) {
         throw new UnsupportedOperationException();
     }
 }

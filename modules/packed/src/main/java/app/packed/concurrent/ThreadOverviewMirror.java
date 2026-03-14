@@ -16,6 +16,7 @@
 package app.packed.concurrent;
 
 import app.packed.extension.BaseExtension;
+import app.packed.namespace.OverviewHandle;
 import app.packed.namespace.OverviewMirror;
 
 /**
@@ -26,7 +27,12 @@ import app.packed.namespace.OverviewMirror;
 // We must have one per extension...
 // I mean we have a service namespace per extension.
 // So would probably be strange to share one for extensions?
-public class ThreadOverviewMirror extends OverviewMirror<BaseExtension> {
+public final class ThreadOverviewMirror extends OverviewMirror<BaseExtension> {
 
-
+    /**
+     * @param overviewHandle
+     */
+    protected ThreadOverviewMirror(OverviewHandle<BaseExtension> overviewHandle) {
+        super(overviewHandle);
+    }
 }

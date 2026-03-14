@@ -31,12 +31,10 @@ import app.packed.extension.ExtensionNamespaceHandle;
  */
 public class CliExtensionNamespace extends ExtensionNamespace<CliExtensionNamespace, CliExtension> {
 
-
     /** All the commands within the namespace. */
     final LinkedHashMap<String, CliCommandOperationHandle> commands = new LinkedHashMap<>();
 
     final List<CliOptionMirror> options = new ArrayList<>();
-
 
     void process(CliExtension extension, CliCommand c, BeanIntrospector.OnMethod method) {
         CliCommandOperationHandle h = null;

@@ -20,16 +20,17 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.component.ComponentRealm;
+import internal.app.packed.namespace.PackedExtensionNamespaceHandle;
 
 /**
  *
  */
 public abstract class ExtensionNamespace<N extends ExtensionNamespace<N, E>, E extends Extension<E>> {
 
-    private final ExtensionNamespaceHandle<N, E> handle;
+    private final PackedExtensionNamespaceHandle<N, E> handle;
 
     protected ExtensionNamespace(ExtensionNamespaceHandle<N, E> handle) {
-        this.handle = requireNonNull(handle);
+        this.handle = (PackedExtensionNamespaceHandle<N, E>) requireNonNull(handle);
     }
 
     /** {@return whether or not the namespace is the root namespace in the application} */
@@ -38,8 +39,8 @@ public abstract class ExtensionNamespace<N extends ExtensionNamespace<N, E>, E e
     }
 
     /** {@return whether or not the namespace is owned by an extension} */
-    public final boolean isExtensionNamespace() {
-        return owner().isExtension();
+    public final boolean isUserland() {
+        return owner().isUserland();
     }
 
     // ExtensionNamespace created for extensions will never use this method

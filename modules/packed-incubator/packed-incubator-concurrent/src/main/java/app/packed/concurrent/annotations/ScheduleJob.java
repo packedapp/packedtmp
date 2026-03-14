@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.OnAnnotatedMethod;
-import app.packed.concurrent.JobExtension;
 import app.packed.concurrent.job2.impl.ScheduledOperationHandle;
+import app.packed.extension.BaseExtension;
 import internal.app.packed.concurrent.old.ScheduleImpl;
 
 /**
@@ -65,7 +65,7 @@ public @interface ScheduleJob {
     TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
 }
 
-final class JobExtensionBeanIntrospector extends BeanIntrospector<JobExtension> {
+final class JobExtensionBeanIntrospector extends BeanIntrospector<BaseExtension> {
 
     @Override
     public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod on) {

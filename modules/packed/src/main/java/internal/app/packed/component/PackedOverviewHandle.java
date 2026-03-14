@@ -13,27 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent;
+package internal.app.packed.component;
 
-import app.packed.extension.ExtensionHandle;
+import static java.util.Objects.requireNonNull;
+
+import app.packed.extension.Extension;
 import app.packed.extension.ExtensionNamespace;
-import app.packed.extension.ExtensionNamespaceHandle;
+import app.packed.namespace.OverviewHandle;
 
 /**
  *
  */
-class JobExtensionNamespace extends ExtensionNamespace<JobExtensionNamespace, JobExtension> {
+public abstract sealed class PackedOverviewHandle<E extends Extension<E>> implements OverviewHandle<E> {
 
-    /**
-     * @param handle
-     */
-    protected JobExtensionNamespace(ExtensionNamespaceHandle<JobExtensionNamespace, JobExtension> handle) {
-        super(handle);
+    final ExtensionNamespace<?, ?> owner;
+
+    public PackedOverviewHandle(ExtensionNamespace<?, ?> owner) {
+        this.owner = requireNonNull(owner);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public JobExtension newExtension(ExtensionHandle<JobExtension> extensionHandle) {
-        return new JobExtension(this, extensionHandle);
+    public static final class PackedApplicationOverviewHandle<E extends Extension<E>> extends PackedOverviewHandle<E> {
+
+        public PackedApplicationOverviewHandle(ExtensionNamespace<?, ?> owner) {
+            super(owner);
+        }
+
     }
 }

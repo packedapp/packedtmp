@@ -17,11 +17,12 @@ package internal.app.packed.namespace;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
+
 import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionNamespace;
 import app.packed.extension.ExtensionNamespaceHandle;
-import internal.app.packed.extension.ExtensionNamespaceSetup;
 
 /**
  *
@@ -29,9 +30,6 @@ import internal.app.packed.extension.ExtensionNamespaceSetup;
 public final class PackedExtensionNamespaceHandle<N extends ExtensionNamespace<N, E>, E extends Extension<E>> implements ExtensionNamespaceHandle<N, E> {
 
     private final NamespaceSetup namespace;
-
-    // Don't know if needed
-    ExtensionNamespaceSetup managedBy;
 
     public PackedExtensionNamespaceHandle(NamespaceSetup namespace) {
         this.namespace = requireNonNull(namespace);
@@ -48,4 +46,16 @@ public final class PackedExtensionNamespaceHandle<N extends ExtensionNamespace<N
     public boolean isApplicationRoot() {
         return namespace.isApplicationRoot();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<N> parent() {
+        throw new UnsupportedOperationException();
+//        NamespaceSetup parent = namespace.treeParent;
+//        if (parent == null) {
+//            return Optional.empty();
+//        }
+//        return Optional.of((N) new PackedExtensionNamespaceHandle<>(parent));
+    }
+
 }

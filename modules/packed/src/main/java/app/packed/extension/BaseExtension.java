@@ -10,7 +10,6 @@ import app.packed.bean.BeanKind;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension.Props;
 import app.packed.extension.ExtensionPoint.ExtensionPointHandle;

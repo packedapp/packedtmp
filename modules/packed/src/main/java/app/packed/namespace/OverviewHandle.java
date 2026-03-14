@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent;
+package app.packed.namespace;
 
-import app.packed.operation.OperationHandle;
+import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
+import internal.app.packed.component.PackedOverviewHandle;
 
 /**
- * Like all other mirrors, a job mirror only represents jobs that are defined at build time. Jobs that are submitted at
- * runtime can only be tracked through a job tracker.
+ *
  */
-public abstract class JobMirror extends OperationMirror {
+public sealed interface OverviewHandle<E extends Extension<E>> permits PackedOverviewHandle {
 
-    OperationHandle<?> handle;
+    OperationMirror.OfStream<OperationMirror> operations();
 
-    /**
-     * @param handle
-     */
-    // TODO make package private
-    protected JobMirror(OperationHandle<?> handle) {
-        super(handle);
-    }
+    <T extends OperationMirror> OperationMirror.OfStream<T> operations(Class<T> operations);
+
+    // isOverviewForWholeApplication
+    // isOverviewForExtension
+    // IsOverviewForNamespace
+    // IsOverviewForSingleContainer <--- (not sure if we want to implement
 }
