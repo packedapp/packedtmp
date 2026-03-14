@@ -246,8 +246,24 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         return handle.configuration();
     }
 
+    /**
+     * Creates a new child container by linking the specified assembly into a new namespace.
+     *
+     * @param name
+     *            the name of the new container
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     */
+    public void linkNewNamespace(String name, Assembly assembly, Wirelet... wirelets) {
+        PackedContainerInstaller<?> installer = link0();
+        installer.newNamespace = true;
+        installer.named(name).install(assembly, wirelets);
+    }
+
     /** {@return a new container builder used for linking.} */
-    private ContainerInstaller<?> link0() {
+    private PackedContainerInstaller<?> link0() {
         return PackedContainerInstaller.of(BaseExtension.class,
                 extension.container.application, extension.container);
     }

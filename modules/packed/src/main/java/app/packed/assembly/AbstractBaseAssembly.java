@@ -111,6 +111,23 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
         return base().installInstance(instance);
     }
 
+    protected final void linkNewNamespace(Assembly assembly, Wirelet... wirelets) {
+        base().linkNewNamespace(assembly.getClass().getSimpleName().replace("Assembly", ""), assembly, wirelets);
+    }
+
+    /**
+     * Links the specified assembly as part of the same application and container that this container is part of.
+     *
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     * @return a mirror of the container that was linked
+     */
+    protected final void linkNewNamespace(Assembly assembly, String name, Wirelet... wirelets) {
+        base().linkNewNamespace(name, assembly, wirelets);
+    }
+
     protected final void link(Assembly assembly, Wirelet... wirelets) {
         base().link(assembly.getClass().getSimpleName().replace("Assembly", ""), assembly, wirelets);
     }
@@ -253,9 +270,9 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
 }
 
 //protected final void requireGuest() {
-////requirePassive <--- maaske er den her i virkeligheden meget mere interessant...
+//// requirePassive <--- maaske er den her i virkeligheden meget mere interessant...
 //
-////Vi skal have en eller anden maade at kunne specificere det her
+//// Vi skal have en eller anden maade at kunne specificere det her
 //
 //}
 //
