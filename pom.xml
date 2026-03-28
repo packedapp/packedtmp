@@ -29,7 +29,7 @@
     <version.plugin.exec>3.5.0</version.plugin.exec>
     <version.plugin.plugin>3.17.0</version.plugin.plugin>
     <version.plugin.release>3.1.1</version.plugin.release>
-    <version.plugin.resources>3.4.0</version.plugin.resources>
+    <version.plugin.resources>3.5.0</version.plugin.resources>
     <version.plugin.assembly>3.7.1</version.plugin.assembly>
     <version.plugin.dependency>3.8.1</version.plugin.dependency>
     <version.plugin.help>3.5.1</version.plugin.help>
