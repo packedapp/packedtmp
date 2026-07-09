@@ -15,13 +15,13 @@
  */
 package app.packed.moduletests.isopen;
 
-import static app.packed.component.SidehandleBinding.Kind.FROM_CONTEXT;
+import static app.packed.extension.SidehandleBinding.Kind.FROM_CONTEXT;
 
 import app.packed.application.BootstrapApp;
 import app.packed.application.ManagedApplicationRuntime;
 import app.packed.bean.Bean;
-import app.packed.component.SidehandleBinding;
-import app.packed.component.SidehandleContext;
+import app.packed.extension.SidehandleBinding;
+import app.packed.extension.SidehandleContext;
 import app.packed.lifecycle.LifecycleKind;
 /**
  *
