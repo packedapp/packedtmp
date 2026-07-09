@@ -15,7 +15,7 @@
  */
 package app.packed.moduletests.isopen;
 
-import app.packed.component.SidehandleTargetKind;
+import app.packed.extension.SidehandleTargetKind;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 

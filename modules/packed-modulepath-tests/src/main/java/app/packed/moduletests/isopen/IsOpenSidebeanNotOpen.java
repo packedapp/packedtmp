@@ -15,8 +15,8 @@
  */
 package app.packed.moduletests.isopen;
 
-import app.packed.component.SidehandleBinding;
-import app.packed.component.SidehandleBinding.Kind;
+import app.packed.extension.SidehandleBinding;
+import app.packed.extension.SidehandleBinding.Kind;
 import app.packed.moduletests.notopen.NotOpenInvokerInterface;
 
 /**
